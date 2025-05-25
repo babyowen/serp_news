@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>选择关键词 - {{ date }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2em; }
+        h1 { color: #2c3e50; }
+        ul { list-style: none; padding: 0; }
+        li { margin: 1em 0; }
+        a { text-decoration: none; color: #27ae60; font-size: 1.2em; }
+        a:hover { color: #e67e22; }
+        .back-link { margin-bottom: 2em; display: inline-block; }
+    </style>
+</head>
+<body>
+    <a class="back-link" href="/">← 返回日期选择</a>
+    <h1>选择关键词 - {{ date }}</h1>
+    <ul>
+        {% for kw in keywords %}
+        <li><a href="/date/{{ date }}?keyword={{ kw }}">{{ kw }}</a></li>
+        {% else %}
+        <li>暂无关键词</li>
+        {% endfor %}
+    </ul>
+</body>
+</html> 
