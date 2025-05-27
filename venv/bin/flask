@@ -1,4 +1,4 @@
-#!/Users/liuliang/python/serp_news/venv/bin/python3
+#!/Users/babyowen/python/serp_news/venv/bin/python3
 # -*- coding: utf-8 -*-
 import re
 import sys
