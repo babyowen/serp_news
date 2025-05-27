@@ -1,0 +1,32 @@
+🕒 本次运行时间: 2025-05-28 06:33:56
+
+==============================
+🔑 关键词: 公积金
+🌐 Baidu News: 14 条
+🌐 Google News: 25 条
+🌐 Bing News: 15 条
+🌐 DuckDuckGo News: 12 条
+✅ 去重后 serp_baidunews: 14 条
+✅ 去重后 serp_googlenews: 5 条
+✅ 去重后 serp_bingnews: 14 条
+✅ 去重后 serp_duckduckgo_news: 3 条
+⭐️ 去重后总保存: 36 条
+
+
+==============================
+🔑 关键词: 养老
+🌐 Baidu News: 19 条
+🌐 Google News: 215 条
+🌐 Bing News: 30 条
+🌐 DuckDuckGo News: 13 条
+🚫 黑名单过滤: [英为财情] | 标题: 养老基金创纪录流入推动智利股市上涨 提供者 Investing.com | 来源: 英为财情 Investing.com | 链接: https://cn.investing.com/news/stock-market-news/article-93CH-2822091
+🚫 黑名单过滤: [英为财情] | 标题: 养老基金创纪录流入推动智利股市上涨 提供者 Investing.com | 来源: 英为财情 Investing.com | 链接: https://cn.investing.com/news/stock-market-news/article-93CH-2822091
+🚫 黑名单过滤: [英为财情] | 标题: 养老基金创纪录流入推动智利股市上涨 提供者 Investing.com | 来源: 英为财情 Investing.com | 链接: https://cn.investing.com/news/stock-market-news/article-93CH-2822091
+🚫 黑名单过滤: [英为财情] | 标题: 养老基金创纪录流入推动智利股市上涨 提供者 Investing.com | 来源: 英为财情 Investing.com | 链接: https://cn.investing.com/news/stock-market-news/article-93CH-2822091
+🚫 黑名单过滤: [英为财情] | 标题: 养老基金创纪录流入推动智利股市上涨 提供者 Investing.com | 来源: 英为财情 Investing.com | 链接: https://cn.investing.com/news/stock-market-news/article-93CH-2822091
+✅ 去重后 serp_baidunews: 19 条
+✅ 去重后 serp_googlenews: 42 条
+✅ 去重后 serp_bingnews: 23 条
+✅ 去重后 serp_duckduckgo_news: 12 条
+⭐️ 去重后总保存: 96 条
+
