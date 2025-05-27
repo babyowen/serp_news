@@ -4,6 +4,8 @@ from datetime import datetime, timedelta
 import json
 from bs4 import BeautifulSoup
 import re
+import time
+import os
 
 def fetch_gnews(keyword, date=None, sortby="publishedAt"):
     if date is None:
@@ -41,13 +43,24 @@ def fetch_serpapi_google_news(keyword, max_pages=5):
     for page in range(max_pages):
         if page > 0:
             params["start"] = page * 10
-        resp = requests.get(url, params=params)
-        resp.raise_for_status()
-        data = resp.json()
-        results = data.get("news_results", [])
-        if not results:
-            break
-        all_results.extend(results)
+        for attempt in range(3):
+            try:
+                resp = requests.get(url, params=params, timeout=15)
+                resp.raise_for_status()
+                data = resp.json()
+                results = data.get("news_results", [])
+                if not results:
+                    break
+                all_results.extend(results)
+                break  # 成功则跳出重试
+            except Exception as e:
+                if attempt == 2:
+                    log_error(f"google_news", keyword, str(e))
+                else:
+                    time.sleep(3)
+        else:
+            # 3次都失败
+            return {"news_results": []}
     return {"news_results": all_results}
 
 def fetch_serpapi_baidu_news(keyword, max_pages=5):
@@ -61,13 +74,23 @@ def fetch_serpapi_baidu_news(keyword, max_pages=5):
     all_results = []
     for page in range(max_pages):
         params["pn"] = page * 10
-        resp = requests.get(url, params=params)
-        resp.raise_for_status()
-        data = resp.json()
-        results = data.get("organic_results", [])
-        if not results:
-            break
-        all_results.extend(results)
+        for attempt in range(3):
+            try:
+                resp = requests.get(url, params=params, timeout=15)
+                resp.raise_for_status()
+                data = resp.json()
+                results = data.get("organic_results", [])
+                if not results:
+                    break
+                all_results.extend(results)
+                break
+            except Exception as e:
+                if attempt == 2:
+                    log_error(f"baidu_news", keyword, str(e))
+                else:
+                    time.sleep(3)
+        else:
+            return {"organic_results": []}
     return {"organic_results": all_results}
 
 def fetch_baidu_news_web(keyword="养老", max_pages=3):
@@ -121,11 +144,66 @@ def fetch_serpapi_bing_news(keyword, max_pages=5):
     for page in range(max_pages):
         if page > 0:
             params["first"] = page * 10
-        resp = requests.get(url, params=params)
-        resp.raise_for_status()
-        data = resp.json()
-        results = data.get("organic_results", [])
-        if not results:
-            break
-        all_results.extend(results)
-    return {"organic_results": all_results} 
+        for attempt in range(3):
+            try:
+                resp = requests.get(url, params=params, timeout=15)
+                resp.raise_for_status()
+                data = resp.json()
+                results = data.get("organic_results", [])
+                if not results:
+                    break
+                all_results.extend(results)
+                break
+            except Exception as e:
+                if attempt == 2:
+                    log_error(f"bing_news", keyword, str(e))
+                else:
+                    time.sleep(3)
+        else:
+            return {"organic_results": []}
+    return {"organic_results": all_results}
+
+def fetch_serpapi_duckduckgo_news(keyword, max_pages=5):
+    """
+    通过SerpApi DuckDuckGo News API获取新闻，拉取一周内新闻，分页，自动重试，错误日志。
+    返回结构：{'news_results': [...]}，内容为原始news_results
+    """
+    url = "https://serpapi.com/search.json"
+    params = {
+        "engine": "duckduckgo_news",
+        "q": keyword,
+        "api_key": SERPAPI_KEY,
+        "kl": "cn-zh",
+        "df": "w"
+    }
+    all_results = []
+    for page in range(max_pages):
+        if page > 0:
+            params["start"] = page * 30  # duckduckgo_news每页最多30条
+        for attempt in range(3):
+            try:
+                resp = requests.get(url, params=params, timeout=15)
+                resp.raise_for_status()
+                data = resp.json()
+                results = data.get("news_results", [])
+                if not results:
+                    break
+                all_results.extend(results)
+                break
+            except Exception as e:
+                if attempt == 2:
+                    log_error(f"duckduckgo_news", keyword, str(e))
+                else:
+                    time.sleep(3)
+        else:
+            return {"news_results": []}
+    return {"news_results": all_results}
+
+def log_error(source, keyword, error_msg):
+    # 记录到 output/error_log.txt
+    log_dir = "output"
+    os.makedirs(log_dir, exist_ok=True)
+    log_path = os.path.join(log_dir, "error_log.txt")
+    with open(log_path, "a", encoding="utf-8") as f:
+        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        f.write(f"[{now}] {source} | {keyword} | {error_msg}\n") 

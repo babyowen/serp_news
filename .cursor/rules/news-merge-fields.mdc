@@ -1,0 +1,29 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# 新闻数据合并与黑名单过滤统一规范
+
+本项目所有新闻源（Baidu、Google、Bing、DuckDuckGo）合并输出的新闻条目，字段结构如下：
+
+- `title`：原始 title
+- `link`：原始 link
+- `source`：
+  - Baidu/Bing/DuckDuckGo：原始 source
+  - Google News：item['source']['name']（如有，否则为 ''）
+- `date`：原始 date 字段（API返回的时间字符串）
+- `fetchdate`：解析/计算后的实际日期（昨天，YYYY-MM-DD）
+- `sourceapi`：数据来源（如 'serp_baidunews'、'serp_googlenews'、'serp_bingnews'、'serp_duckduckgo_news'）
+- `thumbnail`：原始 thumbnail（如有，否则为 None）
+- `keyword`：当前关键词
+
+其它字段全部丢弃。
+
+## 黑名单过滤机制
+
+- 合并新闻时，程序会自动过滤掉来源/source/标题/链接中包含黑名单关键词的新闻条目。
+- 黑名单关键词配置在 [config.py](mdc:config.py) 的 `blacklist_keywords` 列表中，可自行扩展。
+- 被过滤的新闻会在 run_log.txt 日志中记录，内容包括触发的关键词、标题、来源、链接。
+
+该规范已在 [main.py](mdc:main.py) 和 [test_fetcher.py](mdc:test_fetcher.py) 中统一实现。

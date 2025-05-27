@@ -52,14 +52,13 @@
                             {% endif %}
                         </div>
                         <div class="news-meta">
-                            来源: {{ item.source.name if item.source and item.source.name else item.source or '' }}<br>
-                            时间: {{ item.date or item.parsed_date or '' }}
+                            <span style="color:#888;">来源:</span> {{ item.source or '' }}<br>
+                            <span style="color:#888;">原始时间:</span> {{ item.date or '' }}<br>
+                            <span style="color:#888;">抓取日期:</span> {{ item.fetchdate or '' }}<br>
+                            <span style="color:#888;">来源API:</span> <span style="background:#e1ecf4;color:#39739d;padding:0.1em 0.5em;border-radius:4px;font-size:0.95em;">{{ item.sourceapi }}</span>
                         </div>
-                        {% if item.snippet %}
-                            <div class="news-snippet">{{ item.snippet }}</div>
-                        {% endif %}
                         {% if item.keyword %}
-                            <div style="color:#aaa;font-size:0.9em;">关键词: {{ item.keyword }}</div>
+                            <div style="color:#aaa;font-size:0.9em;">关键词: <span style="background:#f6e58d;color:#7f6d00;padding:0.1em 0.5em;border-radius:4px;">{{ item.keyword }}</span></div>
                         {% endif %}
                     </div>
                 {% endfor %}

@@ -1,14 +1,10 @@
-from news_fetcher import fetch_serpapi_baidu_news, fetch_serpapi_google_news, fetch_serpapi_bing_news
-from config import DEFAULT_KEYWORDS
+from news_fetcher import fetch_serpapi_baidu_news, fetch_serpapi_google_news, fetch_serpapi_bing_news, fetch_serpapi_duckduckgo_news
+from config import DEFAULT_KEYWORDS, blacklist_keywords
 import json
 from datetime import datetime, timedelta
 import re
 from dateutil import parser
 import os
-
-# 当前主程序使用的新闻源和API类型
-NEWS_SOURCE = "SerpApi"
-NEWS_API = "Baidu News API"
 
 def is_baidu_news_yesterday(date_str):
     """
@@ -164,20 +160,84 @@ def is_bing_news_yesterday(date_str):
 def get_output_path(fetch_date, basename):
     return os.path.join("output", fetch_date, basename)
 
+def is_duckduckgo_news_yesterday(date_str):
+    """
+    判断DuckDuckGo News返回的date字段是否为昨天。
+    支持：
+    - '1 day ago'（昨天）
+    - 'X days ago'（X=1为昨天）
+    - 'X hours ago'（需判断当前时间是否属于昨天）
+    - 'X minutes ago'（同上）
+    """
+    if not date_str:
+        return False
+    now = datetime.now()
+    yesterday = (now - timedelta(days=1)).date()
+    # 1 day ago
+    if date_str.strip() == '1 day ago':
+        return True
+    # X days ago
+    m = re.match(r"(\d+) days ago", date_str)
+    if m:
+        days = int(m.group(1))
+        return days == 1
+    # X hours ago
+    m = re.match(r"(\d+) hours ago", date_str)
+    if m:
+        hours = int(m.group(1))
+        news_time = now - timedelta(hours=hours)
+        return news_time.date() == yesterday
+    # X minutes ago
+    m = re.match(r"(\d+) minutes ago", date_str)
+    if m:
+        minutes = int(m.group(1))
+        news_time = now - timedelta(minutes=minutes)
+        return news_time.date() == yesterday
+    return False
+
+def parse_duckduckgo_news_date(date_str):
+    """
+    将DuckDuckGo News的date字段解析为具体日期（YYYY-MM-DD），解析失败返回None。
+    """
+    if not date_str:
+        return None
+    now = datetime.now()
+    if date_str.strip() == '1 day ago':
+        return (now - timedelta(days=1)).strftime("%Y-%m-%d")
+    m = re.match(r"(\d+) days ago", date_str)
+    if m:
+        days = int(m.group(1))
+        return (now - timedelta(days=days)).strftime("%Y-%m-%d")
+    m = re.match(r"(\d+) hours ago", date_str)
+    if m:
+        hours = int(m.group(1))
+        news_time = now - timedelta(hours=hours)
+        return news_time.strftime("%Y-%m-%d")
+    m = re.match(r"(\d+) minutes ago", date_str)
+    if m:
+        minutes = int(m.group(1))
+        news_time = now - timedelta(minutes=minutes)
+        return news_time.strftime("%Y-%m-%d")
+    return None
+
 def main():
     try:
         keywords = list(DEFAULT_KEYWORDS)
     except Exception:
         keywords = [DEFAULT_KEYWORDS]
-    fetch_date = datetime.now().strftime("%Y-%m-%d")
+    fetch_date = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
     os.makedirs(os.path.join("output", fetch_date), exist_ok=True)
     log_lines = []
+    run_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    log_lines.append(f"🕒 本次运行时间: {run_time}")
     for keyword in keywords:
-        print(f"\n==== 关键词：{keyword} ====")
+        log_lines.append(f"\n==============================")
+        log_lines.append(f"🔑 关键词: {keyword}")
         all_yesterday_news = []
         count_baidu = 0
         count_google = 0
         count_bing = 0
+        count_duck = 0
 
         # --- SerpApi Baidu News ---
         print("\n【SerpApi Baidu News API】")
@@ -189,14 +249,19 @@ def main():
         for item in news_data_baidu.get("organic_results", []):
             date_str = item.get('date', '')
             if is_baidu_news_yesterday(date_str):
-                item = item.copy()
-                item['fetch_date'] = fetch_date
-                item['parsed_date'] = parse_baidu_news_date(date_str)
-                item['keyword'] = keyword
-                item['sourceapi'] = 'serp_baidunews'
-                all_yesterday_news.append(item)
+                news_date = parse_baidu_news_date(date_str)
+                filtered_item = {
+                    'title': item.get('title', ''),
+                    'link': item.get('link', ''),
+                    'fetchdate': news_date,
+                    'source': item.get('source', ''),
+                    'sourceapi': 'serp_baidunews',
+                    'keyword': keyword,
+                    'thumbnail': item.get('thumbnail', None)
+                }
+                all_yesterday_news.append(filtered_item)
                 count_baidu += 1
-        log_lines.append(f"{fetch_date} {keyword} serp_baidunews: {count_baidu} 条")
+        log_lines.append(f"🌐 Baidu News: {count_baidu} 条")
 
         # --- SerpApi Google News ---
         print("\n【SerpApi Google News API】")
@@ -208,14 +273,20 @@ def main():
         for item in news_data_google.get("news_results", []):
             date_str = item.get('date', '')
             if is_google_news_yesterday(date_str):
-                item = item.copy()
-                item['fetch_date'] = fetch_date
-                item['parsed_date'] = parse_google_news_date(date_str)
-                item['keyword'] = keyword
-                item['sourceapi'] = 'serp_googlenews'
-                all_yesterday_news.append(item)
+                news_date = parse_google_news_date(date_str)
+                filtered_item = {
+                    'title': item.get('title', ''),
+                    'link': item.get('link', ''),
+                    'source': item.get('source', {}).get('name', '') if isinstance(item.get('source', {}), dict) else '',
+                    'date': item.get('date', ''),
+                    'fetchdate': news_date,
+                    'sourceapi': 'serp_googlenews',
+                    'thumbnail': item.get('thumbnail', None),
+                    'keyword': keyword
+                }
+                all_yesterday_news.append(filtered_item)
                 count_google += 1
-        log_lines.append(f"{fetch_date} {keyword} serp_googlenews: {count_google} 条")
+        log_lines.append(f"🌐 Google News: {count_google} 条")
 
         # --- SerpApi Bing News ---
         print("\n【SerpApi Bing News API】")
@@ -227,18 +298,55 @@ def main():
         for item in news_data_bing.get("organic_results", []):
             date_str = item.get('date', '')
             if is_bing_news_yesterday(date_str):
-                item = item.copy()
-                item['fetch_date'] = fetch_date
-                item['parsed_date'] = (datetime.strptime(fetch_date, "%Y-%m-%d") - timedelta(days=1)).strftime("%Y-%m-%d")
-                item['keyword'] = keyword
-                item['sourceapi'] = 'serp_bingnews'
-                all_yesterday_news.append(item)
+                news_date = (datetime.strptime(fetch_date, "%Y-%m-%d") - timedelta(days=1)).strftime("%Y-%m-%d")
+                filtered_item = {
+                    'title': item.get('title', ''),
+                    'link': item.get('link', ''),
+                    'source': item.get('source', ''),
+                    'date': item.get('date', ''),
+                    'fetchdate': news_date,
+                    'sourceapi': 'serp_bingnews',
+                    'thumbnail': item.get('thumbnail', None),
+                    'keyword': keyword
+                }
+                all_yesterday_news.append(filtered_item)
                 count_bing += 1
-        log_lines.append(f"{fetch_date} {keyword} serp_bingnews: {count_bing} 条")
+        log_lines.append(f"🌐 Bing News: {count_bing} 条")
+
+        # --- SerpApi DuckDuckGo News ---
+        print("\n【SerpApi DuckDuckGo News API】")
+        news_data_duck = fetch_serpapi_duckduckgo_news(keyword)
+        raw_filename_duck = get_output_path(fetch_date, f"raw_serp_duckduckgo_news_{keyword}_{fetch_date}.json")
+        with open(raw_filename_duck, "w", encoding="utf-8") as f:
+            json.dump(news_data_duck, f, ensure_ascii=False, indent=2)
+        print(f"完整API返回内容已保存到 {raw_filename_duck}")
+        for item in news_data_duck.get("news_results", []):
+            date_str = item.get('date', '')
+            if is_duckduckgo_news_yesterday(date_str):
+                news_date = parse_duckduckgo_news_date(date_str)
+                filtered_item = {
+                    'title': item.get('title', ''),
+                    'link': item.get('link', ''),
+                    'source': item.get('source', ''),
+                    'date': item.get('date', ''),
+                    'fetchdate': news_date,
+                    'sourceapi': 'serp_duckduckgo_news',
+                    'thumbnail': item.get('thumbnail', None),
+                    'keyword': keyword
+                }
+                all_yesterday_news.append(filtered_item)
+                count_duck += 1
+        log_lines.append(f"🌐 DuckDuckGo News: {count_duck} 条")
 
         # 合并去重：标题+链接唯一
         unique = {}
         for item in all_yesterday_news:
+            # 黑名单过滤
+            text_to_check = f"{item.get('source','')} {item.get('title','')} {item.get('link','')}"
+            matched_kw = next((kw for kw in blacklist_keywords if kw.lower() in text_to_check.lower()), None)
+            if matched_kw:
+                log_lines.append(f"🚫 黑名单过滤: [{matched_kw}] | 标题: {item.get('title','')} | 来源: {item.get('source','')} | 链接: {item.get('link','')}")
+                continue
             key = (item.get('title', '').strip(), item.get('link', '').strip())
             if key not in unique:
                 unique[key] = item
@@ -250,13 +358,14 @@ def main():
             api = item.get('sourceapi', 'unknown')
             api_counts[api] = api_counts.get(api, 0) + 1
         for api, count in api_counts.items():
-            log_lines.append(f"{fetch_date} {keyword} deduped_{api}: {count} 条")
+            log_lines.append(f"✅ 去重后 {api}: {count} 条")
+        log_lines.append(f"⭐️ 去重后总保存: {len(deduped_news)} 条")
+        log_lines.append("")
 
-        deduped_filename = get_output_path(fetch_date, f"yesterday_{keyword}_{fetch_date}.json")
+        deduped_filename = get_output_path(fetch_date, f"{fetch_date}_{keyword}.json")
         with open(deduped_filename, "w", encoding="utf-8") as f:
             json.dump(deduped_news, f, ensure_ascii=False, indent=2)
         print(f"合并去重后昨天新闻已保存到 {deduped_filename}，数量：{len(deduped_news)}")
-        log_lines.append(f"{fetch_date} {keyword} deduped_saved: {len(deduped_news)} 条")
 
     # 写入日志文件
     log_path = os.path.join("output", fetch_date, "run_log.txt")

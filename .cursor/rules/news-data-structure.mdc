@@ -1,0 +1,11 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# 新闻数据结构规范
+
+- 所有新闻源（Baidu、Google、Bing、DuckDuckGo）输出的新闻条目只保留一个 `date` 字段，表示新闻的实际日期（即原先的 parsed_date）。
+- 不再保留 `fetch_date` 字段。
+- 该规范已在 [main.py](mdc:main.py) 和 [test_fetcher.py](mdc:test_fetcher.py) 中统一实现。
+- 其它元信息如 `keyword`、`sourceapi` 保持不变。
