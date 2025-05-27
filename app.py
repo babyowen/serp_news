@@ -18,15 +18,15 @@ def show_date(date):
     date_dir = os.path.join(OUTPUT_DIR, date)
     if not os.path.exists(date_dir):
         return f"日期 {date} 不存在", 404
-    # 只展示yesterday_开头的json文件
-    files = [f for f in os.listdir(date_dir) if f.startswith('yesterday_') and f.endswith('.json')]
+    # 展示所有 *_关键词.json 文件（新合并格式）
+    files = [f for f in os.listdir(date_dir) if f.endswith('.json') and '_' in f and not f.startswith('raw_')]
     # 提取所有关键词
     keywords = set()
     file_map = {}  # keyword -> [file, ...]
     for fname in files:
         parts = fname.split('_')
-        if len(parts) >= 3:
-            keyword = parts[-2]
+        if len(parts) >= 2:
+            keyword = parts[-1].replace('.json', '')
             keywords.add(keyword)
             file_map.setdefault(keyword, []).append(fname)
     keywords = sorted(keywords)
@@ -44,9 +44,22 @@ def show_date(date):
                 items = json.load(f)
                 if isinstance(items, dict):
                     items = [items]
+                # 只保留新格式字段
+                filtered_items = []
+                for item in items:
+                    filtered_items.append({
+                        'title': item.get('title', ''),
+                        'link': item.get('link', ''),
+                        'source': item.get('source', ''),
+                        'date': item.get('date', ''),
+                        'fetchdate': item.get('fetchdate', ''),
+                        'sourceapi': item.get('sourceapi', ''),
+                        'thumbnail': item.get('thumbnail', None),
+                        'keyword': item.get('keyword', '')
+                    })
                 news_data.append({
                     'file': fname,
-                    'items': items
+                    'items': filtered_items
                 })
         except Exception as e:
             news_data.append({'file': fname, 'items': [], 'error': str(e)})
