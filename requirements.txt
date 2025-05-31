@@ -1,6 +1,13 @@
-requests           # HTTP请求，抓取API和网页
-python-dotenv       # 读取.env中的API Key
-python-dateutil     # 智能日期解析
-beautifulsoup4      # 网页抓取与解析（如需）
-flask               # 简单Web前端
-jinja2              # Flask模板渲染 
+trafilatura
+newspaper3k
+selenium
+webdriver-manager
+requests
+beautifulsoup4
+python-dateutil
+playwright
+readability-lxml
+python-dotenv
+
+# HTTP请求，抓取API和网页
+# Flask模板渲染 
