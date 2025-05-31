@@ -1,0 +1,66 @@
+```mermaid
+mindmap
+  root((新闻采集与正文抓取自动化系统))
+    依赖与环境
+      - requirements.txt 统一管理
+      - playwright 首次需 playwright install
+      - chromedriver 自动下载到 drivers/
+    运行入口
+      main.py
+        - 支持批量关键词采集
+        - 命令行可指定日期
+        - 日志写入 output/run_log.txt
+        - 采集结果按日期/关键词存储
+      fetch_content.py
+        - 单关键词正文抓取
+        - 支持 --test 测试模式
+        - 支持 --url 单链接调试
+        - 日志写入 output/run_log.txt
+    新闻采集
+      - 多新闻源 (Google/Baidu/Bing/DuckDuckGo)
+      - 统一格式化为 JSON
+      - 自动去重、黑名单过滤
+      - 采集结果按日期/关键词分类存储
+    正文抓取流程
+      - 多级兜底机制
+        - 1. trafilatura 静态正文提取
+        - 2. newspaper3k 静态提取
+        - 3. Playwright 渲染
+          - Newspaper3k 提取
+          - Readability 提取
+        - 4. Selenium 定制化兜底
+      - 定制化抓取规则
+        - 规则集中在 config_grab_rules.py
+        - 注册表机制，优先命中即返回
+        - 针对特定站点专属选择器
+        - 支持 Playwright/Selenium 两种方式
+        - custom_grab 字段标记
+      - 特殊站点处理
+        - msn.cn 直接跳过正文抓取
+        - GBK/GB2312 站点优先 requests 自动识别编码
+        - 现代前端页面 class 前缀模糊匹配
+      - 失败处理
+        - 正文抓取失败 content 为空，wordcount=0
+        - 依然写入 json 结果
+    反爬虫与稳定性
+      - User-Agent 伪装
+      - 忽略 SSL 证书错误
+      - 同站点间隔 1~4 秒
+    日志与统计
+      - output/run_log.txt 详细记录
+        - 关键词、模式、json文件
+        - 成功/失败/定制化命中统计
+        - 失败新闻列表
+      - output/news_sources.txt
+        - 累积所有采集过的新闻源域名
+      - output/news_source_stats.json
+        - 每天每关键词下各新闻源采集条数
+    扩展与维护
+      - 新增定制化站点仅需加规则
+      - 规则支持复杂匹配逻辑
+      - 推荐前端/分析阶段维护域名-中文名映射
+    常用命令
+      - python main.py [YYYY-MM-DD]
+      - python fetch_content.py 关键词 [YYYY-MM-DD] [--test]
+      - python fetch_content.py test --url="链接"
+``` 

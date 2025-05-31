@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 import re
 from dateutil import parser
 import os
+import sys
 
 def is_baidu_news_yesterday(date_str):
     """
@@ -225,11 +226,15 @@ def main():
         keywords = list(DEFAULT_KEYWORDS)
     except Exception:
         keywords = [DEFAULT_KEYWORDS]
-    fetch_date = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
+    # 支持命令行参数指定日期
+    if len(sys.argv) > 1:
+        fetch_date = sys.argv[1]
+    else:
+        fetch_date = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
     os.makedirs(os.path.join("output", fetch_date), exist_ok=True)
     log_lines = []
     run_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    log_lines.append(f"🕒 本次运行时间: {run_time}")
+    log_lines.append(f"=====🕒 本次运行时间: {run_time}=====")
     for keyword in keywords:
         log_lines.append(f"\n==============================")
         log_lines.append(f"🔑 关键词: {keyword}")
@@ -254,6 +259,7 @@ def main():
                     'title': item.get('title', ''),
                     'link': item.get('link', ''),
                     'fetchdate': news_date,
+                    'date': date_str,
                     'source': item.get('source', ''),
                     'sourceapi': 'serp_baidunews',
                     'keyword': keyword,
@@ -352,23 +358,37 @@ def main():
                 unique[key] = item
         deduped_news = list(unique.values())
 
+        # 剔除tv.cctv.com视频新闻，并记录日志
+        filtered_news = []
+        skipped_video_items = []
+        for item in deduped_news:
+            url = item.get('link')
+            if url and 'tv.cctv.com' in url:
+                skipped_video_items.append({'title': item.get('title', ''), 'link': url})
+                continue
+            filtered_news.append(item)
+        if skipped_video_items:
+            log_lines.append("📺 跳过仅含视频的新闻（tv.cctv.com）：")
+            for item in skipped_video_items:
+                log_lines.append(f"  - {item['title']} | {item['link']}")
+
         # 统计去重后每个API的数量
         api_counts = {}
-        for item in deduped_news:
+        for item in filtered_news:
             api = item.get('sourceapi', 'unknown')
             api_counts[api] = api_counts.get(api, 0) + 1
         for api, count in api_counts.items():
             log_lines.append(f"✅ 去重后 {api}: {count} 条")
-        log_lines.append(f"⭐️ 去重后总保存: {len(deduped_news)} 条")
+        log_lines.append(f"⭐️ 去重后总保存: {len(filtered_news)} 条")
         log_lines.append("")
 
         deduped_filename = get_output_path(fetch_date, f"{fetch_date}_{keyword}.json")
         with open(deduped_filename, "w", encoding="utf-8") as f:
-            json.dump(deduped_news, f, ensure_ascii=False, indent=2)
-        print(f"合并去重后昨天新闻已保存到 {deduped_filename}，数量：{len(deduped_news)}")
+            json.dump(filtered_news, f, ensure_ascii=False, indent=2)
+        print(f"合并去重后昨天新闻已保存到 {deduped_filename}，数量：{len(filtered_news)}")
 
-    # 写入日志文件
-    log_path = os.path.join("output", fetch_date, "run_log.txt")
+    # 写入全局统一日志
+    log_path = os.path.join("output", "run_log.txt")
     with open(log_path, "a", encoding="utf-8") as logf:
         for line in log_lines:
             logf.write(line + "\n")

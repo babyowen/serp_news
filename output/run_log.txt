@@ -1,0 +1,779 @@
+[2025-05-29 21:39:34] 关键词: 公积金
+  模式: 正式
+  处理的json文件: output/2025-05-27/2025-05-27_公积金.json
+  成功抓取正文: 21 篇
+  其中定制化抓取: 0 篇
+  抓取失败: 15 篇
+  未能抓取的新闻：
+    - 苏州公积金新政发布,7月1日起正式施行 | http://news.10jqka.com.cn/20250527/c668479594.shtml 
+    - 成都住房公积金、不动产登记最新公告 | https://baijiahao.baidu.com/s?id=1833270747944793169&wfr=spider&for=pc 
+    - 锦屏县管理部扎实开展民法典宣传活动 “典”亮公积金缴存人员生活 | https://baijiahao.baidu.com/s?id=1833266881798822509&wfr=spider&for=pc 
+    - 今起实施!事关郑州住房公积金 | https://baijiahao.baidu.com/s?id=1833260051342507677&wfr=spider&for=pc 
+    - 即日起,郑州住房公积金贷款实现“一证办” | https://baijiahao.baidu.com/s?id=1833260463325372028&wfr=spider&for=pc 
+    - 云生集团发布“社保医保公积金智能体” | https://baijiahao.baidu.com/s?id=1833254105838980258&wfr=spider&for=pc 
+    - 锦屏公积金催缴行动护航职工权益促安居 | https://baijiahao.baidu.com/s?id=1833254265172529742&wfr=spider&for=pc 
+    - 焦作:住房公积金新政助力“安居梦” | https://baijiahao.baidu.com/s?id=1833250299333141665&wfr=spider&for=pc 
+    - 四川自贡市首笔灵活就业人员住房公积金贷款发放 | https://baijiahao.baidu.com/s?id=1833250613211604279&wfr=spider&for=pc 
+    - 菏泽市住房公积金商转公直转业务首月发放贷款3024.4万元 | https://baijiahao.baidu.com/s?id=1833235232553330665&wfr=spider&for=pc 
+    - 来自住房公积金的“隐藏财富”，您了解多少？ | https://www.msn.cn/zh-cn/money/%E6%94%BF%E5%BA%9C%E6%94%AF%E5%8A%A9%E5%92%8C%E7%A6%8F%E5%88%A9/%E6%9D%A5%E8%87%AA%E4%BD%8F%E6%88%BF%E5%85%AC%E7%A7%AF%E9%87%91%E7%9A%84-%E9%9A%90%E8%97%8F%E8%B4%A2%E5%AF%8C-%E6%82%A8%E4%BA%86%E8%A7%A3%E5%A4%9A%E5%B0%91/ar-AA1Fx47K?ocid=BingNewsVerp 
+    - 安阳市住房公积金管理中心上线《效能监督热线》，相关问题请提问！ | https://www.aynews.net.cn/ayinfo/76869 
+    - 反诈宣传走进北京公交保修，警企共筑“防骗墙” | https://www.msn.cn/zh-cn/news/other/%E5%8F%8D%E8%AF%88%E5%AE%A3%E4%BC%A0%E8%B5%B0%E8%BF%9B%E5%8C%97%E4%BA%AC%E5%85%AC%E4%BA%A4%E4%BF%9D%E4%BF%AE-%E8%AD%A6%E4%BC%81%E5%85%B1%E7%AD%91-%E9%98%B2%E9%AA%97%E5%A2%99/ar-AA1Fzl2d?ocid=BingNewsVerp 
+    - 来自住房公积金的"隐藏财富"，您了解多少？ | https://www.msn.cn/zh-cn/money/%E6%94%BF%E5%BA%9C%E6%94%AF%E5%8A%A9%E5%92%8C%E7%A6%8F%E5%88%A9/%E6%9D%A5%E8%87%AA%E4%BD%8F%E6%88%BF%E5%85%AC%E7%A7%AF%E9%87%91%E7%9A%84-%E9%9A%90%E8%97%8F%E8%B4%A2%E5%AF%8C-%E6%82%A8%E4%BA%86%E8%A7%A3%E5%A4%9A%E5%B0%91/ar-AA1Fx47K 
+    - 安阳市住房公积金管理中心上线《效能监督热线》，相关问题请提问! | https://www.aynews.net.cn/ayinfo/76869 
+
+[2025-05-29 21:53:24] 关键词: 公积金
+  模式: 正式
+  处理的json文件: output/2025-05-26/2025-05-26_公积金.json
+  成功抓取正文: 9 篇
+  其中定制化抓取: 0 篇
+  抓取失败: 2 篇
+  未能抓取的新闻：
+    - 安阳市住房公积金管理中心上线《效能监督热线》，相关问题请提问！ | https://www.aynews.net.cn/ayinfo/76869 
+    - 安阳市住房公积金管理中心上线《效能监督热线》，相关问题请提问! | https://www.aynews.net.cn/ayinfo/76869 
+
+[2025-05-29 21:57:59] 关键词: 养老
+  模式: 正式
+  处理的json文件: output/2025-05-26/2025-05-26_养老.json
+  成功抓取正文: 28 篇
+  其中定制化抓取: 0 篇
+  抓取失败: 6 篇
+  未能抓取的新闻：
+    - 大江AI丨基本养老保险个人账户的钱能提前取？ 真相是骗子盯上你了 | https://jiangxi.jxnews.com.cn/system/2025/05/26/020882447.shtml 
+    - 首批入选！ 长江养老积极助力雄安企业年金自动加入机制落地 | https://finance.jxnews.com.cn/system/2025/05/26/020881609.shtml 
+    - 六位老人自驾雪山，用“养老金”开百万车上路，意外1死1伤 | https://www.msn.com/zh-cn/news/other/%E5%85%AD%E4%BD%8D%E8%80%81%E4%BA%BA%E8%87%AA%E9%A9%BE%E9%9B%AA%E5%B1%B1-%E7%94%A8-%E5%85%BB%E8%80%81%E9%87%91-%E5%BC%80%E7%99%BE%E4%B8%87%E8%BD%A6%E4%B8%8A%E8%B7%AF-%E6%84%8F%E5%A4%961%E6%AD%BB1%E4%BC%A4/ar-AA1FukWG?ocid=BingNewsVerp 
+    - 钱理群谈如何养老 | https://www.msn.com/zh-cn/news/other/%E9%92%B1%E7%90%86%E7%BE%A4%E8%B0%88%E5%A6%82%E4%BD%95%E5%85%BB%E8%80%81/ar-AA1FtvtU?ocid=BingNewsVerp 
+    - 美团 2025 年第一季度营收 865.6 亿元，同比增长 18.1% | https://www.msn.cn/zh-cn/news/other/%E7%BE%8E%E5%9B%A2-2025-%E5%B9%B4%E7%AC%AC%E4%B8%80%E5%AD%A3%E5%BA%A6%E8%90%A5%E6%94%B6-8656-%E4%BA%BF%E5%85%83-%E5%90%8C%E6%AF%94%E5%A2%9E%E9%95%BF-181/ar-AA1FtWyc 
+    - 机器人赛道，北京咋领跑？ | https://www.msn.cn/zh-cn/news/other/%E6%9C%BA%E5%99%A8%E4%BA%BA%E8%B5%9B%E9%81%93-%E5%8C%97%E4%BA%AC%E5%92%8B%E9%A2%86%E8%B7%91/ar-AA1FtBCM 
+
+[2025-05-29 22:18:26] 关键词: 养老
+  模式: 正式
+  处理的json文件: output/2025-05-28/2025-05-28_养老.json
+  成功抓取正文: 25 篇
+  其中定制化抓取: 0 篇
+  抓取失败: 2 篇
+  未能抓取的新闻：
+    - 守护好老年人的“养老钱袋子”！上海开放大学与上证报共同启动公益项目 | https://m.cnstock.com/commonDetail/447087?from=QRCODE 
+    - 养老FOF三年规模大考怎么过？年内3只发起式清盘，7只产品濒临清盘线 | https://www.cls.cn/detail/2043372 
+
+🕒 本次运行时间: 2025-05-29 22:44:52
+
+==============================
+🔑 关键词: 公积金
+🌐 Baidu News: 0 条
+🌐 Google News: 5 条
+🌐 Bing News: 10 条
+🌐 DuckDuckGo News: 2 条
+✅ 去重后 serp_googlenews: 1 条
+✅ 去重后 serp_bingnews: 8 条
+✅ 去重后 serp_duckduckgo_news: 1 条
+⭐️ 去重后总保存: 10 条
+
+
+==============================
+🔑 关键词: 养老
+🌐 Baidu News: 0 条
+🌐 Google News: 90 条
+🌐 Bing News: 3 条
+🌐 DuckDuckGo News: 9 条
+🚫 黑名单过滤: [英为财情] | 标题: 又有麻烦了？牵动全球债市的这场日债标售 结果并不好…… | 来源: 英为财情Investing.com | 链接: https://cn.investing.com/news/stock-market-news/article-2823799
+🚫 黑名单过滤: [英为财情] | 标题: 【行业深度】洞察2025：中国自学习边缘计算智控器市场规模及竞争 ... | 来源: 英为财情Investing.com | 链接: https://cn.investing.com/news/economy-news/article-2823710
+✅ 去重后 serp_googlenews: 18 条
+✅ 去重后 serp_bingnews: 3 条
+✅ 去重后 serp_duckduckgo_news: 6 条
+⭐️ 去重后总保存: 27 条
+
+[2025-05-29 22:49:09] 关键词: 公积金
+  模式: 正式
+  处理的json文件: output/2025-05-28/2025-05-28_公积金.json
+  成功抓取正文: 5 篇
+  其中定制化抓取: 0 篇
+  抓取失败: 5 篇
+  未能抓取的新闻：
+    - 郑州公积金贷款实现“一证办” | https://www.msn.cn/zh-cn/money/other/%E9%83%91%E5%B7%9E%E5%85%AC%E7%A7%AF%E9%87%91%E8%B4%B7%E6%AC%BE%E5%AE%9E%E7%8E%B0-%E4%B8%80%E8%AF%81%E5%8A%9E/ar-AA1FAFDl?ocid=BingNewsVerp 
+    - 仅需身份证就行郑州市公积金贷款实现“一证办理” | https://www.msn.cn/zh-cn/money/other/%E4%BB%85%E9%9C%80%E8%BA%AB%E4%BB%BD%E8%AF%81%E5%B0%B1%E8%A1%8C%E9%83%91%E5%B7%9E%E5%B8%82%E5%85%AC%E7%A7%AF%E9%87%91%E8%B4%B7%E6%AC%BE%E5%AE%9E%E7%8E%B0-%E4%B8%80%E8%AF%81%E5%8A%9E%E7%90%86/ar-AA1FCvTa?ocid=BingNewsVerp 
+    - 房地产市场交易指标持续回稳 各地加码“稳定住房消费” | https://finance.people.com.cn/n1/2025/0528/c1004-40489269.html 
+    - 楼市早餐荟 | 广州5月二手住宅网签量9228套，同比增长17.73%；杭州第十一批宅地出让清单公布 | https://www.msn.cn/zh-cn/news/other/%E6%A5%BC%E5%B8%82%E6%97%A9%E9%A4%90%E8%8D%9F-%E5%B9%BF%E5%B7%9E5%E6%9C%88%E4%BA%8C%E6%89%8B%E4%BD%8F%E5%AE%85%E7%BD%91%E7%AD%BE%E9%87%8F9228%E5%A5%97-%E5%90%8C%E6%AF%94%E5%A2%9E%E9%95%BF17-73-%E6%9D%AD%E5%B7%9E%E7%AC%AC%E5%8D%81%E4%B8%80%E6%89%B9%E5%AE%85%E5%9C%B0%E5%87%BA%E8%AE%A9%E6%B8%85%E5%8D%95%E5%85%AC%E5%B8%83/ar-AA1FBt8P?ocid=BingNewsVerp 
+    - 仅需身份证就行郑州市公积金贷款实现"一证办理" | https://www.msn.cn/zh-cn/news/other/%E4%BB%85%E9%9C%80%E8%BA%AB%E4%BB%BD%E8%AF%81%E5%B0%B1%E8%A1%8C%E9%83%91%E5%B7%9E%E5%B8%82%E5%85%AC%E7%A7%AF%E9%87%91%E8%B4%B7%E6%AC%BE%E5%AE%9E%E7%8E%B0-%E4%B8%80%E8%AF%81%E5%8A%9E%E7%90%86/ar-AA1FCvTa 
+
+🕒 本次运行时间: 2025-05-29 22:51:57
+
+==============================
+🔑 关键词: 公积金
+🌐 Baidu News: 0 条
+🌐 Google News: 5 条
+🌐 Bing News: 10 条
+🌐 DuckDuckGo News: 2 条
+✅ 去重后 serp_googlenews: 1 条
+✅ 去重后 serp_bingnews: 8 条
+✅ 去重后 serp_duckduckgo_news: 1 条
+⭐️ 去重后总保存: 10 条
+
+
+==============================
+🔑 关键词: 养老
+🌐 Baidu News: 0 条
+🌐 Google News: 90 条
+🌐 Bing News: 3 条
+🌐 DuckDuckGo News: 9 条
+🚫 黑名单过滤: [英为财情] | 标题: 又有麻烦了？牵动全球债市的这场日债标售 结果并不好…… | 来源: 英为财情Investing.com | 链接: https://cn.investing.com/news/stock-market-news/article-2823799
+🚫 黑名单过滤: [英为财情] | 标题: 【行业深度】洞察2025：中国自学习边缘计算智控器市场规模及竞争 ... | 来源: 英为财情Investing.com | 链接: https://cn.investing.com/news/economy-news/article-2823710
+✅ 去重后 serp_googlenews: 18 条
+✅ 去重后 serp_bingnews: 3 条
+✅ 去重后 serp_duckduckgo_news: 6 条
+⭐️ 去重后总保存: 27 条
+
+[2025-05-29 23:00:41] 关键词: 公积金
+  模式: 正式
+  处理的json文件: output/2025-05-28/2025-05-28_公积金.json
+  成功抓取正文: 5 篇
+  其中定制化抓取: 0 篇
+  抓取失败: 5 篇
+  未能抓取的新闻：
+    - 郑州公积金贷款实现“一证办” | https://www.msn.cn/zh-cn/money/other/%E9%83%91%E5%B7%9E%E5%85%AC%E7%A7%AF%E9%87%91%E8%B4%B7%E6%AC%BE%E5%AE%9E%E7%8E%B0-%E4%B8%80%E8%AF%81%E5%8A%9E/ar-AA1FAFDl?ocid=BingNewsVerp 
+    - 仅需身份证就行郑州市公积金贷款实现“一证办理” | https://www.msn.cn/zh-cn/money/other/%E4%BB%85%E9%9C%80%E8%BA%AB%E4%BB%BD%E8%AF%81%E5%B0%B1%E8%A1%8C%E9%83%91%E5%B7%9E%E5%B8%82%E5%85%AC%E7%A7%AF%E9%87%91%E8%B4%B7%E6%AC%BE%E5%AE%9E%E7%8E%B0-%E4%B8%80%E8%AF%81%E5%8A%9E%E7%90%86/ar-AA1FCvTa?ocid=BingNewsVerp 
+    - 房地产市场交易指标持续回稳 各地加码“稳定住房消费” | https://finance.people.com.cn/n1/2025/0528/c1004-40489269.html 
+    - 楼市早餐荟 | 广州5月二手住宅网签量9228套，同比增长17.73%；杭州第十一批宅地出让清单公布 | https://www.msn.cn/zh-cn/news/other/%E6%A5%BC%E5%B8%82%E6%97%A9%E9%A4%90%E8%8D%9F-%E5%B9%BF%E5%B7%9E5%E6%9C%88%E4%BA%8C%E6%89%8B%E4%BD%8F%E5%AE%85%E7%BD%91%E7%AD%BE%E9%87%8F9228%E5%A5%97-%E5%90%8C%E6%AF%94%E5%A2%9E%E9%95%BF17-73-%E6%9D%AD%E5%B7%9E%E7%AC%AC%E5%8D%81%E4%B8%80%E6%89%B9%E5%AE%85%E5%9C%B0%E5%87%BA%E8%AE%A9%E6%B8%85%E5%8D%95%E5%85%AC%E5%B8%83/ar-AA1FBt8P?ocid=BingNewsVerp 
+    - 仅需身份证就行郑州市公积金贷款实现"一证办理" | https://www.msn.cn/zh-cn/news/other/%E4%BB%85%E9%9C%80%E8%BA%AB%E4%BB%BD%E8%AF%81%E5%B0%B1%E8%A1%8C%E9%83%91%E5%B7%9E%E5%B8%82%E5%85%AC%E7%A7%AF%E9%87%91%E8%B4%B7%E6%AC%BE%E5%AE%9E%E7%8E%B0-%E4%B8%80%E8%AF%81%E5%8A%9E%E7%90%86/ar-AA1FCvTa 
+
+🕒 本次运行时间: 2025-05-30 00:21:28
+
+==============================
+🔑 关键词: 公积金
+🌐 Baidu News: 10 条
+🌐 Google News: 35 条
+🌐 Bing News: 18 条
+🌐 DuckDuckGo News: 14 条
+✅ 去重后 serp_baidunews: 10 条
+✅ 去重后 serp_googlenews: 7 条
+✅ 去重后 serp_bingnews: 17 条
+✅ 去重后 serp_duckduckgo_news: 7 条
+⭐️ 去重后总保存: 41 条
+
+
+==============================
+🔑 关键词: 养老
+🌐 Baidu News: 29 条
+🌐 Google News: 195 条
+🌐 Bing News: 34 条
+🌐 DuckDuckGo News: 31 条
+🚫 黑名单过滤: [英为财情] | 标题: 布鲁克代尔养老生活公司支持其董事会抵抗Ortelius的挑战 提供者 Investing.com | 来源: 英为财情 Investing.com | 链接: https://cn.investing.com/news/company-news/article-93CH-2826304
+🚫 黑名单过滤: [英为财情] | 标题: 英国金融行为监管局将为政府养老金投资审查收集数据 提供者 Investing.com | 来源: 英为财情 Investing.com | 链接: https://cn.investing.com/news/company-news/article-93CH-2826256
+🚫 黑名单过滤: [英为财情] | 标题: 布鲁克代尔养老生活公司支持其董事会抵抗Ortelius的挑战 提供者 Investing.com | 来源: 英为财情 Investing.com | 链接: https://cn.investing.com/news/company-news/article-93CH-2826304
+🚫 黑名单过滤: [英为财情] | 标题: 英国金融行为监管局将为政府养老金投资审查收集数据 提供者 Investing.com | 来源: 英为财情 Investing.com | 链接: https://cn.investing.com/news/company-news/article-93CH-2826256
+🚫 黑名单过滤: [英为财情] | 标题: 布鲁克代尔养老生活公司支持其董事会抵抗Ortelius的挑战 提供者 Investing.com | 来源: 英为财情 Investing.com | 链接: https://cn.investing.com/news/company-news/article-93CH-2826304
+🚫 黑名单过滤: [英为财情] | 标题: 英国金融行为监管局将为政府养老金投资审查收集数据 提供者 Investing.com | 来源: 英为财情 Investing.com | 链接: https://cn.investing.com/news/company-news/article-93CH-2826256
+🚫 黑名单过滤: [英为财情] | 标题: 布鲁克代尔养老生活公司支持其董事会抵抗Ortelius的挑战 提供者 Investing.com | 来源: 英为财情 Investing.com | 链接: https://cn.investing.com/news/company-news/article-93CH-2826304
+🚫 黑名单过滤: [英为财情] | 标题: 英国金融行为监管局将为政府养老金投资审查收集数据 提供者 Investing.com | 来源: 英为财情 Investing.com | 链接: https://cn.investing.com/news/company-news/article-93CH-2826256
+🚫 黑名单过滤: [英为财情] | 标题: 布鲁克代尔养老生活公司支持其董事会抵抗Ortelius的挑战 提供者 Investing.com | 来源: 英为财情 Investing.com | 链接: https://cn.investing.com/news/company-news/article-93CH-2826304
+🚫 黑名单过滤: [英为财情] | 标题: 英国金融行为监管局将为政府养老金投资审查收集数据 提供者 Investing.com | 来源: 英为财情 Investing.com | 链接: https://cn.investing.com/news/company-news/article-93CH-2826256
+🚫 黑名单过滤: [英为财情] | 标题: 英国金融行为监管局将为政府养老金投资审查收集数据 | 来源: 英为财情Investing.com | 链接: https://cn.investing.com/news/company-news/article-93CH-2826256
+🚫 黑名单过滤: [英为财情] | 标题: 又有麻烦了？牵动全球债市的这场日债标售 结果并不好…… | 来源: 英为财情Investing.com | 链接: https://cn.investing.com/news/stock-market-news/article-2823799
+🚫 黑名单过滤: [英为财情] | 标题: 【行业深度】洞察2025：中国自学习边缘计算智控器市场规模及竞争 ... | 来源: 英为财情Investing.com | 链接: https://cn.investing.com/news/economy-news/article-2823710
+✅ 去重后 serp_baidunews: 29 条
+✅ 去重后 serp_googlenews: 37 条
+✅ 去重后 serp_bingnews: 28 条
+✅ 去重后 serp_duckduckgo_news: 18 条
+⭐️ 去重后总保存: 112 条
+
+[2025-05-30 00:31:48] 关键词: 公积金
+  模式: 正式
+  处理的json文件: output/2025-05-29/2025-05-29_公积金.json
+  成功抓取正文: 38 篇
+  其中定制化抓取: 0 篇
+  抓取失败: 3 篇
+  未能抓取的新闻：
+    - 如何使用单位交的公积金?使用公积金有哪些途径和方法? | https://m.hexun.com/insurance/2025-05-29/219308941.html 
+    - 房地产市场交易指标持续回稳 各地加码“稳定住房消费” | https://finance.people.com.cn/n1/2025/0528/c1004-40489269.html 
+    - 居民全年在澳至少183天方可获得现金分享 | https://hm.people.com.cn/n1/2025/0529/c42272-40490565.html 
+
+🕒 本次运行时间: 2025-05-31 09:25:06
+
+==============================
+🔑 关键词: 公积金
+🌐 Baidu News: 8 条
+🌐 Google News: 75 条
+🌐 Bing News: 25 条
+🌐 DuckDuckGo News: 26 条
+✅ 去重后 serp_baidunews: 8 条
+✅ 去重后 serp_googlenews: 15 条
+✅ 去重后 serp_bingnews: 22 条
+✅ 去重后 serp_duckduckgo_news: 6 条
+⭐️ 去重后总保存: 51 条
+
+
+==============================
+🔑 关键词: 养老
+🌐 Baidu News: 11 条
+🌐 Google News: 230 条
+🌐 Bing News: 25 条
+🌐 DuckDuckGo News: 19 条
+🚫 黑名单过滤: [英为财情] | 标题: 韩国最大养老基金逆势加码海外投资 明年拟斥资265亿美元增持美股 提供者 智通财经 | 来源: 英为财情 Investing.com | 链接: https://cn.investing.com/news/stock-market-news/article-2827837
+🚫 黑名单过滤: [英为财情] | 标题: 韩国最大养老基金逆势加码海外投资 明年拟斥资265亿美元增持美股 提供者 智通财经 | 来源: 英为财情 Investing.com | 链接: https://cn.investing.com/news/stock-market-news/article-2827837
+🚫 黑名单过滤: [英为财情] | 标题: 韩国最大养老基金逆势加码海外投资 明年拟斥资265亿美元增持美股 提供者 智通财经 | 来源: 英为财情 Investing.com | 链接: https://cn.investing.com/news/stock-market-news/article-2827837
+🚫 黑名单过滤: [英为财情] | 标题: 韩国最大养老基金逆势加码海外投资 明年拟斥资265亿美元增持美股 提供者 智通财经 | 来源: 英为财情 Investing.com | 链接: https://cn.investing.com/news/stock-market-news/article-2827837
+🚫 黑名单过滤: [英为财情] | 标题: 韩国最大养老基金逆势加码海外投资 明年拟斥资265亿美元增持美股 提供者 智通财经 | 来源: 英为财情 Investing.com | 链接: https://cn.investing.com/news/stock-market-news/article-2827837
+✅ 去重后 serp_baidunews: 11 条
+✅ 去重后 serp_googlenews: 45 条
+✅ 去重后 serp_bingnews: 23 条
+✅ 去重后 serp_duckduckgo_news: 17 条
+⭐️ 去重后总保存: 96 条
+
+[2025-05-31 09:47:27] 关键词: 公积金
+  模式: 正式
+  处理的json文件: output/2025-05-30/2025-05-30_公积金.json
+  成功抓取正文: 50 篇
+  其中定制化抓取: 0 篇
+  抓取失败: 1 篇
+  未能抓取的新闻：
+    - 居民全年在澳至少183天方可获得现金分享 | https://hm.people.com.cn/n1/2025/0529/c42272-40490565.html 
+
+[2025-05-31 10:06:46] 关键词: 养老
+  模式: 正式
+  处理的json文件: output/2025-05-30/2025-05-30_养老.json
+  成功抓取正文: 94 篇
+  其中定制化抓取: 0 篇
+  抓取失败: 2 篇
+  未能抓取的新闻：
+    - “聪明”养老院 拥抱新科技 | https://www.msn.cn/zh-cn/news/other/%E8%81%AA%E6%98%8E-%E5%85%BB%E8%80%81%E9%99%A2-%E6%8B%A5%E6%8A%B1%E6%96%B0%E7%A7%91%E6%8A%80/ar-AA1FK4Cc?ocid=BingNewsVerp (定制化)
+    - 富德生命人寿入选“2025中国品牌500强” | https://business.china.com.cn/2025-05/30/content_43131308.html 
+
+🕒 本次运行时间: 2025-05-31 11:18:19
+
+==============================
+🔑 关键词: 公积金
+🌐 Baidu News: 0 条
+🌐 Google News: 80 条
+🌐 Bing News: 28 条
+🌐 DuckDuckGo News: 22 条
+✅ 去重后 serp_googlenews: 16 条
+✅ 去重后 serp_bingnews: 25 条
+✅ 去重后 serp_duckduckgo_news: 3 条
+⭐️ 去重后总保存: 44 条
+
+
+==============================
+🔑 关键词: 养老
+🌐 Baidu News: 10 条
+🌐 Google News: 205 条
+🌐 Bing News: 21 条
+🌐 DuckDuckGo News: 13 条
+🚫 黑名单过滤: [英为财情] | 标题: 韩国最大养老基金逆势加码海外投资 明年拟斥资265亿美元增持美股 提供者 智通财经 | 来源: 英为财情 Investing.com | 链接: https://cn.investing.com/news/stock-market-news/article-2827837
+🚫 黑名单过滤: [英为财情] | 标题: 韩国最大养老基金逆势加码海外投资 明年拟斥资265亿美元增持美股 提供者 智通财经 | 来源: 英为财情 Investing.com | 链接: https://cn.investing.com/news/stock-market-news/article-2827837
+🚫 黑名单过滤: [英为财情] | 标题: 韩国最大养老基金逆势加码海外投资 明年拟斥资265亿美元增持美股 提供者 智通财经 | 来源: 英为财情 Investing.com | 链接: https://cn.investing.com/news/stock-market-news/article-2827837
+🚫 黑名单过滤: [英为财情] | 标题: 韩国最大养老基金逆势加码海外投资 明年拟斥资265亿美元增持美股 提供者 智通财经 | 来源: 英为财情 Investing.com | 链接: https://cn.investing.com/news/stock-market-news/article-2827837
+🚫 黑名单过滤: [英为财情] | 标题: 韩国最大养老基金逆势加码海外投资 明年拟斥资265亿美元增持美股 提供者 智通财经 | 来源: 英为财情 Investing.com | 链接: https://cn.investing.com/news/stock-market-news/article-2827837
+✅ 去重后 serp_baidunews: 10 条
+✅ 去重后 serp_googlenews: 40 条
+✅ 去重后 serp_bingnews: 16 条
+✅ 去重后 serp_duckduckgo_news: 10 条
+⭐️ 去重后总保存: 76 条
+
+[2025-05-31 11:24:18] 关键词: 公积金
+  模式: 正式
+  处理的json文件: output/2025-05-30/2025-05-30_公积金.json
+  成功抓取正文: 43 篇
+  其中定制化抓取: 1 篇
+  本次采集新闻源数量: 37
+  定制化抓取命中统计：
+    - www.jfdaily.com: 1 篇
+        * 重庆楼市新政！住房“以旧换新”最高可获1%购房补贴 | https://www.jfdaily.com/news/detail?id=920289
+  抓取失败: 1 篇
+  使用定制化抓取的新闻：
+    - 重庆楼市新政！住房“以旧换新”最高可获1%购房补贴 | https://www.jfdaily.com/news/detail?id=920289
+  未能抓取的新闻：
+    - 居民全年在澳至少183天方可获得现金分享 | https://hm.people.com.cn/n1/2025/0529/c42272-40490565.html 
+
+[2025-05-31 11:30:14] 关键词: 养老
+  模式: 正式
+  处理的json文件: output/2025-05-30/2025-05-30_养老.json
+  成功抓取正文: 76 篇
+  其中定制化抓取: 6 篇
+  本次采集新闻源数量: 42
+  定制化抓取命中统计：
+    - www.cnstock.com: 1 篇
+        * 上海落地服务消费与养老再贷款新政后首批相关产业贷款 | https://www.cnstock.com/commonDetail/448150
+    - www.jfdaily.com: 5 篇
+        * “沪小满”赋能个人养老金政策普及,助力构建多层次养老体系 | https://www.jfdaily.com/news/detail?id=920419
+        * 激活社区养老新场景，延吉新村街道这场银发市集有科技又有情怀 | https://www.jfdaily.com/news/detail?id=919947
+        * 金融机构集体入驻“随申办”专区,上海个人养老金人均缴存额居全国第一 | https://www.jfdaily.com/news/detail?id=920303
+        * 上海个人养老金人均缴存额居全国第一，第三支柱养老保险宣讲团今日揭牌 | https://www.jfdaily.com/news/detail?id=920254
+        * 民政部：“中国健康养老委员会”等组织未在民政部门登记 | https://www.jfdaily.com/news/detail?id=920317
+  抓取失败: 0 篇
+  使用定制化抓取的新闻：
+    - 上海落地服务消费与养老再贷款新政后首批相关产业贷款 | https://www.cnstock.com/commonDetail/448150
+    - “沪小满”赋能个人养老金政策普及,助力构建多层次养老体系 | https://www.jfdaily.com/news/detail?id=920419
+    - 激活社区养老新场景，延吉新村街道这场银发市集有科技又有情怀 | https://www.jfdaily.com/news/detail?id=919947
+    - 金融机构集体入驻“随申办”专区,上海个人养老金人均缴存额居全国第一 | https://www.jfdaily.com/news/detail?id=920303
+    - 上海个人养老金人均缴存额居全国第一，第三支柱养老保险宣讲团今日揭牌 | https://www.jfdaily.com/news/detail?id=920254
+    - 民政部：“中国健康养老委员会”等组织未在民政部门登记 | https://www.jfdaily.com/news/detail?id=920317
+
+🕒 本次运行时间: 2025-05-31 17:32:15
+
+==============================
+🔑 关键词: 公积金
+🌐 Baidu News: 4 条
+🌐 Google News: 65 条
+🌐 Bing News: 10 条
+🌐 DuckDuckGo News: 24 条
+✅ 去重后 serp_baidunews: 4 条
+✅ 去重后 serp_googlenews: 13 条
+✅ 去重后 serp_bingnews: 10 条
+✅ 去重后 serp_duckduckgo_news: 6 条
+⭐️ 去重后总保存: 33 条
+
+
+==============================
+🔑 关键词: 养老
+🌐 Baidu News: 2 条
+🌐 Google News: 165 条
+🌐 Bing News: 12 条
+🌐 DuckDuckGo News: 7 条
+✅ 去重后 serp_baidunews: 2 条
+✅ 去重后 serp_googlenews: 33 条
+✅ 去重后 serp_bingnews: 10 条
+✅ 去重后 serp_duckduckgo_news: 5 条
+⭐️ 去重后总保存: 50 条
+
+
+=====
+🕒 本次运行时间: 2025-05-31 17:35:40=====
+
+==============================
+🔑 关键词: 公积金
+🌐 Baidu News: 4 条
+🌐 Google News: 65 条
+🌐 Bing News: 10 条
+🌐 DuckDuckGo News: 24 条
+✅ 去重后 serp_baidunews: 4 条
+✅ 去重后 serp_googlenews: 13 条
+✅ 去重后 serp_bingnews: 10 条
+✅ 去重后 serp_duckduckgo_news: 6 条
+⭐️ 去重后总保存: 33 条
+
+
+==============================
+🔑 关键词: 养老
+🌐 Baidu News: 2 条
+🌐 Google News: 165 条
+🌐 Bing News: 12 条
+🌐 DuckDuckGo News: 7 条
+✅ 去重后 serp_baidunews: 2 条
+✅ 去重后 serp_googlenews: 33 条
+✅ 去重后 serp_bingnews: 10 条
+✅ 去重后 serp_duckduckgo_news: 5 条
+⭐️ 去重后总保存: 50 条
+
+[2025-05-31 17:39:52] 关键词: 公积金
+  模式: 正式
+  处理的json文件: output/2025-04-01/2025-04-01_公积金.json
+  成功抓取正文: 33 篇
+  其中定制化抓取: 0 篇
+  本次采集新闻源数量: 60
+  抓取失败: 0 篇
+
+=====🕒 本次运行时间: 2025-05-31 17:53:56=====
+
+==============================
+🔑 关键词: 公积金
+🌐 Baidu News: 4 条
+🌐 Google News: 65 条
+🌐 Bing News: 10 条
+🌐 DuckDuckGo News: 24 条
+✅ 去重后 serp_baidunews: 4 条
+✅ 去重后 serp_googlenews: 13 条
+✅ 去重后 serp_bingnews: 10 条
+✅ 去重后 serp_duckduckgo_news: 6 条
+⭐️ 去重后总保存: 33 条
+
+
+==============================
+🔑 关键词: 养老
+🌐 Baidu News: 2 条
+🌐 Google News: 165 条
+🌐 Bing News: 12 条
+🌐 DuckDuckGo News: 7 条
+✅ 去重后 serp_baidunews: 2 条
+✅ 去重后 serp_googlenews: 33 条
+✅ 去重后 serp_bingnews: 10 条
+✅ 去重后 serp_duckduckgo_news: 5 条
+⭐️ 去重后总保存: 50 条
+
+[2025-05-31 18:34:05] 关键词: 公积金
+  模式: 正式
+  处理的json文件: output/2025-05-30/2025-05-30_公积金.json
+  成功抓取正文: 33 篇
+  其中定制化抓取: 0 篇
+  本次采集新闻源数量: 60
+  抓取失败: 0 篇
+
+
+==============================
+📰 [抓取新闻正文] 2025-05-31 18:41:17
+🔑 关键词: 养老
+🗂️ 模式: 正式
+📄 处理的json文件: output/2025-05-30/2025-05-30_养老.json
+✅ 成功抓取正文: 50 篇
+✨ 其中定制化抓取: 6 篇
+🌐 本次采集新闻源数量: 62
+
+🎯 定制化抓取命中统计：
+  - www.cnstock.com: 1 篇
+      • 上海落地服务消费与养老再贷款新政后首批相关产业贷款 | https://www.cnstock.com/commonDetail/448150
+  - www.jfdaily.com: 5 篇
+      • “沪小满”赋能个人养老金政策普及,助力构建多层次养老体系 | https://www.jfdaily.com/news/detail?id=920419
+      • 激活社区养老新场景，延吉新村街道这场银发市集有科技又有情怀 | https://www.jfdaily.com/news/detail?id=919947
+      • 金融机构集体入驻“随申办”专区,上海个人养老金人均缴存额居全国第一 | https://www.jfdaily.com/news/detail?id=920303
+      • 上海个人养老金人均缴存额居全国第一，第三支柱养老保险宣讲团今日揭牌 | https://www.jfdaily.com/news/detail?id=920254
+      • 民政部：“中国健康养老委员会”等组织未在民政部门登记 | https://www.jfdaily.com/news/detail?id=920317
+❌ 抓取失败: 0 篇
+
+🛠️ 使用定制化抓取的新闻：
+  - 上海落地服务消费与养老再贷款新政后首批相关产业贷款 | https://www.cnstock.com/commonDetail/448150
+  - “沪小满”赋能个人养老金政策普及,助力构建多层次养老体系 | https://www.jfdaily.com/news/detail?id=920419
+  - 激活社区养老新场景，延吉新村街道这场银发市集有科技又有情怀 | https://www.jfdaily.com/news/detail?id=919947
+  - 金融机构集体入驻“随申办”专区,上海个人养老金人均缴存额居全国第一 | https://www.jfdaily.com/news/detail?id=920303
+  - 上海个人养老金人均缴存额居全国第一，第三支柱养老保险宣讲团今日揭牌 | https://www.jfdaily.com/news/detail?id=920254
+  - 民政部：“中国健康养老委员会”等组织未在民政部门登记 | https://www.jfdaily.com/news/detail?id=920317
+==============================
+
+=====🕒 本次运行时间: 2025-05-31 20:17:42=====
+
+==============================
+🔑 关键词: 公积金
+🌐 Baidu News: 0 条
+🌐 Google News: 65 条
+🌐 Bing News: 20 条
+🌐 DuckDuckGo News: 29 条
+✅ 去重后 serp_googlenews: 13 条
+✅ 去重后 serp_bingnews: 19 条
+✅ 去重后 serp_duckduckgo_news: 4 条
+⭐️ 去重后总保存: 36 条
+
+
+==============================
+🔑 关键词: 养老
+🌐 Baidu News: 2 条
+🌐 Google News: 155 条
+🌐 Bing News: 5 条
+🌐 DuckDuckGo News: 8 条
+✅ 去重后 serp_baidunews: 2 条
+✅ 去重后 serp_googlenews: 31 条
+✅ 去重后 serp_bingnews: 3 条
+✅ 去重后 serp_duckduckgo_news: 4 条
+⭐️ 去重后总保存: 40 条
+
+
+==============================
+📰 [抓取新闻正文] 2025-05-31 20:23:08
+🔑 关键词: 公积金
+🗂️ 模式: 正式
+📄 处理的json文件: output/2025-05-30/2025-05-30_公积金.json
+
+📊 抓取统计：
+  ✅ 成功抓取正文: 35 篇
+  ✨ 其中定制化抓取: 0 篇
+  🌐 本次采集新闻源数量: 68
+  ❌ 抓取失败: 1 篇
+
+⚠️ 未能抓取的新闻：
+  - 超2720亿元用于租赁住房！2024年住房公积金最新披露 | https://www.msn.cn/zh-cn/news/other/%E8%B6%852720%E4%BA%BF%E5%85%83%E7%94%A8%E4%BA%8E%E7%A7%9F%E8%B5%81%E4%BD%8F%E6%88%BF-2024%E5%B9%B4%E4%BD%8F%E6%88%BF%E5%85%AC%E7%A7%AF%E9%87%91%E6%9C%80%E6%96%B0%E6%8A%AB%E9%9C%B2/ar-AA1FMfQL?ocid=BingNewsVerp 
+==============================
+
+
+==============================
+📰 [抓取新闻正文] 2025-05-31 20:25:21
+🔑 关键词: 养老
+🗂️ 模式: 正式
+📄 处理的json文件: output/2025-05-30/2025-05-30_养老.json
+
+📊 抓取统计：
+  ✅ 成功抓取正文: 40 篇
+  ✨ 其中定制化抓取: 6 篇
+  🌐 本次采集新闻源数量: 68
+  ❌ 抓取失败: 0 篇
+
+🎯 定制化抓取命中统计：
+  - www.cnstock.com: 1 篇
+      • 上海落地服务消费与养老再贷款新政后首批相关产业贷款 | https://www.cnstock.com/commonDetail/448150
+  - www.jfdaily.com: 5 篇
+      • “沪小满”赋能个人养老金政策普及,助力构建多层次养老体系 | https://www.jfdaily.com/news/detail?id=920419
+      • 激活社区养老新场景，延吉新村街道这场银发市集有科技又有情怀 | https://www.jfdaily.com/news/detail?id=919947
+      • 金融机构集体入驻“随申办”专区,上海个人养老金人均缴存额居全国第一 | https://www.jfdaily.com/news/detail?id=920303
+      • 上海个人养老金人均缴存额居全国第一，第三支柱养老保险宣讲团今日揭牌 | https://www.jfdaily.com/news/detail?id=920254
+      • 民政部：“中国健康养老委员会”等组织未在民政部门登记 | https://www.jfdaily.com/news/detail?id=920317
+==============================
+
+
+==============================
+📰 [抓取新闻正文] 2025-05-31 20:36:39
+🔑 关键词: 养老
+🗂️ 模式: 正式
+📄 处理的json文件: output/2025-05-29/2025-05-29_养老.json
+
+📊 抓取统计：
+  ✅ 成功抓取正文: 103 篇
+  ✨ 其中定制化抓取: 0 篇
+  🌐 本次采集新闻源数量: 103
+  ❌ 抓取失败: 9 篇
+
+⚠️ 未能抓取的新闻：
+  - 建行携手大零号湾集团设立全国首支养老科创产业基金 | https://www.jfdaily.com/sgh/detail?id=1580726 (定制化)
+  - 我为群众办实事|当物业跨界养老,长者的晚年生活过成了“理想型” | https://www.jfdaily.com/sgh/detail?id=1580200 (定制化)
+  - 韩国养老金基金设定至2030年底的股票持有目标比例为55% | https://baijiahao.baidu.com/s?id=1833436275711521546&wfr=spider&for=pc 
+  - AI赋能让香港养老生活充满“智慧” | https://www.msn.cn/zh-cn/news/other/ai%E8%B5%8B%E8%83%BD%E8%AE%A9%E9%A6%99%E6%B8%AF%E5%85%BB%E8%80%81%E7%94%9F%E6%B4%BB%E5%85%85%E6%BB%A1-%E6%99%BA%E6%85%A7/ar-AA1FG0gw?ocid=BingNewsVerp 
+  - 建信金投与上海大零号湾携手 设立首支养老科创产业基金 | https://www.msn.cn/zh-cn/money/other/%E5%BB%BA%E4%BF%A1%E9%87%91%E6%8A%95%E4%B8%8E%E4%B8%8A%E6%B5%B7%E5%A4%A7%E9%9B%B6%E5%8F%B7%E6%B9%BE%E6%90%BA%E6%89%8B-%E8%AE%BE%E7%AB%8B%E9%A6%96%E6%94%AF%E5%85%BB%E8%80%81%E7%A7%91%E5%88%9B%E4%BA%A7%E4%B8%9A%E5%9F%BA%E9%87%91/ar-AA1FIjVp?ocid=BingNewsVerp 
+  - “高息养老”当心藏陷阱 警惕“以房养老”等非法集资套路 | https://www.msn.cn/zh-cn/money/%E9%87%91%E8%9E%8D%E7%9B%91%E7%AE%A1/%E9%AB%98%E6%81%AF%E5%85%BB%E8%80%81-%E5%BD%93%E5%BF%83%E8%97%8F%E9%99%B7%E9%98%B1-%E8%AD%A6%E6%83%95-%E4%BB%A5%E6%88%BF%E5%85%BB%E8%80%81-%E7%AD%89%E9%9D%9E%E6%B3%95%E9%9B%86%E8%B5%84%E5%A5%97%E8%B7%AF/ar-AA1FF4oH?ocid=BingNewsVerp 
+  - AI赋能让香港养老生活充满"智慧" | https://www.msn.cn/zh-cn/news/other/ai%E8%B5%8B%E8%83%BD%E8%AE%A9%E9%A6%99%E6%B8%AF%E5%85%BB%E8%80%81%E7%94%9F%E6%B4%BB%E5%85%85%E6%BB%A1-%E6%99%BA%E6%85%A7/ar-AA1FG0gw 
+  - 普陀区创新推出"适老化改造+短托养老"一站式服务模式，解决老年 ... | https://www.msn.cn/zh-cn/news/other/%E6%99%AE%E9%99%80%E5%8C%BA%E5%88%9B%E6%96%B0%E6%8E%A8%E5%87%BA-%E9%80%82%E8%80%81%E5%8C%96%E6%94%B9%E9%80%A0-%E7%9F%AD%E6%89%98%E5%85%BB%E8%80%81-%E4%B8%80%E7%AB%99%E5%BC%8F%E6%9C%8D%E5%8A%A1%E6%A8%A1%E5%BC%8F-%E8%A7%A3%E5%86%B3%E8%80%81%E5%B9%B4%E4%BA%BA%E5%AE%9E%E9%99%85%E5%9B%B0%E9%9A%BE/ar-AA1FFOTB 
+  - "高息养老"当心藏陷阱 警惕"以房养老"等非法集资套路 | https://www.msn.cn/zh-cn/money/%E9%87%91%E8%9E%8D%E7%9B%91%E7%AE%A1/%E9%AB%98%E6%81%AF%E5%85%BB%E8%80%81-%E5%BD%93%E5%BF%83%E8%97%8F%E9%99%B7%E9%98%B1-%E8%AD%A6%E6%83%95-%E4%BB%A5%E6%88%BF%E5%85%BB%E8%80%81-%E7%AD%89%E9%9D%9E%E6%B3%95%E9%9B%86%E8%B5%84%E5%A5%97%E8%B7%AF/ar-AA1FF4oH 
+==============================
+
+
+==============================
+📰 [抓取新闻正文] 2025-05-31 20:42:58
+🔑 关键词: 公积金
+🗂️ 模式: 正式
+📄 处理的json文件: output/2025-05-29/2025-05-29_公积金.json
+
+📊 抓取统计：
+  ✅ 成功抓取正文: 33 篇
+  ✨ 其中定制化抓取: 0 篇
+  🌐 本次采集新闻源数量: 115
+  ❌ 抓取失败: 8 篇
+
+⚠️ 未能抓取的新闻：
+  - 如何使用单位交的公积金?使用公积金有哪些途径和方法? | https://m.hexun.com/insurance/2025-05-29/219308941.html 
+  - 公积金贷款利率下调，执行时间如何确定？最新回复来了！ | https://www.msn.cn/zh-cn/money/%E6%94%BF%E5%BA%9C%E6%94%AF%E5%8A%A9%E5%92%8C%E7%A6%8F%E5%88%A9/%E5%85%AC%E7%A7%AF%E9%87%91%E8%B4%B7%E6%AC%BE%E5%88%A9%E7%8E%87%E4%B8%8B%E8%B0%83-%E6%89%A7%E8%A1%8C%E6%97%B6%E9%97%B4%E5%A6%82%E4%BD%95%E7%A1%AE%E5%AE%9A-%E6%9C%80%E6%96%B0%E5%9B%9E%E5%A4%8D%E6%9D%A5%E4%BA%86/ar-AA1FGS99?ocid=BingNewsVerp 
+  - 郑州公积金贷款实现“一证办” | https://www.msn.cn/zh-cn/money/other/%E9%83%91%E5%B7%9E%E5%85%AC%E7%A7%AF%E9%87%91%E8%B4%B7%E6%AC%BE%E5%AE%9E%E7%8E%B0-%E4%B8%80%E8%AF%81%E5%8A%9E/ar-AA1FAFDl?ocid=BingNewsVerp 
+  - 房地产市场交易指标持续回稳 各地加码“稳定住房消费” | https://finance.people.com.cn/n1/2025/0528/c1004-40489269.html 
+  - 楼市早餐荟 | 广州5月二手住宅网签量9228套，同比增长17.73%；杭州第十一批宅地出让清单公布 | https://www.msn.cn/zh-cn/news/other/%E6%A5%BC%E5%B8%82%E6%97%A9%E9%A4%90%E8%8D%9F-%E5%B9%BF%E5%B7%9E5%E6%9C%88%E4%BA%8C%E6%89%8B%E4%BD%8F%E5%AE%85%E7%BD%91%E7%AD%BE%E9%87%8F9228%E5%A5%97-%E5%90%8C%E6%AF%94%E5%A2%9E%E9%95%BF17-73-%E6%9D%AD%E5%B7%9E%E7%AC%AC%E5%8D%81%E4%B8%80%E6%89%B9%E5%AE%85%E5%9C%B0%E5%87%BA%E8%AE%A9%E6%B8%85%E5%8D%95%E5%85%AC%E5%B8%83/ar-AA1FBt8P?ocid=BingNewsVerp 
+  - 居民全年在澳至少183天方可获得现金分享 | https://hm.people.com.cn/n1/2025/0529/c42272-40490565.html 
+  - 公积金贷款利率下调，执行时间如何确定？最新回复来了! | https://www.msn.cn/zh-cn/money/%E6%94%BF%E5%BA%9C%E6%94%AF%E5%8A%A9%E5%92%8C%E7%A6%8F%E5%88%A9/%E5%85%AC%E7%A7%AF%E9%87%91%E8%B4%B7%E6%AC%BE%E5%88%A9%E7%8E%87%E4%B8%8B%E8%B0%83-%E6%89%A7%E8%A1%8C%E6%97%B6%E9%97%B4%E5%A6%82%E4%BD%95%E7%A1%AE%E5%AE%9A-%E6%9C%80%E6%96%B0%E5%9B%9E%E5%A4%8D%E6%9D%A5%E4%BA%86/ar-AA1FGS99 
+  - 仅需身份证就行郑州市公积金贷款实现"一证办理" | https://www.msn.cn/zh-cn/money/other/%E4%BB%85%E9%9C%80%E8%BA%AB%E4%BB%BD%E8%AF%81%E5%B0%B1%E8%A1%8C%E9%83%91%E5%B7%9E%E5%B8%82%E5%85%AC%E7%A7%AF%E9%87%91%E8%B4%B7%E6%AC%BE%E5%AE%9E%E7%8E%B0-%E4%B8%80%E8%AF%81%E5%8A%9E%E7%90%86/ar-AA1FCvTa 
+==============================
+
+
+==============================
+📰 [抓取新闻正文] 2025-05-31 21:13:48
+🔑 关键词: 公积金
+🗂️ 模式: 正式
+📄 处理的json文件: output/2025-05-27/2025-05-27_公积金.json
+
+📊 抓取统计：
+  ✅ 成功抓取正文: 31 篇
+  ✨ 其中定制化抓取: 0 篇
+  🌐 本次采集新闻源数量: 122
+  ❌ 抓取失败: 5 篇
+
+⚠️ 未能抓取的新闻：
+  - 来自住房公积金的“隐藏财富”，您了解多少？ | https://www.msn.cn/zh-cn/money/%E6%94%BF%E5%BA%9C%E6%94%AF%E5%8A%A9%E5%92%8C%E7%A6%8F%E5%88%A9/%E6%9D%A5%E8%87%AA%E4%BD%8F%E6%88%BF%E5%85%AC%E7%A7%AF%E9%87%91%E7%9A%84-%E9%9A%90%E8%97%8F%E8%B4%A2%E5%AF%8C-%E6%82%A8%E4%BA%86%E8%A7%A3%E5%A4%9A%E5%B0%91/ar-AA1Fx47K?ocid=BingNewsVerp 
+  - 安阳市住房公积金管理中心上线《效能监督热线》，相关问题请提问！ | https://www.aynews.net.cn/ayinfo/76869 
+  - 反诈宣传走进北京公交保修，警企共筑“防骗墙” | https://www.msn.cn/zh-cn/news/other/%E5%8F%8D%E8%AF%88%E5%AE%A3%E4%BC%A0%E8%B5%B0%E8%BF%9B%E5%8C%97%E4%BA%AC%E5%85%AC%E4%BA%A4%E4%BF%9D%E4%BF%AE-%E8%AD%A6%E4%BC%81%E5%85%B1%E7%AD%91-%E9%98%B2%E9%AA%97%E5%A2%99/ar-AA1Fzl2d?ocid=BingNewsVerp 
+  - 来自住房公积金的"隐藏财富"，您了解多少？ | https://www.msn.cn/zh-cn/money/%E6%94%BF%E5%BA%9C%E6%94%AF%E5%8A%A9%E5%92%8C%E7%A6%8F%E5%88%A9/%E6%9D%A5%E8%87%AA%E4%BD%8F%E6%88%BF%E5%85%AC%E7%A7%AF%E9%87%91%E7%9A%84-%E9%9A%90%E8%97%8F%E8%B4%A2%E5%AF%8C-%E6%82%A8%E4%BA%86%E8%A7%A3%E5%A4%9A%E5%B0%91/ar-AA1Fx47K 
+  - 安阳市住房公积金管理中心上线《效能监督热线》，相关问题请提问! | https://www.aynews.net.cn/ayinfo/76869 
+==============================
+
+
+==============================
+📰 [抓取新闻正文] 2025-05-31 21:32:22
+🔑 关键词: 养老
+🗂️ 模式: 正式
+📄 处理的json文件: output/2025-05-27/2025-05-27_养老.json
+
+📊 抓取统计：
+  ✅ 成功抓取正文: 89 篇
+  ✨ 其中定制化抓取: 2 篇
+  🌐 本次采集新闻源数量: 149
+  ❌ 抓取失败: 7 篇
+
+🎯 定制化抓取命中统计：
+  - www.cnstock.com: 2 篇
+      • 国寿(天津)养老养生投资有限公司总经理张宝山:建设具有国寿特色的... | https://www.cnstock.com/commonDetail/446509
+      • 国寿健投已在10余个城市完成养老养生项目布局 | https://www.cnstock.com/commonDetail/446508
+
+⚠️ 未能抓取的新闻：
+  - 到2025年底，上海将建成至少100家智慧养老院 “聪明”养老院 拥抱新科技（探访·关注新型养老） | https://www.msn.cn/zh-cn/news/other/%E5%88%B02025%E5%B9%B4%E5%BA%95-%E4%B8%8A%E6%B5%B7%E5%B0%86%E5%BB%BA%E6%88%90%E8%87%B3%E5%B0%91100%E5%AE%B6%E6%99%BA%E6%85%A7%E5%85%BB%E8%80%81%E9%99%A2-%E8%81%AA%E6%98%8E-%E5%85%BB%E8%80%81%E9%99%A2-%E6%8B%A5%E6%8A%B1%E6%96%B0%E7%A7%91%E6%8A%80-%E6%8E%A2%E8%AE%BF-%E5%85%B3%E6%B3%A8%E6%96%B0%E5%9E%8B%E5%85%BB%E8%80%81/ar-AA1FxEmJ?ocid=BingNewsVerp 
+  - “智慧养老”遇冷：是老人保守，还是产品没读懂需求？ | https://www.msn.cn/zh-cn/news/other/%E8%B0%83%E6%9F%A5-%E6%99%BA%E6%85%A7%E5%85%BB%E8%80%81-%E9%81%87%E5%86%B7-%E6%98%AF%E8%80%81%E4%BA%BA%E4%BF%9D%E5%AE%88-%E8%BF%98%E6%98%AF%E4%BA%A7%E5%93%81%E6%B2%A1%E8%AF%BB%E6%87%82%E9%9C%80%E6%B1%82/ar-AA1FtcZR?ocid=BingNewsVerp 
+  - 人社部回应：领失业保险金不影响养老账户余额 | https://www.msn.cn/zh-cn/money/%E6%94%BF%E5%BA%9C%E6%94%AF%E5%8A%A9%E5%92%8C%E7%A6%8F%E5%88%A9/%E4%BA%BA%E7%A4%BE%E9%83%A8%E5%9B%9E%E5%BA%94-%E9%A2%86%E5%A4%B1%E4%B8%9A%E4%BF%9D%E9%99%A9%E9%87%91%E4%B8%8D%E5%BD%B1%E5%93%8D%E5%85%BB%E8%80%81%E8%B4%A6%E6%88%B7%E4%BD%99%E9%A2%9D/ar-AA1FyD3o?ocid=BingNewsVerp 
+  - 银龄绽芳华 乐活正当时 | https://www.msn.cn/zh-cn/news/other/%E9%93%B6%E9%BE%84%E7%BB%BD%E8%8A%B3%E5%8D%8E-%E4%B9%90%E6%B4%BB%E6%AD%A3%E5%BD%93%E6%97%B6/ar-AA1FwwwE?ocid=BingNewsVerp 
+  - 一辆助浴车为綦江特困老人“澡”回幸福 | https://www.msn.cn/zh-cn/news/other/%E4%B8%80%E8%BE%86%E5%8A%A9%E6%B5%B4%E8%BD%A6%E4%B8%BA%E7%B6%A6%E6%B1%9F%E7%89%B9%E5%9B%B0%E8%80%81%E4%BA%BA-%E6%BE%A1-%E5%9B%9E%E5%B9%B8%E7%A6%8F/ar-AA1FsVBI?ocid=BingNewsVerp 
+  - 不去沙特养老!莫德里奇新东家已浮现 双向奔赴 一笔伟大转会要诞生 | https://www.msn.cn/zh-cn/sports/soccer/%E4%B8%8D%E5%8E%BB%E6%B2%99%E7%89%B9%E5%85%BB%E8%80%81-%E8%8E%AB%E5%BE%B7%E9%87%8C%E5%A5%87%E6%96%B0%E4%B8%9C%E5%AE%B6%E5%B7%B2%E6%B5%AE%E7%8E%B0-%E5%8F%8C%E5%90%91%E5%A5%94%E8%B5%B4-%E4%B8%80%E7%AC%94%E4%BC%9F%E5%A4%A7%E8%BD%AC%E4%BC%9A%E8%A6%81%E8%AF%9E%E7%94%9F/ar-AA1FA2j7 
+  - 新型养老来袭，老人很满意：不用去养老院，也不用拖累子女! | https://www.msn.cn/zh-cn/health/%E8%80%81%E5%B9%B4%E5%81%A5%E5%BA%B7/%E6%96%B0%E5%9E%8B%E5%85%BB%E8%80%81%E6%9D%A5%E8%A2%AD-%E8%80%81%E4%BA%BA%E5%BE%88%E6%BB%A1%E6%84%8F-%E4%B8%8D%E7%94%A8%E5%8E%BB%E5%85%BB%E8%80%81%E9%99%A2-%E4%B9%9F%E4%B8%8D%E7%94%A8%E6%8B%96%E7%B4%AF%E5%AD%90%E5%A5%B3/ar-AA1FwYzo 
+==============================
+
+
+==============================
+📰 [抓取新闻正文] 2025-05-31 21:47:42
+🔑 关键词: 养老
+🗂️ 模式: 正式
+📄 处理的json文件: output/2025-05-26/2025-05-26_养老.json
+
+📊 抓取统计：
+  ✅ 成功抓取正文: 32 篇
+  ✨ 其中定制化抓取: 1 篇
+  🌐 本次采集新闻源数量: 159
+  ❌ 抓取失败: 2 篇
+
+🎯 定制化抓取命中统计：
+  - www.jfdaily.com: 1 篇
+      • 床边验血、远程问诊：浦东全面深化养老服务机构医养结合 | https://www.jfdaily.com/sgh/detail?id=1577699
+
+⚠️ 未能抓取的新闻：
+  - 美团 2025 年第一季度营收 865.6 亿元，同比增长 18.1% | https://www.msn.cn/zh-cn/news/other/%E7%BE%8E%E5%9B%A2-2025-%E5%B9%B4%E7%AC%AC%E4%B8%80%E5%AD%A3%E5%BA%A6%E8%90%A5%E6%94%B6-8656-%E4%BA%BF%E5%85%83-%E5%90%8C%E6%AF%94%E5%A2%9E%E9%95%BF-181/ar-AA1FtWyc 
+  - 机器人赛道，北京咋领跑？ | https://www.msn.cn/zh-cn/news/other/%E6%9C%BA%E5%99%A8%E4%BA%BA%E8%B5%9B%E9%81%93-%E5%8C%97%E4%BA%AC%E5%92%8B%E9%A2%86%E8%B7%91/ar-AA1FtBCM 
+==============================
+
+
+==============================
+📰 [抓取新闻正文] 2025-05-31 21:50:25
+🔑 关键词: 公积金
+🗂️ 模式: 正式
+📄 处理的json文件: output/2025-05-26/2025-05-26_公积金.json
+
+📊 抓取统计：
+  ✅ 成功抓取正文: 10 篇
+  ✨ 其中定制化抓取: 1 篇
+  🌐 本次采集新闻源数量: 159
+  ❌ 抓取失败: 1 篇
+
+🎯 定制化抓取命中统计：
+  - www.jfdaily.com: 1 篇
+      • 【聚焦】不设户籍限制！可抵扣个税！灵活就业人员在上海缴存公积金，您关心的都在这~ | https://www.jfdaily.com/sgh/detail?id=1577967
+
+⚠️ 未能抓取的新闻：
+  - 安阳市住房公积金管理中心上线《效能监督热线》，相关问题请提问！ | https://www.aynews.net.cn/ayinfo/76869 
+==============================
+
+=====🕒 本次运行时间: 2025-05-31 22:03:27=====
+
+==============================
+🔑 关键词: 公积金
+🌐 Baidu News: 0 条
+🌐 Google News: 65 条
+🌐 Bing News: 14 条
+🌐 DuckDuckGo News: 21 条
+✅ 去重后 serp_googlenews: 13 条
+✅ 去重后 serp_bingnews: 14 条
+✅ 去重后 serp_duckduckgo_news: 3 条
+⭐️ 去重后总保存: 30 条
+
+
+==============================
+🔑 关键词: 养老
+🌐 Baidu News: 0 条
+🌐 Google News: 140 条
+🌐 Bing News: 9 条
+🌐 DuckDuckGo News: 11 条
+✅ 去重后 serp_googlenews: 28 条
+✅ 去重后 serp_bingnews: 7 条
+✅ 去重后 serp_duckduckgo_news: 6 条
+⭐️ 去重后总保存: 41 条
+
+
+==============================
+📰 [抓取新闻正文] 2025-05-31 22:06:29
+🔑 关键词: 公积金
+🗂️ 模式: 正式
+📄 处理的json文件: output/2025-05-30/2025-05-30_公积金.json
+
+📊 抓取统计：
+  ✅ 成功抓取正文: 29 篇
+  ✨ 其中定制化抓取: 0 篇
+  🌐 本次采集新闻源数量: 159
+  ❌ 抓取失败: 1 篇
+
+⚠️ 未能抓取的新闻：
+  - 超2720亿元用于租赁住房！2024年住房公积金最新披露 | https://www.msn.cn/zh-cn/money/%E6%94%BF%E5%BA%9C%E6%94%AF%E5%8A%A9%E5%92%8C%E7%A6%8F%E5%88%A9/%E8%B6%852720%E4%BA%BF%E5%85%83%E7%94%A8%E4%BA%8E%E7%A7%9F%E8%B5%81%E4%BD%8F%E6%88%BF-2024%E5%B9%B4%E4%BD%8F%E6%88%BF%E5%85%AC%E7%A7%AF%E9%87%91%E6%9C%80%E6%96%B0%E6%8A%AB%E9%9C%B2/ar-AA1FMfQL?ocid=BingNewsVerp 
+==============================
+
+
+==============================
+📰 [抓取新闻正文] 2025-05-31 22:09:21
+🔑 关键词: 养老
+🗂️ 模式: 正式
+📄 处理的json文件: output/2025-05-30/2025-05-30_养老.json
+
+📊 抓取统计：
+  ✅ 成功抓取正文: 41 篇
+  ✨ 其中定制化抓取: 4 篇
+  🌐 本次采集新闻源数量: 159
+  ❌ 抓取失败: 0 篇
+
+🎯 定制化抓取命中统计：
+  - www.jfdaily.com: 4 篇
+      • 激活社区养老新场景，延吉新村街道这场银发市集有科技又有情怀 | https://www.jfdaily.com/news/detail?id=919947
+      • 金融机构集体入驻“随申办”专区,上海个人养老金人均缴存额居全国第一 | https://www.jfdaily.com/news/detail?id=920303
+      • 上海个人养老金人均缴存额居全国第一，第三支柱养老保险宣讲团今日揭牌 | https://www.jfdaily.com/news/detail?id=920254
+      • 民政部：“中国健康养老委员会”等组织未在民政部门登记 | https://www.jfdaily.com/news/detail?id=920317
+==============================
+
+=====🕒 本次运行时间: 2025-05-31 22:21:18=====
+
+==============================
+🔑 关键词: 公积金
+🌐 Baidu News: 0 条
+🌐 Google News: 65 条
+🌐 Bing News: 14 条
+🌐 DuckDuckGo News: 21 条
+📺 跳过仅含视频的新闻（tv.cctv.com）：
+  - [新闻直播间]《全国住房公积金2024年年度报告》发布 灵活就业者缴存公积金试点城市扩至36个 | https://tv.cctv.com/2025/05/30/VIDEwNhjQS1LghcYXOUMpKkM250530.shtml
+  - [新闻直播间]《全国住房公积金2024年年度报告》发布 灵活就业者缴存 ... | https://tv.cctv.com/2025/05/30/VIDEwNhjQS1LghcYXOUMpKkM250530.shtml
+✅ 去重后 serp_googlenews: 13 条
+✅ 去重后 serp_bingnews: 13 条
+✅ 去重后 serp_duckduckgo_news: 2 条
+⭐️ 去重后总保存: 28 条
+
+
+==============================
+🔑 关键词: 养老
+🌐 Baidu News: 0 条
+🌐 Google News: 140 条
+🌐 Bing News: 9 条
+🌐 DuckDuckGo News: 11 条
+✅ 去重后 serp_googlenews: 28 条
+✅ 去重后 serp_bingnews: 7 条
+✅ 去重后 serp_duckduckgo_news: 6 条
+⭐️ 去重后总保存: 41 条
+
+
+==============================
+📰 [抓取新闻正文] 2025-05-31 22:23:59
+🔑 关键词: 公积金
+🗂️ 模式: 正式
+📄 处理的json文件: output/2025-05-30/2025-05-30_公积金.json
+
+📊 抓取统计：
+  ✅ 成功抓取正文: 27 篇
+  ✨ 其中定制化抓取: 1 篇
+  🌐 本次采集新闻源数量: 159
+  ❌ 抓取失败: 1 篇
+
+🎯 定制化抓取命中统计：
+  - www.yicai.com: 1 篇
+      • 2024年全国发放住房公积金贷款1.3万亿元 | https://www.yicai.com/news/102642992.html
+
+⚠️ 未能抓取的新闻：
+  - 超2720亿元用于租赁住房！2024年住房公积金最新披露 | https://www.msn.cn/zh-cn/money/%E6%94%BF%E5%BA%9C%E6%94%AF%E5%8A%A9%E5%92%8C%E7%A6%8F%E5%88%A9/%E8%B6%852720%E4%BA%BF%E5%85%83%E7%94%A8%E4%BA%8E%E7%A7%9F%E8%B5%81%E4%BD%8F%E6%88%BF-2024%E5%B9%B4%E4%BD%8F%E6%88%BF%E5%85%AC%E7%A7%AF%E9%87%91%E6%9C%80%E6%96%B0%E6%8A%AB%E9%9C%B2/ar-AA1FMfQL?ocid=BingNewsVerp 
+==============================
+
+
+==============================
+📰 [抓取新闻正文] 2025-05-31 22:29:21
+🔑 关键词: 养老
+🗂️ 模式: 正式
+📄 处理的json文件: output/2025-05-30/2025-05-30_养老.json
+
+📊 抓取统计：
+  ✅ 成功抓取正文: 41 篇
+  ✨ 其中定制化抓取: 4 篇
+  🌐 本次采集新闻源数量: 159
+  ❌ 抓取失败: 0 篇
+
+🎯 定制化抓取命中统计：
+  - www.jfdaily.com: 4 篇
+      • 激活社区养老新场景，延吉新村街道这场银发市集有科技又有情怀 | https://www.jfdaily.com/news/detail?id=919947
+      • 金融机构集体入驻“随申办”专区,上海个人养老金人均缴存额居全国第一 | https://www.jfdaily.com/news/detail?id=920303
+      • 上海个人养老金人均缴存额居全国第一，第三支柱养老保险宣讲团今日揭牌 | https://www.jfdaily.com/news/detail?id=920254
+      • 民政部：“中国健康养老委员会”等组织未在民政部门登记 | https://www.jfdaily.com/news/detail?id=920317
+==============================
+
