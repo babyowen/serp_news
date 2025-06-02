@@ -8,6 +8,10 @@ python-dateutil
 playwright
 readability-lxml
 python-dotenv
+tiktoken
+transformers
+
+
 
 # HTTP请求，抓取API和网页
 # Flask模板渲染 
