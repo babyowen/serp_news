@@ -1,5 +1,5 @@
 import requests
-from config import GNEWS_API_KEY, SERPAPI_KEY
+from config import GNEWS_API_KEY, SERPAPI_KEY, DEFAULT_KEYWORDS
 from datetime import datetime, timedelta
 import json
 from bs4 import BeautifulSoup
@@ -206,4 +206,42 @@ def log_error(source, keyword, error_msg):
     log_path = os.path.join(log_dir, "error_log.txt")
     with open(log_path, "a", encoding="utf-8") as f:
         now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        f.write(f"[{now}] {source} | {keyword} | {error_msg}\n") 
+        f.write(f"[{now}] {source} | {keyword} | {error_msg}\n")
+
+if __name__ == "__main__":
+    import sys
+    import os
+    
+    def run_for_keyword(keyword, date_str=None):
+        if date_str is None:
+            date_str = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
+        print(f"[INFO] 抓取关键词: {keyword} 日期: {date_str}")
+        all_news = []
+        # 各采集源
+        baidu = fetch_serpapi_baidu_news(keyword).get("organic_results", [])
+        print(f"  Baidu News: {len(baidu)} 条")
+        all_news.extend(baidu)
+        google = fetch_serpapi_google_news(keyword).get("news_results", [])
+        print(f"  Google News: {len(google)} 条")
+        all_news.extend(google)
+        bing = fetch_serpapi_bing_news(keyword).get("organic_results", [])
+        print(f"  Bing News: {len(bing)} 条")
+        all_news.extend(bing)
+        duck = fetch_serpapi_duckduckgo_news(keyword).get("news_results", [])
+        print(f"  DuckDuckGo News: {len(duck)} 条")
+        all_news.extend(duck)
+        # 保存
+        outdir = os.path.join("output", date_str)
+        os.makedirs(outdir, exist_ok=True)
+        outpath = os.path.join(outdir, f"news_fetcher_{keyword}_{date_str}.json")
+        with open(outpath, "w", encoding="utf-8") as f:
+            json.dump(all_news, f, ensure_ascii=False, indent=2)
+        print(f"[INFO] 共采集 {len(all_news)} 条，已保存到 {outpath}")
+
+    if len(sys.argv) > 1:
+        # 指定关键词
+        run_for_keyword(sys.argv[1])
+    else:
+        # 批量模式
+        for kw in DEFAULT_KEYWORDS:
+            run_for_keyword(kw) 

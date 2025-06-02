@@ -5,11 +5,143 @@ load_dotenv()
 
 SERPAPI_KEY = os.getenv("SERPAPI_KEY")
 GNEWS_API_KEY = os.getenv("GNEWS_API_KEY")  # GNews API Key
-DEFAULT_KEYWORDS = ["公积金", "养老"]  # 可在此处修改默认关键词列表
+
+# 默认关键词列表，供批量处理和主流程使用
+DEFAULT_KEYWORDS = [
+    "养老",
+    "公积金",
+    # 可在此处添加更多关键词
+]
+# 兼容单关键词用法，取第一个关键词
+DEFAULT_KEYWORD = DEFAULT_KEYWORDS[0]
+
+# DeepSeek大模型API配置
+DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY")
+DEEPSEEK_BASE_URL = "https://api.deepseek.com"
+DEEPSEEK_MODEL = "deepseek-reasoner"
+
+
+# 大模型评分时的 system 消息内容，可在此处修改
+NEWS_SCORE_SYSTEM_MSG = """
+#### 定位
+- 智能助手名称 ：新闻相关度及重要性评分专家
+- 主要任务 ：对新闻的正文与关键词的相关度和重要性进行打分
+
+#### 能力
+- 文本分析 ：能够准确分析新闻文本的内容和含义。
+- 综合评分: 根据以下规则进行评分(0-5分)，5分为最相关最重要，0分不相关
+
+#### 规则
+- 全国性、中央级新闻；政府出台政策、制度；可以打分为\"5\"分。
+- 重要省、市，经济发达省、市的新闻，得分为\"4\"分。
+- 具有创新性、重大意义的新闻，得分为\"4\"分。
+- 一般省、市，一般新闻得分为\"3\"分。
+- 如果新闻中仅有一小部分是与关键词相关的，则打分为\"2\"分。
+- 如果不是中国的新闻，则打分为\"1\"分。
+- 如果你感觉不是新闻，而是如产品介绍、广告宣传等内容，则打分为\"1\"分。
+- 请你主要根据新闻正文进行评分，新闻标题只是供你参考。
+
+#### 使用说明
+- 输入 ：评分时用到的关键词和新闻正文及标题。
+- 输出 ：只输出分数，不要输出其他内容。
+
+""" 
+
+# 评分prompt
+NEWS_SCORE_PROMPT = """
+【新闻信息】
+关键词：{keyword}
+新闻标题：{title}
+新闻正文：{content}
+"""
 
 API_KEY = os.getenv("SERPAPI_KEY")
 
 # 黑名单关键词
 blacklist_keywords = [
     '星岛环球网','8world','诗华资讯','日经中文网','lianhe','南洋商报','两个至上','ntdtv','看中国','vietnamplus','swissinfo','英为财情','Wall Street Journal','法国国际广播电台','新唐人電視台','China Digital Times','大紀元','DW','文学城','禁闻网','BBC.com','自由亚洲电台','焦点新闻','美国之音','人民报','议报'
-] 
+]
+
+# ========== 新闻总结平台与模型配置 ==========
+# 当前使用的平台（如 deepseek、bailian）
+NEWS_SUMMARY_PLATFORM = os.getenv("NEWS_SUMMARY_PLATFORM", "deepseek")
+# 当前使用的具体模型（如 deepseek-reasoner、qwen-max）
+NEWS_SUMMARY_MODEL = os.getenv("NEWS_SUMMARY_MODEL", "deepseek-reasoner")
+
+# 多平台多模型配置
+NEWS_SUMMARY_MODELS = {
+    "deepseek": {
+        "deepseek-reasoner": {
+            "api_key": os.getenv("DEEPSEEK_API_KEY"),
+            "base_url": "https://api.deepseek.com",
+            "model": "deepseek-reasoner"
+        },
+        # 未来可扩展更多deepseek模型
+    },
+    "bailian": {
+        "qwen-max": {
+            "api_key": os.getenv("BAILIAN_API_KEY"),
+            "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+            "model": "qwen-max"
+        },
+        "qwen-plus-latest": {
+            "api_key": os.getenv("BAILIAN_API_KEY"),
+            "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+            "model": "qwen-plus-latest"
+        },
+        # 未来可扩展更多bailian模型
+    }
+}
+
+# 新闻总结 system prompt
+NEWS_SUMMARY_SYSTEM_PROMPT = '''
+#### 定位
+- 智能助手名称 ：新闻摘要总结和分析专家
+- 主要任务 ：针对某一关键词或一组关键词，对多条新闻进行归纳、总结和观点提炼。
+
+#### 能力
+- 文本分析 ：能够准确分析新闻文本的事实、观点等内容。
+- 归纳总结提炼 : 能够在大量文本中归纳总结出事实的要点和观点的要点。
+
+#### 总结时可以使用的技巧
+- 如果某条新闻出现多次，说明其重要性更高，请优先在综述和总结中体现。
+- 更加关注时事新闻、时政类型新闻；对于知识普及型内容可在最后归纳。
+- 每条新闻都包含其评分分数，请重点关注得分为5分和4分的新闻。
+
+#### 总结文本结构范例和内容要点
+
+## **📰 今日综述**  
+- 根据关键词对当天新闻进行整体概述。
+- 概述当天主要发生的事件及其广泛影响，让读者快速掌握当天的新闻焦点。
+- 使用清晰的语句，简明扼要地交代事件的核心内容。
+
+## **📺 新闻总结**
+- 归类整理当天的新闻要点。你可以根据事件类型、涉及区域、或主题等进行划分。
+- 聚焦事件的核心要素，列出重要的时间节点、关键人物以及事件背景。
+- 以客观、简明的文字呈现新闻内容全貌，确保内容清晰且富有逻辑性。
+
+## **📊 观点总结**
+- 提炼新闻中的各方观点和评论，客观总结不同立场的见解，帮助读者理解事件的多样化视角。
+- 每条观点都需简洁明了、逻辑清晰，避免偏向性表述，使信息呈现更加客观中立。
+
+
+#### 限制规则
+- 你只能从给定的新闻中进行总结，不能自己添加任何不存在的内容。
+- 必须以mackdown格式进行输出。所有标题使用二级标题(##)，严格禁出现其它标题。除主标题外不得再出现任何 # 号。如需小节，用无序列表 - 或有序列表 1. 表示
+- 输出内容务必结构清晰、逻辑严谨。
+- 今日综述字数限制在200-300字，新闻总结字数限制在400-600字，观点总结字数限制在200-300字；全年内容不超过1100字。
+- 你并不需要在每段结尾输出字数，如（字数：238）。
+
+'''
+
+# 新闻总结 user prompt 模板
+NEWS_SUMMARY_USER_PROMPT = '''
+【新闻关键词】是:
+{keyword}
+
+【新闻列表】:
+{news_list}
+'''
+
+# 新闻总结结果保存文件名模板
+NEWS_SUMMARY_RESULT_FILENAME = "{date}_{keyword}_summary.json"

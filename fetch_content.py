@@ -1,7 +1,7 @@
 import os
 import sys
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 import trafilatura
 import time
 import random
@@ -18,10 +18,15 @@ from config_grab_rules import grab_msn_cn_playwright
 from playwright.sync_api import sync_playwright
 from readability import Document
 from bs4 import BeautifulSoup
+from config import DEFAULT_KEYWORDS
 
 
 def get_today_str():
     return datetime.now().strftime('%Y-%m-%d')
+
+def get_yesterday_str():
+    yesterday = datetime.now() - timedelta(days=1)
+    return yesterday.strftime("%Y-%m-%d")
 
 def get_json_path(keyword, date_str=None):
     if date_str is None:
@@ -319,13 +324,14 @@ def process_json(keyword, date_str=None, mode='正式'):
     custom_used_items = []
     custom_grab_domain_count = {}
     custom_grab_domain_items = {}
-    all_domains = set()
+    current_domains = set()  # 只统计本次成功抓取正文的新闻源域名
     domain_news_count = {}
     for item in filtered_news_list:
         url = item.get('link')
         curr_domain = get_domain(url) if url else None
-        if curr_domain:
-            all_domains.add(curr_domain)
+        # 只统计成功抓取正文的新闻源
+        if curr_domain and item.get('wordcount', 0) > 0:
+            current_domains.add(curr_domain)
             if curr_domain not in domain_news_count:
                 domain_news_count[curr_domain] = 0
             domain_news_count[curr_domain] += 1
@@ -342,7 +348,8 @@ def process_json(keyword, date_str=None, mode='正式'):
             custom_grab_domain_items[curr_domain].append({'title': item.get('title', ''), 'link': url})
     # 新增：写入所有新闻来源域名到output/news_sources.txt（累积历史域名）
     sources_path = os.path.join('output', 'news_sources.txt')
-    # 读取历史域名
+    # 读取历史域名并合并
+    all_domains = set(current_domains)
     if os.path.exists(sources_path):
         with open(sources_path, 'r', encoding='utf-8') as sf:
             for line in sf:
@@ -380,7 +387,7 @@ def process_json(keyword, date_str=None, mode='正式'):
         logf.write(f"\n📊 抓取统计：\n")
         logf.write(f"  ✅ 成功抓取正文: {success_count} 篇\n")
         logf.write(f"  ✨ 其中定制化抓取: {len(custom_used_items)} 篇\n")
-        logf.write(f"  🌐 本次采集新闻源数量: {len(all_domains)}\n")
+        logf.write(f"  🌐 本次采集新闻源数量: {len(current_domains)}\n")
         logf.write(f"  ❌ 抓取失败: {len(fail_items)} 篇\n")
         if custom_grab_domain_count:
             logf.write("\n🎯 定制化抓取命中统计：\n")
@@ -406,28 +413,34 @@ def process_json(keyword, date_str=None, mode='正式'):
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
-        print("用法: python fetch_content.py 关键词 [日期, 格式:YYYY-MM-DD] [--test] [--url 新闻链接]")
-        sys.exit(1)
-    keyword = sys.argv[1]
-    date_str = None
-    mode = '正式'
-    test_url = None
-    for arg in sys.argv[2:]:
-        if arg in ('--test', '-test'):
-            mode = '测试'
-        elif arg.startswith('--url'):
-            # 支持 --url=xxx 或 --url xxx
-            if '=' in arg:
-                test_url = arg.split('=', 1)[1]
-            else:
-                idx = sys.argv.index(arg)
-                if idx + 1 < len(sys.argv):
-                    test_url = sys.argv[idx + 1]
-        elif date_str is None and not arg.startswith('--'):
-            date_str = arg
-    if test_url:
-        print(f"测试抓取单个新闻链接: {test_url}")
-        content, wordcount, used_custom = fetch_article_content(test_url)
-        print(f"\n【抓取结果】\n字数: {wordcount}\n定制化: {used_custom}\n正文预览:\n{content[:500]}{'...' if len(content) > 500 else ''}")
+        # 无参数，自动批量处理昨天所有关键词
+        date_str = get_yesterday_str()
+        mode = '正式'
+        for keyword in DEFAULT_KEYWORDS:
+            json_path = os.path.join("output", date_str, f"{date_str}_{keyword}.json")
+            print(f"自动抓取: {json_path}")
+            process_json(keyword, date_str, mode)
     else:
-        process_json(keyword, date_str, mode) 
+        # 有参数，走原有逻辑
+        keyword = sys.argv[1]
+        date_str = None
+        mode = '正式'
+        test_url = None
+        for arg in sys.argv[2:]:
+            if arg in ('--test', '-test'):
+                mode = '测试'
+            elif arg.startswith('--url'):
+                if '=' in arg:
+                    test_url = arg.split('=', 1)[1]
+                else:
+                    idx = sys.argv.index(arg)
+                    if idx + 1 < len(sys.argv):
+                        test_url = sys.argv[idx + 1]
+            elif date_str is None and not arg.startswith('--'):
+                date_str = arg
+        if test_url:
+            print(f"测试抓取单个新闻链接: {test_url}")
+            content, wordcount, used_custom = fetch_article_content(test_url)
+            print(f"\n【抓取结果】\n字数: {wordcount}\n定制化: {used_custom}\n正文预览:\n{content[:500]}{'...' if len(content) > 500 else ''}")
+        else:
+            process_json(keyword, date_str, mode) 
