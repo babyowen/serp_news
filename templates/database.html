@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>数据库内容展示</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body { font-family: "Segoe UI", Arial, sans-serif; background: #f8f9fa; margin: 0; padding: 0; }
+        h1 { margin: 30px 0 10px 0; text-align: center; color: #333; }
+        .table-container { width: 98vw; max-width: 1800px; margin: 30px auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px #0001; padding: 20px; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 15px; }
+        th, td { border: 1px solid #e0e0e0; padding: 8px 10px; text-align: left; }
+        th { background: #f1f3f6; position: sticky; top: 0; z-index: 2; }
+        tr:nth-child(even) { background: #f8fafc; }
+        tr:hover { background: #e6f7ff; }
+        td.content, td.summary { max-width: 420px; word-break: break-all; white-space: pre-line; }
+        td.content, td.summary { font-family: "Menlo", "Consolas", monospace; }
+        td.content, td.summary span.ellipsis, td.content, td.summary span.ellipsis { display: inline-block; vertical-align: top; }
+        td.link { max-width: 320px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        a { color: #0074d9; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        @media (max-width: 900px) {
+            .table-container { padding: 2px; }
+            table { font-size: 13px; }
+            td.content, td.summary { max-width: 180px; }
+            td.link { max-width: 120px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="table-container">
+        <h1>scored_news（最新50条）</h1>
+        <table>
+            <tr>
+                {% for col in scored_news[0].keys() %}
+                    {% if col != 'thumbnail' %}
+                        <th>{{ col }}</th>
+                    {% endif %}
+                {% endfor %}
+            </tr>
+            {% for row in scored_news %}
+            <tr>
+                {% for col, val in row.items() %}
+                    {% if col == 'thumbnail' %}
+                        {# 跳过 #}
+                    {% elif col == 'content' %}
+                        <td class="content" title="{{ val }}">{{ val[:120] }}{% if val|length > 120 %}...{% endif %}</td>
+                    {% elif col == 'link' %}
+                        <td class="link">
+                            {% if val %}
+                                <a href="{{ val }}" target="_blank" title="{{ val }}">
+                                    {{ val[:50] }}{% if val|length > 50 %}...{% endif %}
+                                </a>
+                            {% endif %}
+                        </td>
+                    {% else %}
+                        <td>{{ val }}</td>
+                    {% endif %}
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <div class="table-container">
+        <h1>summary_news（最新50条）</h1>
+        <table>
+            <tr>
+                {% for col in summary_news[0].keys() %}
+                    {% if col != 'thumbnail' %}
+                        <th>{{ col }}</th>
+                    {% endif %}
+                {% endfor %}
+            </tr>
+            {% for row in summary_news %}
+            <tr>
+                {% for col, val in row.items() %}
+                    {% if col == 'thumbnail' %}
+                        {# 跳过 #}
+                    {% elif col == 'summary' %}
+                        <td class="summary" title="{{ val }}">{{ val[:120] }}{% if val|length > 120 %}...{% endif %}</td>
+                    {% else %}
+                        <td>{{ val }}</td>
+                    {% endif %}
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</body>
+</html>

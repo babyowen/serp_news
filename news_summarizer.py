@@ -1,14 +1,16 @@
 import os
+import sys
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 from config import (
     NEWS_SUMMARY_MODELS,
     NEWS_SUMMARY_SYSTEM_PROMPT,
     NEWS_SUMMARY_USER_PROMPT,
     NEWS_SUMMARY_RESULT_FILENAME,
     NEWS_SUMMARY_PLATFORM,
-    NEWS_SUMMARY_MODEL
+    NEWS_SUMMARY_MODEL,
+    DEFAULT_KEYWORDS
 )
 from openai import OpenAI
 import tiktoken
@@ -207,7 +209,19 @@ if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument('--date', type=str, help='日期, 格式YYYY-MM-DD')
-    parser.add_argument('--keyword', type=str, required=True, help='关键词')
+    parser.add_argument('--keyword', type=str, help='关键词')
     parser.add_argument('--model', type=str, default=None, help='模型名（deepseek/bailian等）')
     args = parser.parse_args()
+
+    # 新增：无参数时自动批量处理昨天所有关键词
+    if args.keyword is None:
+        date_str = args.date or (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
+        for keyword in DEFAULT_KEYWORDS:
+            print(f"\n=== 开始总结关键词: {keyword} ===")
+            try:
+                main(date=date_str, keyword=keyword, model_name=args.model)
+            except Exception as e:
+                print(f"[ERROR] 总结关键词 {keyword} 失败: {e}")
+        sys.exit(0)
+
     main(date=args.date, keyword=args.keyword, model_name=args.model) 

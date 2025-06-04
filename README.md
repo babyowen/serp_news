@@ -89,11 +89,6 @@ serp_news/
   ```bash
   python main.py
   ```
-- **抓取指定日期（仅采集该日期"昨天"的新闻，主要用于补录当天漏采）：**
-  ```bash
-  python main.py YYYY-MM-DD
-  # 例：python main.py 2025-05-28
-  ```
 
 ### 2. 新闻正文抓取（fetch_content.py）
 - **抓取指定关键词的新闻正文（默认昨天）：**
@@ -196,3 +191,86 @@ A:
 
 如需进一步补充"常见报错与解决方法"、"贡献指南"等内容，可随时扩展。
 如有问题或需定制化扩展，欢迎联系开发者。
+
+## 数据库结构
+
+### scored_news 表
+```sql
+CREATE TABLE scored_news (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    date VARCHAR(64),
+    title VARCHAR(255),
+    link TEXT,
+    source VARCHAR(255),
+    fetchdate DATE,
+    sourceapi VARCHAR(255),
+    thumbnail TEXT,
+    keyword VARCHAR(255),
+    content LONGTEXT,
+    wordcount INT,
+    custom_grab BOOLEAN,
+    score INT
+);
+```
+
+### summary_news 表
+```sql
+CREATE TABLE summary_news (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    date DATE,
+    keyword VARCHAR(255),
+    summary LONGTEXT,
+    platform VARCHAR(255),
+    model VARCHAR(255)
+);
+```
+
+---
+
+## 数据库写入功能说明
+
+- 所有新闻数据和摘要数据会自动写入MySQL数据库。
+- `write_to_mysql.py` 支持批量导入，自动读取 config.py 里的 DEFAULT_KEYWORDS。
+- 支持命令行参数 `--date`，不带参数时自动导入昨天的数据。
+- 自动批量导入所有关键词的 scored/summary 两类文件。
+- 文件不存在时自动跳过并提示。
+
+---
+
+## 数据库写入命令
+
+### 1. 安装依赖
+```sh
+pip install pymysql python-dotenv
+```
+
+### 2. 配置数据库连接
+在项目根目录新建 `.env` 文件，内容如下（请用你自己的信息替换）：
+```
+MYSQL_HOST=your_host
+MYSQL_PORT=3306
+MYSQL_USER=your_user
+MYSQL_PASSWORD=your_password
+MYSQL_DB=serp_news
+```
+
+### 3. 批量写入数据库
+- 导入昨天的数据：
+```sh
+python write_to_mysql.py
+```
+- 导入指定日期的数据（如2025-06-01）：
+```sh
+python write_to_mysql.py --date 2025-06-01
+```
+
+---
+
+## 其它说明
+- `config.py` 里的 DEFAULT_KEYWORDS 控制批量导入的关键词。
+- 数据库表结构如上，`scored_news.date` 字段为原始新闻日期（字符串），`fetchdate` 字段为抓取日期（DATE 类型）。
+- 如需清空表数据，可用：
+```sql
+TRUNCATE TABLE scored_news;
+TRUNCATE TABLE summary_news;
+```
