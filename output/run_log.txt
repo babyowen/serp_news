@@ -1481,3 +1481,794 @@
 [Token统计] 平台: deepseek，模型: deepseek-reasoner，system: 485, user: 4194, result: 779
 ✅ 运行结果: 成功
 ==============================
+=====🕒 本次运行时间: 2025-06-03 06:42:24=====
+
+==============================
+🔑 关键词: 养老
+🌐 Baidu News: 8 条
+🌐 Google News: 35 条
+🌐 Bing News: 6 条
+🌐 DuckDuckGo News: 3 条
+✅ 去重后 serp_baidunews: 8 条
+✅ 去重后 serp_googlenews: 7 条
+✅ 去重后 serp_bingnews: 6 条
+✅ 去重后 serp_duckduckgo_news: 3 条
+⭐️ 去重后总保存: 24 条
+
+
+==============================
+🔑 关键词: 公积金
+🌐 Baidu News: 1 条
+🌐 Google News: 20 条
+🌐 Bing News: 20 条
+🌐 DuckDuckGo News: 15 条
+✅ 去重后 serp_baidunews: 1 条
+✅ 去重后 serp_googlenews: 4 条
+✅ 去重后 serp_bingnews: 17 条
+✅ 去重后 serp_duckduckgo_news: 6 条
+⭐️ 去重后总保存: 28 条
+
+
+==============================
+📰 [抓取新闻正文] 2025-06-03 06:52:00
+🔑 关键词: 公积金
+🗂️ 模式: 正式
+📄 处理的json文件: output/2025-06-02/2025-06-02_公积金.json
+
+📊 抓取统计：
+  ✅ 成功抓取正文: 26 篇
+  ✨ 其中定制化抓取: 1 篇
+  🌐 本次采集新闻源数量: 21
+  ❌ 抓取失败: 2 篇
+
+🎯 定制化抓取命中统计：
+  - www.jfdaily.com: 1 篇
+      • 不设户籍限制、可抵扣个税……灵活就业人员在上海缴存公积金，热点解答都在这→_上观新闻 | https://www.jfdaily.com/sgh/detail?id=1583298
+
+⚠️ 未能抓取的新闻：
+  - 6月3日起贵阳将新增7个住房公积金“社区服务站” | https://www.msn.cn/zh-cn/money/other/6%E6%9C%883%E6%97%A5%E8%B5%B7%E8%B4%B5%E9%98%B3%E5%B0%86%E6%96%B0%E5%A2%9E7%E4%B8%AA%E4%BD%8F%E6%88%BF%E5%85%AC%E7%A7%AF%E9%87%91-%E7%A4%BE%E5%8C%BA%E6%9C%8D%E5%8A%A1%E7%AB%99/ar-AA1FRHMg?ocid=BingNewsVerp 
+  - 奔驰经销商困境：销量下滑，智能化转型能否成为救命稻草？ | https://www.msn.cn/zh-cn/news/other/%E5%A5%94%E9%A9%B0%E7%BB%8F%E9%94%80%E5%95%86%E5%9B%B0%E5%A2%83-%E9%94%80%E9%87%8F%E4%B8%8B%E6%BB%91-%E6%99%BA%E8%83%BD%E5%8C%96%E8%BD%AC%E5%9E%8B%E8%83%BD%E5%90%A6%E6%88%90%E4%B8%BA%E6%95%91%E5%91%BD%E7%A8%BB%E8%8D%89/ar-AA1FUQkl 
+==============================
+
+
+==============================
+📰 [抓取新闻正文] 2025-06-03 07:11:45
+🔑 关键词: 养老
+🗂️ 模式: 正式
+📄 处理的json文件: output/2025-06-02/2025-06-02_养老.json
+
+📊 抓取统计：
+  ✅ 成功抓取正文: 23 篇
+  ✨ 其中定制化抓取: 1 篇
+  🌐 本次采集新闻源数量: 12
+  ❌ 抓取失败: 1 篇
+
+🎯 定制化抓取命中统计：
+  - www.jfdaily.com: 1 篇
+      • 养老更有“科技感”！家用外骨骼机器人要来了 | https://www.jfdaily.com/sgh/detail?id=1583203
+
+⚠️ 未能抓取的新闻：
+  - 彭博社：特朗普推动将加密货币纳入养老金账户，但仍面临福利诉讼风险 | https://www.mitrade.com/cn/insights/news/live-news/article-3-860369-20250603 
+==============================
+
+
+[🕒 2025-06-03 20:42:06]
+执行程序: ai评分
+🔑 关键词: 公积金
+📄 原json文件: output/2025-06-02/2025-06-02_公积金.json
+🆕 评分结果文件: output/2025-06-02/2025-06-02_公积金_scored.json
+📊 新闻总数: 26
+✅ 完成评分: 26
+0分:3 1分:2 2分:3 3分:3 4分:9 5分:6
+📝 3分及以上新闻正文总字数: 13582
+==============================
+
+[🕒 2025-06-03 21:01:48]
+执行程序: ai评分
+🔑 关键词: 养老
+📄 原json文件: output/2025-06-02/2025-06-02_养老.json
+🆕 评分结果文件: output/2025-06-02/2025-06-02_养老_scored.json
+📊 新闻总数: 24
+✅ 完成评分: 24
+0分:1 1分:2 2分:0 3分:3 4分:11 5分:7
+📝 3分及以上新闻正文总字数: 25124
+==============================
+
+[🕒 2025-06-03 21:04:21]
+执行程序: news_summarizer
+🔑 关键词: 公积金
+📅 日期: 2025-06-02
+🤖 平台: deepseek
+🤖 模型: deepseek-reasoner
+📄 3分及以上新闻数量: 18
+📝 送给大模型的prompt前300字:  【新闻关键词】是: 公积金  【新闻列表】: 标题1: 公积金利率下调利好房地产市场 分数1: 5 新闻1: 近日，中国人民银行宣布，下调个人住房公积金贷款利率0.25个百分点，5年以下（含5年）和5年以上首套个人住房公积金贷款利率分别调整为2.1%和2.6%。 国海证券首席经济学家夏磊指出，公积金贷款作为一种重要的购房资金支持方式，是商业贷款的有益补充，并且具有明显的利率优势。根据全国住房公积金2023年报数据，住房公积金个人住房贷款利率比同期商贷利率低0.85个至1.2个百分点。 自5月8日起，北京、上海、深圳、广州等一线城市纷纷下调公积金贷款利率；长沙、西安、宁波、南京、昆明、哈尔滨、
+💾 总结结果文件: output/2025-06-02/2025-06-02_公积金_summary.json
+[Token统计] 平台: deepseek，模型: deepseek-reasoner，system: 485, user: 8068, result: 927
+✅ 运行结果: 成功
+==============================
+
+[🕒 2025-06-03 21:12:21]
+执行程序: news_summarizer
+🔑 关键词: 养老
+📅 日期: 2025-06-02
+🤖 平台: deepseek
+🤖 模型: deepseek-reasoner
+📄 3分及以上新闻数量: 21
+📝 送给大模型的prompt前300字:  【新闻关键词】是: 养老  【新闻列表】: 标题1: 守好群众“养老钱” 分数1: 5 新闻1: 原标题：守好群众“养老钱” 近来，多地频繁出现不法分子以补缴养老保险为借口实施诈骗的案件，同时也有个别企业超出经营范围，通过虚假挂靠、代缴基本养老保险业务等手段骗取钱财，导致众多群众遭受资金损失。这些不法行为不仅给受害群众带来了直接的经济损失，更严重扰乱了社会秩序。 在这些骗局中，不法分子利用部分中老年人对社保政策不熟悉，且因社保缴纳年限不足而迫切希望通过补缴来增加退休金的心理，通过虚构劳动合同和劳动关系、以“代缴社保”“挂靠参保”等手段收取高额手续费和补缴费用，实际上只是伪造缴费凭证而未真正履
+💾 总结结果文件: output/2025-06-02/2025-06-02_养老_summary.json
+[Token统计] 平台: deepseek，模型: deepseek-reasoner，system: 485, user: 15010, result: 1113
+✅ 运行结果: 成功
+==============================
+[查重] scored_news 已存在，跳过: 守好群众“养老钱” | https://m.yunnan.cn/system/2025/06/02/033500461.shtml
+[查重] scored_news 已存在，跳过: “老年人糖尿病康复公益行”走进“五边颐养”智慧养老服务中心 | http://baijiahao.baidu.com/s?id=1833777024549912162&wfr=spider&for=pc
+[查重] scored_news 已存在，跳过: 农村养老金好事！！2025年满60岁农民每月增300元，满70岁增400元？是否属实？赶快看看！！ | https://www.sohu.com/a/900876211_121296021
+[查重] scored_news 已存在，跳过: 7月起，养老金将开始计发补发！1954~1963年出生的退休人员能补多少？ | https://www.sohu.com/a/900877621_121296021
+[查重] scored_news 已存在，跳过: 原创 6月1日养老金再上调？三大调整方式解析，哪些人受益最多？ | https://www.sohu.com/a/900758277_121145935
+[查重] scored_news 已存在，跳过: 2025年6月起，退休人员养老金发放有新调整，注意这几个重要变化 | https://news.qq.com/rain/a/20250530A02KKR00
+[查重] scored_news 已存在，跳过: 中央定调，养老金调整向中低收入群体倾斜，如何实现提低控高？ | https://www.sohu.com/a/900824188_121942017
+[查重] scored_news 已存在，跳过: 做一名有温度的养老顾问,普陀的他们这么做 | https://baijiahao.baidu.com/s?id=1833817536533732305&wfr=spider&for=pc
+[查重] scored_news 已存在，跳过: 如何做一名有温度的养老顾问?普陀的他们用心诠释服务之道 | http://baijiahao.baidu.com/s?id=1833790225638579590&wfr=spider&for=pc
+[查重] scored_news 已存在，跳过: “物业+养老”,让年轻人重启职业人生 | https://baijiahao.baidu.com/s?id=1833777774750180916&wfr=spider&for=pc
+[查重] scored_news 已存在，跳过: 西藏分级分类深入实施养老服务补贴制度 | https://www.cnr.cn/xz/gstjxz/20250602/t20250602_527192939.shtml
+[查重] scored_news 已存在，跳过: 记者走基层丨设施有智慧 养老变享老 | https://baijiahao.baidu.com/s?id=1833775855574425944&wfr=spider&for=pc
+[查重] scored_news 已存在，跳过: 做一名有温度的养老顾问，普陀的他们这么做 | https://finance.sina.com.cn/jjxw/2025-06-02/doc-ineysvfz2259136.shtml?froms=ggmp
+[查重] scored_news 已存在，跳过: “物业+养老”，让年轻人重启职业人生 | https://m.voc.com.cn/xhn/news/202506/29595747.html
+[查重] scored_news 已存在，跳过: 养老更有“科技感”！家用外骨骼机器人要来了 | https://www.jfdaily.com/sgh/detail?id=1583203
+[查重] scored_news 已存在，跳过: 记者走基层丨设施有智慧 养老变享老 | https://finance.sina.cn/2025-06-02/detail-ineyrtuf9761153.d.html?vt=4&cid=76729&node_id=76729
+[查重] scored_news 已存在，跳过: 做一名有温度的养老顾问，普陀的他们这么做 | https://news.qq.com/rain/a/20250602A06LT500
+[查重] scored_news 已存在，跳过: 领过失业保险金影响以后的养老金吗? | https://news.qq.com/rain/a/20250602A06XGF00
+[查重] scored_news 已存在，跳过: 山东省烟台护士学校2025年养老照护赛项选拔赛圆满结束 | https://www.zhonghongwang.com/show-493-401779-1.html
+[查重] scored_news 已存在，跳过: 领取失业保险金对缴纳养老保险费有影响吗？ | http://www.qinghai.gov.cn/zmhd/system/2025/06/02/030073636.shtml
+[查重] scored_news 已存在，跳过: 个人养老金资金账户能否销户？ | http://www.qinghai.gov.cn/zmhd/system/2025/06/02/030073638.shtml
+[查重] scored_news 已存在，跳过: 养老更有“科技感”!家用外骨骼机器人要来了 | http://baijiahao.baidu.com/s?id=1833793982723015841&wfr=spider&for=pc
+[查重] scored_news 已存在，跳过: 日本自民党与立宪民主党就养老金制度改革相关法案达成4日审议共识 | http://www.jpchinapress.com/static/content/SS/2025-06-02/1379140241965203456.html
+[查重] scored_news 已存在，跳过: 彭博社：特朗普推动将加密货币纳入养老金账户，但仍面临福利诉讼风险 | https://www.mitrade.com/cn/insights/news/live-news/article-3-860369-20250603
+[2025-06-03 22:33:04] 导入数据库
+  关键词: 养老
+  文件: output/2025-06-02/2025-06-02_养老_scored.json
+  表: scored_news
+  成功写入: 0 条
+  跳过: 24 条
+  失败: 0 条
+------------------------------
+[查重] summary_news 已存在，跳过: 2025-06-02 | 养老 | ## 📰 今日综述  
+- 今日围绕“养老”关键词的新闻聚焦...
+[2025-06-03 22:33:04] 导入数据库
+  关键词: 养老
+  文件: output/2025-06-02/2025-06-02_养老_summary.json
+  表: summary_news
+  成功写入: 0 条
+  跳过: 1 条
+  失败: 0 条
+------------------------------
+[查重] scored_news 已存在，跳过: 公积金利率下调利好房地产市场 | http://www.ce.cn/xwzx/gnsz/gdxw/202506/t20250603_2313480.shtml
+[查重] scored_news 已存在，跳过: 部分地区存量公积金贷款利率下调？记者实测 | https://i.ifeng.com/c/8jqzXMW593k
+[查重] scored_news 已存在，跳过: 2024年全国发放住房公积金贷款超1.3万亿元 | https://www.sohu.com/a/900885074_121106832
+[查重] scored_news 已存在，跳过: 2024年实缴单位数量增长6.92% 住房公积金制度惠及面不断扩大 | https://finance.china.com.cn/news/20250601/6246678.shtml
+[查重] scored_news 已存在，跳过: 部分地区存量公积金贷款利率下调？记者实测 | https://news.ifeng.com/c/8jqzXMW593k
+[查重] scored_news 已存在，跳过: 住房公积金制度惠及面不断扩大 | http://finance.people.com.cn/n1/2025/0601/c1004-40491935.html
+[查重] scored_news 已存在，跳过: 济南:购买高品质住宅公积金最高贷款额度上浮30% | https://baijiahao.baidu.com/s?id=1833771642252566168&wfr=spider&for=pc
+[查重] scored_news 已存在，跳过: 不设户籍限制、可抵扣个税……灵活就业人员在上海缴存公积金，热点解答都在这→_上观新闻 | https://www.jfdaily.com/sgh/detail?id=1583298
+[查重] scored_news 已存在，跳过: 连续缴存6个月即可贷款 长沙住房公积金支持青年人才购房 | https://gz.house.ifeng.com/news/2025_06_02-57054296_0.shtml
+[查重] scored_news 已存在，跳过: 佛山修订住房公积金提取办法 7月1日起实施 | https://gz.house.ifeng.com/news/2025_06_02-57054300_0.shtml
+[查重] scored_news 已存在，跳过: 降首付、降利率、提额度、扩范围……我市公积金政策打“组合拳” | https://www.sohu.com/a/900625860_349247
+[查重] scored_news 已存在，跳过: 不设户籍限制、可抵扣个税……灵活就业人员在上海缴存公积金，您关心的都在这→ | https://finance.sina.com.cn/jjxw/2025-06-02/doc-ineyqshv8590626.shtml
+[查重] scored_news 已存在，跳过: 济南三度优化公积金政策 贷款额度大幅提升 | https://news.china.com/socialgd/10000169/20250601/48409410.html
+[查重] scored_news 已存在，跳过: 济南：购买高品质住宅公积金最高贷款额度上浮30% | https://www.bjnews.com.cn/detail/1748747123168368.html
+[查重] scored_news 已存在，跳过: 上汽通用五菱：5月全球销量134419辆，同比增长20.7% | https://36kr.com/newsflashes/3317368806369794
+[查重] scored_news 已存在，跳过: 福州住房公积金利率常见问答！ | https://news.qq.com/rain/a/20250602A075JU00
+[查重] scored_news 已存在，跳过: 已发放公积金贷款职工，能否按2025年5月新政策调整利率？ | http://www.qinghai.gov.cn/zmhd/system/2025/06/02/030073635.shtml
+[查重] scored_news 已存在，跳过: 保定公积金提取条件 | https://news.qq.com/rain/a/20250602A06XEB00
+[查重] scored_news 已存在，跳过: 午评：港股恒指跌2.2% 科指跌2.43% 加密货币概念股强势 | https://city.sina.com.cn/city_finance/2025-06-02/detail-ineyseiz9560654.shtml
+[查重] scored_news 已存在，跳过: 国防部新49图库澳门传真笫252期闻发言人张晓刚就香格里拉对话会期间美方涉华消极言论答记者问 | https://www.cnsoftnews.com/industry/387342434699.html
+[查重] scored_news 已存在，跳过: 浙江象山发文：极力减少"拜访""联络"型出国（境）行程 | https://www.thepaper.cn/newsDetail_forward_30920047
+[查重] scored_news 已存在，跳过: 岩山科技(002195):利润分配管理制度（2025年5月） | https://www.cfi.net.cn/p20250602000159.html
+[查重] scored_news 已存在，跳过: 今起，可提取父母子女公积金交首付或还贷 | https://www.msn.com/zh-cn/news/other/%E4%BB%8A%E8%B5%B7-%E5%8F%AF%E6%8F%90%E5%8F%96%E7%88%B6%E6%AF%8D%E5%AD%90%E5%A5%B3%E5%85%AC%E7%A7%AF%E9%87%91%E4%BA%A4%E9%A6%96%E4%BB%98%E6%88%96%E8%BF%98%E8%B4%B7/ar-AA1FRCPm?ocid=BingNewsVerp
+[查重] scored_news 已存在，跳过: 6月3日起贵阳将新增7个住房公积金“社区服务站” | https://www.msn.cn/zh-cn/money/other/6%E6%9C%883%E6%97%A5%E8%B5%B7%E8%B4%B5%E9%98%B3%E5%B0%86%E6%96%B0%E5%A2%9E7%E4%B8%AA%E4%BD%8F%E6%88%BF%E5%85%AC%E7%A7%AF%E9%87%91-%E7%A4%BE%E5%8C%BA%E6%9C%8D%E5%8A%A1%E7%AB%99/ar-AA1FRHMg?ocid=BingNewsVerp
+[查重] scored_news 已存在，跳过: 奔驰经销商困境：销量下滑，智能化转型能否成为救命稻草？ | https://www.msn.cn/zh-cn/news/other/%E5%A5%94%E9%A9%B0%E7%BB%8F%E9%94%80%E5%95%86%E5%9B%B0%E5%A2%83-%E9%94%80%E9%87%8F%E4%B8%8B%E6%BB%91-%E6%99%BA%E8%83%BD%E5%8C%96%E8%BD%AC%E5%9E%8B%E8%83%BD%E5%90%A6%E6%88%90%E4%B8%BA%E6%95%91%E5%91%BD%E7%A8%BB%E8%8D%89/ar-AA1FUQkl
+[查重] scored_news 已存在，跳过: 龙舟鼓点敲出端午消费新"节奏" | http://cq.people.com.cn/n2/2025/0602/c367668-41246981.html
+[2025-06-03 22:33:05] 导入数据库
+  关键词: 公积金
+  文件: output/2025-06-02/2025-06-02_公积金_scored.json
+  表: scored_news
+  成功写入: 0 条
+  跳过: 26 条
+  失败: 0 条
+------------------------------
+[查重] summary_news 已存在，跳过: 2025-06-02 | 公积金 | ## **📰 今日综述**  
+- 公积金政策近期密集优化，...
+[2025-06-03 22:33:05] 导入数据库
+  关键词: 公积金
+  文件: output/2025-06-02/2025-06-02_公积金_summary.json
+  表: summary_news
+  成功写入: 0 条
+  跳过: 1 条
+  失败: 0 条
+------------------------------
+[2025-06-03 22:35:38] 导入数据库
+  关键词: 养老
+  文件: output/2025-06-02/2025-06-02_养老_scored.json
+  表: scored_news
+  成功写入: 24 条
+  跳过: 0 条
+  失败: 0 条
+------------------------------
+[查重] summary_news 已存在，跳过: 2025-06-02 | 养老 | ## 📰 今日综述  
+- 今日围绕“养老”关键词的新闻聚焦...
+[2025-06-03 22:35:38] 导入数据库
+  关键词: 养老
+  文件: output/2025-06-02/2025-06-02_养老_summary.json
+  表: summary_news
+  成功写入: 0 条
+  跳过: 1 条
+  失败: 0 条
+------------------------------
+[2025-06-03 22:35:38] 导入数据库
+  关键词: 公积金
+  文件: output/2025-06-02/2025-06-02_公积金_scored.json
+  表: scored_news
+  成功写入: 26 条
+  跳过: 0 条
+  失败: 0 条
+------------------------------
+[查重] summary_news 已存在，跳过: 2025-06-02 | 公积金 | ## **📰 今日综述**  
+- 公积金政策近期密集优化，...
+[2025-06-03 22:35:39] 导入数据库
+  关键词: 公积金
+  文件: output/2025-06-02/2025-06-02_公积金_summary.json
+  表: summary_news
+  成功写入: 0 条
+  跳过: 1 条
+  失败: 0 条
+------------------------------
+[2025-06-03 22:42:08] 导入数据库
+  关键词: 养老
+  文件: output/2025-06-02/2025-06-02_养老_scored.json
+  表: scored_news
+  成功写入: 24 条
+  跳过: 0 条
+  失败: 0 条
+------------------------------
+[查重] summary_news 已存在，跳过: 2025-06-02 | 养老 | ## 📰 今日综述  
+- 今日围绕“养老”关键词的新闻聚焦...
+[2025-06-03 22:42:08] 导入数据库
+  关键词: 养老
+  文件: output/2025-06-02/2025-06-02_养老_summary.json
+  表: summary_news
+  成功写入: 0 条
+  跳过: 1 条
+  失败: 0 条
+------------------------------
+[2025-06-03 22:42:09] 导入数据库
+  关键词: 公积金
+  文件: output/2025-06-02/2025-06-02_公积金_scored.json
+  表: scored_news
+  成功写入: 26 条
+  跳过: 0 条
+  失败: 0 条
+------------------------------
+[查重] summary_news 已存在，跳过: 2025-06-02 | 公积金 | ## **📰 今日综述**  
+- 公积金政策近期密集优化，...
+[2025-06-03 22:42:09] 导入数据库
+  关键词: 公积金
+  文件: output/2025-06-02/2025-06-02_公积金_summary.json
+  表: summary_news
+  成功写入: 0 条
+  跳过: 1 条
+  失败: 0 条
+------------------------------
+[2025-06-03 22:42:52] 导入数据库
+  关键词: 养老
+  文件: output/2025-06-01/2025-06-01_养老_scored.json
+  表: scored_news
+  成功写入: 28 条
+  跳过: 0 条
+  失败: 0 条
+------------------------------
+[2025-06-03 22:42:52] 导入数据库
+  关键词: 养老
+  文件: output/2025-06-01/2025-06-01_养老_summary.json
+  表: summary_news
+  成功写入: 1 条
+  跳过: 0 条
+  失败: 0 条
+------------------------------
+[查重] scored_news 已存在，跳过: 2024年实缴单位数量增长6.92% 住房公积金制度惠及面不断扩大 | https://finance.china.com.cn/news/20250601/6246678.shtml
+[查重] scored_news 已存在，跳过: 住房公积金制度惠及面不断扩大 | http://finance.people.com.cn/n1/2025/0601/c1004-40491935.html
+[查重] scored_news 已存在，跳过: 降首付、降利率、提额度、扩范围……我市公积金政策打“组合拳” | https://www.sohu.com/a/900625860_349247
+[查重] scored_news 已存在，跳过: 济南三度优化公积金政策 贷款额度大幅提升 | https://news.china.com/socialgd/10000169/20250601/48409410.html
+[查重] scored_news 已存在，跳过: 济南：购买高品质住宅公积金最高贷款额度上浮30% | https://www.bjnews.com.cn/detail/1748747123168368.html
+[查重] scored_news 已存在，跳过: 上汽通用五菱：5月全球销量134419辆，同比增长20.7% | https://36kr.com/newsflashes/3317368806369794
+[查重] scored_news 已存在，跳过: 6月3日起贵阳将新增7个住房公积金“社区服务站” | https://www.msn.cn/zh-cn/money/other/6%E6%9C%883%E6%97%A5%E8%B5%B7%E8%B4%B5%E9%98%B3%E5%B0%86%E6%96%B0%E5%A2%9E7%E4%B8%AA%E4%BD%8F%E6%88%BF%E5%85%AC%E7%A7%AF%E9%87%91-%E7%A4%BE%E5%8C%BA%E6%9C%8D%E5%8A%A1%E7%AB%99/ar-AA1FRHMg?ocid=BingNewsVerp
+[查重] scored_news 已存在，跳过: 今起，可提取父母子女公积金交首付或还贷 | https://www.msn.com/zh-cn/news/other/%E4%BB%8A%E8%B5%B7-%E5%8F%AF%E6%8F%90%E5%8F%96%E7%88%B6%E6%AF%8D%E5%AD%90%E5%A5%B3%E5%85%AC%E7%A7%AF%E9%87%91%E4%BA%A4%E9%A6%96%E4%BB%98%E6%88%96%E8%BF%98%E8%B4%B7/ar-AA1FRCPm?ocid=BingNewsVerp
+[2025-06-03 22:42:53] 导入数据库
+  关键词: 公积金
+  文件: output/2025-06-01/2025-06-01_公积金_scored.json
+  表: scored_news
+  成功写入: 26 条
+  跳过: 8 条
+  失败: 0 条
+------------------------------
+[2025-06-03 22:42:54] 导入数据库
+  关键词: 公积金
+  文件: output/2025-06-01/2025-06-01_公积金_summary.json
+  表: summary_news
+  成功写入: 2 条
+  跳过: 0 条
+  失败: 0 条
+------------------------------
+[查重] scored_news 已存在，跳过: 嘉兴南湖推动被动“养老”向主动“享老”蝶变 | http://www.zj.xinhuanet.com/20250531/a5307ee93c324e6bb4410333ab1638f5/c.html
+[查重] scored_news 已存在，跳过: 罗湖区养老用上“智慧颐养” 可实时监测全区81个社区养老服务 | https://www.msn.cn/zh-cn/%E6%8A%80%E6%9C%AF/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/%E7%BD%97%E6%B9%96%E5%8C%BA%E5%85%BB%E8%80%81%E7%94%A8%E4%B8%8A-%E6%99%BA%E6%85%A7%E9%A2%90%E5%85%BB-%E5%8F%AF%E5%AE%9E%E6%97%B6%E7%9B%91%E6%B5%8B%E5%85%A8%E5%8C%BA81%E4%B8%AA%E7%A4%BE%E5%8C%BA%E5%85%BB%E8%80%81%E6%9C%8D%E5%8A%A1/ar-AA1FONd6?ocid=BingNewsVerp
+[查重] scored_news 已存在，跳过: 沈阳市以澳门内部消息资料哪里看案说法提升养老领域执法质效 | https://xycity.cn/itqy/guankan_692308900.html
+[2025-06-03 22:43:09] 导入数据库
+  关键词: 养老
+  文件: output/2025-05-31/2025-05-31_养老_scored.json
+  表: scored_news
+  成功写入: 48 条
+  跳过: 3 条
+  失败: 0 条
+------------------------------
+[2025-06-03 22:43:09] 导入数据库
+  关键词: 养老
+  文件: output/2025-05-31/2025-05-31_养老_summary.json
+  表: summary_news
+  成功写入: 1 条
+  跳过: 0 条
+  失败: 0 条
+------------------------------
+[查重] scored_news 已存在，跳过: 去年全国发放住房公积金贷款超1.3万亿元 | https://finance.youth.cn/finance_gdxw/202505/t20250531_16034037.htm
+[2025-06-03 22:43:11] 导入数据库
+  关键词: 公积金
+  文件: output/2025-05-31/2025-05-31_公积金_scored.json
+  表: scored_news
+  成功写入: 57 条
+  跳过: 1 条
+  失败: 0 条
+------------------------------
+[2025-06-03 22:43:11] 导入数据库
+  关键词: 公积金
+  文件: output/2025-05-31/2025-05-31_公积金_summary.json
+  表: summary_news
+  成功写入: 1 条
+  跳过: 0 条
+  失败: 0 条
+------------------------------
+[查重] scored_news 已存在，跳过: 供需发力做大消费"蛋糕" 政策协同做强国内大循环 | https://www.henan.gov.cn/2025/05-30/3164250.html
+[查重] scored_news 已存在，跳过: 截至今年4月，上海个人养老金累计缴存金额超180亿元 | https://www.thepaper.cn/newsDetail_forward_30906671
+[查重] scored_news 已存在，跳过: 沈阳市以案说法提升养老领域执法质效 | https://www.chinanews.com/sh/2025/05-30/10424952.shtml
+[查重] scored_news 已存在，跳过: 中国平安37载践行金融为民，平安养老险20年深耕养老金融 | http://finance.ce.cn/insurance1/scrollnews/202505/t20250530_2311800.shtml
+[查重] scored_news 已存在，跳过: 上海发布个人养老金品牌 助力构建多层次养老体系 | http://jjckb.xinhuanet.com/20250530/afffa077cc744f2397a70642a5dcc540/c.html
+[查重] scored_news 已存在，跳过: 解读今年前4个月的医保账本：当期结余3000亿，生育保险支出增长22% | https://ishare.ifeng.com/c/s/8jmGVhsaZeX
+[查重] scored_news 已存在，跳过: 打造“中医药+康养”健康养老新模式 | https://www.msn.com/zh-cn/news/other/%E6%89%93%E9%80%A0-%E4%B8%AD%E5%8C%BB%E8%8D%AF-%E5%BA%B7%E5%85%BB-%E5%81%A5%E5%BA%B7%E5%85%BB%E8%80%81%E6%96%B0%E6%A8%A1%E5%BC%8F/ar-AA1FM29A?ocid=BingNewsVerp
+[2025-06-03 22:43:24] 导入数据库
+  关键词: 养老
+  文件: output/2025-05-30/2025-05-30_养老_scored.json
+  表: scored_news
+  成功写入: 34 条
+  跳过: 7 条
+  失败: 0 条
+------------------------------
+[2025-06-03 22:43:24] 导入数据库
+  关键词: 养老
+  文件: output/2025-05-30/2025-05-30_养老_summary.json
+  表: summary_news
+  成功写入: 1 条
+  跳过: 0 条
+  失败: 0 条
+------------------------------
+[查重] scored_news 已存在，跳过: 2024年全国发放个人住房公积金贷款逾1.3万亿元 | http://news.china.com.cn/2025-05/30/content_117904482.shtml
+[查重] scored_news 已存在，跳过: 青岛住房公积金中心前四月发放39.9亿贷款 拉动住房消费近百亿 | https://house.ifeng.com/news/2025_05_30-57052627_0.shtml
+[查重] scored_news 已存在，跳过: 数字化发展加力！多维度“数”读2024年全国住房公积金“年报”亮点 | https://news.cctv.com/2025/05/30/ARTISZRNAh6E4QRwUSGFOBqe250530.shtml
+[查重] scored_news 已存在，跳过: 2024年全国发放住房公积金贷款1.3万亿元 | https://www.yicai.com/news/102642992.html
+[查重] scored_news 已存在，跳过: 超2720亿元用于租赁住房！2024年住房公积金最新披露 | https://www.msn.cn/zh-cn/money/%E6%94%BF%E5%BA%9C%E6%94%AF%E5%8A%A9%E5%92%8C%E7%A6%8F%E5%88%A9/%E8%B6%852720%E4%BA%BF%E5%85%83%E7%94%A8%E4%BA%8E%E7%A7%9F%E8%B5%81%E4%BD%8F%E6%88%BF-2024%E5%B9%B4%E4%BD%8F%E6%88%BF%E5%85%AC%E7%A7%AF%E9%87%91%E6%9C%80%E6%96%B0%E6%8A%AB%E9%9C%B2/ar-AA1FMfQL?ocid=BingNewsVerp
+[查重] scored_news 已存在，跳过: 上海：住宅老旧电梯更新费用可提取住房公积金 | http://news.dichan.sina.com.cn/2025/05/30/1296377.html
+[查重] scored_news 已存在，跳过: 上海：老电梯更新分摊费用可用公积金 7月1日起施行 | https://house.ifeng.com/news/2025_05_30-57052669_0.shtml
+[查重] scored_news 已存在，跳过: 助力青年人才安居 长沙出台青年人才住房公积金支持政策 | https://hunan.ifeng.com/c/8jmQp1YcFCG
+[查重] scored_news 已存在，跳过: 海安管理部：联动宣讲聚共识 政策护航助企强 | https://www.nantong.gov.cn/ntsrmzf/bmyw/content/ff888516-e028-4fd2-8640-ba3fd43f5ea5.html
+[查重] scored_news 已存在，跳过: 重磅！重庆再出六条房地产新政：中心城区购房卖旧买新最高可享总房款1.5%补贴 | https://www.cqnews.net/1/detail/1378040645275693056/web/content_1378040645275693056.html
+[查重] scored_news 已存在，跳过: 湖南出台促进房地产市场平稳健康发展若干措施 | https://hunan.ifeng.com/c/8jmU1XxCrvw
+[查重] scored_news 已存在，跳过: 5月30日晚间央视新闻联播要闻集锦 | https://fund.eastmoney.com/a/202505303419389833.html
+[查重] scored_news 已存在，跳过: 独家深度｜哪吒汽车 "债转股" 折戟 新金主入主条件直指创始人去留 | https://www.newskj.org/qiche/182301.html
+[查重] scored_news 已存在，跳过: 湖南：取消普通住宅和非普通住宅标准 购买首套住房补贴契税 | https://stock.10jqka.com.cn/20250530/c668566192.shtml
+[2025-06-03 22:43:25] 导入数据库
+  关键词: 公积金
+  文件: output/2025-05-30/2025-05-30_公积金_scored.json
+  表: scored_news
+  成功写入: 14 条
+  跳过: 14 条
+  失败: 0 条
+------------------------------
+[2025-06-03 22:43:25] 导入数据库
+  关键词: 公积金
+  文件: output/2025-05-30/2025-05-30_公积金_summary.json
+  表: summary_news
+  成功写入: 1 条
+  跳过: 0 条
+  失败: 0 条
+------------------------------
+[2025-06-03 22:43:33] 导入数据库
+  关键词: 养老
+  文件: output/2025-05-29/2025-05-29_养老_scored.json
+  表: scored_news
+  成功写入: 109 条
+  跳过: 0 条
+  失败: 0 条
+------------------------------
+[2025-06-03 22:43:33] 导入数据库
+  关键词: 养老
+  文件: output/2025-05-29/2025-05-29_养老_summary.json
+  表: summary_news
+  成功写入: 1 条
+  跳过: 0 条
+  失败: 0 条
+------------------------------
+[2025-06-03 22:43:34] 导入数据库
+  关键词: 公积金
+  文件: output/2025-05-29/2025-05-29_公积金_scored.json
+  表: scored_news
+  成功写入: 37 条
+  跳过: 0 条
+  失败: 0 条
+------------------------------
+[2025-06-03 22:43:34] 导入数据库
+  关键词: 公积金
+  文件: output/2025-05-29/2025-05-29_公积金_summary.json
+  表: summary_news
+  成功写入: 1 条
+  跳过: 0 条
+  失败: 0 条
+------------------------------
+[2025-06-03 22:43:43] 导入数据库
+  关键词: 养老
+  文件: output/2025-05-27/2025-05-27_养老_scored.json
+  表: scored_news
+  成功写入: 93 条
+  跳过: 0 条
+  失败: 0 条
+------------------------------
+[2025-06-03 22:43:43] 导入数据库
+  关键词: 养老
+  文件: output/2025-05-27/2025-05-27_养老_summary.json
+  表: summary_news
+  成功写入: 1 条
+  跳过: 0 条
+  失败: 0 条
+------------------------------
+[2025-06-03 22:43:44] 导入数据库
+  关键词: 公积金
+  文件: output/2025-05-27/2025-05-27_公积金_scored.json
+  表: scored_news
+  成功写入: 35 条
+  跳过: 0 条
+  失败: 0 条
+------------------------------
+[2025-06-03 22:43:44] 导入数据库
+  关键词: 公积金
+  文件: output/2025-05-27/2025-05-27_公积金_summary.json
+  表: summary_news
+  成功写入: 1 条
+  跳过: 0 条
+  失败: 0 条
+------------------------------
+[查重] scored_news 已存在，跳过: 养老生活圈托起幸福“夕阳红” | http://paper.people.com.cn/zgcsb/pc/content/202505/26/content_30075396.html
+[查重] scored_news 已存在，跳过: “无评估 不精准”评估助力养老行业高质量发展 2025年首届养老评估主题交流分享会召开 | https://www.xinhuanet.com/health/20250526/caf9df3b826243f3bbf5dabf1f2df510/c.html
+[查重] scored_news 已存在，跳过: 探馆四川老博会 养老“黑科技”等你来体验 | https://news.qq.com/rain/a/20250526A017FH00
+[查重] scored_news 已存在，跳过: 椿萱茂聚焦养老服务升级与文化赋能，破局70-80岁老人养老困境 | https://news.sina.com.cn/sx/2025-05-26/detail-inexwnvc7864465.shtml
+[查重] scored_news 已存在，跳过: 钱理群谈如何养老 | https://www.msn.com/zh-cn/news/other/%E9%92%B1%E7%90%86%E7%BE%A4%E8%B0%88%E5%A6%82%E4%BD%95%E5%85%BB%E8%80%81/ar-AA1FtvtU?ocid=BingNewsVerp
+[查重] scored_news 已存在，跳过: 退休后第一次调整养老金的比例有多高，是怎么调整的？ | https://www.163.com/v/video/VQVHUJIIC.html
+[查重] scored_news 已存在，跳过: 【加拿大养老金巨头拟向英国投资超过80亿 | https://guba.sina.com.cn/?s=thread&tid=52865&bid=68218
+[2025-06-03 22:43:51] 导入数据库
+  关键词: 养老
+  文件: output/2025-05-26/2025-05-26_养老_scored.json
+  表: scored_news
+  成功写入: 26 条
+  跳过: 7 条
+  失败: 0 条
+------------------------------
+[2025-06-03 22:43:51] 导入数据库
+  关键词: 养老
+  文件: output/2025-05-26/2025-05-26_养老_summary.json
+  表: summary_news
+  成功写入: 1 条
+  跳过: 0 条
+  失败: 0 条
+------------------------------
+[查重] scored_news 已存在，跳过: 公积金新政！5月26日起，提取范围扩大！ | https://www.sohu.com/a/898691681_443414
+[查重] scored_news 已存在，跳过: 特朗普释放重磅消息：正认真考虑让房利美、房地美重新上市 | https://nt.focus.cn/?search=q179
+[查重] scored_news 已存在，跳过: 安阳市住房公积金管理中心上线《效能监督热线》，相关问题请提问！ | https://www.aynews.net.cn/ayinfo/76869
+[2025-06-03 22:43:52] 导入数据库
+  关键词: 公积金
+  文件: output/2025-05-26/2025-05-26_公积金_scored.json
+  表: scored_news
+  成功写入: 6 条
+  跳过: 3 条
+  失败: 0 条
+------------------------------
+[2025-06-03 22:43:52] 导入数据库
+  关键词: 公积金
+  文件: output/2025-05-26/2025-05-26_公积金_summary.json
+  表: summary_news
+  成功写入: 1 条
+  跳过: 0 条
+  失败: 0 条
+------------------------------
+[查重] scored_news 已存在，跳过: 守好群众“养老钱” | https://m.yunnan.cn/system/2025/06/02/033500461.shtml
+[查重] scored_news 已存在，跳过: “老年人糖尿病康复公益行”走进“五边颐养”智慧养老服务中心 | http://baijiahao.baidu.com/s?id=1833777024549912162&wfr=spider&for=pc
+[查重] scored_news 已存在，跳过: 农村养老金好事！！2025年满60岁农民每月增300元，满70岁增400元？是否属实？赶快看看！！ | https://www.sohu.com/a/900876211_121296021
+[查重] scored_news 已存在，跳过: 7月起，养老金将开始计发补发！1954~1963年出生的退休人员能补多少？ | https://www.sohu.com/a/900877621_121296021
+[查重] scored_news 已存在，跳过: 原创 6月1日养老金再上调？三大调整方式解析，哪些人受益最多？ | https://www.sohu.com/a/900758277_121145935
+[查重] scored_news 已存在，跳过: 2025年6月起，退休人员养老金发放有新调整，注意这几个重要变化 | https://news.qq.com/rain/a/20250530A02KKR00
+[查重] scored_news 已存在，跳过: 中央定调，养老金调整向中低收入群体倾斜，如何实现提低控高？ | https://www.sohu.com/a/900824188_121942017
+[查重] scored_news 已存在，跳过: 做一名有温度的养老顾问,普陀的他们这么做 | https://baijiahao.baidu.com/s?id=1833817536533732305&wfr=spider&for=pc
+[查重] scored_news 已存在，跳过: 如何做一名有温度的养老顾问?普陀的他们用心诠释服务之道 | http://baijiahao.baidu.com/s?id=1833790225638579590&wfr=spider&for=pc
+[查重] scored_news 已存在，跳过: “物业+养老”,让年轻人重启职业人生 | https://baijiahao.baidu.com/s?id=1833777774750180916&wfr=spider&for=pc
+[查重] scored_news 已存在，跳过: 西藏分级分类深入实施养老服务补贴制度 | https://www.cnr.cn/xz/gstjxz/20250602/t20250602_527192939.shtml
+[查重] scored_news 已存在，跳过: 记者走基层丨设施有智慧 养老变享老 | https://baijiahao.baidu.com/s?id=1833775855574425944&wfr=spider&for=pc
+[查重] scored_news 已存在，跳过: 做一名有温度的养老顾问，普陀的他们这么做 | https://finance.sina.com.cn/jjxw/2025-06-02/doc-ineysvfz2259136.shtml?froms=ggmp
+[查重] scored_news 已存在，跳过: “物业+养老”，让年轻人重启职业人生 | https://m.voc.com.cn/xhn/news/202506/29595747.html
+[查重] scored_news 已存在，跳过: 养老更有“科技感”！家用外骨骼机器人要来了 | https://www.jfdaily.com/sgh/detail?id=1583203
+[查重] scored_news 已存在，跳过: 记者走基层丨设施有智慧 养老变享老 | https://finance.sina.cn/2025-06-02/detail-ineyrtuf9761153.d.html?vt=4&cid=76729&node_id=76729
+[查重] scored_news 已存在，跳过: 做一名有温度的养老顾问，普陀的他们这么做 | https://news.qq.com/rain/a/20250602A06LT500
+[查重] scored_news 已存在，跳过: 领过失业保险金影响以后的养老金吗? | https://news.qq.com/rain/a/20250602A06XGF00
+[查重] scored_news 已存在，跳过: 山东省烟台护士学校2025年养老照护赛项选拔赛圆满结束 | https://www.zhonghongwang.com/show-493-401779-1.html
+[查重] scored_news 已存在，跳过: 领取失业保险金对缴纳养老保险费有影响吗？ | http://www.qinghai.gov.cn/zmhd/system/2025/06/02/030073636.shtml
+[查重] scored_news 已存在，跳过: 个人养老金资金账户能否销户？ | http://www.qinghai.gov.cn/zmhd/system/2025/06/02/030073638.shtml
+[查重] scored_news 已存在，跳过: 养老更有“科技感”!家用外骨骼机器人要来了 | http://baijiahao.baidu.com/s?id=1833793982723015841&wfr=spider&for=pc
+[查重] scored_news 已存在，跳过: 日本自民党与立宪民主党就养老金制度改革相关法案达成4日审议共识 | http://www.jpchinapress.com/static/content/SS/2025-06-02/1379140241965203456.html
+[查重] scored_news 已存在，跳过: 彭博社：特朗普推动将加密货币纳入养老金账户，但仍面临福利诉讼风险 | https://www.mitrade.com/cn/insights/news/live-news/article-3-860369-20250603
+[2025-06-03 22:55:16] 导入数据库
+  关键词: 养老
+  文件: output/2025-06-02/2025-06-02_养老_scored.json
+  表: scored_news
+  成功写入: 0 条
+  跳过: 24 条
+  失败: 0 条
+------------------------------
+[查重] summary_news 已存在，跳过: 2025-06-02 | 养老 | ## 📰 今日综述  
+- 今日围绕“养老”关键词的新闻聚焦...
+[2025-06-03 22:55:16] 导入数据库
+  关键词: 养老
+  文件: output/2025-06-02/2025-06-02_养老_summary.json
+  表: summary_news
+  成功写入: 0 条
+  跳过: 1 条
+  失败: 0 条
+------------------------------
+[查重] scored_news 已存在，跳过: 公积金利率下调利好房地产市场 | http://www.ce.cn/xwzx/gnsz/gdxw/202506/t20250603_2313480.shtml
+[查重] scored_news 已存在，跳过: 部分地区存量公积金贷款利率下调？记者实测 | https://i.ifeng.com/c/8jqzXMW593k
+[查重] scored_news 已存在，跳过: 2024年全国发放住房公积金贷款超1.3万亿元 | https://www.sohu.com/a/900885074_121106832
+[查重] scored_news 已存在，跳过: 2024年实缴单位数量增长6.92% 住房公积金制度惠及面不断扩大 | https://finance.china.com.cn/news/20250601/6246678.shtml
+[查重] scored_news 已存在，跳过: 部分地区存量公积金贷款利率下调？记者实测 | https://news.ifeng.com/c/8jqzXMW593k
+[查重] scored_news 已存在，跳过: 住房公积金制度惠及面不断扩大 | http://finance.people.com.cn/n1/2025/0601/c1004-40491935.html
+[查重] scored_news 已存在，跳过: 济南:购买高品质住宅公积金最高贷款额度上浮30% | https://baijiahao.baidu.com/s?id=1833771642252566168&wfr=spider&for=pc
+[查重] scored_news 已存在，跳过: 不设户籍限制、可抵扣个税……灵活就业人员在上海缴存公积金，热点解答都在这→_上观新闻 | https://www.jfdaily.com/sgh/detail?id=1583298
+[查重] scored_news 已存在，跳过: 连续缴存6个月即可贷款 长沙住房公积金支持青年人才购房 | https://gz.house.ifeng.com/news/2025_06_02-57054296_0.shtml
+[查重] scored_news 已存在，跳过: 佛山修订住房公积金提取办法 7月1日起实施 | https://gz.house.ifeng.com/news/2025_06_02-57054300_0.shtml
+[查重] scored_news 已存在，跳过: 降首付、降利率、提额度、扩范围……我市公积金政策打“组合拳” | https://www.sohu.com/a/900625860_349247
+[查重] scored_news 已存在，跳过: 不设户籍限制、可抵扣个税……灵活就业人员在上海缴存公积金，您关心的都在这→ | https://finance.sina.com.cn/jjxw/2025-06-02/doc-ineyqshv8590626.shtml
+[查重] scored_news 已存在，跳过: 济南三度优化公积金政策 贷款额度大幅提升 | https://news.china.com/socialgd/10000169/20250601/48409410.html
+[查重] scored_news 已存在，跳过: 济南：购买高品质住宅公积金最高贷款额度上浮30% | https://www.bjnews.com.cn/detail/1748747123168368.html
+[查重] scored_news 已存在，跳过: 上汽通用五菱：5月全球销量134419辆，同比增长20.7% | https://36kr.com/newsflashes/3317368806369794
+[查重] scored_news 已存在，跳过: 福州住房公积金利率常见问答！ | https://news.qq.com/rain/a/20250602A075JU00
+[查重] scored_news 已存在，跳过: 已发放公积金贷款职工，能否按2025年5月新政策调整利率？ | http://www.qinghai.gov.cn/zmhd/system/2025/06/02/030073635.shtml
+[查重] scored_news 已存在，跳过: 保定公积金提取条件 | https://news.qq.com/rain/a/20250602A06XEB00
+[查重] scored_news 已存在，跳过: 午评：港股恒指跌2.2% 科指跌2.43% 加密货币概念股强势 | https://city.sina.com.cn/city_finance/2025-06-02/detail-ineyseiz9560654.shtml
+[查重] scored_news 已存在，跳过: 国防部新49图库澳门传真笫252期闻发言人张晓刚就香格里拉对话会期间美方涉华消极言论答记者问 | https://www.cnsoftnews.com/industry/387342434699.html
+[查重] scored_news 已存在，跳过: 浙江象山发文：极力减少"拜访""联络"型出国（境）行程 | https://www.thepaper.cn/newsDetail_forward_30920047
+[查重] scored_news 已存在，跳过: 岩山科技(002195):利润分配管理制度（2025年5月） | https://www.cfi.net.cn/p20250602000159.html
+[查重] scored_news 已存在，跳过: 今起，可提取父母子女公积金交首付或还贷 | https://www.msn.com/zh-cn/news/other/%E4%BB%8A%E8%B5%B7-%E5%8F%AF%E6%8F%90%E5%8F%96%E7%88%B6%E6%AF%8D%E5%AD%90%E5%A5%B3%E5%85%AC%E7%A7%AF%E9%87%91%E4%BA%A4%E9%A6%96%E4%BB%98%E6%88%96%E8%BF%98%E8%B4%B7/ar-AA1FRCPm?ocid=BingNewsVerp
+[查重] scored_news 已存在，跳过: 6月3日起贵阳将新增7个住房公积金“社区服务站” | https://www.msn.cn/zh-cn/money/other/6%E6%9C%883%E6%97%A5%E8%B5%B7%E8%B4%B5%E9%98%B3%E5%B0%86%E6%96%B0%E5%A2%9E7%E4%B8%AA%E4%BD%8F%E6%88%BF%E5%85%AC%E7%A7%AF%E9%87%91-%E7%A4%BE%E5%8C%BA%E6%9C%8D%E5%8A%A1%E7%AB%99/ar-AA1FRHMg?ocid=BingNewsVerp
+[查重] scored_news 已存在，跳过: 奔驰经销商困境：销量下滑，智能化转型能否成为救命稻草？ | https://www.msn.cn/zh-cn/news/other/%E5%A5%94%E9%A9%B0%E7%BB%8F%E9%94%80%E5%95%86%E5%9B%B0%E5%A2%83-%E9%94%80%E9%87%8F%E4%B8%8B%E6%BB%91-%E6%99%BA%E8%83%BD%E5%8C%96%E8%BD%AC%E5%9E%8B%E8%83%BD%E5%90%A6%E6%88%90%E4%B8%BA%E6%95%91%E5%91%BD%E7%A8%BB%E8%8D%89/ar-AA1FUQkl
+[查重] scored_news 已存在，跳过: 龙舟鼓点敲出端午消费新"节奏" | http://cq.people.com.cn/n2/2025/0602/c367668-41246981.html
+[2025-06-03 22:55:17] 导入数据库
+  关键词: 公积金
+  文件: output/2025-06-02/2025-06-02_公积金_scored.json
+  表: scored_news
+  成功写入: 0 条
+  跳过: 26 条
+  失败: 0 条
+------------------------------
+[查重] summary_news 已存在，跳过: 2025-06-02 | 公积金 | ## **📰 今日综述**  
+- 公积金政策近期密集优化，...
+[2025-06-03 22:55:17] 导入数据库
+  关键词: 公积金
+  文件: output/2025-06-02/2025-06-02_公积金_summary.json
+  表: summary_news
+  成功写入: 0 条
+  跳过: 1 条
+  失败: 0 条
+------------------------------
+=====🕒 本次运行时间: 2025-06-04 17:30:34=====
+
+==============================
+🔑 关键词: 养老
+🌐 Baidu News: 1 条
+🌐 Google News: 110 条
+🌐 Bing News: 11 条
+🌐 DuckDuckGo News: 12 条
+🚫 黑名单过滤: [英为财情] | 标题: Ventas在Nareit REITweek大会上：战略扩张养老住房业务 提供者 Investing.com | 来源: 英为财情 Investing.com | 链接: https://cn.investing.com/news/transcripts/article-93CH-2832870
+🚫 黑名单过滤: [英为财情] | 标题: 多元化医疗信托在Nareit REITweek大会：战略聚焦养老住房运营组合 提供者 Investing.com | 来源: 英为财情 Investing.com | 链接: https://cn.investing.com/news/transcripts/article-93CH-2832865
+🚫 黑名单过滤: [英为财情] | 标题: Ventas在Nareit REITweek大会上：战略扩张养老住房业务 提供者 Investing.com | 来源: 英为财情 Investing.com | 链接: https://cn.investing.com/news/transcripts/article-93CH-2832870
+🚫 黑名单过滤: [英为财情] | 标题: 多元化医疗信托在Nareit REITweek大会：战略聚焦养老住房运营组合 提供者 Investing.com | 来源: 英为财情 Investing.com | 链接: https://cn.investing.com/news/transcripts/article-93CH-2832865
+🚫 黑名单过滤: [英为财情] | 标题: Ventas在Nareit REITweek大会上：战略扩张养老住房业务 提供者 Investing.com | 来源: 英为财情 Investing.com | 链接: https://cn.investing.com/news/transcripts/article-93CH-2832870
+🚫 黑名单过滤: [英为财情] | 标题: 多元化医疗信托在Nareit REITweek大会：战略聚焦养老住房运营组合 提供者 Investing.com | 来源: 英为财情 Investing.com | 链接: https://cn.investing.com/news/transcripts/article-93CH-2832865
+🚫 黑名单过滤: [英为财情] | 标题: Ventas在Nareit REITweek大会上：战略扩张养老住房业务 提供者 Investing.com | 来源: 英为财情 Investing.com | 链接: https://cn.investing.com/news/transcripts/article-93CH-2832870
+🚫 黑名单过滤: [英为财情] | 标题: 多元化医疗信托在Nareit REITweek大会：战略聚焦养老住房运营组合 提供者 Investing.com | 来源: 英为财情 Investing.com | 链接: https://cn.investing.com/news/transcripts/article-93CH-2832865
+🚫 黑名单过滤: [英为财情] | 标题: Ventas在Nareit REITweek大会上：战略扩张养老住房业务 提供者 Investing.com | 来源: 英为财情 Investing.com | 链接: https://cn.investing.com/news/transcripts/article-93CH-2832870
+🚫 黑名单过滤: [英为财情] | 标题: 多元化医疗信托在Nareit REITweek大会：战略聚焦养老住房运营组合 提供者 Investing.com | 来源: 英为财情 Investing.com | 链接: https://cn.investing.com/news/transcripts/article-93CH-2832865
+✅ 去重后 serp_baidunews: 1 条
+✅ 去重后 serp_googlenews: 20 条
+✅ 去重后 serp_bingnews: 9 条
+✅ 去重后 serp_duckduckgo_news: 11 条
+⭐️ 去重后总保存: 41 条
+
+
+==============================
+🔑 关键词: 公积金
+🌐 Baidu News: 2 条
+🌐 Google News: 25 条
+🌐 Bing News: 8 条
+🌐 DuckDuckGo News: 4 条
+✅ 去重后 serp_baidunews: 2 条
+✅ 去重后 serp_googlenews: 5 条
+✅ 去重后 serp_bingnews: 6 条
+✅ 去重后 serp_duckduckgo_news: 3 条
+⭐️ 去重后总保存: 16 条
+
+=====🕒 本次运行时间: 2025-06-04 17:41:03=====
+
+==============================
+🔑 关键词: 养老
+🌐 Baidu News: 1 条
+🌐 Google News: 110 条
+🌐 Bing News: 11 条
+🌐 DuckDuckGo News: 12 条
+🚫 黑名单过滤: [英为财情] | 标题: Ventas在Nareit REITweek大会上：战略扩张养老住房业务 提供者 Investing.com | 来源: 英为财情 Investing.com | 链接: https://cn.investing.com/news/transcripts/article-93CH-2832870
+🚫 黑名单过滤: [英为财情] | 标题: 多元化医疗信托在Nareit REITweek大会：战略聚焦养老住房运营组合 提供者 Investing.com | 来源: 英为财情 Investing.com | 链接: https://cn.investing.com/news/transcripts/article-93CH-2832865
+🚫 黑名单过滤: [英为财情] | 标题: Ventas在Nareit REITweek大会上：战略扩张养老住房业务 提供者 Investing.com | 来源: 英为财情 Investing.com | 链接: https://cn.investing.com/news/transcripts/article-93CH-2832870
+🚫 黑名单过滤: [英为财情] | 标题: 多元化医疗信托在Nareit REITweek大会：战略聚焦养老住房运营组合 提供者 Investing.com | 来源: 英为财情 Investing.com | 链接: https://cn.investing.com/news/transcripts/article-93CH-2832865
+🚫 黑名单过滤: [英为财情] | 标题: Ventas在Nareit REITweek大会上：战略扩张养老住房业务 提供者 Investing.com | 来源: 英为财情 Investing.com | 链接: https://cn.investing.com/news/transcripts/article-93CH-2832870
+🚫 黑名单过滤: [英为财情] | 标题: 多元化医疗信托在Nareit REITweek大会：战略聚焦养老住房运营组合 提供者 Investing.com | 来源: 英为财情 Investing.com | 链接: https://cn.investing.com/news/transcripts/article-93CH-2832865
+🚫 黑名单过滤: [英为财情] | 标题: Ventas在Nareit REITweek大会上：战略扩张养老住房业务 提供者 Investing.com | 来源: 英为财情 Investing.com | 链接: https://cn.investing.com/news/transcripts/article-93CH-2832870
+🚫 黑名单过滤: [英为财情] | 标题: 多元化医疗信托在Nareit REITweek大会：战略聚焦养老住房运营组合 提供者 Investing.com | 来源: 英为财情 Investing.com | 链接: https://cn.investing.com/news/transcripts/article-93CH-2832865
+🚫 黑名单过滤: [英为财情] | 标题: Ventas在Nareit REITweek大会上：战略扩张养老住房业务 提供者 Investing.com | 来源: 英为财情 Investing.com | 链接: https://cn.investing.com/news/transcripts/article-93CH-2832870
+🚫 黑名单过滤: [英为财情] | 标题: 多元化医疗信托在Nareit REITweek大会：战略聚焦养老住房运营组合 提供者 Investing.com | 来源: 英为财情 Investing.com | 链接: https://cn.investing.com/news/transcripts/article-93CH-2832865
+✅ 去重后 serp_baidunews: 1 条
+✅ 去重后 serp_googlenews: 20 条
+✅ 去重后 serp_bingnews: 9 条
+✅ 去重后 serp_duckduckgo_news: 11 条
+⭐️ 去重后总保存: 41 条
+
+
+==============================
+🔑 关键词: 公积金
+🌐 Baidu News: 2 条
+🌐 Google News: 25 条
+🌐 Bing News: 8 条
+🌐 DuckDuckGo News: 4 条
+✅ 去重后 serp_baidunews: 2 条
+✅ 去重后 serp_googlenews: 5 条
+✅ 去重后 serp_bingnews: 6 条
+✅ 去重后 serp_duckduckgo_news: 3 条
+⭐️ 去重后总保存: 16 条
+
+
+==============================
+📰 [抓取新闻正文] 2025-06-04 17:42:45
+🔑 关键词: 养老
+🗂️ 模式: 正式
+📄 处理的json文件: output/2025-06-03/2025-06-03_养老.json
+
+📊 抓取统计：
+  ✅ 成功抓取正文: 38 篇
+  ✨ 其中定制化抓取: 0 篇
+  🌐 本次采集新闻源数量: 31
+  ❌ 抓取失败: 3 篇
+
+⚠️ 未能抓取的新闻：
+  - 襄阳电信营业员识破骗局挽回"养老钱" | https://www.msn.cn/zh-cn/%E5%85%AC%E5%85%B1%E5%AE%89%E5%85%A8%E5%92%8C%E7%B4%A7%E6%80%A5%E6%83%85%E5%86%B5/%E5%81%A5%E5%BA%B7%E4%B8%8E%E5%AE%89%E5%85%A8%E8%AD%A6%E6%8A%A5/%E8%A5%84%E9%98%B3%E7%94%B5%E4%BF%A1%E8%90%A5%E4%B8%9A%E5%91%98%E8%AF%86%E7%A0%B4%E9%AA%97%E5%B1%80%E6%8C%BD%E5%9B%9E-%E5%85%BB%E8%80%81%E9%92%B1/ar-AA1FZ9GN 
+  - 人形机器人"着急"落地 应用方却喊话"先理清市场需求 警惕 ... | https://www.msn.cn/zh-cn/news/other/%E4%BA%BA%E5%BD%A2%E6%9C%BA%E5%99%A8%E4%BA%BA-%E7%9D%80%E6%80%A5-%E8%90%BD%E5%9C%B0-%E5%BA%94%E7%94%A8%E6%96%B9%E5%8D%B4%E5%96%8A%E8%AF%9D-%E5%85%88%E7%90%86%E6%B8%85%E5%B8%82%E5%9C%BA%E9%9C%80%E6%B1%82-%E8%AD%A6%E6%83%95-%E6%8A%80%E6%9C%AF%E6%B3%A1%E6%B2%AB/ar-AA1FXEPb 
+  - 市场监管总局：无锡美抖因美瞳隐形眼镜违法广告被罚19.4万元 | https://www.msn.cn/zh-cn/news/other/%E5%B8%82%E5%9C%BA%E7%9B%91%E7%AE%A1%E6%80%BB%E5%B1%80-%E6%97%A0%E9%94%A1%E7%BE%8E%E6%8A%96%E5%9B%A0%E7%BE%8E%E7%9E%B3%E9%9A%90%E5%BD%A2%E7%9C%BC%E9%95%9C%E8%BF%9D%E6%B3%95%E5%B9%BF%E5%91%8A%E8%A2%AB%E7%BD%9A19-4%E4%B8%87%E5%85%83/ar-AA1FZ5aH 
+==============================
+
+
+==============================
+📰 [抓取新闻正文] 2025-06-04 17:43:32
+🔑 关键词: 公积金
+🗂️ 模式: 正式
+📄 处理的json文件: output/2025-06-03/2025-06-03_公积金.json
+
+📊 抓取统计：
+  ✅ 成功抓取正文: 15 篇
+  ✨ 其中定制化抓取: 1 篇
+  🌐 本次采集新闻源数量: 13
+  ❌ 抓取失败: 1 篇
+
+🎯 定制化抓取命中统计：
+  - www.jfdaily.com: 1 篇
+      • 【便民】灵活就业人员公积金业务办理6月1日正式上线了，来看办理攻略~ | https://www.jfdaily.com/sgh/detail?id=1584101
+
+⚠️ 未能抓取的新闻：
+  - 2024年住房公积金惠及面不断扩大 | https://www.msn.cn/zh-cn/news/other/2024%E5%B9%B4%E4%BD%8F%E6%88%BF%E5%85%AC%E7%A7%AF%E9%87%91%E6%83%A0%E5%8F%8A%E9%9D%A2%E4%B8%8D%E6%96%AD%E6%89%A9%E5%A4%A7/ar-AA1FX7Lv?ocid=BingNewsVerp 
+==============================
+
+
+[🕒 2025-06-04 18:10:34]
+执行程序: ai评分
+🔑 关键词: 养老
+📄 原json文件: output/2025-06-03/2025-06-03_养老.json
+🆕 评分结果文件: output/2025-06-03/2025-06-03_养老_scored.json
+📊 新闻总数: 41
+✅ 完成评分: 41
+0分:3 1分:8 2分:3 3分:3 4分:17 5分:7
+📝 3分及以上新闻正文总字数: 42316
+==============================
+
+[🕒 2025-06-04 18:19:57]
+执行程序: ai评分
+🔑 关键词: 公积金
+📄 原json文件: output/2025-06-03/2025-06-03_公积金.json
+🆕 评分结果文件: output/2025-06-03/2025-06-03_公积金_scored.json
+📊 新闻总数: 15
+✅ 完成评分: 15
+0分:1 1分:2 2分:0 3分:1 4分:4 5分:7
+📝 3分及以上新闻正文总字数: 11614
+==============================
+
+[🕒 2025-06-04 18:22:08]
+执行程序: news_summarizer
+🔑 关键词: 养老
+📅 日期: 2025-06-03
+🤖 平台: deepseek
+🤖 模型: deepseek-reasoner
+📄 3分及以上新闻数量: 27
+📝 送给大模型的prompt前300字:  【新闻关键词】是: 养老  【新闻列表】: 标题1: 民政部发布关于警惕“中国健康养老委员会”等组织开展活动的提醒... 分数1: 5 新闻1: 民政部发布关于警惕“中国健康养老委员会”等组织开展活动的提醒公告 本报讯 （记者 柳 旭） 近日，民政部发布提醒公告，根据群众反映的相关情况核查，“中国健康养老委员会”（自称由多部门组成专项小组，推出“惠康之家” APP 引导投资）、“中国康养城市旧城改造工作委员会”（自称由民政部成立，开展旧楼电梯安装项目邀企业投资）两个组织均未在民政部门登记。请广大群众谨慎对待，参与活动前核实组织资质，避免造成经济损失，如发现可疑情况可向相关部门举报。  标题2
+💾 总结结果文件: output/2025-06-03/2025-06-03_养老_summary.json
+[Token统计] 平台: deepseek，模型: deepseek-reasoner，system: 499, user: 24574, result: 828
+✅ 运行结果: 成功
+==============================
+
+[🕒 2025-06-04 18:24:38]
+执行程序: news_summarizer
+🔑 关键词: 公积金
+📅 日期: 2025-06-03
+🤖 平台: deepseek
+🤖 模型: deepseek-reasoner
+📄 3分及以上新闻数量: 12
+📝 送给大模型的prompt前300字:  【新闻关键词】是: 公积金  【新闻列表】: 标题1: 公积金利率下调利好房地产市场 分数1: 5 新闻1: 近日，中国人民银行宣布，下调个人住房公积金贷款利率0.25个百分点，5年以下（含5年）和5年以上首套个人住房公积金贷款利率分别调整为2.1%和2.6%。  国海证券首席经济学家夏磊指出，公积金贷款作为一种重要的购房资金支持方式，是商业贷款的有益补充，并且具有明显的利率优势。根据全国住房公积金2023年报数据，住房公积金个人住房贷款利率比同期商贷利率低0.85个至1.2个百分点。  自5月8日起，北京、上海、深圳、广州等一线城市纷纷下调公积金贷款利率；长沙、西安、宁波、南京、昆明、哈尔
+💾 总结结果文件: output/2025-06-03/2025-06-03_公积金_summary.json
+[Token统计] 平台: deepseek，模型: deepseek-reasoner，system: 499, user: 7080, result: 886
+✅ 运行结果: 成功
+==============================
+[2025-06-04 18:24:40] 导入数据库
+  关键词: 养老
+  文件: output/2025-06-03/2025-06-03_养老_scored.json
+  表: scored_news
+  成功写入: 41 条
+  跳过: 0 条
+  失败: 0 条
+------------------------------
+[2025-06-04 18:24:40] 导入数据库
+  关键词: 养老
+  文件: output/2025-06-03/2025-06-03_养老_summary.json
+  表: summary_news
+  成功写入: 1 条
+  跳过: 0 条
+  失败: 0 条
+------------------------------
+[2025-06-04 18:24:40] 导入数据库
+  关键词: 公积金
+  文件: output/2025-06-03/2025-06-03_公积金_scored.json
+  表: scored_news
+  成功写入: 15 条
+  跳过: 0 条
+  失败: 0 条
+------------------------------
+[2025-06-04 18:24:40] 导入数据库
+  关键词: 公积金
+  文件: output/2025-06-03/2025-06-03_公积金_summary.json
+  表: summary_news
+  成功写入: 1 条
+  跳过: 0 条
+  失败: 0 条
+------------------------------

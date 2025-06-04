@@ -3,3 +3,11 @@ description:
 globs:
 alwaysApply: false
 ---
+# news_summarizer.py 说明
+
+- 该文件为新闻自动摘要主流程脚本。
+- 入口函数为 `main`，支持命令行参数（日期、关键词、模型名等）。
+- 支持多平台多模型（如 deepseek、bailian/qwen），所有大模型调用均统一为 OpenAI SDK 方式，自动适配流式/非流式。
+- 主要依赖配置集中在 [config.py](mdc:config.py)，包括平台、模型、API Key、base_url 等。
+- 运行日志和调试信息详见 `output/run_log.txt`。
+- 适合批量新闻摘要、模型对比、自动化流程等场景。
