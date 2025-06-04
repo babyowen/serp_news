@@ -10,6 +10,8 @@ readability-lxml
 python-dotenv
 tiktoken
 transformers
+openai
+pymysql
 
 
 
