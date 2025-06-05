@@ -2,7 +2,7 @@ import subprocess
 import sys
 import datetime
 import os
-from config import DEFAULT_KEYWORDS
+from config import DEFAULT_KEYWORDS, SECONDARY_KEYWORDS
 
 def run_step(cmd, step_name, script_name=None, desc=None):
     if script_name or desc:
@@ -24,51 +24,40 @@ def run_step(cmd, step_name, script_name=None, desc=None):
         print(f"==============================\n")
         sys.exit(1)
 
-def main():
-    # 计算昨天日期
-    yesterday = (datetime.date.today() - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
-    print("\n==============================")
-    print(f"🟢 新闻自动化主流程启动，处理日期: {yesterday}")
-    print("==============================\n")
-    # 步骤1：抓取API并筛选
-    run_step(
-        f"python fetch_and_filter.py {yesterday}",
-        "抓取API并筛选",
-        script_name="fetch_and_filter.py",
-        desc="抓取各新闻API并筛选、去重，保存为json文件"
-    )
-    # 步骤2：抓取正文（对每个关键词循环）
-    for keyword in DEFAULT_KEYWORDS:
-        run_step(
-            f"python fetch_content.py {keyword} {yesterday}",
-            f"抓取新闻正文: {keyword}",
-            script_name="fetch_content.py",
-            desc=f"为关键词 {keyword} 的每条新闻抓取正文内容，写入json"
-        )
-    # 步骤3：正文打分
-    run_step(
-        f"python news_scorer.py",
-        "正文打分",
-        script_name="news_scorer.py",
-        desc="对每条新闻正文进行AI打分，生成_scored.json"
-    )
-    # 步骤4：总结
-    run_step(
-        f"python news_summarizer.py",
-        "新闻总结",
-        script_name="news_summarizer.py",
-        desc="对每个关键词的高分新闻进行AI总结，生成_summary.json"
-    )
-    # 步骤5：写入数据库
-    run_step(
-        f"python write_to_mysql.py --date {yesterday}",
-        "写入数据库",
-        script_name="write_to_mysql.py",
-        desc="将_scored.json和_summary.json数据批量写入MySQL数据库"
-    )
-    print("\n==============================")
-    print("🎉 全部流程执行完毕！请检查 output/run_log.txt 或数据库查看结果。")
-    print("==============================\n")
+def get_all_keywords():
+    all_keywords = set(DEFAULT_KEYWORDS)
+    for sublist in SECONDARY_KEYWORDS.values():
+        all_keywords.update(sublist)
+    return list(all_keywords)
+
+def main(date=None):
+    all_keywords = get_all_keywords()
+    print(f"[INFO] 本次批量处理关键词: {all_keywords}")
+    # 步骤1：抓取API
+    for kw in all_keywords:
+        print(f"[INFO] [步骤1] 抓取API: {kw}")
+        os.system(f'python fetch_and_filter.py {kw} {date}')
+    # 步骤2：抓正文
+    for kw in all_keywords:
+        print(f"[INFO] [步骤2] 抓正文: {kw}")
+        os.system(f'python fetch_content.py {kw} {date}')
+    # 步骤3：评分
+    for kw in all_keywords:
+        print(f"[INFO] [步骤3] 评分: {kw}")
+        os.system(f'python news_scorer.py {kw} {date}')
+    print("[INFO] 全部关键词处理完成。开始自动总结主关键词...")
+    # 步骤4：自动总结主关键词
+    date_arg = f'--date {date}' if date else ''
+    print("[INFO] [步骤4] 自动总结主关键词（合并二级关键词）")
+    run_step(f'python news_summarizer.py {date_arg}', '自动总结主关键词', 'news_summarizer.py', '对所有主关键词进行总结，自动合并二级关键词新闻')
+    # 步骤5：自动写入数据库
+    print("[INFO] [步骤5] 自动写入数据库")
+    run_step(f'python write_to_mysql.py {date_arg}', '自动写入数据库', 'write_to_mysql.py', '将scored和summary结果写入数据库')
+    print("[INFO] 全部流程已自动完成！")
 
 if __name__ == "__main__":
-    main() 
+    import sys
+    date = None
+    if len(sys.argv) > 1:
+        date = sys.argv[1]
+    main(date) 
