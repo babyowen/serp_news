@@ -412,21 +412,14 @@ def process_json(keyword, date_str=None, mode='正式'):
     print(f"已写入新闻源分布统计: {stats_path}")
 
 if __name__ == '__main__':
-    if len(sys.argv) < 2:
-        # 无参数，自动批量处理昨天所有关键词
-        date_str = get_yesterday_str()
-        mode = '正式'
-        for keyword in DEFAULT_KEYWORDS:
-            json_path = os.path.join("output", date_str, f"{date_str}_{keyword}.json")
-            print(f"自动抓取: {json_path}")
-            process_json(keyword, date_str, mode)
-    else:
-        # 有参数，走原有逻辑
+    if len(sys.argv) > 2:
         keyword = sys.argv[1]
-        date_str = None
+        date_str = sys.argv[2]
+        if not date_str or date_str.lower() == 'none':
+            date_str = get_yesterday_str()
         mode = '正式'
         test_url = None
-        for arg in sys.argv[2:]:
+        for arg in sys.argv[3:]:
             if arg in ('--test', '-test'):
                 mode = '测试'
             elif arg.startswith('--url'):
@@ -443,4 +436,17 @@ if __name__ == '__main__':
             content, wordcount, used_custom = fetch_article_content(test_url)
             print(f"\n【抓取结果】\n字数: {wordcount}\n定制化: {used_custom}\n正文预览:\n{content[:500]}{'...' if len(content) > 500 else ''}")
         else:
+            process_json(keyword, date_str, mode)
+    elif len(sys.argv) > 1:
+        keyword = sys.argv[1]
+        date_str = get_yesterday_str()
+        mode = '正式'
+        process_json(keyword, date_str, mode)
+    else:
+        # 无参数，自动批量处理昨天所有关键词
+        date_str = get_yesterday_str()
+        mode = '正式'
+        for keyword in DEFAULT_KEYWORDS:
+            json_path = os.path.join("output", date_str, f"{date_str}_{keyword}.json")
+            print(f"自动抓取: {json_path}")
             process_json(keyword, date_str, mode) 

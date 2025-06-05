@@ -222,14 +222,22 @@ def parse_duckduckgo_news_date(date_str):
     return None
 
 def main():
-    try:
-        keywords = list(DEFAULT_KEYWORDS)
-    except Exception:
-        keywords = [DEFAULT_KEYWORDS]
-    # 支持命令行参数指定日期
-    if len(sys.argv) > 1:
-        fetch_date = sys.argv[1]
+    # 参数解析：第一个参数为关键词，第二个为日期
+    if len(sys.argv) > 2:
+        keyword = sys.argv[1]
+        fetch_date = sys.argv[2]
+        if not fetch_date or fetch_date.lower() == 'none':
+            fetch_date = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
+        keywords = [keyword]
+    elif len(sys.argv) > 1:
+        keyword = sys.argv[1]
+        fetch_date = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
+        keywords = [keyword]
     else:
+        try:
+            keywords = list(DEFAULT_KEYWORDS)
+        except Exception:
+            keywords = [DEFAULT_KEYWORDS]
         fetch_date = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
     os.makedirs(os.path.join("output", fetch_date), exist_ok=True)
     log_lines = []

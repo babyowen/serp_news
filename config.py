@@ -10,8 +10,18 @@ GNEWS_API_KEY = os.getenv("GNEWS_API_KEY")  # GNews API Key
 DEFAULT_KEYWORDS = [
     "养老",
     "公积金",
+    "政府基金",
     # 可在此处添加更多关键词
 ]
+
+# 二级关键词配置：每个主关键词对应一个二级关键词列表
+# 用法示例：SECONDARY_KEYWORDS["养老"] = ["养老金", "退休金"]
+SECONDARY_KEYWORDS = {
+    "政府基金": ["引导基金", "母基金",],
+
+    # 可在此处继续添加主关键词与其二级关键词的映射
+}
+
 # 兼容单关键词用法，取第一个关键词
 DEFAULT_KEYWORD = DEFAULT_KEYWORDS[0]
 

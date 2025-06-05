@@ -68,13 +68,12 @@ def write_scored_json(results, json_path):
     return new_path
 
 def append_log(keyword, json_path, total, score_counter, scored_count, scored_json_path, results=None):
+    print(f"[DEBUG] 准备写入日志，关键词: {keyword}")
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     log_path = os.path.join("output", "run_log.txt")
     score_line = " ".join([f"{i}分: {score_counter.get(i,0)}" for i in range(6)])
-    # emoji_map = ["0️⃣", "1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣"]
     emoji_map = ["0分", "1分", "2分", "3分", "4分", "5分"]
     emoji_score_line = " ".join([f"{emoji_map[i]}:{score_counter.get(i,0)}" for i in range(6)])
-    # 新增：统计3分及以上新闻正文总字数
     total_wordcount_3plus = 0
     if results is not None:
         for news in results:
@@ -93,9 +92,10 @@ def append_log(keyword, json_path, total, score_counter, scored_count, scored_js
     if results is not None:
         log += f"📝 3分及以上新闻正文总字数: {total_wordcount_3plus}\n"
     log += f"==============================\n"
+    print(f"[DEBUG] 日志内容预览（前100字）：{log[:100]}")
     with open(log_path, "a", encoding="utf-8") as f:
         f.write(log)
-    # 新增：屏幕输出日志文件位置
+    print(f"[DEBUG] 日志写入完成，关键词: {keyword}")
     print(f"评分完成，日志已写入: {log_path}")
     print(f"评分结果文件: {scored_json_path}")
 
@@ -157,7 +157,9 @@ def main():
 
     # 单关键词模式
     keyword = args.keyword or DEFAULT_KEYWORD
-    date_str = args.date or (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
+    date_str = args.date
+    if not date_str or date_str.lower() == 'none':
+        date_str = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
     json_path = os.path.join("output", date_str, f"{date_str}_{keyword}.json")
     if not os.path.exists(json_path):
         print(f"未找到文件: {json_path}")

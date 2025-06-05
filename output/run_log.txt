@@ -2272,3 +2272,384 @@
   跳过: 0 条
   失败: 0 条
 ------------------------------
+=====🕒 本次运行时间: 2025-06-05 21:19:37=====
+
+==============================
+🔑 关键词: 养老
+🌐 Baidu News: 5 条
+🌐 Google News: 110 条
+🌐 Bing News: 13 条
+🌐 DuckDuckGo News: 11 条
+✅ 去重后 serp_baidunews: 5 条
+✅ 去重后 serp_googlenews: 22 条
+✅ 去重后 serp_bingnews: 10 条
+✅ 去重后 serp_duckduckgo_news: 10 条
+⭐️ 去重后总保存: 47 条
+
+
+==============================
+🔑 关键词: 公积金
+🌐 Baidu News: 9 条
+🌐 Google News: 25 条
+🌐 Bing News: 4 条
+🌐 DuckDuckGo News: 3 条
+✅ 去重后 serp_baidunews: 9 条
+✅ 去重后 serp_googlenews: 5 条
+✅ 去重后 serp_bingnews: 4 条
+✅ 去重后 serp_duckduckgo_news: 2 条
+⭐️ 去重后总保存: 20 条 
+
+
+==============================
+🔑 关键词: 政府基金
+🌐 Baidu News: 6 条
+🌐 Google News: 0 条
+🌐 Bing News: 5 条
+🌐 DuckDuckGo News: 7 条
+✅ 去重后 serp_baidunews: 6 条
+✅ 去重后 serp_bingnews: 4 条
+✅ 去重后 serp_duckduckgo_news: 2 条
+⭐️ 去重后总保存: 12 条
+
+=====🕒 本次运行时间: 2025-06-05 21:46:52=====
+
+==============================
+🔑 关键词: 公积金
+🌐 Baidu News: 9 条
+🌐 Google News: 25 条
+🌐 Bing News: 4 条
+🌐 DuckDuckGo News: 3 条
+✅ 去重后 serp_baidunews: 9 条
+✅ 去重后 serp_googlenews: 5 条
+✅ 去重后 serp_bingnews: 4 条
+✅ 去重后 serp_duckduckgo_news: 2 条
+⭐️ 去重后总保存: 20 条
+
+=====🕒 本次运行时间: 2025-06-05 22:02:40=====
+
+==============================
+🔑 关键词: 母基金
+🌐 Baidu News: 3 条
+🌐 Google News: 20 条
+🌐 Bing News: 10 条
+🌐 DuckDuckGo News: 15 条
+✅ 去重后 serp_baidunews: 3 条
+✅ 去重后 serp_googlenews: 4 条
+✅ 去重后 serp_bingnews: 2 条
+✅ 去重后 serp_duckduckgo_news: 3 条
+⭐️ 去重后总保存: 12 条
+
+=====🕒 本次运行时间: 2025-06-05 22:03:21=====
+
+==============================
+🔑 关键词: 养老
+🌐 Baidu News: 5 条
+🌐 Google News: 110 条
+🌐 Bing News: 13 条
+🌐 DuckDuckGo News: 11 条
+✅ 去重后 serp_baidunews: 5 条
+✅ 去重后 serp_googlenews: 22 条
+✅ 去重后 serp_bingnews: 10 条
+✅ 去重后 serp_duckduckgo_news: 10 条
+⭐️ 去重后总保存: 47 条
+
+=====🕒 本次运行时间: 2025-06-05 22:03:43=====
+
+==============================
+🔑 关键词: 政府基金
+🌐 Baidu News: 6 条
+🌐 Google News: 0 条
+🌐 Bing News: 5 条
+🌐 DuckDuckGo News: 7 条
+✅ 去重后 serp_baidunews: 6 条
+✅ 去重后 serp_bingnews: 4 条
+✅ 去重后 serp_duckduckgo_news: 2 条
+⭐️ 去重后总保存: 12 条
+
+=====🕒 本次运行时间: 2025-06-05 22:04:06=====
+
+==============================
+🔑 关键词: 引导基金
+🌐 Baidu News: 5 条
+🌐 Google News: 10 条
+🌐 Bing News: 12 条
+🌐 DuckDuckGo News: 10 条
+✅ 去重后 serp_baidunews: 5 条
+✅ 去重后 serp_googlenews: 2 条
+✅ 去重后 serp_bingnews: 4 条
+✅ 去重后 serp_duckduckgo_news: 2 条
+⭐️ 去重后总保存: 13 条
+
+=====🕒 本次运行时间: 2025-06-05 22:05:02=====
+
+==============================
+🔑 关键词: 公积金
+🌐 Baidu News: 9 条
+🌐 Google News: 25 条
+🌐 Bing News: 4 条
+🌐 DuckDuckGo News: 3 条
+✅ 去重后 serp_baidunews: 9 条
+✅ 去重后 serp_googlenews: 5 条
+✅ 去重后 serp_bingnews: 4 条
+✅ 去重后 serp_duckduckgo_news: 2 条
+⭐️ 去重后总保存: 20 条
+
+=====🕒 本次运行时间: 2025-06-05 22:18:19=====
+
+==============================
+🔑 关键词: 公积金
+🌐 Baidu News: 9 条
+🌐 Google News: 25 条
+🌐 Bing News: 4 条
+🌐 DuckDuckGo News: 3 条
+✅ 去重后 serp_baidunews: 9 条
+✅ 去重后 serp_googlenews: 5 条
+✅ 去重后 serp_bingnews: 4 条
+✅ 去重后 serp_duckduckgo_news: 2 条
+⭐️ 去重后总保存: 20 条
+
+=====🕒 本次运行时间: 2025-06-05 22:18:39=====
+
+==============================
+🔑 关键词: 引导基金
+🌐 Baidu News: 5 条
+🌐 Google News: 10 条
+🌐 Bing News: 12 条
+🌐 DuckDuckGo News: 10 条
+✅ 去重后 serp_baidunews: 5 条
+✅ 去重后 serp_googlenews: 2 条
+✅ 去重后 serp_bingnews: 4 条
+✅ 去重后 serp_duckduckgo_news: 2 条
+⭐️ 去重后总保存: 13 条
+
+=====🕒 本次运行时间: 2025-06-05 22:19:00=====
+
+==============================
+🔑 关键词: 母基金
+🌐 Baidu News: 3 条
+🌐 Google News: 20 条
+🌐 Bing News: 10 条
+🌐 DuckDuckGo News: 15 条
+✅ 去重后 serp_baidunews: 3 条
+✅ 去重后 serp_googlenews: 4 条
+✅ 去重后 serp_bingnews: 2 条
+✅ 去重后 serp_duckduckgo_news: 3 条
+⭐️ 去重后总保存: 12 条
+
+=====🕒 本次运行时间: 2025-06-05 22:19:28=====
+
+==============================
+🔑 关键词: 养老
+🌐 Baidu News: 5 条
+🌐 Google News: 110 条
+🌐 Bing News: 13 条
+🌐 DuckDuckGo News: 11 条
+✅ 去重后 serp_baidunews: 5 条
+✅ 去重后 serp_googlenews: 22 条
+✅ 去重后 serp_bingnews: 10 条
+✅ 去重后 serp_duckduckgo_news: 10 条
+⭐️ 去重后总保存: 47 条
+
+=====🕒 本次运行时间: 2025-06-05 22:19:49=====
+
+==============================
+🔑 关键词: 政府基金
+🌐 Baidu News: 6 条
+🌐 Google News: 0 条
+🌐 Bing News: 5 条
+🌐 DuckDuckGo News: 7 条
+✅ 去重后 serp_baidunews: 6 条
+✅ 去重后 serp_bingnews: 4 条
+✅ 去重后 serp_duckduckgo_news: 2 条
+⭐️ 去重后总保存: 12 条
+
+
+==============================
+📰 [抓取新闻正文] 2025-06-05 22:21:48
+🔑 关键词: 公积金
+🗂️ 模式: 正式
+📄 处理的json文件: output/2025-06-04/2025-06-04_公积金.json
+
+📊 抓取统计：
+  ✅ 成功抓取正文: 20 篇
+  ✨ 其中定制化抓取: 0 篇
+  🌐 本次采集新闻源数量: 12
+  ❌ 抓取失败: 0 篇
+==============================
+
+
+==============================
+📰 [抓取新闻正文] 2025-06-05 22:22:48
+🔑 关键词: 引导基金
+🗂️ 模式: 正式
+📄 处理的json文件: output/2025-06-04/2025-06-04_引导基金.json
+
+📊 抓取统计：
+  ✅ 成功抓取正文: 10 篇
+  ✨ 其中定制化抓取: 0 篇
+  🌐 本次采集新闻源数量: 6
+  ❌ 抓取失败: 3 篇
+
+⚠️ 未能抓取的新闻：
+  - 【投融资动态】智蔻科技A轮融资，投资方为机器人产业集团、宁波天使投资引导基金等 | https://www.msn.cn/zh-cn/%E6%8A%80%E6%9C%AF/%E6%8A%80%E6%9C%AF%E5%85%AC%E5%8F%B8/%E6%8A%95%E8%9E%8D%E8%B5%84%E5%8A%A8%E6%80%81-%E6%99%BA%E8%94%BB%E7%A7%91%E6%8A%80a%E8%BD%AE%E8%9E%8D%E8%B5%84-%E6%8A%95%E8%B5%84%E6%96%B9%E4%B8%BA%E6%9C%BA%E5%99%A8%E4%BA%BA%E4%BA%A7%E4%B8%9A%E9%9B%86%E5%9B%A2-%E5%AE%81%E6%B3%A2%E5%A4%A9%E4%BD%BF%E6%8A%95%E8%B5%84%E5%BC%95%E5%AF%BC%E5%9F%BA%E9%87%91%E7%AD%89/ar-AA1G4ytQ?ocid=BingNewsVerp 
+  - 荣耀等出资14.4亿成立人工智能终端产业基金 加速AI生态布 | https://www.msn.cn/zh-cn/%E6%8A%80%E6%9C%AF/%E6%8A%80%E6%9C%AF%E5%85%AC%E5%8F%B8/%E8%8D%A3%E8%80%80%E7%AD%89%E5%87%BA%E8%B5%8414-4%E4%BA%BF%E6%88%90%E7%AB%8B%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD%E7%BB%88%E7%AB%AF%E4%BA%A7%E4%B8%9A%E5%9F%BA%E9%87%91-%E5%8A%A0%E9%80%9Fai%E7%94%9F%E6%80%81%E5%B8%83/ar-AA1G2DiF?ocid=BingNewsVerp 
+  - 【投融资动态】智蔻科技A轮融资，投资方为机器人产业集团、宁波 ... | https://www.msn.cn/zh-cn/%E6%8A%80%E6%9C%AF/%E6%8A%80%E6%9C%AF%E5%85%AC%E5%8F%B8/%E6%8A%95%E8%9E%8D%E8%B5%84%E5%8A%A8%E6%80%81-%E6%99%BA%E8%94%BB%E7%A7%91%E6%8A%80a%E8%BD%AE%E8%9E%8D%E8%B5%84-%E6%8A%95%E8%B5%84%E6%96%B9%E4%B8%BA%E6%9C%BA%E5%99%A8%E4%BA%BA%E4%BA%A7%E4%B8%9A%E9%9B%86%E5%9B%A2-%E5%AE%81%E6%B3%A2%E5%A4%A9%E4%BD%BF%E6%8A%95%E8%B5%84%E5%BC%95%E5%AF%BC%E5%9F%BA%E9%87%91%E7%AD%89/ar-AA1G4ytQ 
+==============================
+
+
+==============================
+📰 [抓取新闻正文] 2025-06-05 22:24:30
+🔑 关键词: 母基金
+🗂️ 模式: 正式
+📄 处理的json文件: output/2025-06-04/2025-06-04_母基金.json
+
+📊 抓取统计：
+  ✅ 成功抓取正文: 12 篇
+  ✨ 其中定制化抓取: 0 篇
+  🌐 本次采集新闻源数量: 9
+  ❌ 抓取失败: 0 篇
+==============================
+
+
+==============================
+📰 [抓取新闻正文] 2025-06-05 22:29:16
+🔑 关键词: 养老
+🗂️ 模式: 正式
+📄 处理的json文件: output/2025-06-04/2025-06-04_养老.json
+
+📊 抓取统计：
+  ✅ 成功抓取正文: 40 篇
+  ✨ 其中定制化抓取: 1 篇
+  🌐 本次采集新闻源数量: 30
+  ❌ 抓取失败: 7 篇
+
+🎯 定制化抓取命中统计：
+  - www.jfdaily.com: 1 篇
+      • 养老预付费公证提存签约全覆盖！普陀新模式实力出圈，养老不忧心→ | https://www.jfdaily.com/news/detail?id=922229
+
+⚠️ 未能抓取的新闻：
+  - 完善15分钟居家养老服务圈!青岛推动养老服务“扩容提质” | https://baijiahao.baidu.com/s?id=1833966010529460979&wfr=spider&for=pc 
+  - 掘金养老 ｜ 轻工物业的“居家养老”试验田 | https://www.msn.cn/zh-cn/%E5%9F%8E%E5%B8%82%E5%9F%BA%E7%A1%80%E8%AE%BE%E6%96%BD/%E4%BD%8F%E6%88%BF%E4%B8%8E%E5%9F%8E%E5%B8%82%E5%8F%91%E5%B1%95/%E6%8E%98%E9%87%91%E5%85%BB%E8%80%81-%E8%BD%BB%E5%B7%A5%E7%89%A9%E4%B8%9A%E7%9A%84-%E5%B1%85%E5%AE%B6%E5%85%BB%E8%80%81-%E8%AF%95%E9%AA%8C%E7%94%B0/ar-AA1G6E3Z?ocid=BingNewsVerp 
+  - 居家养老“一人户”增多，养老资源如何避免忙闲不均 | https://www.msn.cn/zh-cn/%E5%9F%8E%E5%B8%82%E5%9F%BA%E7%A1%80%E8%AE%BE%E6%96%BD/%E4%BD%8F%E6%88%BF%E4%B8%8E%E5%9F%8E%E5%B8%82%E5%8F%91%E5%B1%95/%E5%B1%85%E5%AE%B6%E5%85%BB%E8%80%81-%E4%B8%80%E4%BA%BA%E6%88%B7-%E5%A2%9E%E5%A4%9A-%E5%85%BB%E8%80%81%E8%B5%84%E6%BA%90%E5%A6%82%E4%BD%95%E9%81%BF%E5%85%8D%E5%BF%99%E9%97%B2%E4%B8%8D%E5%9D%87/ar-AA1G2f4k?ocid=BingNewsVerp 
+  - 掘金养老 ｜ 轻工物业的"居家养老"试验田 | https://www.msn.cn/zh-cn/%E5%9F%8E%E5%B8%82%E5%9F%BA%E7%A1%80%E8%AE%BE%E6%96%BD/%E4%BD%8F%E6%88%BF%E4%B8%8E%E5%9F%8E%E5%B8%82%E5%8F%91%E5%B1%95/%E6%8E%98%E9%87%91%E5%85%BB%E8%80%81-%E8%BD%BB%E5%B7%A5%E7%89%A9%E4%B8%9A%E7%9A%84-%E5%B1%85%E5%AE%B6%E5%85%BB%E8%80%81-%E8%AF%95%E9%AA%8C%E7%94%B0/ar-AA1G6E3Z 
+  - 智慧养老：让晚年生活更有"数" | http://union.china.com.cn/cmdt/txt/2025-06/04/content_43134639.html 
+  - 2025年"服务消费季"活动启动 | https://www.msn.cn/zh-cn/news/other/2025%E5%B9%B4-%E6%9C%8D%E5%8A%A1%E6%B6%88%E8%B4%B9%E5%AD%A3-%E6%B4%BB%E5%8A%A8%E5%90%AF%E5%8A%A8/ar-AA1G2lxg 
+  - "童颜针"获批，乐普医疗大涨逾16% | https://www.msn.cn/zh-cn/news/other/%E7%AB%A5%E9%A2%9C%E9%92%88-%E8%8E%B7%E6%89%B9-%E4%B9%90%E6%99%AE%E5%8C%BB%E7%96%97%E5%A4%A7%E6%B6%A8%E9%80%BE16/ar-AA1G2rQ6 
+==============================
+
+
+==============================
+📰 [抓取新闻正文] 2025-06-05 22:30:59
+🔑 关键词: 政府基金
+🗂️ 模式: 正式
+📄 处理的json文件: output/2025-06-04/2025-06-04_政府基金.json
+
+📊 抓取统计：
+  ✅ 成功抓取正文: 12 篇
+  ✨ 其中定制化抓取: 0 篇
+  🌐 本次采集新闻源数量: 6
+  ❌ 抓取失败: 0 篇
+==============================
+
+
+[🕒 2025-06-05 22:45:51]
+执行程序: ai评分
+🔑 关键词: 公积金
+📄 原json文件: output/2025-06-04/2025-06-04_公积金.json
+🆕 评分结果文件: output/2025-06-04/2025-06-04_公积金_scored.json
+📊 新闻总数: 20
+✅ 完成评分: 20
+0分:3 1分:2 2分:1 3分:2 4分:11 5分:1
+📝 3分及以上新闻正文总字数: 11490
+==============================
+
+
+[查重] scored_news 已存在，跳过: 让养老服务更智慧 | http://www.xinhuanet.com/tech/20250604/24ddda5118554432997d3ad71673c3f4/c.html
+[查重] scored_news 已存在，跳过: 增强个人养老金产品吸引力_观点评论 | http://news.cnfol.com/guandianpinglun/20250604/31360937.shtml
+[查重] scored_news 已存在，跳过: 工行厦门分行成功发放全市首批服务消费与养老贷款 | https://cj.sina.cn/articles/view/6824573189/196c6b905020029lua
+[查重] scored_news 已存在，跳过: 中国康养践行中国梦，推动健康养老模式创新 | https://news.sina.com.cn/sx/2025-06-04/detail-ineywwwh2655343.shtml
+[查重] scored_news 已存在，跳过: 养老预付费公证提存签约全覆盖!普陀新模式实力出圈,养老不忧心→ | https://baijiahao.baidu.com/s?id=1833969570941810542&wfr=spider&for=pc
+[查重] scored_news 已存在，跳过: 2025年泰安市“寿比泰山”养老服务大集启幕 | https://baijiahao.baidu.com/s?id=1833993810714779132&wfr=spider&for=pc
+[查重] scored_news 已存在，跳过: 社区养老资源“围墙”如何打破 | https://baijiahao.baidu.com/s?id=1833965104952775856&wfr=spider&for=pc
+[查重] scored_news 已存在，跳过: 上海老博会将启幕：养老黑科技突破传统边界，还能享消费补贴 | https://www.thepaper.cn/newsDetail_forward_30928406
+[查重] scored_news 已存在，跳过: 安仁县：从“舌尖”到“心间”，“三助”养老模式托起长者幸福晚年 | https://m.voc.com.cn/xhn/news/202506/29612387.html
+[查重] scored_news 已存在，跳过: 免费，限满50人！南京2025年度养老培训交流活动等你来 | https://www.yzwb.net/news/jiangsu/nanjing/202506/t20250604_216739.html
+[查重] scored_news 已存在，跳过: ﻿头牌手记/平保发债攻养老医疗 前景看俏\沈金 | https://www.takungpao.com/finance/236135/2025/0605/1092636.html
+[查重] scored_news 已存在，跳过: 养老预付费公证提存签约全覆盖！普陀新模式实力出圈，养老不忧心→ | https://www.jfdaily.com/news/detail?id=922229
+[查重] scored_news 已存在，跳过: “养老”变“享老”！南沙东涌镇“耆妙学堂”激发银龄新活力__新快网 | https://www.xkb.com.cn/articleDetail/408268
+[查重] scored_news 已存在，跳过: 上海老博会下周开展：养老黑科技亮相、展区享消费补贴 | https://finance.sina.cn/2025-06-04/detail-ineywsqh4540567.d.html?vt=4&cid=76729&node_id=76729
+[查重] scored_news 已存在，跳过: 掘金养老 ｜ 轻工物业的“居家养老”试验田 | https://www.guandian.cn/m/show/489702
+[查重] scored_news 已存在，跳过: 实名羡慕江西老人！这样的医养结合生活，谁看了不心动？ | https://jiangxi.jxnews.com.cn/system/2025/06/04/020892034.shtml
+[查重] scored_news 已存在，跳过: 免费，限满50人！南京2025年度养老培训交流活动等你来 | https://finance.sina.cn/2025-06-04/detail-ineyxptw4187342.d.html?vt=4&cid=76729&node_id=76729
+[查重] scored_news 已存在，跳过: 中国天保集团(01427)：天保京北健康城项目正式营运_经济时评 | https://finance.stockstar.com/IG2025060400035650.shtml
+[查重] scored_news 已存在，跳过: 上海老博会下周开展：养老黑科技亮相、展区享消费补贴 | https://news.sina.com.cn/zx/gj/2025-06-04/doc-ineyxcef9333187.shtml
+[查重] scored_news 已存在，跳过: 兵团个人养老金参加人数达54万人 | https://finance.sina.cn/2025-06-05/detail-ineyxyiv8914916.d.html?vt=4&cid=76729&node_id=76729
+[查重] scored_news 已存在，跳过: [雁峰区] 王燕暗访督导群众身边不正之风和腐败问题集中整治工作 | https://www.hengyang.gov.cn/xxgk/dtxx/xsqdt/20250604/i3687676.html
+[查重] scored_news 已存在，跳过: 养老金突然被法院扣划，16年前签的合同究竟有何问题？ | https://m.gmw.cn/2025-06/04/content_1304051630.htm
+[查重] scored_news 已存在，跳过: 六旬老人养老金突然被法院扣划，16年前究竟发生了什么？ | https://m.gmw.cn/2025-06/04/content_1304051544.htm
+[查重] scored_news 已存在，跳过: 2025年“国寿616”客户节正式开幕﻿ 广发银行推动综合金融服务新升级 | https://app.xinhuanet.com/news/article.html?articleId=7287ae7190f28549ea5bb37c6b39c397
+[查重] scored_news 已存在，跳过: 富德生命人寿河北分公司：守护居家养老心愿，共筑美好养老生活 | https://news.tom.com/202506/4325224705.html
+[查重] scored_news 已存在，跳过: 平安养老2025Y (017337): 平安养老目标日期2025一年持有期混合型发起式基金中基金(FOF)(平安养老2025(FOF)Y类份额)基金产品资料概要更新- CFi.CN 中财网 | https://www.cfi.net.cn/p20250604000599.html
+[查重] scored_news 已存在，跳过: 丹麦养老院痴呆患者抗抑郁药物减量干预的集群随机对照试验：挑战与启示 | https://www.ebiotrade.com/newsf/2025-6/20250604062017913.htm
+[查重] scored_news 已存在，跳过: 完善15分钟居家养老服务圈!青岛推动养老服务“扩容提质” | https://baijiahao.baidu.com/s?id=1833966010529460979&wfr=spider&for=pc
+[查重] scored_news 已存在，跳过: 2025年"服务消费季"活动启动 | https://www.msn.cn/zh-cn/news/other/2025%E5%B9%B4-%E6%9C%8D%E5%8A%A1%E6%B6%88%E8%B4%B9%E5%AD%A3-%E6%B4%BB%E5%8A%A8%E5%90%AF%E5%8A%A8/ar-AA1G2lxg
+[2025-06-06 00:06:17] 导入数据库
+  关键词: 养老
+  文件: output/2025-06-04/2025-06-04_养老_scored.json
+  表: scored_news
+  成功写入: 17 条
+  跳过: 29 条
+  失败: 0 条
+------------------------------
+[2025-06-06 00:06:17] 导入数据库
+  关键词: 养老
+  文件: output/2025-06-04/2025-06-04_养老_summary.json
+  表: summary_news
+  成功写入: 1 条
+  跳过: 0 条
+  失败: 0 条
+------------------------------
+[查重] scored_news 已存在，跳过: 江苏一市调整公积金政策 | https://baijiahao.baidu.com/s?id=1833983301380316589&wfr=spider&for=pc
+[查重] scored_news 已存在，跳过: 南通住房公积金政策优化 每户贷款额度提高至140万元 | https://baijiahao.baidu.com/s?id=1833985738701396237&wfr=spider&for=pc
+[查重] scored_news 已存在，跳过: 江西:精准“亮剑”住房公积金领域虚假诉讼 | https://www.hi.jcy.gov.cn/webSite/module/M101/view/893530/00500008
+[查重] scored_news 已存在，跳过: 二手房买卖办理再提速 | http://epaper.tianjinwe.com/tjrb/html/2025-06/05/content_143082_2253146.htm
+[查重] scored_news 已存在，跳过: 南通：住房公积金最高贷款额度调整为140万元/户 | https://www.thepaper.cn/newsDetail_forward_30928066
+[查重] scored_news 已存在，跳过: 南通住房公积金政策优化 每户贷款额度提高至140万元 | https://www.guandian.cn/m/show/489598
+[查重] scored_news 已存在，跳过: 表兄弟虚假诉讼套取20万元公积金,一个细节暴露马脚! | https://baijiahao.baidu.com/s?id=1833986810056183192&wfr=spider&for=pc
+[查重] scored_news 已存在，跳过: 这家银行推出暖心服务 办理住房公积金贷款只需跑一次 | http://www.xj.chinanews.com.cn/dizhou/2025-06-04/detail-ihesaipz3753198.shtml
+[查重] scored_news 已存在，跳过: 购房者称购房不到一年降200多万 承诺未兑现引发争议 | https://news.china.com/socialgd/10000169/20250604/48420504.html
+[查重] scored_news 已存在，跳过: 灵活就业人员公积金业务怎么办理?请戳→ | http://baijiahao.baidu.com/s?id=1833980906016436658&wfr=spider&for=pc
+[查重] scored_news 已存在，跳过: 公积金利澳门平特一肖资料大全率下调利好房地产市场 | https://xycity.cn/ksj/521746228.html
+[查重] scored_news 已存在，跳过: 公积金利香港大全经典全年资料率下调利好房地产市场 | https://www.cnsoftnews.com/html/922891992647.html
+[2025-06-06 00:06:17] 导入数据库
+  关键词: 公积金
+  文件: output/2025-06-04/2025-06-04_公积金_scored.json
+  表: scored_news
+  成功写入: 8 条
+  跳过: 12 条
+  失败: 0 条
+------------------------------
+[2025-06-06 00:06:17] 导入数据库
+  关键词: 公积金
+  文件: output/2025-06-04/2025-06-04_公积金_summary.json
+  表: summary_news
+  成功写入: 1 条
+  跳过: 0 条
+  失败: 0 条
+------------------------------
+[2025-06-06 00:06:18] 导入数据库
+  关键词: 政府基金
+  文件: output/2025-06-04/2025-06-04_政府基金_scored.json
+  表: scored_news
+  成功写入: 12 条
+  跳过: 0 条
+  失败: 0 条
+------------------------------
+[2025-06-06 00:06:18] 导入数据库
+  关键词: 政府基金
+  文件: output/2025-06-04/2025-06-04_政府基金_summary.json
+  表: summary_news
+  成功写入: 1 条
+  跳过: 0 条
+  失败: 0 条
+------------------------------
