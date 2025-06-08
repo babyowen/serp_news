@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+# =========================================
+# 新闻正文抓取主程序
+# 主要功能：多方式抓取新闻正文，支持定制化规则、trafilatura、newspaper3k、Selenium、Playwright等，抓取结果写入json并记录日志
+# =========================================
 import os
 import sys
 import json
@@ -20,29 +25,34 @@ from readability import Document
 from bs4 import BeautifulSoup
 from config import DEFAULT_KEYWORDS
 
-
+# 获取今天日期字符串
 def get_today_str():
     return datetime.now().strftime('%Y-%m-%d')
 
+# 获取昨天日期字符串
 def get_yesterday_str():
     yesterday = datetime.now() - timedelta(days=1)
     return yesterday.strftime("%Y-%m-%d")
 
+# 获取指定关键词和日期的json路径
 def get_json_path(keyword, date_str=None):
     if date_str is None:
         date_str = get_today_str()
     filename = f"{date_str}_{keyword}.json"
     return os.path.join('output', date_str, filename)
 
+# 获取日志文件路径
 def get_log_path(date_str=None):
     # 日志统一放在output目录下
     return os.path.join('output', 'run_log.txt')
 
+# 获取chromedriver路径（自动下载）
 def get_chromedriver_path():
     # 只需这样即可，chromedriver 会自动下载到默认缓存目录
     driver_path = ChromeDriverManager().install()
     return driver_path
 
+# 用Selenium抓取新闻正文，支持定制化规则和通用抓取
 def fetch_article_content_with_selenium(url):
     print(f"[调试] fetch_article_content_with_selenium 启动, url={url}")
     options = Options()
@@ -85,6 +95,7 @@ def fetch_article_content_with_selenium(url):
     finally:
         driver.quit()
 
+# 用requests+trafilatura/newspaper3k抓取正文，适合特殊编码站点
 def fetch_article_content_with_requests(url):
     try:
         resp = requests.get(url, timeout=10)
@@ -111,6 +122,7 @@ def fetch_article_content_with_requests(url):
         pass
     return '', 0, False
 
+# 用Playwright渲染页面并抓取正文，支持定制化规则
 def fetch_article_content_with_playwright(url):
     print(f"[调试] fetch_article_content_with_playwright 启动, url={url}")
     custom_grab = False
@@ -149,6 +161,7 @@ def fetch_article_content_with_playwright(url):
         print(f"[调试] fetch_article_content_with_playwright 异常: {e}")
         return '', 0, False
 
+# 综合抓取正文，优先定制化规则，其次trafilatura/newspaper3k/Playwright/Selenium等
 def fetch_article_content(url, max_retries=3):
     print(f"[调试] fetch_article_content 启动, url={url}")
     # 1. msn.cn 直接跳过抓取
@@ -243,6 +256,7 @@ def fetch_article_content(url, max_retries=3):
     print("[调试] 全部抓取失败，返回空")
     return '', 0, False
 
+# 用Selenium驱动返回driver对象，供定制化规则使用
 def fetch_article_content_with_selenium_driver(url):
     options = Options()
     options.add_argument('--headless')
@@ -263,6 +277,7 @@ def fetch_article_content_with_selenium_driver(url):
         driver.quit()
         raise
 
+# 获取url的主域名
 def get_domain(url):
     try:
         parsed = urllib.parse.urlparse(url)
@@ -270,6 +285,7 @@ def get_domain(url):
     except Exception:
         return ''
 
+# 处理指定关键词和日期的json，抓取正文并写入，统计日志
 def process_json(keyword, date_str=None, mode='正式'):
     json_path = get_json_path(keyword, date_str)
     log_path = get_log_path(date_str)
@@ -278,6 +294,19 @@ def process_json(keyword, date_str=None, mode='正式'):
         return
     with open(json_path, 'r', encoding='utf-8') as f:
         news_list = json.load(f)
+    # 跳过机制：如所有新闻条目都已包含content字段（不论内容是否为空），说明已跑过正文抓取，无需重复处理
+    all_has_content_field = all('content' in item for item in news_list)
+    if all_has_content_field:
+        print(f"[SKIP] {json_path} 所有新闻已包含content字段，跳过 {keyword}")
+        # 可选：写入日志
+        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        log_path = os.path.join("output", "run_log.txt")
+        skip_log = (
+            f"[🕒 {now}]\n[SKIP] 跳过关键词: {keyword}\n原因: {json_path} 所有新闻已包含content字段，正文抓取已执行\n==============================\n"
+        )
+        with open(log_path, "a", encoding="utf-8") as f:
+            f.write(skip_log)
+        return
     # 新增：将 https://people.com.cn 及其所有子域名替换为 http
     for item in news_list:
         url = item.get('link')
@@ -411,6 +440,7 @@ def process_json(keyword, date_str=None, mode='正式'):
     print(f"已写入新闻来源统计: {sources_path}")
     print(f"已写入新闻源分布统计: {stats_path}")
 
+# 命令行入口，支持批量/单条/测试模式
 if __name__ == '__main__':
     if len(sys.argv) > 2:
         keyword = sys.argv[1]

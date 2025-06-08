@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+# =========================================
+# 新闻自动评分主程序
+# 主要功能：加载新闻、去重、调用大模型评分、保存结果、记录日志
+# =========================================
 import json
 import sys
 import os
@@ -6,6 +11,11 @@ from openai import OpenAI
 from config import NEWS_SCORE_PROMPT, DEEPSEEK_API_KEY, DEEPSEEK_BASE_URL, DEEPSEEK_MODEL, DEFAULT_KEYWORD, NEWS_SCORE_SYSTEM_MSG, DEFAULT_KEYWORDS
 import argparse
 
+# 调用大模型对单条新闻进行评分
+# title: 新闻标题
+# content: 新闻正文
+# keyword: 关键词
+# 返回分数（int）
 def score_news(title: str, content: str, keyword: str) -> int:
     prompt = NEWS_SCORE_PROMPT.format(keyword=keyword, title=title, content=content)
     print("\n===== 送给大模型的内容 =====")
@@ -29,6 +39,10 @@ def score_news(title: str, content: str, keyword: str) -> int:
         score = 0
     return score
 
+# 批量对新闻进行评分，去重、统计分布
+# json_path: 新闻json文件路径
+# keyword: 关键词
+# 返回：带分数的新闻列表、分数统计、新闻总数
 def batch_score_news(json_path, keyword):
     with open(json_path, "r", encoding="utf-8") as f:
         news_list = json.load(f)
@@ -58,6 +72,10 @@ def batch_score_news(json_path, keyword):
         print(f"标题: {title}\n分数: {score}\n")
     return results, score_counter, len(unique_news_list)
 
+# 保存带分数的新闻到新json文件，按分数降序排列
+# results: 新闻列表
+# json_path: 原始json路径
+# 返回新文件路径
 def write_scored_json(results, json_path):
     # 按评分降序排列
     results_sorted = sorted(results, key=lambda x: x.get("score", 0), reverse=True)
@@ -67,6 +85,14 @@ def write_scored_json(results, json_path):
         json.dump(results_sorted, f, ensure_ascii=False, indent=2)
     return new_path
 
+# 追加运行日志到log文件，记录评分分布、文件路径等
+# keyword: 关键词
+# json_path: 原始json路径
+# total: 新闻总数
+# score_counter: 分数统计
+# scored_count: 已评分数量
+# scored_json_path: 评分结果文件路径
+# results: 可选，带分数的新闻列表
 def append_log(keyword, json_path, total, score_counter, scored_count, scored_json_path, results=None):
     print(f"[DEBUG] 准备写入日志，关键词: {keyword}")
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -99,10 +125,12 @@ def append_log(keyword, json_path, total, score_counter, scored_count, scored_js
     print(f"评分完成，日志已写入: {log_path}")
     print(f"评分结果文件: {scored_json_path}")
 
+# 获取昨天日期字符串，格式YYYY-MM-DD
 def get_yesterday_str():
     yesterday = datetime.now() - timedelta(days=1)
     return yesterday.strftime("%Y-%m-%d")
 
+# 主流程入口，支持批量/单条/测试模式
 def main():
     # 用法: python news_scorer.py [keyword] [date] 或 --test_json '{...}'
     parser = argparse.ArgumentParser()
@@ -135,9 +163,17 @@ def main():
             if not os.path.exists(json_path):
                 print(f"未找到文件: {json_path}")
                 continue
-            # 优先判断_scored.json是否已存在
+            # 跳过机制：如已存在_scored.json文件，说明已完成打分，无需重复处理
             if os.path.exists(scored_json_path):
-                print(f"已检测到 {scored_json_path} 已存在，跳过。")
+                print(f"[SKIP] {scored_json_path} 已存在，跳过 {keyword}")
+                # 可选：写入日志
+                now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                log_path = os.path.join("output", "run_log.txt")
+                skip_log = (
+                    f"[🕒 {now}]\n[SKIP] 跳过关键词: {keyword}\n原因: 已存在 {scored_json_path}，已完成打分\n==============================\n"
+                )
+                with open(log_path, "a", encoding="utf-8") as f:
+                    f.write(skip_log)
                 continue
             # 检查是否已打分（兼容旧流程）
             try:
@@ -161,6 +197,18 @@ def main():
     if not date_str or date_str.lower() == 'none':
         date_str = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
     json_path = os.path.join("output", date_str, f"{date_str}_{keyword}.json")
+    scored_json_path = os.path.splitext(json_path)[0] + "_scored.json"
+    # 跳过机制：如已存在_scored.json文件，说明已完成打分，无需重复处理
+    if os.path.exists(scored_json_path):
+        print(f"[SKIP] {scored_json_path} 已存在，跳过 {keyword}")
+        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        log_path = os.path.join("output", "run_log.txt")
+        skip_log = (
+            f"[🕒 {now}]\n[SKIP] 跳过关键词: {keyword}\n原因: 已存在 {scored_json_path}，已完成打分\n==============================\n"
+        )
+        with open(log_path, "a", encoding="utf-8") as f:
+            f.write(skip_log)
+        return
     if not os.path.exists(json_path):
         print(f"未找到文件: {json_path}")
         return
