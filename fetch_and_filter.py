@@ -1,12 +1,20 @@
+# -*- coding: utf-8 -*-
+# =========================================
+# 新闻采集与过滤主程序
+# 主要功能：采集四大新闻API，按日期过滤、去重、黑名单过滤，保存结果并记录日志
+# =========================================
 from news_fetcher import fetch_serpapi_baidu_news, fetch_serpapi_google_news, fetch_serpapi_bing_news, fetch_serpapi_duckduckgo_news
 from config import DEFAULT_KEYWORDS, blacklist_keywords
+from config import SEARCH_KEYWORDS
 import json
 from datetime import datetime, timedelta
 import re
 from dateutil import parser
 import os
 import sys
+import argparse
 
+# 判断Baidu News返回的date字段是否为昨天
 def is_baidu_news_yesterday(date_str):
     """
     判断Baidu News返回的date字段是否为昨天。
@@ -50,6 +58,7 @@ def is_baidu_news_yesterday(date_str):
     # 其它情况（如"几天前"等）不算昨天
     return False
 
+# 解析Baidu News的date字段为具体日期字符串
 def parse_baidu_news_date(date_str):
     """
     将Baidu News的date字段解析为具体日期（YYYY-MM-DD），解析失败返回None。
@@ -82,6 +91,7 @@ def parse_baidu_news_date(date_str):
         pass
     return None
 
+# 解析Google News的date字段为具体日期字符串
 def parse_google_news_date(date_str):
     """
     尝试将Google News的date字段解析为具体日期（YYYY-MM-DD），解析失败返回None。
@@ -122,6 +132,7 @@ def parse_google_news_date(date_str):
         pass
     return None
 
+# 判断Google News返回的date字段是否为昨天
 def is_google_news_yesterday(date_str):
     """
     判断Google News返回的date字段是否为昨天。
@@ -132,6 +143,7 @@ def is_google_news_yesterday(date_str):
     yesterday = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
     return parsed == yesterday
 
+# 判断Bing News返回的date字段是否为昨天
 def is_bing_news_yesterday(date_str):
     if not date_str:
         return False
@@ -158,9 +170,11 @@ def is_bing_news_yesterday(date_str):
     # 兼容其它格式
     return False
 
+# 获取输出文件路径
 def get_output_path(fetch_date, basename):
     return os.path.join("output", fetch_date, basename)
 
+# 判断DuckDuckGo News返回的date字段是否为昨天
 def is_duckduckgo_news_yesterday(date_str):
     """
     判断DuckDuckGo News返回的date字段是否为昨天。
@@ -196,6 +210,7 @@ def is_duckduckgo_news_yesterday(date_str):
         return news_time.date() == yesterday
     return False
 
+# 解析DuckDuckGo News的date字段为具体日期字符串
 def parse_duckduckgo_news_date(date_str):
     """
     将DuckDuckGo News的date字段解析为具体日期（YYYY-MM-DD），解析失败返回None。
@@ -221,189 +236,134 @@ def parse_duckduckgo_news_date(date_str):
         return news_time.strftime("%Y-%m-%d")
     return None
 
+# 主流程入口，采集四大新闻API，按日期过滤、去重、黑名单过滤、保存结果并写日志
 def main():
-    # 参数解析：第一个参数为关键词，第二个为日期
-    if len(sys.argv) > 2:
-        keyword = sys.argv[1]
-        fetch_date = sys.argv[2]
-        if not fetch_date or fetch_date.lower() == 'none':
-            fetch_date = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
-        keywords = [keyword]
-    elif len(sys.argv) > 1:
-        keyword = sys.argv[1]
+    # 参数解析：第一个参数为关键词，第二个为日期，新增 --output、--main_keyword、--search_keyword
+    parser = argparse.ArgumentParser()
+    parser.add_argument('keyword', nargs='?', default=None)
+    parser.add_argument('fetch_date', nargs='?', default=None)
+    parser.add_argument('--output', type=str, default=None, help='指定输出文件路径')
+    parser.add_argument('--main_keyword', type=str, default=None, help='主关键词')
+    parser.add_argument('--search_keyword', type=str, default=None, help='搜索用关键词')
+    args = parser.parse_args()
+
+    keyword = args.keyword
+    fetch_date = args.fetch_date
+    output_path = args.output
+    main_keyword = args.main_keyword
+    search_keyword = args.search_keyword
+
+    if not fetch_date or fetch_date.lower() == 'none':
         fetch_date = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
-        keywords = [keyword]
-    else:
-        try:
-            keywords = list(DEFAULT_KEYWORDS)
-        except Exception:
-            keywords = [DEFAULT_KEYWORDS]
-        fetch_date = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
+    if not keyword:
+        print("[ERROR] 必须指定搜索用关键词")
+        return
     os.makedirs(os.path.join("output", fetch_date), exist_ok=True)
     log_lines = []
     run_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     log_lines.append(f"=====🕒 本次运行时间: {run_time}=====")
-    for keyword in keywords:
-        print("\n==============================")
-        print(f"🔑 正在抓取关键词: {keyword}")
-        print("==============================")
-        log_lines.append(f"\n==============================")
-        log_lines.append(f"🔑 关键词: {keyword}")
-        all_yesterday_news = []
-        count_baidu = 0
-        count_google = 0
-        count_bing = 0
-        count_duck = 0
+    # 采集四大新闻API
+    print("[INFO] 正在采集 Baidu News ...")
+    baidu_data = fetch_serpapi_baidu_news(keyword)
+    print("[INFO] 正在采集 Google News ...")
+    google_data = fetch_serpapi_google_news(keyword)
+    print("[INFO] 正在采集 Bing News ...")
+    bing_data = fetch_serpapi_bing_news(keyword)
+    print("[INFO] 正在采集 DuckDuckGo News ...")
+    duck_data = fetch_serpapi_duckduckgo_news(keyword)
 
-        # --- SerpApi Baidu News ---
-        print(f"\n🌐 [SerpApi Baidu News] 抓取关键词: {keyword}")
-        news_data_baidu = fetch_serpapi_baidu_news(keyword)
-        raw_filename_baidu = get_output_path(fetch_date, f"raw_serp_baidunews_{keyword}_{fetch_date}.json")
-        with open(raw_filename_baidu, "w", encoding="utf-8") as f:
-            json.dump(news_data_baidu, f, ensure_ascii=False, indent=2)
-        print(f"完整API返回内容已保存到 {raw_filename_baidu}")
-        for item in news_data_baidu.get("organic_results", []):
-            date_str = item.get('date', '')
-            if is_baidu_news_yesterday(date_str):
-                news_date = parse_baidu_news_date(date_str)
-                filtered_item = {
-                    'title': item.get('title', ''),
-                    'link': item.get('link', ''),
-                    'fetchdate': news_date,
-                    'date': date_str,
-                    'source': item.get('source', ''),
-                    'sourceapi': 'serp_baidunews',
-                    'keyword': keyword,
-                    'thumbnail': item.get('thumbnail', None)
-                }
-                all_yesterday_news.append(filtered_item)
-                count_baidu += 1
-        log_lines.append(f"🌐 Baidu News: {count_baidu} 条")
+    baidu_news = []
+    for item in baidu_data.get('organic_results', []):
+        date_str = item.get('date', '')
+        if is_baidu_news_yesterday(date_str):
+            item = item.copy()
+            # 保留原始date
+            item['fetchdate'] = fetch_date
+            item['sourceapi'] = 'serp_baidunews'
+            baidu_news.append(item)
+    google_news = []
+    for item in google_data.get('news_results', []):
+        date_str = item.get('date', '')
+        if is_google_news_yesterday(date_str):
+            item = item.copy()
+            # 保留原始date
+            item['fetchdate'] = fetch_date
+            item['sourceapi'] = 'serp_googlenews'
+            google_news.append(item)
+    bing_news = []
+    for item in bing_data.get('organic_results', []):
+        date_str = item.get('date', '')
+        if is_bing_news_yesterday(date_str):
+            item = item.copy()
+            # 保留原始date
+            item['fetchdate'] = fetch_date
+            item['sourceapi'] = 'serp_bingnews'
+            bing_news.append(item)
+    duck_news = []
+    for item in duck_data.get('news_results', []):
+        date_str = item.get('date', '')
+        if is_duckduckgo_news_yesterday(date_str):
+            item = item.copy()
+            # 保留原始date
+            item['fetchdate'] = fetch_date
+            item['sourceapi'] = 'serp_duckduckgo_news'
+            duck_news.append(item)
 
-        # --- SerpApi Google News ---
-        print(f"\n🌐 [SerpApi Google News] 抓取关键词: {keyword}")
-        news_data_google = fetch_serpapi_google_news(keyword)
-        raw_filename_google = get_output_path(fetch_date, f"raw_serp_googlenews_{keyword}_{fetch_date}.json")
-        with open(raw_filename_google, "w", encoding="utf-8") as f:
-            json.dump(news_data_google, f, ensure_ascii=False, indent=2)
-        print(f"完整API返回内容已保存到 {raw_filename_google}")
-        for item in news_data_google.get("news_results", []):
-            date_str = item.get('date', '')
-            if is_google_news_yesterday(date_str):
-                news_date = parse_google_news_date(date_str)
-                filtered_item = {
-                    'title': item.get('title', ''),
-                    'link': item.get('link', ''),
-                    'source': item.get('source', {}).get('name', '') if isinstance(item.get('source', {}), dict) else '',
-                    'date': item.get('date', ''),
-                    'fetchdate': news_date,
-                    'sourceapi': 'serp_googlenews',
-                    'thumbnail': item.get('thumbnail', None),
-                    'keyword': keyword
-                }
-                all_yesterday_news.append(filtered_item)
-                count_google += 1
-        log_lines.append(f"🌐 Google News: {count_google} 条")
+    # 合并
+    all_news = baidu_news + google_news + bing_news + duck_news
 
-        # --- SerpApi Bing News ---
-        print(f"\n🌐 [SerpApi Bing News] 抓取关键词: {keyword}")
-        news_data_bing = fetch_serpapi_bing_news(keyword)
-        raw_filename_bing = get_output_path(fetch_date, f"raw_serp_bingnews_{keyword}_{fetch_date}.json")
-        with open(raw_filename_bing, "w", encoding="utf-8") as f:
-            json.dump(news_data_bing, f, ensure_ascii=False, indent=2)
-        print(f"完整API返回内容已保存到 {raw_filename_bing}")
-        for item in news_data_bing.get("organic_results", []):
-            date_str = item.get('date', '')
-            if is_bing_news_yesterday(date_str):
-                news_date = fetch_date
-                filtered_item = {
-                    'title': item.get('title', ''),
-                    'link': item.get('link', ''),
-                    'source': item.get('source', ''),
-                    'date': item.get('date', ''),
-                    'fetchdate': news_date,
-                    'sourceapi': 'serp_bingnews',
-                    'thumbnail': item.get('thumbnail', None),
-                    'keyword': keyword
-                }
-                all_yesterday_news.append(filtered_item)
-                count_bing += 1
-        log_lines.append(f"🌐 Bing News: {count_bing} 条")
+    # 去重（按title+link）
+    unique = {}
+    for item in all_news:
+        key = (item.get('title', '').strip(), item.get('link', '').strip())
+        if key not in unique:
+            unique[key] = item
+    deduped_news = list(unique.values())
 
-        # --- SerpApi DuckDuckGo News ---
-        print(f"\n🌐 [SerpApi DuckDuckGo News] 抓取关键词: {keyword}")
-        news_data_duck = fetch_serpapi_duckduckgo_news(keyword)
-        raw_filename_duck = get_output_path(fetch_date, f"raw_serp_duckduckgo_news_{keyword}_{fetch_date}.json")
-        with open(raw_filename_duck, "w", encoding="utf-8") as f:
-            json.dump(news_data_duck, f, ensure_ascii=False, indent=2)
-        print(f"完整API返回内容已保存到 {raw_filename_duck}")
-        for item in news_data_duck.get("news_results", []):
-            date_str = item.get('date', '')
-            if is_duckduckgo_news_yesterday(date_str):
-                news_date = parse_duckduckgo_news_date(date_str)
-                filtered_item = {
-                    'title': item.get('title', ''),
-                    'link': item.get('link', ''),
-                    'source': item.get('source', ''),
-                    'date': item.get('date', ''),
-                    'fetchdate': news_date,
-                    'sourceapi': 'serp_duckduckgo_news',
-                    'thumbnail': item.get('thumbnail', None),
-                    'keyword': keyword
-                }
-                all_yesterday_news.append(filtered_item)
-                count_duck += 1
-        log_lines.append(f"🌐 DuckDuckGo News: {count_duck} 条")
-
-        # 合并去重：标题+链接唯一
-        unique = {}
-        for item in all_yesterday_news:
-            # 黑名单过滤
-            text_to_check = f"{item.get('source','')} {item.get('title','')} {item.get('link','')}"
-            matched_kw = next((kw for kw in blacklist_keywords if kw.lower() in text_to_check.lower()), None)
-            if matched_kw:
-                log_lines.append(f"🚫 黑名单过滤: [{matched_kw}] | 标题: {item.get('title','')} | 来源: {item.get('source','')} | 链接: {item.get('link','')}")
-                continue
-            key = (item.get('title', '').strip(), item.get('link', '').strip())
-            if key not in unique:
-                unique[key] = item
-        deduped_news = list(unique.values())
-
-        # 剔除tv.cctv.com视频新闻，并记录日志
-        filtered_news = []
-        skipped_video_items = []
-        for item in deduped_news:
-            url = item.get('link')
-            if url and 'tv.cctv.com' in url:
-                skipped_video_items.append({'title': item.get('title', ''), 'link': url})
-                continue
+    # 过滤黑名单
+    filtered_news = []
+    for item in deduped_news:
+        title = item.get('title', '')
+        if not any(bad in title for bad in blacklist_keywords):
             filtered_news.append(item)
-        if skipped_video_items:
-            log_lines.append("📺 跳过仅含视频的新闻（tv.cctv.com）：")
-            for item in skipped_video_items:
-                log_lines.append(f"  - {item['title']} | {item['link']}")
 
-        # 统计去重后每个API的数量
-        api_counts = {}
-        for item in filtered_news:
-            api = item.get('sourceapi', 'unknown')
-            api_counts[api] = api_counts.get(api, 0) + 1
-        for api, count in api_counts.items():
-            log_lines.append(f"✅ 去重后 {api}: {count} 条")
-        log_lines.append(f"⭐️ 去重后总保存: {len(filtered_news)} 条")
-        log_lines.append("")
+    # 自动推断主关键词（如果未传--main_keyword）
+    if not main_keyword:
+        for mk, sk_list in SEARCH_KEYWORDS.items():
+            if keyword in sk_list:
+                main_keyword = mk
+                break
+        else:
+            main_keyword = keyword  # fallback
 
-        deduped_filename = get_output_path(fetch_date, f"{fetch_date}_{keyword}.json")
-        with open(deduped_filename, "w", encoding="utf-8") as f:
+    # 写入
+    if output_path:
+        with open(output_path, 'w', encoding='utf-8') as f:
             json.dump(filtered_news, f, ensure_ascii=False, indent=2)
-        print(f"合并去重后昨天新闻已保存到 {deduped_filename}，数量：{len(filtered_news)}")
+        print(f"[INFO] 已保存 {len(filtered_news)} 条新闻到 {output_path}")
+        # 统一风格写日志
+        log_path = os.path.join("output", "run_log.txt")
+        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        log = (
+            f"\n[🕒 {now}]\n"
+            f"执行程序: fetch_and_filter\n"
+            f"🔑 主关键词: {main_keyword}\n"
+            f"🔍 搜索关键词: {search_keyword or keyword}\n"
+            f"📅 日期: {fetch_date}\n"
+            f"📄 输出文件: {output_path}\n"
+            f"🌐 Baidu News: {len(baidu_news)} 条\n"
+            f"🌐 Google News: {len(google_news)} 条\n"
+            f"🌐 Bing News: {len(bing_news)} 条\n"
+            f"🌐 DuckDuckGo News: {len(duck_news)} 条\n"
+            f"🚫 黑名单过滤: {len(deduped_news) - len(filtered_news)} 条\n"
+            f"⭐️ 去重后总保存: {len(filtered_news)} 条\n"
+            f"==============================\n"
+        )
+        with open(log_path, "a", encoding="utf-8") as logf:
+            logf.write(log)
+    else:
+        print(f"[INFO] 共采集 {len(filtered_news)} 条新闻（未指定输出文件，不保存）")
 
-    # 写入全局统一日志
-    log_path = os.path.join("output", "run_log.txt")
-    with open(log_path, "a", encoding="utf-8") as logf:
-        for line in log_lines:
-            logf.write(line + "\n")
-    print(f"日志已写入 {log_path}")
-
+# 命令行入口
 if __name__ == "__main__":
     main() 

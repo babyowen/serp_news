@@ -3,6 +3,18 @@
 ## 项目简介
 本项目实现了多新闻源自动采集、正文抓取、AI打分与摘要总结的全自动链路，具备高可用性、自动化、易维护等特点。支持关键词批量处理、自动适配反爬机制、详细日志追踪，并对依赖环境和驱动做了项目级隔离。所有采集和正文抓取逻辑均严格筛选"昨天"的新闻，无法补充更早的历史新闻。
 
+## 近期主要更新（2024-06）
+
+1. **摘要支持三轮流程**：
+   - 第一轮：初稿摘要。
+   - 第二轮：评判官建议+优化摘要。
+   - 第三轮：热点追踪（自动对比前一天和今天的摘要，识别持续热点，结构和输出自动保存）。
+2. `config.py` 新增多轮摘要相关prompt配置，支持自定义每轮system/user prompt。
+3. `write_to_mysql.py` 新增 `fetch_latest_summary`，可自动获取前一天最大轮次摘要。
+4. `fetch_and_filter.py` 日志主关键词自动推断，保证日志主控主题准确。
+5. 所有多轮摘要、热点追踪结果、prompt、日志均自动保存，无需手动干预。
+6. 其它细节优化：数据库写入、日志、关键词配置等。
+
 ---
 
 ## 主要功能
@@ -12,6 +24,37 @@
 - 采集结果统一格式化为 JSON 文件，按日期和关键词分类存储。
 - 自动去重（标题+链接）、黑名单过滤、跳过视频新闻（如 tv.cctv.com）。
 - 支持命令行参数指定日期（仅采集该日期"昨天"的新闻，主要用于补录当天漏采）。
+- **自动跳过已抓取关键词：** 在抓取新闻列表时，程序会自动判断 `output/{日期}/{日期}_{关键词}.json`（合并去重后的主输出文件）是否已存在，存在则跳过该关键词，避免重复抓取。例如：如果 `output/2025-06-05/2025-06-05_政府基金.json` 已存在，则不会再次抓取"政府基金"的新闻。
+
+#### 采集数据格式说明（2024-06统一规范）
+
+每条新闻的JSON结构如下，所有字段均为自动生成，便于后续数据库写入和分析：
+
+```json
+{
+  "title": "新闻标题",
+  "link": "新闻链接",
+  "source": "新闻来源",
+  "date": "原始API返回的时间字符串，如 '1 day ago'、'昨天'、'2025-06-06 09:00' 等",
+  "fetchdate": "抓取日期，格式如 '2025-06-06'，即本地采集时的日期",
+  "sourceapi": "采集来源标记，如 'serp_googlenews'、'serp_baidunews'、'serp_bingnews'、'serp_duckduckgo_news'",
+  "thumbnail": "缩略图链接（如有）",
+  "keyword": "主关键词",
+  "main_keyword": "主关键词（与keyword一致，便于聚合）",
+  "search_keyword": "实际用于采集的搜索关键词",
+  "content": "正文内容（正文抓取后补充）",
+  "wordcount": 123,
+  "custom_grab": false
+  // 其它字段视API返回和后续流程自动补充
+}
+```
+
+- `date` 字段保留原始API返回的时间字符串，便于追溯和灵活解析。
+- `fetchdate` 字段为本地抓取时的日期，所有入库、统计均以此为准。
+- `sourceapi` 字段标记采集来源，便于后续溯源和分析。
+- 其它字段如 `content`、`wordcount`、`custom_grab` 等在正文抓取和后续流程中自动补充。
+
+所有采集、正文、评分、摘要等流程均以此格式为基础，确保数据链路一致。
 
 ### 2. 自动正文抓取（多重兜底+定制化）
 - 对每条新闻链接，自动抓取正文并统计字数。
@@ -198,20 +241,28 @@ A:
 ```sql
 CREATE TABLE scored_news (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    date VARCHAR(64),
+    date VARCHAR(64),           -- 原始API时间字符串
     title VARCHAR(255),
     link TEXT,
     source VARCHAR(255),
-    fetchdate DATE,
-    sourceapi VARCHAR(255),
+    fetchdate DATE,             -- 本地抓取日期
+    sourceapi VARCHAR(255),     -- 采集来源标记
     thumbnail TEXT,
-    keyword VARCHAR(255),
+    keyword VARCHAR(255),       -- 主关键词
     content LONGTEXT,
     wordcount INT,
     custom_grab BOOLEAN,
     score INT
 );
 ```
+
+#### 字段映射说明
+- `date`：对应JSON的原始API时间字符串，便于追溯。
+- `fetchdate`：对应JSON的抓取日期，所有统计、分析、分区均以此为准。
+- `sourceapi`：对应JSON的采集来源标记。
+- 其它字段一一对应。
+
+所有JSON采集字段与数据库表字段严格一一对应，确保数据链路清晰、可追溯。
 
 ### summary_news 表
 ```sql
@@ -266,11 +317,81 @@ python write_to_mysql.py --date 2025-06-01
 
 ---
 
-## 其它说明
-- `config.py` 里的 DEFAULT_KEYWORDS 控制批量导入的关键词。
-- 数据库表结构如上，`scored_news.date` 字段为原始新闻日期（字符串），`fetchdate` 字段为抓取日期（DATE 类型）。
-- 如需清空表数据，可用：
+## 关键词配置机制（2024-06更新）
+
+### 新机制说明
+
+本项目关键词配置采用"主关键词+搜索用关键词"映射机制，极大提升了采集灵活性和主题聚合能力。
+
+- **主关键词**：你关心的主题词，用于后续所有打分、摘要、数据库写入、统计分析等，是所有流程的核心。
+- **搜索用关键词**：实际用于采集新闻的关键词，可以和主关键词相同，也可以完全不同，也可以有多个。
+- **采集时**：遍历每个主关键词的所有搜索用关键词，采集到的新闻全部归属于主关键词。
+- **打分、摘要、数据库写入时**：全部以主关键词为核心，所有新闻都归属于主关键词。
+- **日志输出**：会标明主关键词和实际搜索用关键词，便于追溯和分析。
+
+### 配置示例
+
+在 `config.py` 中：
+
+```python
+SEARCH_KEYWORDS = {
+    "养老": ["养老"],
+    "公积金": ["公积金"],
+    "政府基金": ["政府基金", "引导基金"],
+    "江苏南京国资委": ["江苏省国资委", "南京市国资委"]
+    # 你可以继续扩展更多主关键词和搜索用关键词
+}
+DEFAULT_KEYWORDS = list(SEARCH_KEYWORDS.keys())
+DEFAULT_KEYWORD = DEFAULT_KEYWORDS[0]
+```
+
+- 采集时会用所有搜索用关键词去抓取，采集到的新闻都归属于主关键词（如 `2025-06-05_政府基金.json`）。
+- 后续所有流程（打分、摘要、数据库写入）都只处理主关键词的 json 文件。
+- 你可以灵活设定主关键词和搜索用关键词的关系，主题聚合更清晰。
+
+### 旧机制说明（已废弃）
+
+- 旧版的"二级关键词"配置（`SECONDARY_KEYWORDS`）已废弃，不再使用。
+- 现在只需维护 `SEARCH_KEYWORDS`，无需再考虑二级关键词逻辑。
+
+---
+
+## 新增功能说明（2024-06）
+
+### 1. MySQL 建表说明
+
+为支持抓取统计数据的结构化存储，需在 MySQL 中新建如下表：
+
 ```sql
-TRUNCATE TABLE scored_news;
-TRUNCATE TABLE summary_news;
+CREATE TABLE news_source_stats (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    date DATE NOT NULL,
+    keyword VARCHAR(50) NOT NULL,
+    domain VARCHAR(100) NOT NULL,
+    count INT NOT NULL
+);
+```
+
+### 2. write_to_mysql.py 新增抓取统计数据入库功能
+
+- 新增 `insert_news_source_stats(json_path, target_date)` 函数，支持将 `output/news_source_stats.json` 中 `date=target_date` 的所有数据写入 `news_source_stats` 表。
+- 查重逻辑：同一天、同关键词、同域名的数据只插入一次（`date+keyword+domain` 唯一）。
+- 日志自动记录写入、跳过、异常等情况。
+- 在主流程 `main()` 中自动调用，无需手动干预。
+- 只会写入"昨天"的数据，避免重复或历史数据误入。
+
+#### 用法
+
+1. 确保已在数据库中建好 `news_source_stats` 表。
+2. 正常运行 `python write_to_mysql.py`，会自动将 `output/news_source_stats.json` 中昨天的数据写入数据库。
+3. 日志输出在 `output/run_log.txt`，可追踪写入详情。
+
+#### 相关函数说明
+
+```python
+def insert_news_source_stats(json_path, target_date):
+    # 读取 news_source_stats.json，过滤 date==target_date 的数据
+    # 查重（date+keyword+domain），避免重复插入
+    # 写入 news_source_stats 表
+    # 日志记录写入、跳过、异常
 ```
