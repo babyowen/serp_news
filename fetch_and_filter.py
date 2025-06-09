@@ -309,6 +309,20 @@ def main():
             item['sourceapi'] = 'serp_duckduckgo_news'
             duck_news.append(item)
 
+    # 统一处理 source 字段为字符串
+    def normalize_source(item):
+        source = item.get('source')
+        if isinstance(source, dict):
+            return source.get('name', '')
+        elif isinstance(source, str):
+            return source
+        else:
+            return ''
+
+    for news_list in [baidu_news, google_news, bing_news, duck_news]:
+        for item in news_list:
+            item['source'] = normalize_source(item)
+
     # 合并
     all_news = baidu_news + google_news + bing_news + duck_news
 
