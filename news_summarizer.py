@@ -222,25 +222,39 @@ def append_log(date, keyword, model_name, prompt, summary_path, news_count, succ
         f.write(log)
     print(f"[INFO] 日志已写入: {log_path}")
 
-def call_llm(system_prompt, user_prompt, platform, model_name, stream_mode=False):
+def call_llm(system_prompt, user_prompt, platform, model_name, stream_mode=False, max_retries=3, timeout=120, retry_interval=10):
+    from openai import error
     model_cfg = NEWS_SUMMARY_MODELS[platform][model_name]
     client = OpenAI(api_key=model_cfg['api_key'], base_url=model_cfg['base_url'])
-    response = client.chat.completions.create(
-        model=model_cfg['model'],
-        messages=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_prompt}
-        ],
-        stream=stream_mode
-    )
-    if stream_mode:
-        result = ""
-        for chunk in response:
-            if hasattr(chunk.choices[0].delta, "content") and chunk.choices[0].delta.content:
-                result += chunk.choices[0].delta.content
-    else:
-        result = response.choices[0].message.content.strip()
-    return result
+    messages = [
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": user_prompt}
+    ]
+    for attempt in range(1, max_retries + 1):
+        try:
+            response = client.chat.completions.create(
+                model=model_cfg['model'],
+                messages=messages,
+                stream=stream_mode,
+                timeout=timeout
+            )
+            if stream_mode:
+                result = ""
+                for chunk in response:
+                    if hasattr(chunk.choices[0].delta, "content") and chunk.choices[0].delta.content:
+                        result += chunk.choices[0].delta.content
+            else:
+                result = response.choices[0].message.content.strip()
+            return result
+        except error.Timeout as e:
+            print(f"[WARN] 第{attempt}次请求超时（{timeout}s），将在{retry_interval}s后重试...")
+        except Exception as e:
+            print(f"[WARN] 第{attempt}次请求失败: {e}，将在{retry_interval}s后重试...")
+        if attempt < max_retries:
+            import time
+            time.sleep(retry_interval)
+    print(f"[ERROR] 连续{max_retries}次请求均失败，已放弃。")
+    return None
 
 # 主流程入口
 # date: 日期
@@ -301,6 +315,18 @@ def main(date=None, keyword=None, model_name=None, output_dir=None):
         with open(os.path.join("output", "run_log.txt"), "a", encoding="utf-8") as f:
             f.write(f"[WARN] token数超限，已切换到bailian平台qwen-plus-latest模型，token数: {user_tokens}\n")
     prompt, summary, system_tokens, user_tokens, result_tokens, used_platform, used_model = summarize_news(news_list, platform=platform, model_name=model, keyword=keyword)
+    # ========== 新增：容错处理 ==========
+    if summary is None:
+        # 记录跳过日志
+        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        log_path = os.path.join("output", "run_log.txt")
+        skip_log = (
+            f"[🕒 {now}]\n[SKIP] 跳过关键词: {keyword}\n原因: 大模型API连续多次失败或超时，未能完成总结\n==============================\n"
+        )
+        with open(log_path, "a", encoding="utf-8") as f:
+            f.write(skip_log)
+        print(f"[SKIP] 跳过关键词: {keyword}，原因: 大模型API连续多次失败或超时")
+        return
     # ========== 第一轮摘要结果保存 ==========
     print("\n===== 第1轮-初稿摘要 =====")
     print("[system prompt]")
@@ -339,6 +365,16 @@ def main(date=None, keyword=None, model_name=None, output_dir=None):
     print("\n[user prompt]")
     print(judge_user_prompt.strip())
     judge_suggestion = call_llm(judge_system_prompt, judge_user_prompt, judge_platform, judge_model)
+    if judge_suggestion is None:
+        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        log_path = os.path.join("output", "run_log.txt")
+        skip_log = (
+            f"[🕒 {now}]\n[SKIP] 跳过关键词: {keyword}\n原因: 评判官环节大模型API连续多次失败或超时，未能完成总结\n==============================\n"
+        )
+        with open(log_path, "a", encoding="utf-8") as f:
+            f.write(skip_log)
+        print(f"[SKIP] 跳过关键词: {keyword}，原因: 评判官环节大模型API连续多次失败或超时")
+        return
     print("\n[大模型输出]")
     print(judge_suggestion.strip())
     # ========== 第二轮优化摘要 ==========
@@ -364,6 +400,16 @@ def main(date=None, keyword=None, model_name=None, output_dir=None):
     print("\n[user prompt]")
     print(optimize_user_prompt.strip())
     improved_summary = call_llm(optimize_system_prompt, optimize_user_prompt, optimize_platform, optimize_model)
+    if improved_summary is None:
+        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        log_path = os.path.join("output", "run_log.txt")
+        skip_log = (
+            f"[🕒 {now}]\n[SKIP] 跳过关键词: {keyword}\n原因: 优化环节大模型API连续多次失败或超时，未能完成总结\n==============================\n"
+        )
+        with open(log_path, "a", encoding="utf-8") as f:
+            f.write(skip_log)
+        print(f"[SKIP] 跳过关键词: {keyword}，原因: 优化环节大模型API连续多次失败或超时")
+        return
     print("\n[大模型输出]")
     print(improved_summary.strip())
     round2_entry = {
@@ -388,6 +434,16 @@ def main(date=None, keyword=None, model_name=None, output_dir=None):
         print("\n[user prompt]")
         print(hotspot_user_prompt)
         hotspot_summary = call_llm(hotspot_system_prompt, hotspot_user_prompt, optimize_platform, optimize_model)
+        if hotspot_summary is None:
+            now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            log_path = os.path.join("output", "run_log.txt")
+            skip_log = (
+                f"[🕒 {now}]\n[SKIP] 跳过关键词: {keyword}\n原因: 热点追踪环节大模型API连续多次失败或超时，未能完成总结\n==============================\n"
+            )
+            with open(log_path, "a", encoding="utf-8") as f:
+                f.write(skip_log)
+            print(f"[SKIP] 跳过关键词: {keyword}，原因: 热点追踪环节大模型API连续多次失败或超时")
+            return
         print("\n[大模型输出]")
         print(hotspot_summary.strip())
         round3_entry = {

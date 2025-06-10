@@ -7122,3 +7122,498 @@
 [Token统计] 平台: deepseek，模型: deepseek-reasoner，system: 499, user: 47683, result: 756
 ✅ 运行结果: 成功
 ==============================
+
+[🕒 2025-06-10 19:06:31]
+执行程序: fetch_and_filter
+🔑 主关键词: 国资委测试
+🔍 搜索关键词: 江苏省国资委
+📅 日期: 2025-06-09
+📄 输出文件: output/2025-06-09/tmp_2025-06-09_国资委测试_江苏省国资委.json
+🌐 Baidu News: 0 条
+🌐 Google News: 0 条
+🌐 Bing News: 14 条
+🌐 DuckDuckGo News: 45 条
+🚫 黑名单过滤: 0 条
+⭐️ 去重后总保存: 24 条
+==============================
+
+[🕒 2025-06-10 19:07:30]
+执行程序: fetch_and_filter
+🔑 主关键词: 国资委测试
+🔍 搜索关键词: 南京市国资委
+📅 日期: 2025-06-09
+📄 输出文件: output/2025-06-09/tmp_2025-06-09_国资委测试_南京市国资委.json
+🌐 Baidu News: 0 条
+🌐 Google News: 0 条
+🌐 Bing News: 8 条
+🌐 DuckDuckGo News: 4 条
+🚫 黑名单过滤: 0 条
+⭐️ 去重后总保存: 11 条
+==============================
+
+[🕒 2025-06-10 19:08:18]
+执行程序: fetch_and_filter
+🔑 主关键词: 国资委测试
+🔍 搜索关键词: 江苏交通控股
+📅 日期: 2025-06-09
+📄 输出文件: output/2025-06-09/tmp_2025-06-09_国资委测试_江苏交通控股.json
+🌐 Baidu News: 0 条
+🌐 Google News: 0 条
+🌐 Bing News: 9 条
+🌐 DuckDuckGo News: 26 条
+🚫 黑名单过滤: 0 条
+⭐️ 去重后总保存: 16 条
+==============================
+
+[🕒 2025-06-10 19:09:09]
+执行程序: fetch_and_filter
+🔑 主关键词: 国资委测试
+🔍 搜索关键词: 苏豪
+📅 日期: 2025-06-09
+📄 输出文件: output/2025-06-09/tmp_2025-06-09_国资委测试_苏豪.json
+🌐 Baidu News: 1 条
+🌐 Google News: 10 条
+🌐 Bing News: 5 条
+🌐 DuckDuckGo News: 10 条
+🚫 黑名单过滤: 0 条
+⭐️ 去重后总保存: 6 条
+==============================
+
+[🕒 2025-06-10 19:09:55]
+执行程序: fetch_and_filter
+🔑 主关键词: 国资委测试
+🔍 搜索关键词: 江苏国信集团
+📅 日期: 2025-06-09
+📄 输出文件: output/2025-06-09/tmp_2025-06-09_国资委测试_江苏国信集团.json
+🌐 Baidu News: 0 条
+🌐 Google News: 0 条
+🌐 Bing News: 4 条
+🌐 DuckDuckGo News: 10 条
+🚫 黑名单过滤: 0 条
+⭐️ 去重后总保存: 5 条
+==============================
+
+==============================
+📰 [抓取新闻正文] 2025-06-10 19:13:57
+🔑 关键词: 国资委测试
+🗂️ 模式: 正式
+📄 处理的json文件: output/2025-06-09/2025-06-09_国资委测试.json
+
+📊 抓取统计：
+  ✅ 成功抓取正文: 45 篇
+  ✨ 其中定制化抓取: 1 篇
+  🌐 本次采集新闻源数量: 30
+  ❌ 抓取失败: 12 篇
+
+🎯 定制化抓取命中统计：
+  - www.yicai.com: 1 篇
+      • 晚间公告丨6月9日这些公告有看头 | https://www.yicai.com/news/102654545.html
+
+⚠️ 未能抓取的新闻：
+  - 对话江苏国企掌门人|以变应变 苏豪向新——专访苏豪控股集团党委书记、董事长周勇 | http://www.xgll.com.cn/xwzx/2025-06/09/content_440887.htm 
+  - 涉及关联交易违规，中煤科工金租及时任总裁被罚 | https://www.msn.cn/zh-cn/news/other/%E6%B6%89%E5%8F%8A%E5%85%B3%E8%81%94%E4%BA%A4%E6%98%93%E8%BF%9D%E8%A7%84-%E4%B8%AD%E7%85%A4%E7%A7%91%E5%B7%A5%E9%87%91%E7%A7%9F%E5%8F%8A%E6%97%B6%E4%BB%BB%E6%80%BB%E8%A3%81%E8%A2%AB%E7%BD%9A/ar-AA1GlcJa?ocid=BingNewsVerp 
+  - 【盘后公告集锦】突发！这家公司股票交易异常波动停牌核查 | https://www.msn.cn/zh-cn/money/%E7%83%AD%E9%97%A8%E8%82%A1/%E7%AA%81%E5%8F%91-%E8%BF%99%E5%AE%B6%E5%85%AC%E5%8F%B8%E8%82%A1%E7%A5%A8%E4%BA%A4%E6%98%93%E5%BC%82%E5%B8%B8%E6%B3%A2%E5%8A%A8%E5%81%9C%E7%89%8C%E6%A0%B8%E6%9F%A5-%E7%9B%98%E5%90%8E%E5%85%AC%E5%91%8A%E9%9B%86%E9%94%A6/ar-AA1Gmunk?ocid=BingNewsVerp 
+  - 【早报】中美将举行经贸磋商机制首次会议；事关稀土出口，商务部发声 | https://cn.investing.com/news/stock-market-news/article-2839154 
+  - 长三角先进制造业集群联盟揭牌成立 | https://www.msn.cn/zh-cn/news/other/%E9%95%BF%E4%B8%89%E8%A7%92%E5%85%88%E8%BF%9B%E5%88%B6%E9%80%A0%E4%B8%9A%E9%9B%86%E7%BE%A4%E8%81%94%E7%9B%9F%E6%8F%AD%E7%89%8C%E6%88%90%E7%AB%8B/ar-AA1GkvpP?ocid=BingNewsVerp 
+  - 对话江苏国企掌门人|以变应变 苏豪向新——专访苏豪控股集团党委 ... | http://www.xgll.com.cn/xwzx/2025-06/09/content_440887.htm 
+  - 中成股份：6月5日召开业绩说明会，投资者参与 | https://www.msn.cn/zh-cn/money/%E7%83%AD%E9%97%A8%E8%82%A1/%E4%B8%AD%E6%88%90%E8%82%A1%E4%BB%BD-6%E6%9C%885%E6%97%A5%E5%8F%AC%E5%BC%80%E4%B8%9A%E7%BB%A9%E8%AF%B4%E6%98%8E%E4%BC%9A-%E6%8A%95%E8%B5%84%E8%80%85%E5%8F%82%E4%B8%8E/ar-AA1GkqGg 
+  - 【盘后公告集锦】突发!这家公司股票交易异常波动停牌核查 | https://www.msn.cn/zh-cn/money/%E7%83%AD%E9%97%A8%E8%82%A1/%E7%AA%81%E5%8F%91-%E8%BF%99%E5%AE%B6%E5%85%AC%E5%8F%B8%E8%82%A1%E7%A5%A8%E4%BA%A4%E6%98%93%E5%BC%82%E5%B8%B8%E6%B3%A2%E5%8A%A8%E5%81%9C%E7%89%8C%E6%A0%B8%E6%9F%A5-%E7%9B%98%E5%90%8E%E5%85%AC%E5%91%8A%E9%9B%86%E9%94%A6/ar-AA1Gmunk 
+  - 【早报】中美将举行经贸磋商机制首次会议；事关稀土出口，商务部 ... | https://cn.investing.com/news/stock-market-news/article-2839154 
+  - 长三角先进制造业集群联盟揭牌成立 | https://www.msn.cn/zh-cn/news/other/%E9%95%BF%E4%B8%89%E8%A7%92%E5%85%88%E8%BF%9B%E5%88%B6%E9%80%A0%E4%B8%9A%E9%9B%86%E7%BE%A4%E8%81%94%E7%9B%9F%E6%8F%AD%E7%89%8C%E6%88%90%E7%AB%8B/ar-AA1GkvpP 
+  - “苏超”踢出圈 文旅巧变现 | https://www.msn.cn/zh-cn/news/other/%E4%BA%BA%E6%B0%91%E6%97%A5%E6%8A%A5%E6%B5%B7%E5%A4%96%E7%89%88-%E8%8B%8F%E8%B6%85-%E8%B8%A2%E5%87%BA%E5%9C%88-%E6%96%87%E6%97%85%E5%B7%A7%E5%8F%98%E7%8E%B0/ar-AA1Gk66G?ocid=BingNewsVerp 
+  - "苏超"踢出圈 文旅巧变现 | https://www.msn.cn/zh-cn/news/other/%E4%BA%BA%E6%B0%91%E6%97%A5%E6%8A%A5%E6%B5%B7%E5%A4%96%E7%89%88-%E8%8B%8F%E8%B6%85-%E8%B8%A2%E5%87%BA%E5%9C%88-%E6%96%87%E6%97%85%E5%B7%A7%E5%8F%98%E7%8E%B0/ar-AA1Gk66G 
+==============================
+
+
+[🕒 2025-06-10 20:22:53]
+执行程序: ai评分
+🔑 关键词: 国资委测试
+📄 原json文件: output/2025-06-09/2025-06-09_国资委测试.json
+🆕 评分结果文件: output/2025-06-09/2025-06-09_国资委测试_scored.json
+📊 新闻总数: 50
+✅ 完成评分: 50
+0分:29 1分:3 2分:16 3分:0 4分:1 5分:1
+📝 3分及以上新闻正文总字数: 6510
+==============================
+
+[🕒 2025-06-10 20:27:43]
+执行程序: news_summarizer
+🔑 主关键词: 国资委测试
+涉及搜索关键词: 江苏省国资委, 苏豪
+📅 日期: 2025-06-09
+🤖 平台: deepseek
+🤖 模型: deepseek-reasoner
+📄 3分及以上新闻数量: 2
+📝 送给大模型的prompt前300字:  【新闻关键词】是: 国资委测试  【新闻列表】: 标题1: A股早盘利好利空：事关稀土出口，商务部发声；今日无新股上市及申购 分数1: 5 新闻1: 今日无新股上市，无新股申购。 宏观新闻 1、外交部发言人宣布：应英国政府邀请，中共中央政治局委员、国务院副总理何立峰将于6月8日至13日访问英国。其间，将与美方举行中美经贸磋商机制首次会议。 2、商务部新闻发言人就中重稀土出口管制措施答记者问表示，稀土相关物项具有军民两用属性，对其实施出口管制符合国际通行做法。随着机器人、新能源汽车等行业发展，各国对中重稀土在民用领域的需求量正持续增长。中国作为负责任的大国，充分考虑各国在民用领域的合理需求与关
+💾 总结结果文件: output/2025-06-09/2025-06-09_国资委测试_summary.json
+[Token统计] 平台: deepseek，模型: deepseek-reasoner，system: 499, user: 3935, result: 482
+✅ 运行结果: 成功
+==============================
+[查重] news_websites 已存在，跳过: m.hinews.cn
+[查重] news_websites 已存在，跳过: www.sinchew.com.my
+[查重] news_websites 已存在，跳过: i.ifeng.com
+[查重] news_websites 已存在，跳过: finance.sina.cn
+[查重] news_websites 已存在，跳过: www.tianshui.com.cn
+[查重] news_websites 已存在，跳过: www.wenweipo.com
+[查重] news_websites 已存在，跳过: auto.caijing.com.cn
+[查重] news_websites 已存在，跳过: fj.xinhuanet.com
+[查重] news_websites 已存在，跳过: finance.qingdaonews.com
+[查重] news_websites 已存在，跳过: hk.finance.yahoo.com
+[查重] news_websites 已存在，跳过: www.dcement.com
+[查重] news_websites 已存在，跳过: qd.ifeng.com
+[查重] news_websites 已存在，跳过: www.ctee.com.tw
+[查重] news_websites 已存在，跳过: www.jpchinapress.com
+[查重] news_websites 已存在，跳过: www.21jingji.com
+[查重] news_websites 已存在，跳过: www.stcn.com
+[查重] news_websites 已存在，跳过: hzdaily.hangzhou.com.cn
+[查重] news_websites 已存在，跳过: news.cjn.cn
+[查重] news_websites 已存在，跳过: www.china.com.cn
+[查重] news_websites 已存在，跳过: jr.dahe.cn
+[查重] news_websites 已存在，跳过: www.tj.news.cn
+[查重] news_websites 已存在，跳过: gz.house.ifeng.com
+[查重] news_websites 已存在，跳过: app.xinhuanet.com
+[查重] news_websites 已存在，跳过: www.ncsti.gov.cn
+[查重] news_websites 已存在，跳过: www.xmtv.cn
+[查重] news_websites 已存在，跳过: www.xhby.net
+[查重] news_websites 已存在，跳过: inews.hket.com
+[查重] news_websites 已存在，跳过: gansu.gscn.com.cn
+[查重] news_websites 已存在，跳过: m.voc.com.cn
+[查重] news_websites 已存在，跳过: www.zhenjiang.gov.cn
+[查重] news_websites 已存在，跳过: guba.sina.com.cn
+[查重] news_websites 已存在，跳过: stock.cfi.cn
+[查重] news_websites 已存在，跳过: finance.stockstar.com
+[查重] news_websites 已存在，跳过: m.thepaper.cn
+[查重] news_websites 已存在，跳过: jsnews.jschina.com.cn
+[查重] news_websites 已存在，跳过: m.eeo.com.cn
+[查重] news_websites 已存在，跳过: www.bjnews.com.cn
+[查重] news_websites 已存在，跳过: news.youth.cn
+[查重] news_websites 已存在，跳过: news.10jqka.com.cn
+[查重] news_websites 已存在，跳过: sc.stock.cnfol.com
+[查重] news_websites 已存在，跳过: huanbao.bjx.com.cn
+[查重] news_websites 已存在，跳过: www.yicai.com
+[查重] news_websites 已存在，跳过: www.cq.gov.cn
+[查重] news_websites 已存在，跳过: www.nxnews.net
+[查重] news_websites 已存在，跳过: news.cnnb.com.cn
+[查重] news_websites 已存在，跳过: www.cnr.cn
+[查重] news_websites 已存在，跳过: www.huxiu.com
+[查重] news_websites 已存在，跳过: www.hinews.cn
+[查重] news_websites 已存在，跳过: www.henan.gov.cn
+[查重] news_websites 已存在，跳过: www.xinhuanet.com
+[查重] news_websites 已存在，跳过: www.top168.com
+[查重] news_websites 已存在，跳过: www.scjjrb.com
+[查重] news_websites 已存在，跳过: theory.people.com.cn
+[查重] news_websites 已存在，跳过: www.sx.gov.cn
+[查重] news_websites 已存在，跳过: news.ifeng.com
+[查重] news_websites 已存在，跳过: www.gs.xinhuanet.com
+[查重] news_websites 已存在，跳过: m.yunnan.cn
+[查重] news_websites 已存在，跳过: www.ctnews.com.cn
+[查重] news_websites 已存在，跳过: news.cnfol.com
+[查重] news_websites 已存在，跳过: software.it168.com
+[查重] news_websites 已存在，跳过: xm.fjsen.com
+[查重] news_websites 已存在，跳过: www.cqnews.net
+[查重] news_websites 已存在，跳过: m.36kr.com
+[查重] news_websites 已存在，跳过: linyi.sdnews.com.cn
+[查重] news_websites 已存在，跳过: yjglt.henan.gov.cn
+[查重] news_websites 已存在，跳过: news.hbtv.com.cn
+[查重] news_websites 已存在，跳过: www.kf.cn
+[查重] news_websites 已存在，跳过: news.hexun.com
+[查重] news_websites 已存在，跳过: epaper.tianjinwe.com
+[查重] news_websites 已存在，跳过: wallstreetcn.com
+[查重] news_websites 已存在，跳过: sd.dzwww.com
+[查重] news_websites 已存在，跳过: env.people.com.cn
+[查重] news_websites 已存在，跳过: news.iqilu.com
+[查重] news_websites 已存在，跳过: cn.chinadaily.com.cn
+[写入] news_websites 新增: sports.huanqiu.com
+[查重] news_websites 已存在，跳过: www.businesstoday.com.tw
+[查重] news_websites 已存在，跳过: views.ce.cn
+[查重] news_websites 已存在，跳过: www.cq.chinanews.com.cn
+[查重] news_websites 已存在，跳过: www.leiphone.com
+[查重] news_websites 已存在，跳过: house.stockstar.com
+[查重] news_websites 已存在，跳过: www.chinapeace.gov.cn
+[查重] news_websites 已存在，跳过: www.am730.com.hk
+[查重] news_websites 已存在，跳过: www.hi.jcy.gov.cn
+[查重] news_websites 已存在，跳过: www.36kr.com
+[查重] news_websites 已存在，跳过: www.afinance.cn
+[查重] news_websites 已存在，跳过: paper.people.com.cn
+[查重] news_websites 已存在，跳过: www.licai18.com
+[查重] news_websites 已存在，跳过: news.sxrb.com
+[查重] news_websites 已存在，跳过: udn.com
+[查重] news_websites 已存在，跳过: hunan.voc.com.cn
+[查重] news_websites 已存在，跳过: www.sznews.com
+[查重] news_websites 已存在，跳过: sc.china.com.cn
+[查重] news_websites 已存在，跳过: news.cyol.com
+[查重] news_websites 已存在，跳过: www.ithome.com
+[查重] news_websites 已存在，跳过: house.hexun.com
+[查重] news_websites 已存在，跳过: henan.china.com
+[查重] news_websites 已存在，跳过: www.ah.chinanews.com.cn
+[查重] news_websites 已存在，跳过: 4g.66wz.com
+[查重] news_websites 已存在，跳过: www.takungpao.com
+[查重] news_websites 已存在，跳过: www.zhonghongwang.com
+[查重] news_websites 已存在，跳过: news.shm.com.cn
+[查重] news_websites 已存在，跳过: hn.ifeng.com
+[查重] news_websites 已存在，跳过: news.ycwb.com
+[查重] news_websites 已存在，跳过: www.news.cn
+[查重] news_websites 已存在，跳过: www.ybzhan.cn
+[查重] news_websites 已存在，跳过: news.tom.com
+[查重] news_websites 已存在，跳过: finance.jxnews.com.cn
+[查重] news_websites 已存在，跳过: hy.stock.cnfol.com
+[查重] news_websites 已存在，跳过: www.sh.chinanews.com.cn
+[查重] news_websites 已存在，跳过: sjz.focus.cn
+[查重] news_websites 已存在，跳过: caijing.mnw.cn
+[查重] news_websites 已存在，跳过: city.sina.com.cn
+[查重] news_websites 已存在，跳过: finance.cnr.cn
+[查重] news_websites 已存在，跳过: tech.sina.cn
+[查重] news_websites 已存在，跳过: www.hljnews.cn
+[查重] news_websites 已存在，跳过: www.sasac.gov.cn
+[查重] news_websites 已存在，跳过: cbgc.scol.com.cn
+[查重] news_websites 已存在，跳过: society.people.com.cn
+[查重] news_websites 已存在，跳过: sh.news.cn
+[查重] news_websites 已存在，跳过: finance.ifeng.com
+[查重] news_websites 已存在，跳过: fj.china.com.cn
+[查重] news_websites 已存在，跳过: nx.people.com.cn
+[查重] news_websites 已存在，跳过: www.tynews.com.cn
+[查重] news_websites 已存在，跳过: 36kr.com
+[查重] news_websites 已存在，跳过: www.financialnews.com.cn
+[查重] news_websites 已存在，跳过: info.51.ca
+[查重] news_websites 已存在，跳过: news.china.com.cn
+[查重] news_websites 已存在，跳过: www.hb.chinanews.com.cn
+[查重] news_websites 已存在，跳过: www.changzhou.gov.cn
+[查重] news_websites 已存在，跳过: js.ifeng.com
+[查重] news_websites 已存在，跳过: stock.10jqka.com.cn
+[查重] news_websites 已存在，跳过: www.jiangmen.gov.cn
+[查重] news_websites 已存在，跳过: www.nbd.com.cn
+[查重] news_websites 已存在，跳过: www.thepaper.cn
+[查重] news_websites 已存在，跳过: military.china.com
+[查重] news_websites 已存在，跳过: www.farmer.com.cn
+[查重] news_websites 已存在，跳过: news.hainan.net
+[查重] news_websites 已存在，跳过: news.solarbe.com
+[查重] news_websites 已存在，跳过: m.hexun.com
+[查重] news_websites 已存在，跳过: news.china.com
+[查重] news_websites 已存在，跳过: news.pedaily.cn
+[查重] news_websites 已存在，跳过: xycity.cn
+[查重] news_websites 已存在，跳过: stock.stockstar.com
+[查重] news_websites 已存在，跳过: www.gs.chinanews.com.cn
+[查重] news_websites 已存在，跳过: www.npc.gov.cn
+[查重] news_websites 已存在，跳过: m.online.sh.cn
+[查重] news_websites 已存在，跳过: www.locpg.gov.cn
+[查重] news_websites 已存在，跳过: www.cnstock.com
+[写入] news_websites 新增: legal.gmw.cn
+[查重] news_websites 已存在，跳过: auto.jschina.com.cn
+[查重] news_websites 已存在，跳过: user.guancha.cn
+[查重] news_websites 已存在，跳过: m.cyol.com
+[查重] news_websites 已存在，跳过: finance.caijing.com.cn
+[查重] news_websites 已存在，跳过: finance.people.com.cn
+[查重] news_websites 已存在，跳过: www.hangzhou.gov.cn
+[查重] news_websites 已存在，跳过: www.sxgov.cn
+[查重] news_websites 已存在，跳过: www.rfi.fr
+[查重] news_websites 已存在，跳过: www.eet-china.com
+[查重] news_websites 已存在，跳过: www.gov.cn
+[查重] news_websites 已存在，跳过: www.yzwb.net
+[查重] news_websites 已存在，跳过: www.heb.chinanews.com.cn
+[查重] news_websites 已存在，跳过: www.nantong.gov.cn
+[查重] news_websites 已存在，跳过: news.qq.com
+[查重] news_websites 已存在，跳过: news.sohu.com
+[查重] news_websites 已存在，跳过: bydrug.pharmcube.com
+[查重] news_websites 已存在，跳过: www.cfi.net.cn
+[查重] news_websites 已存在，跳过: opinion.caixin.com
+[查重] news_websites 已存在，跳过: news.cctv.com
+[查重] news_websites 已存在，跳过: ishare.ifeng.com
+[查重] news_websites 已存在，跳过: www.msn.cn
+[查重] news_websites 已存在，跳过: www.donews.com
+[查重] news_websites 已存在，跳过: baijiahao.baidu.com
+[查重] news_websites 已存在，跳过: m.ce.cn
+[查重] news_websites 已存在，跳过: www.xj.chinanews.com.cn
+[查重] news_websites 已存在，跳过: www.stdaily.com
+[查重] news_websites 已存在，跳过: www.hengyang.gov.cn
+[查重] news_websites 已存在，跳过: finance.eastmoney.com
+[查重] news_websites 已存在，跳过: www.yangtse.com
+[查重] news_websites 已存在，跳过: auto.youth.cn
+[查重] news_websites 已存在，跳过: news.fang.com
+[查重] news_websites 已存在，跳过: www.taizhou.gov.cn
+[查重] news_websites 已存在，跳过: www.workercn.cn
+[查重] news_websites 已存在，跳过: news.online.sh.cn
+[查重] news_websites 已存在，跳过: www.cebnet.com.cn
+[查重] news_websites 已存在，跳过: qh.people.com.cn
+[查重] news_websites 已存在，跳过: house.ifeng.com
+[查重] news_websites 已存在，跳过: m.sohu.com
+[写入] news_websites 新增: solution.yktchina.com
+[查重] news_websites 已存在，跳过: www.beijing.gov.cn
+[查重] news_websites 已存在，跳过: www.cfbond.com
+[查重] news_websites 已存在，跳过: cj.sina.cn
+[查重] news_websites 已存在，跳过: news.2500sz.com
+[查重] news_websites 已存在，跳过: www.ylrb.com
+[查重] news_websites 已存在，跳过: gbcode.rthk.hk
+[查重] news_websites 已存在，跳过: finance.sina.com.cn
+[查重] news_websites 已存在，跳过: m.gmw.cn
+[查重] news_websites 已存在，跳过: www.eeo.com.cn
+[查重] news_websites 已存在，跳过: www.aynews.net.cn
+[查重] news_websites 已存在，跳过: www.henan100.com
+[查重] news_websites 已存在，跳过: www.qinghai.gov.cn
+[查重] news_websites 已存在，跳过: www.stheadline.com
+[查重] news_websites 已存在，跳过: news.bandao.cn
+[查重] news_websites 已存在，跳过: house.hangzhou.com.cn
+[查重] news_websites 已存在，跳过: www.ebiotrade.com
+[查重] news_websites 已存在，跳过: news.southcn.com
+[查重] news_websites 已存在，跳过: news.lyd.com.cn
+[查重] news_websites 已存在，跳过: wap.stockstar.com
+[查重] news_websites 已存在，跳过: www.myguancha.com
+[查重] news_websites 已存在，跳过: www.orientaldaily.com.my
+[查重] news_websites 已存在，跳过: szjj.china.com.cn
+[查重] news_websites 已存在，跳过: m.fznews.com.cn
+[查重] news_websites 已存在，跳过: yantai.dzwww.com
+[查重] news_websites 已存在，跳过: news.sina.com.cn
+[查重] news_websites 已存在，跳过: www.mca.gov.cn
+[查重] news_websites 已存在，跳过: www.ts.cn
+[查重] news_websites 已存在，跳过: china.kyodonews.net
+[查重] news_websites 已存在，跳过: www.ne21.com
+[查重] news_websites 已存在，跳过: www.chnfund.com
+[查重] news_websites 已存在，跳过: www.sohu.com
+[查重] news_websites 已存在，跳过: www.cnsoftnews.com
+[查重] news_websites 已存在，跳过: js.news.cn
+[查重] news_websites 已存在，跳过: cq.people.com.cn
+[查重] news_websites 已存在，跳过: www.ce.cn
+[查重] news_websites 已存在，跳过: news.scut.edu.cn
+[查重] news_websites 已存在，跳过: cnews.chinadaily.com.cn
+[查重] news_websites 已存在，跳过: zt.ldnews.cn
+[查重] news_websites 已存在，跳过: sh.xinhuanet.com
+[查重] news_websites 已存在，跳过: www.163.com
+[写入] news_websites 新增: zgh.wuxi.gov.cn
+[查重] news_websites 已存在，跳过: www.qlwb.com.cn
+[查重] news_websites 已存在，跳过: china.huanqiu.com
+[查重] news_websites 已存在，跳过: news.cnhubei.com
+[查重] news_websites 已存在，跳过: www.js.xinhuanet.com
+[查重] news_websites 已存在，跳过: health.sina.com.cn
+[查重] news_websites 已存在，跳过: www.acabridge.cn
+[查重] news_websites 已存在，跳过: www.aastocks.com
+[查重] news_websites 已存在，跳过: finance1.ce.cn
+[查重] news_websites 已存在，跳过: hm.people.com.cn
+[查重] news_websites 已存在，跳过: www.jntimes.cn
+[查重] news_websites 已存在，跳过: www.gkzhan.com
+[查重] news_websites 已存在，跳过: www.spp.gov.cn
+[查重] news_websites 已存在，跳过: xz.people.com.cn
+[查重] news_websites 已存在，跳过: tv.cctv.com
+[查重] news_websites 已存在，跳过: www.guandian.cn
+[查重] news_websites 已存在，跳过: www.hi.chinanews.com.cn
+[查重] news_websites 已存在，跳过: www.ccdi.gov.cn
+[查重] news_websites 已存在，跳过: www.qdnrbs.cn
+[查重] news_websites 已存在，跳过: hb.ifeng.com
+[查重] news_websites 已存在，跳过: www.baotounews.com.cn
+[查重] news_websites 已存在，跳过: www.chinanews.com.cn
+[查重] news_websites 已存在，跳过: taian.sdnews.com.cn
+[查重] news_websites 已存在，跳过: fnc.ebc.net.tw
+[查重] news_websites 已存在，跳过: news.dichan.sina.com.cn
+[查重] news_websites 已存在，跳过: news.dahe.cn
+[查重] news_websites 已存在，跳过: www.sfccn.com
+[查重] news_websites 已存在，跳过: jjckb.xinhuanet.com
+[查重] news_websites 已存在，跳过: www.chinanews.com
+[查重] news_websites 已存在，跳过: insurance.hexun.com
+[查重] news_websites 已存在，跳过: ah.anhuinews.com
+[查重] news_websites 已存在，跳过: life.china.com
+[查重] news_websites 已存在，跳过: www.jfdaily.com
+[查重] news_websites 已存在，跳过: news.gmw.cn
+[查重] news_websites 已存在，跳过: henan.people.com.cn
+[查重] news_websites 已存在，跳过: www.hxnews.com
+[查重] news_websites 已存在，跳过: www.hunantoday.cn
+[查重] news_websites 已存在，跳过: funds.hexun.com
+[查重] news_websites 已存在，跳过: www.ishaanxi.com
+[查重] news_websites 已存在，跳过: nt.focus.cn
+[查重] news_websites 已存在，跳过: m.caijing.com.cn
+[查重] news_websites 已存在，跳过: www.cet.com.cn
+[查重] news_websites 已存在，跳过: www.slrbs.com
+[查重] news_websites 已存在，跳过: www.zj.xinhuanet.com
+[查重] news_websites 已存在，跳过: news.cqjjnet.com
+[查重] news_websites 已存在，跳过: www.ganzhou.gov.cn
+[查重] news_websites 已存在，跳过: cls.cn
+[写入] news_websites 新增: www.cnenergynews.cn
+[查重] news_websites 已存在，跳过: www.dailyqd.com
+[查重] news_websites 已存在，跳过: www.br-cn.com
+[查重] news_websites 已存在，跳过: www.zaobao.com.sg
+[查重] news_websites 已存在，跳过: www.cmrnn.com.cn
+[查重] news_websites 已存在，跳过: www.tj.gov.cn
+[查重] news_websites 已存在，跳过: www.ctdsb.net
+[查重] news_websites 已存在，跳过: www.metroradio.com.hk
+[查重] news_websites 已存在，跳过: www.huaxia.com
+[查重] news_websites 已存在，跳过: dangjian.people.com.cn
+[查重] news_websites 已存在，跳过: www.iygw.cn
+[查重] news_websites 已存在，跳过: sichuan.scol.com.cn
+[查重] news_websites 已存在，跳过: finance.ce.cn
+[查重] news_websites 已存在，跳过: meet.bnext.com.tw
+[查重] news_websites 已存在，跳过: www.wuhunews.cn
+[写入] news_websites 新增: news.qingdaonews.com
+[查重] news_websites 已存在，跳过: hunan.ifeng.com
+[查重] news_websites 已存在，跳过: qingdao.sdnews.com.cn
+[查重] news_websites 已存在，跳过: www.newskj.org
+[查重] news_websites 已存在，跳过: www.gxzf.gov.cn
+[查重] news_websites 已存在，跳过: tech.china.com.cn
+[查重] news_websites 已存在，跳过: www.yinsfinance.com
+[查重] news_websites 已存在，跳过: www.ceweekly.cn
+[查重] news_websites 已存在，跳过: jiangxi.jxnews.com.cn
+[查重] news_websites 已存在，跳过: std.stheadline.com
+[查重] news_websites 已存在，跳过: whysw.org
+[查重] news_websites 已存在，跳过: politics.gmw.cn
+[查重] news_websites 已存在，跳过: wap.eastmoney.com
+[查重] news_websites 已存在，跳过: www.xkb.com.cn
+[查重] news_websites 已存在，跳过: ent.china.com
+[查重] news_websites 已存在，跳过: fund.eastmoney.com
+[查重] news_websites 已存在，跳过: gz.cnr.cn
+[查重] news_websites 已存在，跳过: jingji.cctv.com
+[查重] news_websites 已存在，跳过: jining.focus.cn
+[查重] news_websites 已存在，跳过: view.inews.qq.com
+[查重] news_websites 已存在，跳过: www.jiemian.com
+[查重] news_websites 已存在，跳过: www.tjbh.com
+[查重] news_websites 已存在，跳过: www.msn.com
+[查重] news_websites 已存在，跳过: www.bbtnews.com.cn
+[查重] news_websites 已存在，跳过: companies.caixin.com
+[查重] news_websites 已存在，跳过: finance.youth.cn
+[查重] news_websites 已存在，跳过: world.huanqiu.com
+[查重] news_websites 已存在，跳过: finance.china.com.cn
+[查重] news_websites 已存在，跳过: estate.caijing.com.cn
+[写入] news_websites 新增: www.xgll.com.cn
+[查重] news_websites 已存在，跳过: fj.sina.com.cn
+[查重] news_websites 已存在，跳过: world.gmw.cn
+[查重] news_websites 已存在，跳过: www.jl.chinanews.com.cn
+[查重] news_websites 已存在，跳过: tw.news.yahoo.com
+[2025-06-10 20:27:48] 导入数据库
+  文件: output/news_sources.txt
+  表: news_websites
+  成功写入: 7 条
+  跳过: 317 条
+------------------------------
+[2025-06-10 20:27:49] 导入数据库
+  文件: output/news_source_stats.json
+  表: news_source_stats
+  成功写入: 30 条
+  跳过: 0 条
+  失败: 0 条
+------------------------------
+[2025-06-10 20:27:50] 导入数据库
+  关键词: 国资委测试
+  文件: output/2025-06-09/2025-06-09_国资委测试_scored.json
+  表: scored_news
+  成功写入: 32 条
+  跳过: 18 条
+  失败: 0 条
+------------------------------
+[2025-06-10 20:27:50] 导入数据库
+  关键词: 国资委测试
+  文件: output/2025-06-09/2025-06-09_国资委测试_summary.json
+  表: summary_news
+  成功写入: 2 条
+  跳过: 0 条
+  失败: 0 条
+------------------------------
+[WARN] token数超限，已切换到bailian平台qwen-plus-latest模型，token数: 164749
+
+[🕒 2025-06-11 06:46:06]
+执行程序: news_summarizer
+🔑 主关键词: 养老
+涉及搜索关键词: 养老
+📅 日期: 2025-06-10
+🤖 平台: bailian
+🤖 模型: qwen-plus-latest
+📄 3分及以上新闻数量: 108
+📝 送给大模型的prompt前300字:  【新闻关键词】是: 养老  【新闻列表】: 标题1: “智”绘夕阳红,江苏4项目入选智慧健康养老推广目录 分数1: 5 新闻1: 交汇点讯 “智”绘夕阳红 养老更“享老”。近日，工业和信息化部、民政部、国家卫生健康委员会公布《智慧健康养老产品及服务推广目录（2024年版）》。推广目录包括80个产品、31项服务，其中，江苏共有两项产品两项服务入选。  开展智慧健康养老产品及服务推广目录工作，目的在于促进典型智慧健康养老产品和服务推广应用，推动智慧健康养老产业发展。  其中，智慧健康养老产品主要包括具有趋势分析、智能预警等功能的健康管理类智能产品等六类产品及多种产品集成应用的场景化解决方案；智慧
+💾 总结结果文件: output/2025-06-10/2025-06-10_养老_summary.json
+[Token统计] 平台: bailian，模型: qwen-plus-latest，system: 834, user: 164749, result: 2567
+✅ 运行结果: 成功
+==============================
