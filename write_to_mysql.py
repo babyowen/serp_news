@@ -148,13 +148,14 @@ def insert_news_websites(txt_path):
     with open(txt_path, 'r', encoding='utf-8') as f:
         websites = set(line.strip() for line in f if line.strip())
     success, skip = 0, 0
+    duplicate_found = False  # 标记是否有查重
     for website in websites:
         cursor.execute(
             "SELECT website FROM news_websites WHERE website=%s",
             (website,)
         )
         if cursor.fetchone():
-            write_log(f"[查重] news_websites 已存在，跳过: {website}")
+            duplicate_found = True
             skip += 1
             continue
         try:
@@ -166,6 +167,9 @@ def insert_news_websites(txt_path):
             write_log(f"[写入] news_websites 新增: {website}")
         except Exception as e:
             write_log(f"[导入异常] news_websites: {website} 错误: {e}")
+    # 只输出一条查重日志
+    if duplicate_found:
+        write_log(f"[查重] news_websites 已存在，跳过部分已存在网站（仅提示一次）")
     conn.commit()
     now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     log_msg = f"[{now}] 导入数据库\n  文件: {txt_path}\n  表: news_websites\n  成功写入: {success} 条\n  跳过: {skip} 条\n------------------------------"

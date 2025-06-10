@@ -77,6 +77,7 @@ jr.dahe.cn
 js.ifeng.com
 js.news.cn
 jsnews.jschina.com.cn
+legal.gmw.cn
 life.china.com
 linyi.sdnews.com.cn
 m.36kr.com
@@ -113,16 +114,19 @@ news.fang.com
 news.gmw.cn
 news.hainan.net
 news.hbtv.com.cn
+news.hexun.com
 news.ifeng.com
 news.iqilu.com
 news.lyd.com.cn
 news.online.sh.cn
 news.pedaily.cn
+news.qingdaonews.com
 news.qq.com
 news.scut.edu.cn
 news.shm.com.cn
 news.sina.com.cn
 news.sohu.com
+news.solarbe.com
 news.southcn.com
 news.sxrb.com
 news.tom.com
@@ -145,6 +149,8 @@ sichuan.scol.com.cn
 sjz.focus.cn
 society.people.com.cn
 software.it168.com
+solution.yktchina.com
+sports.huanqiu.com
 std.stheadline.com
 stock.10jqka.com.cn
 stock.cfi.cn
@@ -195,6 +201,7 @@ www.chinanews.com.cn
 www.chinapeace.gov.cn
 www.chnfund.com
 www.cmrnn.com.cn
+www.cnenergynews.cn
 www.cnr.cn
 www.cnsoftnews.com
 www.cnstock.com
@@ -255,6 +262,7 @@ www.myguancha.com
 www.nantong.gov.cn
 www.nbd.com.cn
 www.ncsti.gov.cn
+www.ne21.com
 www.news.cn
 www.newskj.org
 www.npc.gov.cn
@@ -266,6 +274,7 @@ www.qlwb.com.cn
 www.rfi.fr
 www.sasac.gov.cn
 www.scjjrb.com
+www.sfccn.com
 www.sh.chinanews.com.cn
 www.sinchew.com.my
 www.slrbs.com
@@ -289,12 +298,15 @@ www.ts.cn
 www.tynews.com.cn
 www.wenweipo.com
 www.workercn.cn
+www.wuhunews.cn
+www.xgll.com.cn
 www.xhby.net
 www.xinhuanet.com
 www.xj.chinanews.com.cn
 www.xkb.com.cn
 www.xmtv.cn
 www.yangtse.com
+www.ybzhan.cn
 www.yicai.com
 www.yinsfinance.com
 www.ylrb.com
@@ -308,4 +320,5 @@ xycity.cn
 xz.people.com.cn
 yantai.dzwww.com
 yjglt.henan.gov.cn
+zgh.wuxi.gov.cn
 zt.ldnews.cn
