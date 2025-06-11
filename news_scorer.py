@@ -22,20 +22,47 @@ def score_news(title: str, content: str, keyword: str) -> int:
     print(f"[system] {NEWS_SCORE_SYSTEM_MSG}")
     print(f"[user] {prompt}")
     print("==========================\n")
-    client = OpenAI(api_key=DEEPSEEK_API_KEY, base_url=DEEPSEEK_BASE_URL)
-    response = client.chat.completions.create(
-        model='deepseek-reasoner',
-        messages=[
-            {"role": "system", "content": NEWS_SCORE_SYSTEM_MSG},
-            {"role": "user", "content": prompt}
-        ],
-        stream=False,
-        temperature=1
-    )
-    score_str = response.choices[0].message.content.strip()
+    # 新增：token超限主动监控
     try:
+        import tiktoken
+        enc = tiktoken.get_encoding('cl100k_base')
+        token_count = len(enc.encode(prompt))
+        if token_count > 61000:
+            print(f"[WARN] 评分prompt token数超限（主动判断），token数: {token_count}")
+            print(f"[WARN] prompt开头200字: {prompt[:200]}")
+            print(f"[WARN] prompt结尾200字: {prompt[-200:]}")
+            with open("output/run_log.txt", "a", encoding="utf-8") as f:
+                f.write(f"[WARN] 评分prompt token数超限（主动判断），token数: {token_count}\n")
+                f.write(f"[WARN] prompt开头200字: {prompt[:200]}\n")
+                f.write(f"[WARN] prompt结尾200字: {prompt[-200:]}\n")
+    except Exception as e:
+        print(f"[WARN] tiktoken统计token失败: {e}")
+    client = OpenAI(api_key=DEEPSEEK_API_KEY, base_url=DEEPSEEK_BASE_URL)
+    try:
+        response = client.chat.completions.create(
+            model='deepseek-reasoner',
+            messages=[
+                {"role": "system", "content": NEWS_SCORE_SYSTEM_MSG},
+                {"role": "user", "content": prompt}
+            ],
+            stream=False,
+            temperature=1
+        )
+        score_str = response.choices[0].message.content.strip()
         score = int(score_str[0])  # 只取第一个数字
-    except Exception:
+    except Exception as e:
+        # 新增：API返回token超限时记录prompt头尾
+        err_str = str(e)
+        is_token_limit = any(x in err_str.lower() for x in ["token", "context length", "input length", "max input limit", "too long"])
+        if is_token_limit:
+            print(f"[WARN] 评分API返回token超限，prompt开头200字: {prompt[:200]}")
+            print(f"[WARN] 评分API返回token超限，prompt结尾200字: {prompt[-200:]}")
+            with open("output/run_log.txt", "a", encoding="utf-8") as f:
+                f.write(f"[WARN] 评分API返回token超限，prompt开头200字: {prompt[:200]}\n")
+                f.write(f"[WARN] 评分API返回token超限，prompt结尾200字: {prompt[-200:]}\n")
+        print(f"[ERROR] 评分异常，关键词: {keyword}, 标题: {title}")
+        print(f"[ERROR] 异常类型: {type(e).__name__}, 内容: {e}")
+        print(f"[ERROR] prompt前200字: {prompt[:200]}")
         score = 0
     return score
 

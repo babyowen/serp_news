@@ -239,6 +239,15 @@ def call_llm(system_prompt, user_prompt, platform, model_name, stream_mode=False
                 result = response.choices[0].message.content.strip()
             return result
         except Exception as e:
+            # 新增：API返回token超限时记录prompt头尾
+            err_str = str(e)
+            is_token_limit = any(x in err_str.lower() for x in ["token", "context length", "input length", "max input limit", "too long"])
+            if is_token_limit:
+                print(f"[WARN] API返回token超限，prompt开头200字: {user_prompt[:200]}")
+                print(f"[WARN] API返回token超限，prompt结尾200字: {user_prompt[-200:]}")
+                with open(os.path.join("output", "run_log.txt"), "a", encoding="utf-8") as f:
+                    f.write(f"[WARN] API返回token超限，prompt开头200字: {user_prompt[:200]}\n")
+                    f.write(f"[WARN] API返回token超限，prompt结尾200字: {user_prompt[-200:]}\n")
             print(f"[WARN] 第{attempt}次请求失败: {e}，将在{retry_interval}s后重试...")
             # 打印原始响应内容（如有）
             response = getattr(e, 'response', None)
@@ -310,14 +319,19 @@ def main(date=None, keyword=None, model_name=None, output_dir=None):
     # 1. deepseek超限，切换到qwen-max
     if platform == 'deepseek' and user_tokens > 61000:
         print(f"[WARN] token数{user_tokens}超出deepseek 64k限制，自动切换到bailian平台qwen-plus-latest模型")
+        # 新增：记录超限prompt头尾
+        print(f"[WARN] 超限prompt开头200字: {user_prompt[:200]}")
+        print(f"[WARN] 超限prompt结尾200字: {user_prompt[-200:]}")
+        with open(os.path.join("output", "run_log.txt"), "a", encoding="utf-8") as f:
+            f.write(f"[WARN] token数超限（主动判断），已切换到bailian平台qwen-plus-latest模型，token数: {user_tokens}\n")
+            f.write(f"[WARN] 超限prompt开头200字: {user_prompt[:200]}\n")
+            f.write(f"[WARN] 超限prompt结尾200字: {user_prompt[-200:]}\n")
         platform = 'bailian'
         model = 'qwen-plus-latest'
         news_list_str = build_news_list_prompt(news_list)
         user_prompt = NEWS_SUMMARY_USER_PROMPT.format(news_list=news_list_str, keyword=keyword)
         user_tokens = count_tokens(user_prompt, platform=platform, model_name=model)
         switched = True
-        with open(os.path.join("output", "run_log.txt"), "a", encoding="utf-8") as f:
-            f.write(f"[WARN] token数超限，已切换到bailian平台qwen-plus-latest模型，token数: {user_tokens}\n")
     prompt, summary, system_tokens, user_tokens, result_tokens, used_platform, used_model = summarize_news(news_list, platform=platform, model_name=model, keyword=keyword)
     # ========== 新增：容错处理 ==========
     if summary is None:
