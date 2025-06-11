@@ -119,29 +119,21 @@ def summarize_news(news_list, platform=None, model_name=None, keyword=None):
     print(f"[INFO] system prompt tokens: {system_tokens}")
     print(f"[INFO] user prompt tokens: {user_tokens}")
     print("==========================\n")
-    # 统一OpenAI SDK调用
-    client = OpenAI(api_key=model_cfg['api_key'], base_url=model_cfg['base_url'])
+    # 统一用call_llm调用，带重试和异常捕获
+    stream_mode = model_cfg['model'] in ['qwq-plus']  # 可扩展其它流式模型
     print(f"[DEBUG] OpenAI SDK调用模型: {model_cfg['model']}")
     print(f"[DEBUG] OpenAI SDK地址: {model_cfg['base_url']}")
     print(f"[DEBUG] API Key: {'已配置' if model_cfg['api_key'] else '未配置'}")
-    # 判断是否需要流式（如qwq-plus等）
-    stream_mode = model_cfg['model'] in ['qwq-plus']  # 可扩展其它流式模型
     print(f"[DEBUG] stream参数: {stream_mode}")
-    response = client.chat.completions.create(
-        model=model_cfg['model'],
-        messages=[
-            {"role": "system", "content": NEWS_SUMMARY_SYSTEM_PROMPT},
-            {"role": "user", "content": user_prompt}
-        ],
-        stream=stream_mode
+    result = call_llm(
+        NEWS_SUMMARY_SYSTEM_PROMPT,
+        user_prompt,
+        platform,
+        model_name,
+        stream_mode=stream_mode
     )
-    if stream_mode:
-        result = ""
-        for chunk in response:
-            if hasattr(chunk.choices[0].delta, "content") and chunk.choices[0].delta.content:
-                result += chunk.choices[0].delta.content
-    else:
-        result = response.choices[0].message.content.strip()
+    if result is None:
+        return user_prompt, None, system_tokens, user_tokens, 0, platform, model_name
     result_tokens = count_tokens(result, platform, model_name)
     print(f"[INFO] 返回内容tokens: {result_tokens}")
     return user_prompt, result, system_tokens, user_tokens, result_tokens, platform, model_name
@@ -222,8 +214,8 @@ def append_log(date, keyword, model_name, prompt, summary_path, news_count, succ
         f.write(log)
     print(f"[INFO] 日志已写入: {log_path}")
 
-def call_llm(system_prompt, user_prompt, platform, model_name, stream_mode=False, max_retries=3, timeout=120, retry_interval=10):
-    from openai import error
+def call_llm(system_prompt, user_prompt, platform, model_name, stream_mode=False, max_retries=3, timeout=700, retry_interval=10):
+    # from openai import error  # 已删除，兼容新版openai
     model_cfg = NEWS_SUMMARY_MODELS[platform][model_name]
     client = OpenAI(api_key=model_cfg['api_key'], base_url=model_cfg['base_url'])
     messages = [
@@ -246,10 +238,22 @@ def call_llm(system_prompt, user_prompt, platform, model_name, stream_mode=False
             else:
                 result = response.choices[0].message.content.strip()
             return result
-        except error.Timeout as e:
-            print(f"[WARN] 第{attempt}次请求超时（{timeout}s），将在{retry_interval}s后重试...")
         except Exception as e:
             print(f"[WARN] 第{attempt}次请求失败: {e}，将在{retry_interval}s后重试...")
+            # 打印原始响应内容（如有）
+            response = getattr(e, 'response', None)
+            if response is not None:
+                try:
+                    print(f"[DEBUG] 原始响应内容: {response.text}")
+                except Exception as ex:
+                    print(f"[DEBUG] 无法打印原始响应内容: {ex}")
+            else:
+                # 打印异常的args内容
+                if hasattr(e, 'args') and e.args:
+                    print(f"[DEBUG] 异常args: {e.args}")
+                    if isinstance(e.args[0], str):
+                        print(f"[DEBUG] 异常args[0]内容前500字: {e.args[0][:500]}")
+                print(f"[DEBUG] 异常类型: {type(e)}, 内容: {e}")
         if attempt < max_retries:
             import time
             time.sleep(retry_interval)
@@ -354,11 +358,13 @@ def main(date=None, keyword=None, model_name=None, output_dir=None):
     judge_system_tokens = count_tokens(judge_system_prompt, platform=used_platform, model_name=used_model)
     judge_platform, judge_model = used_platform, used_model
     if judge_platform == 'deepseek' and (judge_user_tokens + judge_system_tokens) > 61000:
-        print(f"[WARN] 评判官token数超限，切换到bailian平台qwen-plus-latest模型")
+        print(f"[WARN] 评判官token数超限({judge_user_tokens + judge_system_tokens}>61000)，切换到bailian平台qwen-plus-latest模型")
         judge_platform = 'bailian'
         judge_model = 'qwen-plus-latest'
         judge_user_tokens = count_tokens(judge_user_prompt, platform=judge_platform, model_name=judge_model)
         judge_system_tokens = count_tokens(judge_system_prompt, platform=judge_platform, model_name=judge_model)
+        with open(os.path.join("output", "run_log.txt"), "a", encoding="utf-8") as f:
+            f.write(f"[WARN] 评判官token数超限，已切换到bailian平台qwen-plus-latest模型，token数: {judge_user_tokens + judge_system_tokens}\n")
     print("\n===== 第2-1轮-评判官意见 =====")
     print("[system prompt]")
     print(judge_system_prompt.strip())
@@ -389,11 +395,13 @@ def main(date=None, keyword=None, model_name=None, output_dir=None):
     optimize_user_tokens = count_tokens(optimize_user_prompt, platform=optimize_platform, model_name=optimize_model)
     optimize_system_tokens = count_tokens(optimize_system_prompt, platform=optimize_platform, model_name=optimize_model)
     if optimize_platform == 'deepseek' and (optimize_user_tokens + optimize_system_tokens) > 61000:
-        print(f"[WARN] 优化摘要token数超限，切换到bailian平台qwen-plus-latest模型")
+        print(f"[WARN] 优化摘要token数超限({optimize_user_tokens + optimize_system_tokens}>61000)，切换到bailian平台qwen-plus-latest模型")
         optimize_platform = 'bailian'
         optimize_model = 'qwen-plus-latest'
         optimize_user_tokens = count_tokens(optimize_user_prompt, platform=optimize_platform, model_name=optimize_model)
         optimize_system_tokens = count_tokens(optimize_system_prompt, platform=optimize_platform, model_name=optimize_model)
+        with open(os.path.join("output", "run_log.txt"), "a", encoding="utf-8") as f:
+            f.write(f"[WARN] 优化摘要token数超限，已切换到bailian平台qwen-plus-latest模型，token数: {optimize_user_tokens + optimize_system_tokens}\n")
     print("\n===== 第2-2轮-优化后摘要 =====")
     print("[system prompt]")
     print(optimize_system_prompt.strip())
