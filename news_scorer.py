@@ -10,6 +10,8 @@ from datetime import datetime, timedelta
 from openai import OpenAI
 from config import NEWS_SCORE_PROMPT, DEEPSEEK_API_KEY, DEEPSEEK_BASE_URL, DEEPSEEK_MODEL, DEFAULT_KEYWORD, NEWS_SCORE_SYSTEM_MSG, DEFAULT_KEYWORDS
 import argparse
+# 新增导入规则打分配置
+from config import NEWS_RULE_BASED_SCORING
 
 # 调用大模型对单条新闻进行评分
 # title: 新闻标题
@@ -37,10 +39,12 @@ def score_news(title: str, content: str, keyword: str) -> int:
                 f.write(f"[WARN] prompt结尾200字: {prompt[-200:]}\n")
     except Exception as e:
         print(f"[WARN] tiktoken统计token失败: {e}")
+    # 新增：根据关键词选择模型
+    model_to_use = 'deepseek-chat' if keyword == '国资委测试' else 'deepseek-reasoner'
     client = OpenAI(api_key=DEEPSEEK_API_KEY, base_url=DEEPSEEK_BASE_URL)
     try:
         response = client.chat.completions.create(
-            model='deepseek-reasoner',
+            model=model_to_use,
             messages=[
                 {"role": "system", "content": NEWS_SCORE_SYSTEM_MSG},
                 {"role": "user", "content": prompt}
@@ -66,10 +70,18 @@ def score_news(title: str, content: str, keyword: str) -> int:
         score = 0
     return score
 
+# 规则打分函数
+# 返回分数（int），未命中规则返回None
+def rule_based_score(title: str, main_keyword: str) -> int:
+    for rule in NEWS_RULE_BASED_SCORING:
+        if rule.get('main_keyword') == main_keyword and rule.get('title_contains') in title:
+            return rule.get('score', 0)
+    return None
+
 # 批量对新闻进行评分，去重、统计分布
 # json_path: 新闻json文件路径
 # keyword: 关键词
-# 返回：带分数的新闻列表、分数统计、新闻总数
+# 返回：带分数的新闻列表、分数统计、新闻总数、规则打分标题列表
 def batch_score_news(json_path, keyword):
     with open(json_path, "r", encoding="utf-8") as f:
         news_list = json.load(f)
@@ -83,6 +95,7 @@ def batch_score_news(json_path, keyword):
             seen_links.add(link)
     results = []
     score_counter = {i: 0 for i in range(6)}
+    rule_based_titles = []  # 新增：记录规则打分的标题
     for news in unique_news_list:
         title = news.get("title", "")
         content = news.get("content", "")
@@ -91,13 +104,19 @@ def batch_score_news(json_path, keyword):
         if wordcount == 0:
             score = 0
         else:
-            score = score_news(title, content, keyword)
+            # 先规则打分
+            rule_score = rule_based_score(title, keyword)
+            if rule_score is not None:
+                score = rule_score
+                rule_based_titles.append(title)  # 记录规则打分的标题
+            else:
+                score = score_news(title, content, keyword)
         news_with_score = dict(news)
         news_with_score["score"] = score  # 用英文key
         results.append(news_with_score)
         score_counter[score] = score_counter.get(score, 0) + 1
         print(f"标题: {title}\n分数: {score}\n")
-    return results, score_counter, len(unique_news_list)
+    return results, score_counter, len(unique_news_list), rule_based_titles
 
 # 保存带分数的新闻到新json文件，按分数降序排列
 # results: 新闻列表
@@ -120,7 +139,8 @@ def write_scored_json(results, json_path):
 # scored_count: 已评分数量
 # scored_json_path: 评分结果文件路径
 # results: 可选，带分数的新闻列表
-def append_log(keyword, json_path, total, score_counter, scored_count, scored_json_path, results=None):
+# rule_based_titles: 可选，规则打分标题列表
+def append_log(keyword, json_path, total, score_counter, scored_count, scored_json_path, results=None, rule_based_titles=None):
     print(f"[DEBUG] 准备写入日志，关键词: {keyword}")
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     log_path = os.path.join("output", "run_log.txt")
@@ -144,6 +164,13 @@ def append_log(keyword, json_path, total, score_counter, scored_count, scored_js
     )
     if results is not None:
         log += f"📝 3分及以上新闻正文总字数: {total_wordcount_3plus}\n"
+    # 新增：规则打分统计
+    if rule_based_titles is not None:
+        log += f"📋 规则打分新闻数: {len(rule_based_titles)}\n"
+        if rule_based_titles:
+            log += "规则打分新闻标题：\n"
+            for t in rule_based_titles:
+                log += f"- {t}\n"
     log += f"==============================\n"
     print(f"[DEBUG] 日志内容预览（前100字）：{log[:100]}")
     with open(log_path, "a", encoding="utf-8") as f:
@@ -213,9 +240,9 @@ def main():
             if already_scored:
                 print(f"已检测到 {json_path} 已经打分，跳过。")
                 continue
-            results, score_counter, total = batch_score_news(json_path, keyword)
+            results, score_counter, total, rule_based_titles = batch_score_news(json_path, keyword)
             scored_json_path = write_scored_json(results, json_path)
-            append_log(keyword, json_path, total, score_counter, len(results), scored_json_path, results)
+            append_log(keyword, json_path, total, score_counter, len(results), scored_json_path, results, rule_based_titles)
         return
 
     # 单关键词模式
@@ -239,9 +266,9 @@ def main():
     if not os.path.exists(json_path):
         print(f"未找到文件: {json_path}")
         return
-    results, score_counter, total = batch_score_news(json_path, keyword)
+    results, score_counter, total, rule_based_titles = batch_score_news(json_path, keyword)
     scored_json_path = write_scored_json(results, json_path)
-    append_log(keyword, json_path, total, score_counter, len(results), scored_json_path, results)
+    append_log(keyword, json_path, total, score_counter, len(results), scored_json_path, results, rule_based_titles)
 
 if __name__ == "__main__":
     main() 

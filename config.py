@@ -82,6 +82,11 @@ NEWS_SUMMARY_MODELS = {
             "base_url": "https://api.deepseek.com",
             "model": "deepseek-reasoner"
         },
+        "deepseek-chat": {
+            "api_key": os.getenv("DEEPSEEK_API_KEY"),
+            "base_url": "https://api.deepseek.com",
+            "model": "deepseek-chat"
+        },
         # 未来可扩展更多deepseek模型
     },
     "bailian": {
@@ -249,7 +254,7 @@ NEWS_SUMMARY_HOTSPOT_SYSTEM_PROMPT = '''
 #### 输出格式
 - 结构与前两轮一致，包含：
   - ## **📰 今日综述**
-  - ## **�� 新闻总结**(其中持续出现的新闻请用类似(该新闻近期频繁被提及)来做一些提示，但无需过分描述)
+  - ## **📺 新闻总结**(其中持续出现的新闻请用类似(该新闻近期频繁被提及)来做一些提示，但无需过分描述)
   - ## **📊 观点总结**
 - 输出时，不要输出你的分析和判断，只需要按照"输出格式"输出即可。
 - 输出内容务必结构清晰、逻辑严谨。
@@ -267,3 +272,14 @@ NEWS_SUMMARY_HOTSPOT_USER_PROMPT = '''
 
 请你对比前一天和今天的摘要，找出持续出现的新闻，并在"新闻总结"进行适度的提示。输出结构与前两轮一致。如没有热点新闻，则不要修改，直接输出。
 '''
+
+# ========== 规则打分配置 ==========
+# 每条规则为dict，包含'main_keyword'、'title_contains'、'score'等字段
+NEWS_RULE_BASED_SCORING = [
+    {
+        'main_keyword': '国资委测试',
+        'title_contains': '招募说明书',
+        'score': 1
+    },
+    # 你可以在此处继续添加更多规则
+]

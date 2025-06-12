@@ -24,6 +24,7 @@ from playwright.sync_api import sync_playwright
 from readability import Document
 from bs4 import BeautifulSoup
 from config import DEFAULT_KEYWORDS
+import re
 
 # 获取今天日期字符串
 def get_today_str():
@@ -173,11 +174,18 @@ def fetch_article_content(url, max_retries=3):
         if match_func(url.lower()):
             print(f"[调试] 优先命中定制化规则: {grab_func.__name__}, url={url}")
             text, grab_type = grab_func(fetch_article_content_with_selenium_driver(url))
+            # 乱码检测
+            if is_garbled(text):
+                print(f"[WARN] 定制化规则抓取到疑似乱码或异常正文，已丢弃。url={url}")
+                return '', 0, False
             return text, len(text), True
     # 针对GBK/GB2312等特殊站点优先用requests自动编码识别
     if any(domain in url for domain in ['jxnews.com.cn']):
         print("[调试] 命中特殊编码站点，优先 requests 抓取")
         text, wc, used_custom = fetch_article_content_with_requests(url)
+        if is_garbled(text):
+            print(f"[WARN] requests抓取到疑似乱码或异常正文，已丢弃。url={url}")
+            return '', 0, False
         if text and wc > 50:
             print("[调试] requests 抓取成功，提前 return")
             return text, wc, used_custom
@@ -191,6 +199,9 @@ def fetch_article_content(url, max_retries=3):
                 if result:
                     data = json.loads(result)
                     text = data.get('text', '')
+                    if is_garbled(text):
+                        print(f"[WARN] trafilatura抓取到疑似乱码或异常正文，已丢弃。url={url}")
+                        return '', 0, False
                     if text and len(text) > 50:
                         print("[调试] trafilatura 抓取成功，提前 return")
                         return text, len(text), False
@@ -205,6 +216,9 @@ def fetch_article_content(url, max_retries=3):
         article.download()
         article.parse()
         text = article.text
+        if is_garbled(text):
+            print(f"[WARN] newspaper3k抓取到疑似乱码或异常正文，已丢弃。url={url}")
+            return '', 0, False
         if text and len(text) > 50:
             print("[调试] newspaper3k 抓取成功，提前 return")
             return text, len(text), False
@@ -226,6 +240,9 @@ def fetch_article_content(url, max_retries=3):
             article.download(input_html=html_content)
             article.parse()
             text = article.text
+            if is_garbled(text):
+                print(f"[WARN] Playwright+Newspaper3k抓取到疑似乱码或异常正文，已丢弃。url={url}")
+                return '', 0, False
             if text and len(text) > 50:
                 print("[调试] Playwright+Newspaper3k 抓取成功，提前 return")
                 return text, len(text), False
@@ -237,6 +254,9 @@ def fetch_article_content(url, max_retries=3):
             text = doc.summary()
             soup = BeautifulSoup(text, 'html.parser')
             pure_text = soup.get_text(separator='\n').strip()
+            if is_garbled(pure_text):
+                print(f"[WARN] Playwright+Readability抓取到疑似乱码或异常正文，已丢弃。url={url}")
+                return '', 0, False
             if pure_text and len(pure_text) > 50:
                 print("[调试] Playwright+Readability 抓取成功，提前 return")
                 return pure_text, len(pure_text), False
@@ -248,6 +268,9 @@ def fetch_article_content(url, max_retries=3):
     try:
         print("[调试] selenium 定制化抓取")
         text, wc, custom_grab = fetch_article_content_with_selenium(url)
+        if is_garbled(text):
+            print(f"[WARN] selenium抓取到疑似乱码或异常正文，已丢弃。url={url}")
+            return '', 0, False
         if custom_grab or (text and wc > 50):
             print("[调试] selenium 定制化抓取命中，提前 return")
             return text, wc, custom_grab
@@ -479,4 +502,20 @@ if __name__ == '__main__':
         for keyword in DEFAULT_KEYWORDS:
             json_path = os.path.join("output", date_str, f"{date_str}_{keyword}.json")
             print(f"自动抓取: {json_path}")
-            process_json(keyword, date_str, mode) 
+            process_json(keyword, date_str, mode)
+
+def is_garbled(text):
+    # 1. 乱码特征：大量非中文、非英文字符
+    if not text:
+        return False
+    # 2. 统计可见字符比例
+    visible_chars = re.findall(r'[\u4e00-\u9fa5a-zA-Z0-9]', text)
+    if len(visible_chars) / max(len(text), 1) < 0.2:
+        return True
+    # 3. 连续问号/乱码符号
+    if re.search(r'[?]{10,}', text):
+        return True
+    # 4. 长度异常
+    if len(text) > 20000:
+        return True
+    return False 
