@@ -119,13 +119,12 @@ def summarize_news(news_list, platform=None, model_name=None, keyword=None):
     print(f"[INFO] system prompt tokens: {system_tokens}")
     print(f"[INFO] user prompt tokens: {user_tokens}")
     print("==========================\n")
-    # 统一用call_llm调用，带重试和异常捕获
-    stream_mode = model_cfg['model'] in ['qwq-plus']  # 可扩展其它流式模型
+    stream_mode = model_cfg['model'] in ['qwq-plus']
     print(f"[DEBUG] OpenAI SDK调用模型: {model_cfg['model']}")
     print(f"[DEBUG] OpenAI SDK地址: {model_cfg['base_url']}")
     print(f"[DEBUG] API Key: {'已配置' if model_cfg['api_key'] else '未配置'}")
     print(f"[DEBUG] stream参数: {stream_mode}")
-    result = call_llm(
+    result, token_limit_info = call_llm(
         NEWS_SUMMARY_SYSTEM_PROMPT,
         user_prompt,
         platform,
@@ -133,10 +132,10 @@ def summarize_news(news_list, platform=None, model_name=None, keyword=None):
         stream_mode=stream_mode
     )
     if result is None:
-        return user_prompt, None, system_tokens, user_tokens, 0, platform, model_name
+        return user_prompt, None, system_tokens, user_tokens, 0, platform, model_name, token_limit_info
     result_tokens = count_tokens(result, platform, model_name)
     print(f"[INFO] 返回内容tokens: {result_tokens}")
-    return user_prompt, result, system_tokens, user_tokens, result_tokens, platform, model_name
+    return user_prompt, result, system_tokens, user_tokens, result_tokens, platform, model_name, token_limit_info
 
 # 保存总结结果到json文件
 # date: 日期
@@ -215,13 +214,13 @@ def append_log(date, keyword, model_name, prompt, summary_path, news_count, succ
     print(f"[INFO] 日志已写入: {log_path}")
 
 def call_llm(system_prompt, user_prompt, platform, model_name, stream_mode=False, max_retries=3, timeout=700, retry_interval=10):
-    # from openai import error  # 已删除，兼容新版openai
     model_cfg = NEWS_SUMMARY_MODELS[platform][model_name]
     client = OpenAI(api_key=model_cfg['api_key'], base_url=model_cfg['base_url'])
     messages = [
         {"role": "system", "content": system_prompt},
         {"role": "user", "content": user_prompt}
     ]
+    token_limit_info = None
     for attempt in range(1, max_retries + 1):
         try:
             response = client.chat.completions.create(
@@ -237,19 +236,19 @@ def call_llm(system_prompt, user_prompt, platform, model_name, stream_mode=False
                         result += chunk.choices[0].delta.content
             else:
                 result = response.choices[0].message.content.strip()
-            return result
+            return result, token_limit_info
         except Exception as e:
-            # 新增：API返回token超限时记录prompt头尾
             err_str = str(e)
             is_token_limit = any(x in err_str.lower() for x in ["token", "context length", "input length", "max input limit", "too long"])
             if is_token_limit:
                 print(f"[WARN] API返回token超限，prompt开头200字: {user_prompt[:200]}")
                 print(f"[WARN] API返回token超限，prompt结尾200字: {user_prompt[-200:]}")
-                with open(os.path.join("output", "run_log.txt"), "a", encoding="utf-8") as f:
-                    f.write(f"[WARN] API返回token超限，prompt开头200字: {user_prompt[:200]}\n")
-                    f.write(f"[WARN] API返回token超限，prompt结尾200字: {user_prompt[-200:]}\n")
+                token_limit_info = {
+                    "prompt_head": user_prompt[:200],
+                    "prompt_tail": user_prompt[-200:],
+                    "token_count": len(user_prompt)
+                }
             print(f"[WARN] 第{attempt}次请求失败: {e}，将在{retry_interval}s后重试...")
-            # 打印原始响应内容（如有）
             response = getattr(e, 'response', None)
             if response is not None:
                 try:
@@ -257,7 +256,6 @@ def call_llm(system_prompt, user_prompt, platform, model_name, stream_mode=False
                 except Exception as ex:
                     print(f"[DEBUG] 无法打印原始响应内容: {ex}")
             else:
-                # 打印异常的args内容
                 if hasattr(e, 'args') and e.args:
                     print(f"[DEBUG] 异常args: {e.args}")
                     if isinstance(e.args[0], str):
@@ -267,7 +265,7 @@ def call_llm(system_prompt, user_prompt, platform, model_name, stream_mode=False
             import time
             time.sleep(retry_interval)
     print(f"[ERROR] 连续{max_retries}次请求均失败，已放弃。")
-    return None
+    return None, token_limit_info
 
 # 主流程入口
 # date: 日期
@@ -332,7 +330,7 @@ def main(date=None, keyword=None, model_name=None, output_dir=None):
         user_prompt = NEWS_SUMMARY_USER_PROMPT.format(news_list=news_list_str, keyword=keyword)
         user_tokens = count_tokens(user_prompt, platform=platform, model_name=model)
         switched = True
-    prompt, summary, system_tokens, user_tokens, result_tokens, used_platform, used_model = summarize_news(news_list, platform=platform, model_name=model, keyword=keyword)
+    prompt, summary, system_tokens, user_tokens, result_tokens, used_platform, used_model, token_limit_info = summarize_news(news_list, platform=platform, model_name=model, keyword=keyword)
     # ========== 新增：容错处理 ==========
     if summary is None:
         # 记录跳过日志
@@ -526,7 +524,14 @@ def main(date=None, keyword=None, model_name=None, output_dir=None):
     merge_info = {
         'search_keywords': list(search_keywords_set)
     }
-    append_log(date, keyword, optimize_model, prompt, summary_path, len(news_list), success=True, system_tokens=system_tokens, user_tokens=user_tokens, result_tokens=result_tokens, platform=optimize_platform, model_str=optimize_model, extra_info=merge_info)
+    append_log(date, keyword, used_model, prompt, summary_path, len(news_list), success=True, system_tokens=system_tokens, user_tokens=user_tokens, result_tokens=result_tokens, platform=used_platform, model_str=used_model, extra_info=merge_info)
+    # 新增：主日志写完后再写token超限WARN日志
+    if token_limit_info:
+        log_path = os.path.join("output", "run_log.txt")
+        with open(log_path, "a", encoding="utf-8") as f:
+            f.write(f"[WARN] API返回token超限，prompt token数: {token_limit_info['token_count']}\n")
+            f.write(f"[WARN] prompt开头200字: {token_limit_info['prompt_head']}\n")
+            f.write(f"[WARN] prompt结尾200字: {token_limit_info['prompt_tail']}\n")
 
 # 新增：多轮摘要保存，保留所有轮次和相关信息
 def save_summary_multi_round(date, keyword, round_entries, output_dir):
