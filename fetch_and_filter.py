@@ -263,24 +263,16 @@ def main():
     run_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     log_lines.append(f"=====🕒 本次运行时间: {run_time}=====")
     # 采集四大新闻API
-    print("[INFO] 正在采集 Baidu News ...")
-    baidu_data = fetch_serpapi_baidu_news(keyword)
     print("[INFO] 正在采集 Google News ...")
     google_data = fetch_serpapi_google_news(keyword)
-    print("[INFO] 正在采集 Bing News ...")
-    bing_data = fetch_serpapi_bing_news(keyword)
-    print("[INFO] 正在采集 DuckDuckGo News ...")
-    duck_data = fetch_serpapi_duckduckgo_news(keyword)
+    # baidu_data = fetch_serpapi_baidu_news(keyword)  # 已禁用
+    # bing_data = fetch_serpapi_bing_news(keyword)    # 已禁用
+    # duck_data = fetch_serpapi_duckduckgo_news(keyword)  # 已禁用
 
-    baidu_news = []
-    for item in baidu_data.get('organic_results', []):
-        date_str = item.get('date', '')
-        if is_baidu_news_yesterday(date_str):
-            item = item.copy()
-            # 保留原始date
-            item['fetchdate'] = fetch_date
-            item['sourceapi'] = 'serp_baidunews'
-            baidu_news.append(item)
+    # 只保留googlenews，其它新闻源禁用（设为空列表，便于恢复）
+    baidu_news = []  # 禁用Baidu News
+    bing_news = []   # 禁用Bing News
+    duck_news = []   # 禁用DuckDuckGo News
     google_news = []
     for item in google_data.get('news_results', []):
         date_str = item.get('date', '')
@@ -290,24 +282,6 @@ def main():
             item['fetchdate'] = fetch_date
             item['sourceapi'] = 'serp_googlenews'
             google_news.append(item)
-    bing_news = []
-    for item in bing_data.get('organic_results', []):
-        date_str = item.get('date', '')
-        if is_bing_news_yesterday(date_str):
-            item = item.copy()
-            # 保留原始date
-            item['fetchdate'] = fetch_date
-            item['sourceapi'] = 'serp_bingnews'
-            bing_news.append(item)
-    duck_news = []
-    for item in duck_data.get('news_results', []):
-        date_str = item.get('date', '')
-        if is_duckduckgo_news_yesterday(date_str):
-            item = item.copy()
-            # 保留原始date
-            item['fetchdate'] = fetch_date
-            item['sourceapi'] = 'serp_duckduckgo_news'
-            duck_news.append(item)
 
     # 统一处理 source 字段为字符串
     def normalize_source(item):
@@ -323,8 +297,8 @@ def main():
         for item in news_list:
             item['source'] = normalize_source(item)
 
-    # 合并
-    all_news = baidu_news + google_news + bing_news + duck_news
+    # 合并：只用googlenews
+    all_news = google_news
 
     # 去重（按title+link）
     unique = {}
@@ -365,10 +339,7 @@ def main():
             f"🔍 搜索关键词: {search_keyword or keyword}\n"
             f"📅 日期: {fetch_date}\n"
             f"📄 输出文件: {output_path}\n"
-            f"🌐 Baidu News: {len(baidu_news)} 条\n"
             f"🌐 Google News: {len(google_news)} 条\n"
-            f"🌐 Bing News: {len(bing_news)} 条\n"
-            f"🌐 DuckDuckGo News: {len(duck_news)} 条\n"
             f"🚫 黑名单过滤: {len(deduped_news) - len(filtered_news)} 条\n"
             f"⭐️ 去重后总保存: {len(filtered_news)} 条\n"
             f"==============================\n"
