@@ -382,7 +382,7 @@ def main(date=None, keyword=None, model_name=None, output_dir=None):
     print(judge_system_prompt.strip())
     print("\n[user prompt]")
     print(judge_user_prompt.strip())
-    judge_suggestion = call_llm(judge_system_prompt, judge_user_prompt, judge_platform, judge_model)
+    judge_suggestion, _ = call_llm(judge_system_prompt, judge_user_prompt, judge_platform, judge_model)
     if judge_suggestion is None:
         now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         log_path = os.path.join("output", "run_log.txt")
@@ -419,7 +419,7 @@ def main(date=None, keyword=None, model_name=None, output_dir=None):
     print(optimize_system_prompt.strip())
     print("\n[user prompt]")
     print(optimize_user_prompt.strip())
-    improved_summary = call_llm(optimize_system_prompt, optimize_user_prompt, optimize_platform, optimize_model)
+    improved_summary, _ = call_llm(optimize_system_prompt, optimize_user_prompt, optimize_platform, optimize_model)
     if improved_summary is None:
         now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         log_path = os.path.join("output", "run_log.txt")
@@ -453,7 +453,7 @@ def main(date=None, keyword=None, model_name=None, output_dir=None):
         print(hotspot_system_prompt)
         print("\n[user prompt]")
         print(hotspot_user_prompt)
-        hotspot_summary = call_llm(hotspot_system_prompt, hotspot_user_prompt, optimize_platform, optimize_model)
+        hotspot_summary, _ = call_llm(hotspot_system_prompt, hotspot_user_prompt, optimize_platform, optimize_model)
         if hotspot_summary is None:
             now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             log_path = os.path.join("output", "run_log.txt")
