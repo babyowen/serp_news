@@ -118,10 +118,12 @@ news.hexun.com
 news.ifeng.com
 news.iqilu.com
 news.lyd.com.cn
+news.mingpao.com
 news.online.sh.cn
 news.pedaily.cn
 news.qingdaonews.com
 news.qq.com
+news.rthk.hk
 news.scut.edu.cn
 news.shm.com.cn
 news.sina.com.cn
@@ -225,6 +227,7 @@ www.gov.cn
 www.gs.chinanews.com.cn
 www.gs.xinhuanet.com
 www.guandian.cn
+www.gvm.com.tw
 www.gxzf.gov.cn
 www.hangzhou.gov.cn
 www.hb.chinanews.com.cn
@@ -251,6 +254,7 @@ www.jntimes.cn
 www.jpchinapress.com
 www.js.xinhuanet.com
 www.kf.cn
+www.kunmingbc.com
 www.leiphone.com
 www.licai18.com
 www.locpg.gov.cn

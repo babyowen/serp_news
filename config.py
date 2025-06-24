@@ -284,3 +284,8 @@ NEWS_RULE_BASED_SCORING = [
     },
     # 你可以在此处继续添加更多规则
 ]
+
+# ========== 摘要源过滤配置 ==========
+# 摘要时只使用指定来源的新闻，如'serp_googlenews'
+# 设为None则使用所有来源的新闻
+NEWS_SUMMARY_FILTER_SOURCEAPI = "serp_googlenews"

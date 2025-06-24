@@ -1,403 +1,695 @@
 # 新闻采集与正文抓取自动化系统
 
-## 项目简介
-本项目实现了多新闻源自动采集、正文抓取、AI打分与摘要总结的全自动链路，具备高可用性、自动化、易维护等特点。支持关键词批量处理、自动适配反爬机制、详细日志追踪，并对依赖环境和驱动做了项目级隔离。所有采集和正文抓取逻辑均严格筛选"昨天"的新闻，无法补充更早的历史新闻。
+## 📖 项目简介
 
-## 近期主要更新（2024-06）
+本项目是一个**全自动化新闻采集与分析系统**，实现了多新闻源自动采集、正文抓取、AI智能评分与摘要总结的完整链路。具备高可用性、自动化、易维护等特点，支持关键词批量处理、自动适配反爬机制、详细日志追踪，并对依赖环境和驱动做了项目级隔离。
 
-1. **摘要支持三轮流程**：
-   - 第一轮：初稿摘要。
-   - 第二轮：评判官建议+优化摘要。
-   - 第三轮：热点追踪（自动对比前一天和今天的摘要，识别持续热点，结构和输出自动保存）。
-2. `config.py` 新增多轮摘要相关prompt配置，支持自定义每轮system/user prompt。
-3. `write_to_mysql.py` 新增 `fetch_latest_summary`，可自动获取前一天最大轮次摘要。
-4. `fetch_and_filter.py` 日志主关键词自动推断，保证日志主控主题准确。
-5. 所有多轮摘要、热点追踪结果、prompt、日志均自动保存，无需手动干预。
-6. 其它细节优化：数据库写入、日志、关键词配置等。
-7. **2024-06-10 新增：**
-   - 支持规则打分（如标题/关键词等规则），规则可在`config.py`维护，命中规则的新闻直接给分并在日志中记录。
-   - 支持为特定关键词（如"国资委测试"）指定大模型（如`deepseek-chat`），其它关键词仍用默认模型。
-   - `config.py`支持多模型配置，`news_scorer.py`已根据关键词动态选择模型。
+### ✨ 核心特性
 
----
+- 🌐 **多源采集**：支持Google News、Baidu News、Bing News、DuckDuckGo News等主流新闻平台
+- 🤖 **AI智能分析**：集成DeepSeek等大模型进行新闻评分和摘要生成
+- 🔄 **全自动化**：一键运行完整流程，支持定时任务
+- 📊 **数据可视化**：Web界面展示采集结果和统计数据
+- 🛡️ **容错机制**：多重抓取策略，自动跳过已处理数据
+- 📝 **详细日志**：完整的运行日志和错误追踪
 
-## 主要功能
+> ⚠️ **重要说明**：所有采集和正文抓取逻辑均严格筛选"昨天"的新闻，无法补充更早的历史新闻。
 
-### 1. 多新闻源采集与统一格式化
-- 支持 Google News、Baidu News、Bing News、DuckDuckGo News 等多源采集。
-- 采集结果统一格式化为 JSON 文件，按日期和关键词分类存储。
-- 自动去重（标题+链接）、黑名单过滤、跳过视频新闻（如 tv.cctv.com）。
-- 支持命令行参数指定日期（仅采集该日期"昨天"的新闻，主要用于补录当天漏采）。
-- **自动跳过已抓取关键词：** 在抓取新闻列表时，程序会自动判断 `output/{日期}/{日期}_{关键词}.json`（合并去重后的主输出文件）是否已存在，存在则跳过该关键词，避免重复抓取。例如：如果 `output/2025-06-05/2025-06-05_政府基金.json` 已存在，则不会再次抓取"政府基金"的新闻。
+## 🚀 快速开始
 
-#### 采集数据格式说明（2024-06统一规范）
+### 环境要求
 
-每条新闻的JSON结构如下，所有字段均为自动生成，便于后续数据库写入和分析：
+- **Python 3.8+** （推荐3.9+）
+- **MySQL 5.7+** （用于数据存储）
+- **Chrome浏览器** （Selenium/Playwright需要）
+
+### 安装步骤
+
+1. **克隆项目**
+   ```bash
+   git clone <repository-url>
+   cd serp_news
+   ```
+
+2. **安装依赖**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. **安装Playwright浏览器**
+   ```bash
+   playwright install
+   ```
+
+4. **配置环境变量**
+   
+   创建`.env`文件：
+   ```bash
+   # API配置
+   SERPAPI_KEY=your_serpapi_key
+   DEEPSEEK_API_KEY=your_deepseek_api_key
+   
+   # 数据库配置
+   MYSQL_HOST=localhost
+   MYSQL_PORT=3306
+   MYSQL_USER=your_username
+   MYSQL_PASSWORD=your_password
+   MYSQL_DB=serp_news
+   ```
+
+5. **创建数据库表**
+   ```sql
+   -- 新闻评分表
+   CREATE TABLE scored_news (
+       id INT AUTO_INCREMENT PRIMARY KEY,
+       date VARCHAR(64),
+       title VARCHAR(255),
+       link TEXT,
+       source VARCHAR(255),
+       fetchdate DATE,
+       sourceapi VARCHAR(255),
+       thumbnail TEXT,
+       keyword VARCHAR(255),
+       content LONGTEXT,
+       wordcount INT,
+       custom_grab BOOLEAN,
+       score INT
+   );
+   
+   -- 新闻摘要表
+   CREATE TABLE summary_news (
+       id INT AUTO_INCREMENT PRIMARY KEY,
+       date DATE,
+       keyword VARCHAR(255),
+       summary LONGTEXT,
+       platform VARCHAR(255),
+       model VARCHAR(255),
+       round INT DEFAULT 1,
+       judge_suggestion LONGTEXT
+   );
+   
+   -- 新闻源统计表
+   CREATE TABLE news_source_stats (
+       id INT PRIMARY KEY AUTO_INCREMENT,
+       date DATE NOT NULL,
+       keyword VARCHAR(50) NOT NULL,
+       domain VARCHAR(100) NOT NULL,
+       count INT NOT NULL
+   );
+   
+   -- 新闻网站表
+   CREATE TABLE news_websites (
+       id INT AUTO_INCREMENT PRIMARY KEY,
+       website VARCHAR(255) UNIQUE,
+       name VARCHAR(255)
+   );
+   ```
+
+6. **配置关键词**
+   
+   编辑`config.py`中的关键词配置：
+   ```python
+   SEARCH_KEYWORDS = {
+       "养老": ["养老"],
+       "公积金": ["公积金"],
+       "政府基金": ["政府基金", "引导基金", "母基金"],
+       "你的关键词": ["搜索词1", "搜索词2"]
+   }
+   ```
+
+### 🎯 一键运行
+
+```bash
+# 运行完整流程（采集 → 正文抓取 → AI评分 → 摘要生成 → 数据库存储）
+python main.py
+
+# 启动Web界面查看结果
+python app.py
+```
+
+## 📋 详细使用说明
+
+### 1. 新闻采集
+
+```bash
+# 采集昨天所有关键词的新闻
+python main.py
+
+# 采集指定日期的新闻（用于补录）
+python main.py 2025-06-01
+```
+
+### 2. 正文抓取
+
+```bash
+# 抓取指定关键词的正文（默认昨天）
+python fetch_content.py 公积金
+
+# 抓取指定日期的正文
+python fetch_content.py 公积金 2025-06-01
+
+# 测试模式
+python fetch_content.py 公积金 --test
+
+# 调试单条链接
+python fetch_content.py test --url="https://news.example.com/xxx"
+```
+
+### 3. AI评分
+
+```bash
+# 批量评分所有关键词
+python news_scorer.py
+
+# 评分指定关键词和日期
+python news_scorer.py 公积金 2025-06-01
+
+# 单条测试
+python news_scorer.py --test_json '{"title": "标题", "content": "正文", "keyword": "公积金"}'
+```
+
+### 4. 智能摘要
+
+```bash
+# 生成指定关键词的摘要
+python news_summarizer.py --keyword 公积金 --date 2025-06-01
+
+# 使用指定模型
+python news_summarizer.py --keyword 公积金 --date 2025-06-01 --model qwen-plus-latest
+```
+
+### 5. 数据库操作
+
+```bash
+# 导入昨天的数据到数据库
+python write_to_mysql.py
+
+# 导入指定日期的数据
+python write_to_mysql.py --date 2025-06-01
+```
+
+### 6. Web界面
+
+```bash
+# 启动Web服务（默认端口5000）
+python app.py
+```
+
+访问 `http://localhost:5000` 查看：
+- 📊 数据概览和统计
+- 📰 新闻列表和详情
+- 💾 数据库内容展示
+- 📁 文件下载功能
+
+## 🏗️ 系统架构
+
+```mermaid
+graph TB
+    A[新闻源APIs] --> B[新闻采集模块]
+    B --> C[正文抓取模块]
+    C --> D[AI评分模块]
+    D --> E[智能摘要模块]
+    E --> F[数据库存储]
+    F --> G[Web界面展示]
+    
+    H[配置管理] --> B
+    H --> C
+    H --> D
+    H --> E
+    
+    I[日志系统] --> B
+    I --> C
+    I --> D
+    I --> E
+    I --> F
+```
+
+## 📊 数据流程
+
+```mermaid
+sequenceDiagram
+    participant U as 用户
+    participant M as main.py
+    participant F as 采集模块
+    participant C as 正文模块
+    participant S as 评分模块
+    participant Sum as 摘要模块
+    participant DB as 数据库
+    
+    U->>M: 运行 python main.py
+    M->>F: 1. 采集新闻列表
+    F-->>M: 返回新闻数据
+    M->>C: 2. 抓取正文内容
+    C-->>M: 返回完整新闻
+    M->>S: 3. AI评分
+    S-->>M: 返回评分结果
+    M->>Sum: 4. 生成摘要
+    Sum-->>M: 返回摘要内容
+    M->>DB: 5. 存储到数据库
+    DB-->>M: 确认存储完成
+```
+
+## 🔧 近期主要更新（2024-06）
+
+### ✨ 新功能
+
+1. **三轮摘要流程**
+   - 第一轮：初稿摘要生成
+   - 第二轮：评判官建议 + 优化摘要
+   - 第三轮：热点追踪（对比前一天摘要，识别持续热点）
+
+2. **智能规则打分**
+   - 支持在`config.py`中维护规则（标题/关键词匹配）
+   - 命中规则的新闻直接给分，节省token成本
+   - 日志详细记录规则打分情况
+
+3. **关键词指定模型**
+   - 支持为特定关键词指定专用模型
+   - 如"国资委测试"使用`deepseek-chat`，其他用默认模型
+
+4. **多模型配置支持**
+   - 支持DeepSeek、百炼等多平台多模型
+   - 自动token统计和模型切换
+
+### 🛠️ 优化改进
+
+- `write_to_mysql.py` 新增 `fetch_latest_summary` 功能
+- `fetch_and_filter.py` 日志主关键词自动推断
+- 所有多轮摘要、热点追踪结果自动保存
+- 数据库写入、日志记录等细节优化
+
+## 📁 目录结构
+
+```
+serp_news/
+├── 📄 config.py                    # 配置文件
+├── 🚀 main.py                      # 主程序入口
+├── 📡 news_fetcher.py              # 新闻采集模块
+├── 📝 fetch_content.py             # 正文抓取模块
+├── 🤖 news_scorer.py               # AI评分模块
+├── 📖 news_summarizer.py           # 智能摘要模块
+├── 🗄️ write_to_mysql.py            # 数据库写入
+├── 🌐 app.py                       # Web界面
+├── ⚙️ config_grab_rules.py         # 抓取规则配置
+├── 📋 requirements.txt             # 依赖包列表
+├── 📊 output/                      # 输出目录
+│   ├── 📅 2025-06-16/             # 按日期分类
+│   │   ├── 📰 2025-06-16_公积金.json          # 原始新闻
+│   │   ├── ⭐ 2025-06-16_公积金_scored.json   # 评分结果
+│   │   ├── 📋 2025-06-16_公积金_summary.json  # 摘要结果
+│   │   └── 🔍 raw_serp_*_公积金_*.json       # 原始API响应
+│   ├── 📜 run_log.txt             # 运行日志
+│   ├── 🌐 news_sources.txt        # 新闻源域名
+│   └── 📈 news_source_stats.json  # 采集统计
+├── 🎨 templates/                   # Web模板
+│   ├── index.html
+│   ├── date.html
+│   ├── database.html
+│   └── keyword_select.html
+├── 🤖 deepseek_v3_tokenizer/       # DeepSeek tokenizer
+└── 📖 README.md                    # 项目文档
+```
+
+## 📊 数据格式说明
+
+### 新闻数据结构
+
+每条新闻的JSON结构（2024-06统一规范）：
 
 ```json
 {
   "title": "新闻标题",
   "link": "新闻链接",
   "source": "新闻来源",
-  "date": "原始API返回的时间字符串，如 '1 day ago'、'昨天'、'2025-06-06 09:00' 等",
-  "fetchdate": "抓取日期，格式如 '2025-06-06'，即本地采集时的日期",
-  "sourceapi": "采集来源标记，如 'serp_googlenews'、'serp_baidunews'、'serp_bingnews'、'serp_duckduckgo_news'",
+  "date": "原始API返回的时间字符串，如 '1 day ago'、'昨天'",
+  "fetchdate": "抓取日期，格式如 '2025-06-06'",
+  "sourceapi": "采集来源标记，如 'serp_googlenews'",
   "thumbnail": "缩略图链接（如有）",
   "keyword": "主关键词",
-  "main_keyword": "主关键词（与keyword一致，便于聚合）",
-  "search_keyword": "实际用于采集的搜索关键词",
+  "main_keyword": "主关键词（与keyword一致）",
+  "search_keyword": "实际搜索关键词",
   "content": "正文内容（正文抓取后补充）",
   "wordcount": 123,
-  "custom_grab": false
-  // 其它字段视API返回和后续流程自动补充
+  "custom_grab": false,
+  "score": 4
 }
 ```
 
-- `date` 字段保留原始API返回的时间字符串，便于追溯和灵活解析。
-- `fetchdate` 字段为本地抓取时的日期，所有入库、统计均以此为准。
-- `sourceapi` 字段标记采集来源，便于后续溯源和分析。
-- 其它字段如 `content`、`wordcount`、`custom_grab` 等在正文抓取和后续流程中自动补充。
+### 摘要数据结构
 
-所有采集、正文、评分、摘要等流程均以此格式为基础，确保数据链路一致。
-
-### 2. 自动正文抓取（多重兜底+定制化）
-- 对每条新闻链接，自动抓取正文并统计字数。
-- 抓取顺序：
-  1. **trafilatura**（高效静态正文提取）
-  2. **newspaper3k**（新闻站点适配性强，静态提取）
-  3. **Playwright 渲染页面**，先用 **Newspaper3k** 提取正文，失败再用 **Readability（python-readability）** 提取正文
-  4. **Selenium定制化抓取兜底**（针对特定站点专属选择器）
-- 针对特定新闻站点定制化选择器，极大提升抓取成功率，所有定制化规则集中在 `config_grab_rules.py`，可灵活扩展。
-- 自动统计新闻源域名、采集条数，便于后续可视化。
-- 支持单条新闻链接抓取调试，便于开发和补录。
-
-### 3. AI新闻评分（news_scorer.py）
-- 支持批量/单条新闻评分，自动跳过已评分文件。
-- 评分采用大模型（如 deepseek-reasoner），可配置 API Key、模型等。
-- **支持规则打分：** 可在`config.py`中维护规则（如关键词、标题包含等），命中规则的新闻直接给分，无需调用大模型，节省token，提升效率，日志中会记录规则打分的新闻数和标题。
-- **支持关键词指定模型：** 如关键词为"国资委测试"时，自动调用`deepseek-chat`模型，其它关键词仍用默认模型。
-- 评分结果按分数降序保存，日志详细记录各分数段分布。
-- 支持 --test_json 单条测试，便于 prompt 调优。
-
-### 4. 新闻摘要总结（news_summarizer.py）
-- 对3分及以上新闻自动生成摘要，支持多模型、多平台切换（如 deepseek、bailian）。
-- 自动判断 token 长度，超限时自动切换模型。
-- 摘要结果支持多版本累积，便于横向对比。
-- 日志详细记录 prompt、token 统计、摘要结果等。
-
----
-
-## 依赖与环境
-
-- **Python 3.8+ 推荐。**
-- 依赖安装：
-  ```bash
-  pip install -r requirements.txt
-  ```
-- **首次运行 Playwright 需执行：**
-  ```bash
-  playwright install
-  ```
-- Selenium/Chromedriver 由 webdriver-manager 自动下载，如遇异常可手动升级或清理缓存。
-
----
-
-## 目录结构说明
-
-```
-serp_news/
-├── config.py
-├── main.py
-├── news_fetcher.py
-├── fetch_content.py
-├── news_scorer.py
-├── news_summarizer.py
-├── config_grab_rules.py
-├── requirements.txt
-├── output/
-│   ├── 2025-05-28/
-│   │   ├── 2025-05-28_公积金.json
-│   │   ├── 2025-05-28_公积金_scored.json
-│   │   └── ...
-│   ├── run_log.txt
-│   ├── news_sources.txt           # 历史所有采集过的新闻源域名
-│   └── news_source_stats.json     # 每天每关键词各新闻源采集条数
-└── README.md
+```json
+{
+  "date": "2025-06-16",
+  "keyword": "公积金",
+  "summaries": [
+    {
+      "summary": "摘要内容...",
+      "platform": "deepseek",
+      "model": "deepseek-reasoner",
+      "round": 1
+    },
+    {
+      "summary": "优化后摘要...",
+      "platform": "deepseek", 
+      "model": "deepseek-reasoner",
+      "round": 2,
+      "judge_suggestion": "评判官建议..."
+    }
+  ]
+}
 ```
 
-- `news_sources.txt`：历史所有采集过的新闻源域名，便于后续做域名-中文名映射、可视化。
-- `news_source_stats.json`：每天每个关键词下各新闻源采集到的新闻条数，便于趋势分析。
-- `run_log.txt`：所有采集、正文、评分、摘要等环节的详细日志。
-
----
-
-## 运行方法与命令说明
-
-### 1. 新闻采集（main.py）
-- **默认抓取昨天所有关键词新闻：**
-  ```bash
-  python main.py
-  ```
-
-### 2. 新闻正文抓取（fetch_content.py）
-- **抓取指定关键词的新闻正文（默认昨天）：**
-  ```bash
-  python fetch_content.py 关键词
-  # 例：python fetch_content.py 公积金
-  ```
-- **抓取指定关键词和日期的新闻正文（只处理该日期下的新闻）：**
-  ```bash
-  python fetch_content.py 关键词 YYYY-MM-DD
-  # 例：python fetch_content.py 公积金 2025-05-28
-  ```
-- **测试模式（日志中标记"测试"）：**
-  ```bash
-  python fetch_content.py 关键词 [YYYY-MM-DD] --test
-  # 例：python fetch_content.py 公积金 2025-05-28 --test
-  ```
-- **抓取单条新闻链接正文（开发调试用）：**
-  ```bash
-  python fetch_content.py test --url="https://news.example.com/xxx"
-  ```
-
-### 3. 新闻AI评分（news_scorer.py）
-- **批量评分（对所有关键词/日期自动处理）：**
-  ```bash
-  python news_scorer.py
-  ```
-- **指定关键词和日期评分：**
-  ```bash
-  python news_scorer.py 关键词 YYYY-MM-DD
-  # 例：python news_scorer.py 公积金 2025-06-01
-  ```
-- **单条新闻评分测试：**
-  ```bash
-  python news_scorer.py --test_json '{"title": "标题", "content": "正文", "keyword": "公积金"}'
-  ```
-
-### 4. 新闻摘要总结（news_summarizer.py）
-- **指定关键词、日期进行摘要总结：**
-  ```bash
-  python news_summarizer.py --keyword 关键词 --date YYYY-MM-DD
-  # 例：python news_summarizer.py --keyword 公积金 --date 2025-06-01
-  ```
-- **指定模型进行摘要总结（可选）：**
-  ```bash
-  python news_summarizer.py --keyword 关键词 --date YYYY-MM-DD --model qwen-plus-latest
-  # 例：python news_summarizer.py --keyword 公积金 --date 2025-06-01 --model qwen-plus-latest
-  ```
-
----
-
-## 7. 常见问题与FAQ
-
-### Q1: 能否补抓历史数据？  
-A: **不支持补抓历史数据。**  
-本项目所有采集和正文抓取逻辑均严格筛选"昨天"的新闻（即使指定日期参数，也只会处理昨天的数据），因此无法补充更早的历史新闻。请确保每日定时运行以避免数据缺失。
-
-### Q2: 各主程序如何带参数运行？分别实现什么效果？
-
-详见上文"运行方法与命令说明"部分。
-
-### Q3: 如何调试某个新闻链接的正文抓取？
-A: 运行如下命令，结果会直接输出到终端，便于调试定制化规则：
-```bash
-python fetch_content.py test --url="https://news.example.com/xxx"
-```
-
-### Q4: Playwright/Selenium 报错怎么办？
-A:  
-- 首次运行 Playwright 需执行 `playwright install` 安装浏览器内核。
-- Selenium/Chromedriver 由 webdriver-manager 自动下载，如遇异常可手动升级或清理缓存。
-
-### Q5: 采集结果、日志、统计文件在哪里？
-A:  
-- 所有输出、日志、统计均在 `output/` 目录下，按日期/关键词分类存储，便于管理和分析。
-
----
-
-## 扩展性与维护
-
-- **定制化抓取规则**：只需在 `config_grab_rules.py` 增加规则和抓取函数，无需改动主流程。
-- **AI评分/摘要模型**：支持灵活切换和扩展，API Key、模型参数集中在 `config.py`。
-- **日志与统计**：所有关键环节均有详细日志，便于追踪和问题排查。
-- **所有主流程和关键函数均有详细注释，便于二次开发和维护。**
-
----
-
-## 其它说明
-
-- 采集、正文、评分、摘要等所有环节均有详细日志，便于追踪和复盘。
-- 采集结果、统计、日志等全部本地化存储，便于后续数据分析和可视化。
-- 如需自定义关键词、黑名单、API Key，请编辑 `config.py`。
-
----
-
-## 版本与作者信息
-
-- 最后更新时间：2024-06
-- 作者/维护者：liuliang
-
-如需进一步补充"常见报错与解决方法"、"贡献指南"等内容，可随时扩展。
-如有问题或需定制化扩展，欢迎联系开发者。
-
-## 数据库结构
-
-### scored_news 表
-```sql
-CREATE TABLE scored_news (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    date VARCHAR(64),           -- 原始API时间字符串
-    title VARCHAR(255),
-    link TEXT,
-    source VARCHAR(255),
-    fetchdate DATE,             -- 本地抓取日期
-    sourceapi VARCHAR(255),     -- 采集来源标记
-    thumbnail TEXT,
-    keyword VARCHAR(255),       -- 主关键词
-    content LONGTEXT,
-    wordcount INT,
-    custom_grab BOOLEAN,
-    score INT
-);
-```
-
-#### 字段映射说明
-- `date`：对应JSON的原始API时间字符串，便于追溯。
-- `fetchdate`：对应JSON的抓取日期，所有统计、分析、分区均以此为准。
-- `sourceapi`：对应JSON的采集来源标记。
-- 其它字段一一对应。
-
-所有JSON采集字段与数据库表字段严格一一对应，确保数据链路清晰、可追溯。
-
-### summary_news 表
-```sql
-CREATE TABLE summary_news (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    date DATE,
-    keyword VARCHAR(255),
-    summary LONGTEXT,
-    platform VARCHAR(255),
-    model VARCHAR(255)
-);
-```
-
----
-
-## 数据库写入功能说明
-
-- 所有新闻数据和摘要数据会自动写入MySQL数据库。
-- `write_to_mysql.py` 支持批量导入，自动读取 config.py 里的 DEFAULT_KEYWORDS。
-- 支持命令行参数 `--date`，不带参数时自动导入昨天的数据。
-- 自动批量导入所有关键词的 scored/summary 两类文件。
-- 文件不存在时自动跳过并提示。
-
----
-
-## 数据库写入命令
-
-### 1. 安装依赖
-```sh
-pip install pymysql python-dotenv
-```
-
-### 2. 配置数据库连接
-在项目根目录新建 `.env` 文件，内容如下（请用你自己的信息替换）：
-```
-MYSQL_HOST=your_host
-MYSQL_PORT=3306
-MYSQL_USER=your_user
-MYSQL_PASSWORD=your_password
-MYSQL_DB=serp_news
-```
-
-### 3. 批量写入数据库
-- 导入昨天的数据：
-```sh
-python write_to_mysql.py
-```
-- 导入指定日期的数据（如2025-06-01）：
-```sh
-python write_to_mysql.py --date 2025-06-01
-```
-
----
-
-## 关键词配置机制（2024-06更新）
+## ⚙️ 关键词配置机制
 
 ### 新机制说明
 
-本项目关键词配置采用"主关键词+搜索用关键词"映射机制，极大提升了采集灵活性和主题聚合能力。
+采用"主关键词+搜索用关键词"映射机制，提升采集灵活性：
 
-- **主关键词**：你关心的主题词，用于后续所有打分、摘要、数据库写入、统计分析等，是所有流程的核心。
-- **搜索用关键词**：实际用于采集新闻的关键词，可以和主关键词相同，也可以完全不同，也可以有多个。
-- **采集时**：遍历每个主关键词的所有搜索用关键词，采集到的新闻全部归属于主关键词。
-- **打分、摘要、数据库写入时**：全部以主关键词为核心，所有新闻都归属于主关键词。
-- **日志输出**：会标明主关键词和实际搜索用关键词，便于追溯和分析。
+- **主关键词**：关心的主题词，用于后续打分、摘要、数据库写入等
+- **搜索用关键词**：实际用于采集的关键词，可以有多个
+- **采集时**：遍历所有搜索用关键词，结果归属于主关键词
+- **处理时**：以主关键词为核心进行后续流程
 
 ### 配置示例
-
-在 `config.py` 中：
 
 ```python
 SEARCH_KEYWORDS = {
     "养老": ["养老"],
     "公积金": ["公积金"],
-    "政府基金": ["政府基金", "引导基金"],
-    "江苏南京国资委": ["江苏省国资委", "南京市国资委"]
-    # 你可以继续扩展更多主关键词和搜索用关键词
+    "政府基金": ["政府基金", "引导基金", "母基金"],
+    "江苏国资委": ["江苏省国资委", "南京市国资委", "江苏交通控股"]
 }
-DEFAULT_KEYWORDS = list(SEARCH_KEYWORDS.keys())
-DEFAULT_KEYWORD = DEFAULT_KEYWORDS[0]
 ```
 
-- 采集时会用所有搜索用关键词去抓取，采集到的新闻都归属于主关键词（如 `2025-06-05_政府基金.json`）。
-- 后续所有流程（打分、摘要、数据库写入）都只处理主关键词的 json 文件。
-- 你可以灵活设定主关键词和搜索用关键词的关系，主题聚合更清晰。
+## 🎯 正文抓取策略
 
-### 旧机制说明（已废弃）
+### 多重抓取顺序
 
-- 旧版的"二级关键词"配置（`SECONDARY_KEYWORDS`）已废弃，不再使用。
-- 现在只需维护 `SEARCH_KEYWORDS`，无需再考虑二级关键词逻辑。
+1. **trafilatura** - 高效静态正文提取
+2. **newspaper3k** - 新闻站点适配性强
+3. **Playwright** - 渲染页面后提取
+   - 先用Newspaper3k提取
+   - 失败再用Readability提取
+4. **Selenium** - 定制化抓取兜底
+
+### 定制化规则
+
+针对特定站点的专属选择器，配置在`config_grab_rules.py`：
+
+```python
+CUSTOM_GRAB_RULES = [
+    (lambda url: 'example.com' in url, grab_example_content),
+    (lambda url: 'news.site.com' in url, grab_news_site_content),
+    # 添加更多规则...
+]
+```
+
+## 🤖 AI评分系统
+
+### 评分规则
+
+- **5分**：全国性、中央级新闻；政府政策制度
+- **4分**：重要省市新闻；创新性、重大意义新闻
+- **3分**：一般省市、一般新闻
+- **2分**：仅部分相关内容
+- **1分**：非中国新闻；广告宣传内容
+- **0分**：不相关内容
+
+### 规则打分
+
+支持预设规则直接给分，节省API调用：
+
+```python
+NEWS_RULE_BASED_SCORING = [
+    {
+        'main_keyword': '公积金',
+        'title_contains': '降息',
+        'score': 5
+    }
+]
+```
+
+### 模型选择
+
+支持关键词指定模型：
+
+```python
+# 在news_scorer.py中
+model_to_use = 'deepseek-chat' if keyword == '国资委测试' else 'deepseek-reasoner'
+```
+
+## 📝 智能摘要系统
+
+### 三轮摘要流程
+
+1. **第一轮**：基于3分及以上新闻生成初稿摘要
+2. **第二轮**：评判官评估 + 优化建议 + 改进摘要
+3. **第三轮**：热点追踪（对比前一天摘要，识别持续热点）
+
+### 摘要结构
+
+- **今日综述** (200-300字)：整体概述和核心事件
+- **新闻总结** (400-600字)：分类整理要点和背景
+- **观点总结** (200-300字)：各方观点和评论
+
+### 多模型支持
+
+```python
+NEWS_SUMMARY_MODELS = {
+    "deepseek": {
+        "deepseek-reasoner": {...},
+        "deepseek-chat": {...}
+    },
+    "bailian": {
+        "qwen-max": {...},
+        "qwen-plus-latest": {...}
+    }
+}
+```
+
+## 🗄️ 数据库设计
+
+### 主要数据表
+
+- **scored_news**：新闻评分数据
+- **summary_news**：新闻摘要数据
+- **news_source_stats**：新闻源统计
+- **news_websites**：新闻网站信息
+
+### 数据写入
+
+- 自动查重（title+link）
+- 批量导入支持
+- 详细日志记录
+- 支持指定日期导入
+
+## 🌐 Web界面功能
+
+### 主要页面
+
+- **首页**：日期列表和数据概览
+- **日期页面**：指定日期的新闻数据
+- **关键词选择**：按关键词筛选新闻
+- **数据库页面**：数据库内容展示
+
+### 功能特性
+
+- 📊 实时数据统计
+- 🔍 关键词筛选
+- 📁 文件下载
+- 📱 响应式设计
+
+## ❓ 常见问题
+
+### Q1: 能否补抓历史数据？
+
+**A:** 不支持补抓历史数据。系统严格筛选"昨天"的新闻，请确保每日定时运行避免数据缺失。
+
+### Q2: 如何调试正文抓取？
+
+**A:** 使用调试命令：
+```bash
+python fetch_content.py test --url="https://news.example.com/xxx"
+```
+
+### Q3: Playwright/Selenium报错怎么办？
+
+**A:** 
+- 首次运行需执行 `playwright install`
+- Selenium会自动下载ChromeDriver，如有问题可清理缓存重试
+
+### Q4: 如何添加新的新闻源？
+
+**A:** 在`news_fetcher.py`中添加新的采集函数，并在主流程中调用。
+
+### Q5: 如何自定义评分规则？
+
+**A:** 在`config.py`中的`NEWS_RULE_BASED_SCORING`添加新规则。
+
+### Q6: 如何优化抓取成功率？
+
+**A:** 在`config_grab_rules.py`中添加针对特定站点的定制化规则。
+
+## 🔧 扩展开发
+
+### 添加新闻源
+
+1. 在`news_fetcher.py`中实现新的采集函数
+2. 在主流程中添加调用逻辑
+3. 更新配置文件中的相关参数
+
+### 自定义抓取规则
+
+1. 在`config_grab_rules.py`中添加匹配函数和抓取函数
+2. 将规则添加到`CUSTOM_GRAB_RULES`列表
+3. 测试验证抓取效果
+
+### 集成新的AI模型
+
+1. 在`config.py`中添加模型配置
+2. 在相应模块中实现模型调用逻辑
+3. 更新token统计和错误处理
+
+## 📈 性能优化
+
+### 并发处理
+
+- 新闻采集支持多线程
+- 正文抓取可配置并发数
+- AI评分支持批量处理
+
+### 缓存机制
+
+- 自动跳过已处理文件
+- 支持断点续传
+- 智能重试机制
+
+### 资源管理
+
+- 浏览器实例复用
+- 内存使用优化
+- 临时文件自动清理
+
+## 🚀 部署指南
+
+### 生产环境部署
+
+1. **服务器配置**
+   ```bash
+   # 安装系统依赖
+   sudo apt-get update
+   sudo apt-get install python3 python3-pip mysql-server
+   
+   # 安装Chrome（用于Selenium/Playwright）
+   wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+   sudo sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
+   sudo apt-get update
+   sudo apt-get install google-chrome-stable
+   ```
+
+2. **定时任务设置**
+   ```bash
+   # 编辑crontab
+   crontab -e
+   
+   # 添加定时任务（每天早上8点运行）
+   0 8 * * * cd /path/to/serp_news && python main.py >> /var/log/serp_news.log 2>&1
+   ```
+
+3. **Web服务部署**
+   ```bash
+   # 使用gunicorn部署
+   pip install gunicorn
+   gunicorn -w 4 -b 0.0.0.0:5000 app:app
+   
+   # 或使用nginx + uwsgi
+   pip install uwsgi
+   uwsgi --ini uwsgi.ini
+   ```
+
+### Docker部署
+
+```dockerfile
+FROM python:3.9-slim
+
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
+COPY . .
+RUN playwright install
+
+EXPOSE 5000
+CMD ["python", "app.py"]
+```
+
+## 📊 监控与维护
+
+### 日志监控
+
+- 所有操作记录在`output/run_log.txt`
+- 支持日志轮转和归档
+- 错误自动告警（可配置）
+
+### 性能监控
+
+- 采集成功率统计
+- 抓取耗时分析
+- API调用量监控
+- 存储空间使用
+
+### 数据备份
+
+```bash
+# 数据库备份
+mysqldump -u username -p serp_news > backup.sql
+
+# 文件备份
+tar -czf output_backup.tar.gz output/
+```
+
+## 🤝 贡献指南
+
+### 开发环境搭建
+
+1. Fork项目到个人仓库
+2. 克隆到本地开发环境
+3. 创建开发分支
+4. 安装开发依赖
+
+### 代码规范
+
+- 使用Python PEP8编码规范
+- 添加必要的注释和文档
+- 编写单元测试
+- 提交前运行代码检查
+
+### 提交流程
+
+1. 创建功能分支
+2. 完成开发和测试
+3. 提交Pull Request
+4. 代码审查和合并
+
+## 📄 许可证
+
+本项目采用MIT许可证，详见LICENSE文件。
+
+## 👥 作者信息
+
+- **作者/维护者**：liuliang
+- **最后更新**：2024-06
+- **联系方式**：[请添加联系方式]
+
+## 🙏 致谢
+
+感谢以下开源项目的支持：
+- [trafilatura](https://github.com/adbar/trafilatura) - 网页正文提取
+- [newspaper3k](https://github.com/codelucas/newspaper) - 新闻文章处理
+- [Playwright](https://github.com/microsoft/playwright-python) - 浏览器自动化
+- [Selenium](https://github.com/SeleniumHQ/selenium) - Web自动化
+- [Flask](https://github.com/pallets/flask) - Web框架
 
 ---
 
-## 新增功能说明（2024-06）
-
-### 1. MySQL 建表说明
-
-为支持抓取统计数据的结构化存储，需在 MySQL 中新建如下表：
-
-```sql
-CREATE TABLE news_source_stats (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    date DATE NOT NULL,
-    keyword VARCHAR(50) NOT NULL,
-    domain VARCHAR(100) NOT NULL,
-    count INT NOT NULL
-);
-```
-
-### 2. write_to_mysql.py 新增抓取统计数据入库功能
-
-- 新增 `insert_news_source_stats(json_path, target_date)` 函数，支持将 `output/news_source_stats.json` 中 `date=target_date` 的所有数据写入 `news_source_stats` 表。
-- 查重逻辑：同一天、同关键词、同域名的数据只插入一次（`date+keyword+domain` 唯一）。
-- 日志自动记录写入、跳过、异常等情况。
-- 在主流程 `main()` 中自动调用，无需手动干预。
-- 只会写入"昨天"的数据，避免重复或历史数据误入。
-
-#### 用法
-
-1. 确保已在数据库中建好 `news_source_stats` 表。
-2. 正常运行 `python write_to_mysql.py`，会自动将 `output/news_source_stats.json` 中昨天的数据写入数据库。
-3. 日志输出在 `output/run_log.txt`，可追踪写入详情。
-
-#### 相关函数说明
-
-```python
-def insert_news_source_stats(json_path, target_date):
-    # 读取 news_source_stats.json，过滤 date==target_date 的数据
-    # 查重（date+keyword+domain），避免重复插入
-    # 写入 news_source_stats 表
-    # 日志记录写入、跳过、异常
-```
+如有问题或需要定制化扩展，欢迎提交Issue或联系开发者。
