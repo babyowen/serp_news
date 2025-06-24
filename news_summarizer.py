@@ -23,6 +23,7 @@ from config import (
     NEWS_SUMMARY_OPTIMIZE_USER_PROMPT,    # 新增：优化轮user prompt
     NEWS_SUMMARY_HOTSPOT_SYSTEM_PROMPT, # 新增：热点追踪system prompt
     NEWS_SUMMARY_HOTSPOT_USER_PROMPT,   # 新增：热点追踪user prompt
+    NEWS_SUMMARY_FILTER_SOURCEAPI,      # 新增：摘要源过滤配置
 )
 from openai import OpenAI
 import tiktoken
@@ -71,14 +72,22 @@ def count_tokens(text, platform=None, model_name=None):
 # 加载打分后的新闻，过滤低分新闻
 # json_path: 新闻json文件路径
 # min_score: 最低分数阈值
+# filter_sourceapi: 过滤特定来源的新闻，如'serp_googlenews'
 # 返回过滤后的新闻列表
 
-def load_scored_news(json_path, min_score=3):
+def load_scored_news(json_path, min_score=3, filter_sourceapi=None):
     print(f"[INFO] 读取打分新闻文件: {json_path}")
     with open(json_path, 'r', encoding='utf-8') as f:
         news_list = json.load(f)
     filtered = [n for n in news_list if n.get('score', 0) >= min_score]
     print(f"[INFO] 3分及以上新闻数量: {len(filtered)}")
+    
+    # 如果指定了sourceapi过滤
+    if filter_sourceapi:
+        sourceapi_filtered = [n for n in filtered if n.get('sourceapi') == filter_sourceapi]
+        print(f"[INFO] 过滤sourceapi='{filter_sourceapi}'后数量: {len(sourceapi_filtered)}")
+        return sourceapi_filtered
+    
     return filtered
 
 # 构建新闻列表prompt字符串
@@ -283,13 +292,14 @@ def main(date=None, keyword=None, model_name=None, output_dir=None):
     scored_json = os.path.join(output_dir, f"{date}_{keyword}_scored.json")
     news_list = []
     search_keywords_set = set()
-    # 只加载主关键词新闻
+    # 只加载主关键词新闻，根据配置决定是否过滤特定来源
     if os.path.exists(scored_json):
-        news_items = load_scored_news(scored_json, min_score=3)
+        news_items = load_scored_news(scored_json, min_score=3, filter_sourceapi=NEWS_SUMMARY_FILTER_SOURCEAPI)
         news_list += news_items
         for n in news_items:
             if 'search_keyword' in n:
                 search_keywords_set.add(n['search_keyword'])
+    
     # 合并去重（按link去重）
     unique_links = set()
     deduped_news = []
@@ -299,11 +309,16 @@ def main(date=None, keyword=None, model_name=None, output_dir=None):
             deduped_news.append(news)
             unique_links.add(link)
     news_list = deduped_news
-    # 新增：打印涉及的搜索关键词
+    
+    # 新增：打印涉及的搜索关键词和过滤信息
     if search_keywords_set:
         print(f"[INFO] 本批次涉及的搜索关键词: {', '.join([str(s) for s in search_keywords_set if s])}")
+    if NEWS_SUMMARY_FILTER_SOURCEAPI:
+        print(f"[INFO] 摘要只使用来源为 '{NEWS_SUMMARY_FILTER_SOURCEAPI}' 的新闻")
+    
     if not news_list:
-        print("[INFO] 无3分及以上新闻，无需总结。")
+        filter_msg = f"（已过滤来源：{NEWS_SUMMARY_FILTER_SOURCEAPI}）" if NEWS_SUMMARY_FILTER_SOURCEAPI else ""
+        print(f"[INFO] 无3分及以上新闻{filter_msg}，无需总结。")
         append_log(date, keyword, model_name, '', '', 0, success=True, extra_info={'search_keywords': list(search_keywords_set)})
         return
     # 后续流程保持不变

@@ -26,6 +26,23 @@ from bs4 import BeautifulSoup
 from config import DEFAULT_KEYWORDS
 import re
 
+# 判断文本是否为乱码
+def is_garbled(text):
+    # 1. 乱码特征：大量非中文、非英文字符
+    if not text:
+        return False
+    # 2. 统计可见字符比例
+    visible_chars = re.findall(r'[\u4e00-\u9fa5a-zA-Z0-9]', text)
+    if len(visible_chars) / max(len(text), 1) < 0.2:
+        return True
+    # 3. 连续问号/乱码符号
+    if re.search(r'[?]{10,}', text):
+        return True
+    # 4. 长度异常
+    if len(text) > 20000:
+        return True
+    return False
+
 # 获取今天日期字符串
 def get_today_str():
     return datetime.now().strftime('%Y-%m-%d')
@@ -502,20 +519,4 @@ if __name__ == '__main__':
         for keyword in DEFAULT_KEYWORDS:
             json_path = os.path.join("output", date_str, f"{date_str}_{keyword}.json")
             print(f"自动抓取: {json_path}")
-            process_json(keyword, date_str, mode)
-
-def is_garbled(text):
-    # 1. 乱码特征：大量非中文、非英文字符
-    if not text:
-        return False
-    # 2. 统计可见字符比例
-    visible_chars = re.findall(r'[\u4e00-\u9fa5a-zA-Z0-9]', text)
-    if len(visible_chars) / max(len(text), 1) < 0.2:
-        return True
-    # 3. 连续问号/乱码符号
-    if re.search(r'[?]{10,}', text):
-        return True
-    # 4. 长度异常
-    if len(text) > 20000:
-        return True
-    return False 
+            process_json(keyword, date_str, mode) 
