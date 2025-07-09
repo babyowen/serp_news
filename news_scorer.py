@@ -12,6 +12,16 @@ from config import NEWS_SCORE_PROMPT, DEEPSEEK_API_KEY, DEEPSEEK_BASE_URL, DEEPS
 import argparse
 # 新增导入规则打分配置
 from config import NEWS_RULE_BASED_SCORING
+from error_handler import (
+    setup_global_exception_handler,
+    with_error_handling,
+    log_script_start,
+    log_script_complete,
+    ErrorHandler
+)
+
+# 设置全局异常处理器
+setup_global_exception_handler()
 
 # 调用大模型对单条新闻进行评分
 # title: 新闻标题
@@ -185,90 +195,157 @@ def get_yesterday_str():
     return yesterday.strftime("%Y-%m-%d")
 
 # 主流程入口，支持批量/单条/测试模式
+@with_error_handling("news_scorer.py", "main")
 def main():
-    # 用法: python news_scorer.py [keyword] [date] 或 --test_json '{...}'
-    parser = argparse.ArgumentParser()
-    parser.add_argument('keyword', nargs='?', default=None)
-    parser.add_argument('date', nargs='?', default=None)
-    parser.add_argument('--test_json', type=str, help='测试模式，输入一条json字符串')
-    args = parser.parse_args()
+    """主函数：处理新闻评分任务"""
+    # 记录脚本开始
+    log_script_start("news_scorer.py", sys.argv[1:])
+    
+    error_handler = ErrorHandler()
+    success = True
+    
+    try:
+        # 用法: python news_scorer.py [keyword] [date] 或 --test_json '{...}'
+        parser = argparse.ArgumentParser()
+        parser.add_argument('keyword', nargs='?', default=None)
+        parser.add_argument('date', nargs='?', default=None)
+        parser.add_argument('--test_json', type=str, help='测试模式，输入一条json字符串')
+        args = parser.parse_args()
 
-    if args.test_json:
-        # 测试模式
-        try:
-            news = json.loads(args.test_json)
-            title = news.get("title", "")
-            content = news.get("content", "")
-            keyword = news.get("keyword", DEFAULT_KEYWORD)
-            print(f"测试模式：\n新闻标题: {title}\n新闻正文: {content}\n关键词: {keyword}")
-            score = score_news(title, content, keyword)
-            print(f"评分结果: {score}")
-        except Exception as e:
-            print(f"测试模式解析失败: {e}")
-        return
-
-    # 批量模式：无参数时遍历 DEFAULT_KEYWORDS
-    if args.keyword is None:
-        date_str = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
-        for keyword in DEFAULT_KEYWORDS:
-            json_path = os.path.join("output", date_str, f"{date_str}_{keyword}.json")
-            scored_json_path = os.path.splitext(json_path)[0] + "_scored.json"
-            print(f"\n=== 开始处理关键词: {keyword} ===")
-            if not os.path.exists(json_path):
-                print(f"未找到文件: {json_path}")
-                continue
-            # 跳过机制：如已存在_scored.json文件，说明已完成打分，无需重复处理
-            if os.path.exists(scored_json_path):
-                print(f"[SKIP] {scored_json_path} 已存在，跳过 {keyword}")
-                # 可选：写入日志
-                now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                log_path = os.path.join("output", "run_log.txt")
-                skip_log = (
-                    f"[🕒 {now}]\n[SKIP] 跳过关键词: {keyword}\n原因: 已存在 {scored_json_path}，已完成打分\n==============================\n"
-                )
-                with open(log_path, "a", encoding="utf-8") as f:
-                    f.write(skip_log)
-                continue
-            # 检查是否已打分（兼容旧流程）
+        if args.test_json:
+            # 测试模式
             try:
-                with open(json_path, "r", encoding="utf-8") as f:
-                    news_list = json.load(f)
-                already_scored = any("score" in news for news in news_list)
+                news = json.loads(args.test_json)
+                title = news.get("title", "")
+                content = news.get("content", "")
+                keyword = news.get("keyword", DEFAULT_KEYWORD)
+                print(f"测试模式：\n新闻标题: {title}\n新闻正文: {content}\n关键词: {keyword}")
+                score = score_news(title, content, keyword)
+                print(f"评分结果: {score}")
             except Exception as e:
-                print(f"读取文件失败: {json_path}, 错误: {e}")
-                continue
-            if already_scored:
-                print(f"已检测到 {json_path} 已经打分，跳过。")
-                continue
-            results, score_counter, total, rule_based_titles = batch_score_news(json_path, keyword)
-            scored_json_path = write_scored_json(results, json_path)
-            append_log(keyword, json_path, total, score_counter, len(results), scored_json_path, results, rule_based_titles)
-        return
+                print(f"测试模式解析失败: {e}")
+                success = False
+            log_script_complete("news_scorer.py", success=success, message="测试模式完成")
+            return success
 
-    # 单关键词模式
-    keyword = args.keyword or DEFAULT_KEYWORD
-    date_str = args.date
-    if not date_str or date_str.lower() == 'none':
-        date_str = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
-    json_path = os.path.join("output", date_str, f"{date_str}_{keyword}.json")
-    scored_json_path = os.path.splitext(json_path)[0] + "_scored.json"
-    # 跳过机制：如已存在_scored.json文件，说明已完成打分，无需重复处理
-    if os.path.exists(scored_json_path):
-        print(f"[SKIP] {scored_json_path} 已存在，跳过 {keyword}")
-        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        log_path = os.path.join("output", "run_log.txt")
-        skip_log = (
-            f"[🕒 {now}]\n[SKIP] 跳过关键词: {keyword}\n原因: 已存在 {scored_json_path}，已完成打分\n==============================\n"
+            # 批量模式：无参数时遍历 DEFAULT_KEYWORDS
+        if args.keyword is None:
+            date_str = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
+            processed_count = 0
+            total_count = len(DEFAULT_KEYWORDS)
+            
+            for keyword in DEFAULT_KEYWORDS:
+                json_path = os.path.join("output", date_str, f"{date_str}_{keyword}.json")
+                scored_json_path = os.path.splitext(json_path)[0] + "_scored.json"
+                print(f"\n=== 开始处理关键词: {keyword} ===")
+                
+                try:
+                    if not os.path.exists(json_path):
+                        print(f"未找到文件: {json_path}")
+                        continue
+                    # 跳过机制：如已存在_scored.json文件，说明已完成打分，无需重复处理
+                    if os.path.exists(scored_json_path):
+                        print(f"[SKIP] {scored_json_path} 已存在，跳过 {keyword}")
+                        # 可选：写入日志
+                        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                        log_path = os.path.join("output", "run_log.txt")
+                        skip_log = (
+                            f"[🕒 {now}]\n[SKIP] 跳过关键词: {keyword}\n原因: 已存在 {scored_json_path}，已完成打分\n==============================\n"
+                        )
+                        with open(log_path, "a", encoding="utf-8") as f:
+                            f.write(skip_log)
+                        processed_count += 1  # 跳过也算处理成功
+                        continue
+                    # 检查是否已打分（兼容旧流程）
+                    try:
+                        with open(json_path, "r", encoding="utf-8") as f:
+                            news_list = json.load(f)
+                        already_scored = any("score" in news for news in news_list)
+                    except Exception as e:
+                        print(f"读取文件失败: {json_path}, 错误: {e}")
+                        error_handler.log_error(
+                            error_type="FILE_READ_ERROR",
+                            error_msg=f"读取文件失败: {json_path}, 错误: {e}",
+                            script_name="news_scorer.py",
+                            keyword=keyword
+                        )
+                        continue
+                    if already_scored:
+                        print(f"已检测到 {json_path} 已经打分，跳过。")
+                        processed_count += 1
+                        continue
+                    
+                    results, score_counter, total, rule_based_titles = batch_score_news(json_path, keyword)
+                    scored_json_path = write_scored_json(results, json_path)
+                    append_log(keyword, json_path, total, score_counter, len(results), scored_json_path, results, rule_based_titles)
+                    processed_count += 1
+                    
+                except Exception as e:
+                    print(f"处理关键词 {keyword} 时发生异常: {e}")
+                    error_handler.log_error(
+                        error_type="SCORING_ERROR",
+                        error_msg=f"处理关键词 {keyword} 时发生异常: {e}",
+                        script_name="news_scorer.py",
+                        keyword=keyword
+                    )
+                    success = False
+            
+            print(f"\n📊 批量评分完成：{processed_count}/{total_count} 个关键词处理成功")
+            log_script_complete("news_scorer.py", success=success, message=f"批量评分完成：{processed_count}/{total_count}")
+            return success
+
+        # 单关键词模式
+        keyword = args.keyword or DEFAULT_KEYWORD
+        date_str = args.date
+        if not date_str or date_str.lower() == 'none':
+            date_str = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
+        json_path = os.path.join("output", date_str, f"{date_str}_{keyword}.json")
+        scored_json_path = os.path.splitext(json_path)[0] + "_scored.json"
+        
+        # 跳过机制：如已存在_scored.json文件，说明已完成打分，无需重复处理
+        if os.path.exists(scored_json_path):
+            print(f"[SKIP] {scored_json_path} 已存在，跳过 {keyword}")
+            now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            log_path = os.path.join("output", "run_log.txt")
+            skip_log = (
+                f"[🕒 {now}]\n[SKIP] 跳过关键词: {keyword}\n原因: 已存在 {scored_json_path}，已完成打分\n==============================\n"
+            )
+            with open(log_path, "a", encoding="utf-8") as f:
+                f.write(skip_log)
+            log_script_complete("news_scorer.py", success=True, message=f"跳过已处理的关键词: {keyword}")
+            return True
+            
+        if not os.path.exists(json_path):
+            print(f"未找到文件: {json_path}")
+            error_handler.log_error(
+                error_type="FILE_NOT_FOUND",
+                error_msg=f"未找到文件: {json_path}",
+                script_name="news_scorer.py",
+                keyword=keyword
+            )
+            log_script_complete("news_scorer.py", success=False, message=f"文件不存在: {json_path}")
+            return False
+            
+        results, score_counter, total, rule_based_titles = batch_score_news(json_path, keyword)
+        scored_json_path = write_scored_json(results, json_path)
+        append_log(keyword, json_path, total, score_counter, len(results), scored_json_path, results, rule_based_titles)
+        
+        print(f"✅ 关键词 {keyword} 评分完成")
+        log_script_complete("news_scorer.py", success=True, message=f"关键词 {keyword} 评分完成")
+        return True
+        
+    except Exception as e:
+        error_msg = f"news_scorer.py 执行过程中发生异常: {str(e)}"
+        print(f"[ERROR] {error_msg}")
+        error_handler.log_error(
+            error_type="MAIN_FUNCTION_ERROR",
+            error_msg=error_msg,
+            script_name="news_scorer.py"
         )
-        with open(log_path, "a", encoding="utf-8") as f:
-            f.write(skip_log)
-        return
-    if not os.path.exists(json_path):
-        print(f"未找到文件: {json_path}")
-        return
-    results, score_counter, total, rule_based_titles = batch_score_news(json_path, keyword)
-    scored_json_path = write_scored_json(results, json_path)
-    append_log(keyword, json_path, total, score_counter, len(results), scored_json_path, results, rule_based_titles)
+        success = False
+        log_script_complete("news_scorer.py", success=False, message=error_msg)
+        return False
 
 if __name__ == "__main__":
-    main() 
+    success = main()
+    sys.exit(0 if success else 1) 

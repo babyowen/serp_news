@@ -15,3 +15,13 @@
 [2025-06-23 20:04:06] baidu_news | 司库 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=baidu_news&q=%E5%8F%B8%E5%BA%93&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&rtt=4&pn=0
 [2025-06-23 20:04:15] bing_news | 司库 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=bing_news&q=%E5%8F%B8%E5%BA%93&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&mkt=zh-hk&qft=interval%3D%228%22
 [2025-06-23 20:04:24] duckduckgo_news | 司库 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=duckduckgo_news&q=%E5%8F%B8%E5%BA%93&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&kl=cn-zh&df=w
+[2025-07-09 19:17:45] ERROR
+脚本: test_script
+关键词: 测试关键词
+错误类型: TEST_ERROR
+错误信息: 测试错误处理机制
+上下文信息: {
+  "test": true
+}
+==================================================
+

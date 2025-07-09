@@ -4,26 +4,28 @@ import datetime
 import os
 import json
 from config import DEFAULT_KEYWORDS, SEARCH_KEYWORDS
+from error_handler import (
+    setup_global_exception_handler, 
+    safe_subprocess_run, 
+    with_error_handling,
+    log_script_start,
+    log_script_complete,
+    ErrorHandler
+)
 
-def run_step(cmd, step_name, script_name=None, desc=None):
+# 设置全局异常处理器
+setup_global_exception_handler()
+
+def run_step(cmd, step_name, script_name=None, desc=None, keyword=None):
+    """安全运行步骤，使用新的错误处理机制"""
     if script_name or desc:
         print(f"\n------ 即将执行: {script_name or ''} ------")
         if desc:
             print(f"功能说明: {desc}")
         print(f"-----------------------------------\n")
-    print(f"\n==============================")
-    print(f"🚩 开始执行步骤: {step_name}")
-    print(f"==============================")
-    try:
-        # 实时输出子进程日志，遇到错误直接抛出异常
-        result = subprocess.run(cmd, shell=True, check=True)
-        print(f"==============================")
-        print(f"✅ 步骤完成: {step_name}")
-        print(f"==============================\n")
-    except subprocess.CalledProcessError as e:
-        print(f"[❌ 错误] {step_name} 执行失败: {e}")
-        print(f"==============================\n")
-        sys.exit(1)
+    
+    # 使用safe_subprocess_run替代原来的subprocess.run
+    return safe_subprocess_run(cmd, step_name, keyword=keyword, check=True)
 
 def all_news_has_content(json_path):
     """判断json文件中所有新闻条目都已存在非空content字段"""
@@ -36,107 +38,285 @@ def all_news_has_content(json_path):
             return False
         return all(item.get('content') and len(str(item.get('content')).strip()) > 0 for item in news_list)
     except Exception as e:
+        error_handler = ErrorHandler()
+        error_handler.log_error(
+            error_type="FILE_READ_ERROR",
+            error_msg=f"检查content时读取失败: {json_path}, 错误: {e}",
+            script_name="main.py",
+            context={"file_path": json_path, "function": "all_news_has_content"}
+        )
         print(f"[WARN] 检查content时读取失败: {json_path}, 错误: {e}")
         return False
 
 def write_skip_log(keyword, reason, file_path):
+    """记录跳过信息到日志"""
     now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     log_path = os.path.join("output", "run_log.txt")
     skip_log = (
         f"[🕒 {now}]\n[SKIP] 跳过关键词: {keyword}\n原因: {reason} {file_path}\n==============================\n"
     )
-    with open(log_path, "a", encoding="utf-8") as f:
-        f.write(skip_log)
+    try:
+        with open(log_path, "a", encoding="utf-8") as f:
+            f.write(skip_log)
+    except Exception as e:
+        print(f"[WARN] 无法写入跳过日志: {e}")
 
-def main(date=None):
-    # 如果未指定日期，自动赋值为昨天日期
-    if not date:
-        date = (datetime.datetime.now() - datetime.timedelta(days=1)).strftime("%Y-%m-%d")
-    print(f"[INFO] 本次批量处理主关键词: {DEFAULT_KEYWORDS}")
-    # 输出所有搜索关键词
-    all_search_keywords = set()
-    for main_kw in DEFAULT_KEYWORDS:
-        all_search_keywords.update(SEARCH_KEYWORDS[main_kw])
-    print(f"[INFO] 本次所有搜索关键词: {sorted(all_search_keywords)}")
-    # 步骤1：抓取API
-    for main_kw in DEFAULT_KEYWORDS:
-        merged_file = f"output/{date}/{date}_{main_kw}.json"
-        if os.path.exists(merged_file):
-            print(f"[INFO] {merged_file} 已存在，跳过 {main_kw}")
-            write_skip_log(main_kw, "已存在，新闻列表已抓取", merged_file)
+@with_error_handling("main.py", "新闻采集阶段")
+def execute_news_fetching(date, main_kw):
+    """执行新闻采集阶段"""
+    merged_file = f"output/{date}/{date}_{main_kw}.json"
+    if os.path.exists(merged_file):
+        print(f"[INFO] {merged_file} 已存在，跳过 {main_kw}")
+        write_skip_log(main_kw, "已存在，新闻列表已抓取", merged_file)
+        return True
+    
+    print(f"[INFO] [步骤1] 抓取API: {main_kw}")
+    all_news = []
+    
+    for search_kw in SEARCH_KEYWORDS[main_kw]:
+        # 调用采集脚本，采集结果临时存储
+        tmp_file = f"output/{date}/tmp_{date}_{main_kw}_{search_kw}.json"
+        cmd = f'python fetch_and_filter.py "{search_kw}" {date} --output "{tmp_file}"'
+        
+        # 使用安全的subprocess调用
+        success = safe_subprocess_run(
+            cmd, 
+            f"采集新闻-{search_kw}", 
+            keyword=search_kw,
+            check=False  # 不直接抛异常，让程序继续
+        )
+        
+        if not success:
+            print(f"[WARN] 采集 {search_kw} 失败，跳过此搜索关键词")
             continue
-        print(f"[INFO] [步骤1] 抓取API: {main_kw}")
-        all_news = []
-        for search_kw in SEARCH_KEYWORDS[main_kw]:
-            # 调用采集脚本，采集结果临时存储
-            tmp_file = f"output/{date}/tmp_{date}_{main_kw}_{search_kw}.json"
-            os.system(f'python fetch_and_filter.py "{search_kw}" {date} --output "{tmp_file}"')
-            # 读取采集结果，添加 search_keyword 字段
-            if os.path.exists(tmp_file):
+        
+        # 读取采集结果，添加 search_keyword 字段
+        if os.path.exists(tmp_file):
+            try:
+                with open(tmp_file, 'r', encoding='utf-8') as f:
+                    news_list = json.load(f)
+                for item in news_list:
+                    item['search_keyword'] = search_kw
+                    item['main_keyword'] = main_kw
+                    item['keyword'] = main_kw  # 确保keyword字段为主关键词
+                all_news.extend(news_list)
+            except Exception as e:
+                error_handler = ErrorHandler()
+                error_handler.log_error(
+                    error_type="JSON_READ_ERROR",
+                    error_msg=f"读取临时采集文件失败: {tmp_file}, 错误: {e}",
+                    script_name="main.py",
+                    keyword=main_kw,
+                    context={"file_path": tmp_file, "search_keyword": search_kw}
+                )
+                print(f"[WARN] 读取临时采集文件失败: {tmp_file}, 错误: {e}")
+            finally:
+                # 清理临时文件
                 try:
-                    with open(tmp_file, 'r', encoding='utf-8') as f:
-                        news_list = json.load(f)
-                    for item in news_list:
-                        item['search_keyword'] = search_kw
-                        item['main_keyword'] = main_kw
-                        item['keyword'] = main_kw  # 确保keyword字段为主关键词
-                    all_news.extend(news_list)
+                    if os.path.exists(tmp_file):
+                        os.remove(tmp_file)
                 except Exception as e:
-                    print(f"[WARN] 读取临时采集文件失败: {tmp_file}, 错误: {e}")
-                os.remove(tmp_file)
-        # 合并去重（按 title+link）
-        unique = {}
-        for item in all_news:
-            key = (item.get('title', '').strip(), item.get('link', '').strip())
-            if key not in unique:
-                unique[key] = item
-        deduped_news = list(unique.values())
+                    print(f"[WARN] 删除临时文件失败: {tmp_file}, 错误: {e}")
+    
+    # 合并去重（按 title+link）
+    unique = {}
+    for item in all_news:
+        key = (item.get('title', '').strip(), item.get('link', '').strip())
+        if key not in unique:
+            unique[key] = item
+    deduped_news = list(unique.values())
+    
+    # 保存合并结果
+    try:
         os.makedirs(f"output/{date}", exist_ok=True)
         with open(merged_file, 'w', encoding='utf-8') as f:
             json.dump(deduped_news, f, ensure_ascii=False, indent=2)
         print(f"[INFO] 合并去重后已保存: {merged_file}，数量：{len(deduped_news)}")
-    # 步骤2：抓正文
-    for kw in DEFAULT_KEYWORDS:
-        kw = kw.strip()
-        merged_file = f"output/{date}/{date}_{kw}.json"
-        if not os.path.exists(merged_file):
-            print(f"[WARN] {merged_file} 不存在，无法抓正文，跳过 {kw}")
-            write_skip_log(kw, "新闻列表文件不存在，无法抓正文", merged_file)
-            continue
-        if all_news_has_content(merged_file):
-            print(f"[INFO] {merged_file} 所有新闻正文已抓取，跳过 {kw}")
-            write_skip_log(kw, "所有新闻正文已抓取", merged_file)
-            continue
-        print(f"[INFO] [步骤2] 抓正文: {kw}")
-        os.system(f'python fetch_content.py {kw} {date}')
-    # 步骤3：评分
-    for kw in DEFAULT_KEYWORDS:
-        kw = kw.strip()
-        merged_file = f"output/{date}/{date}_{kw}.json"
-        scored_file = f"output/{date}/{date}_{kw}_scored.json"
-        if not os.path.exists(merged_file):
-            print(f"[WARN] {merged_file} 不存在，无法评分，跳过 {kw}")
-            write_skip_log(kw, "新闻列表文件不存在，无法评分", merged_file)
-            continue
-        if os.path.exists(scored_file):
-            print(f"[INFO] {scored_file} 已存在，跳过 {kw}")
-            write_skip_log(kw, "已存在，已完成打分", scored_file)
-            continue
-        print(f"[INFO] [步骤3] 评分: {kw}")
-        os.system(f'python news_scorer.py {kw} {date}')
-    print("[INFO] 全部关键词处理完成。开始自动总结主关键词...")
-    # 步骤4：自动总结主关键词
-    date_arg = f'--date {date}' if date else ''
-    print("[INFO] [步骤4] 自动总结主关键词")
-    run_step(f'python news_summarizer.py {date_arg}', '自动总结主关键词', 'news_summarizer.py', '对所有主关键词进行总结，自动合并搜索关键词新闻')
-    # 步骤5：自动写入数据库
-    print("[INFO] [步骤5] 自动写入数据库")
-    run_step(f'python write_to_mysql.py {date_arg}', '自动写入数据库', 'write_to_mysql.py', '将scored和summary结果写入数据库')
-    print("[INFO] 全部流程已自动完成！")
+        return True
+    except Exception as e:
+        error_handler = ErrorHandler()
+        error_handler.log_error(
+            error_type="FILE_WRITE_ERROR",
+            error_msg=f"保存合并文件失败: {merged_file}, 错误: {e}",
+            script_name="main.py",
+            keyword=main_kw,
+            context={"file_path": merged_file, "news_count": len(deduped_news)}
+        )
+        print(f"[ERROR] 保存合并文件失败: {merged_file}, 错误: {e}")
+        return False
+
+@with_error_handling("main.py", "正文抓取阶段")
+def execute_content_fetching(date, kw):
+    """执行正文抓取阶段"""
+    kw = kw.strip()
+    merged_file = f"output/{date}/{date}_{kw}.json"
+    
+    if not os.path.exists(merged_file):
+        print(f"[WARN] {merged_file} 不存在，无法抓正文，跳过 {kw}")
+        write_skip_log(kw, "新闻列表文件不存在，无法抓正文", merged_file)
+        return False
+    
+    if all_news_has_content(merged_file):
+        print(f"[INFO] {merged_file} 所有新闻正文已抓取，跳过 {kw}")
+        write_skip_log(kw, "所有新闻正文已抓取", merged_file)
+        return True
+    
+    print(f"[INFO] [步骤2] 抓正文: {kw}")
+    cmd = f'python fetch_content.py {kw} {date}'
+    
+    return safe_subprocess_run(cmd, f"抓取正文-{kw}", keyword=kw, check=False)
+
+@with_error_handling("main.py", "AI评分阶段")
+def execute_scoring(date, kw):
+    """执行AI评分阶段"""
+    kw = kw.strip()
+    merged_file = f"output/{date}/{date}_{kw}.json"
+    scored_file = f"output/{date}/{date}_{kw}_scored.json"
+    
+    if not os.path.exists(merged_file):
+        print(f"[WARN] {merged_file} 不存在，无法评分，跳过 {kw}")
+        write_skip_log(kw, "新闻列表文件不存在，无法评分", merged_file)
+        return False
+    
+    if os.path.exists(scored_file):
+        print(f"[INFO] {scored_file} 已存在，跳过 {kw}")
+        write_skip_log(kw, "已存在，已完成打分", scored_file)
+        return True
+    
+    print(f"[INFO] [步骤3] 评分: {kw}")
+    cmd = f'python news_scorer.py {kw} {date}'
+    
+    return safe_subprocess_run(cmd, f"AI评分-{kw}", keyword=kw, check=False)
+
+@with_error_handling("main.py", "main")
+def main(date=None):
+    """主函数，控制整个新闻处理流程"""
+    # 记录脚本开始执行
+    script_args = [date] if date else []
+    log_script_start("main.py", script_args)
+    
+    try:
+        # 如果未指定日期，自动赋值为昨天日期
+        if not date:
+            date = (datetime.datetime.now() - datetime.timedelta(days=1)).strftime("%Y-%m-%d")
+        
+        print(f"[INFO] 本次批量处理主关键词: {DEFAULT_KEYWORDS}")
+        
+        # 输出所有搜索关键词
+        all_search_keywords = set()
+        for main_kw in DEFAULT_KEYWORDS:
+            all_search_keywords.update(SEARCH_KEYWORDS[main_kw])
+        print(f"[INFO] 本次所有搜索关键词: {sorted(all_search_keywords)}")
+        
+        # 统计成功失败情况
+        fetch_success = 0
+        fetch_failed = 0
+        content_success = 0
+        content_failed = 0
+        score_success = 0
+        score_failed = 0
+        
+        # 步骤1：抓取API
+        print(f"\n🌟 开始执行步骤1：新闻采集阶段")
+        for main_kw in DEFAULT_KEYWORDS:
+            if execute_news_fetching(date, main_kw):
+                fetch_success += 1
+            else:
+                fetch_failed += 1
+        
+        print(f"\n📊 步骤1完成统计：成功 {fetch_success}，失败 {fetch_failed}")
+        
+        # 步骤2：抓正文
+        print(f"\n🌟 开始执行步骤2：正文抓取阶段")
+        for kw in DEFAULT_KEYWORDS:
+            if execute_content_fetching(date, kw):
+                content_success += 1
+            else:
+                content_failed += 1
+        
+        print(f"\n📊 步骤2完成统计：成功 {content_success}，失败 {content_failed}")
+        
+        # 步骤3：评分
+        print(f"\n🌟 开始执行步骤3：AI评分阶段")
+        for kw in DEFAULT_KEYWORDS:
+            if execute_scoring(date, kw):
+                score_success += 1
+            else:
+                score_failed += 1
+        
+        print(f"\n📊 步骤3完成统计：成功 {score_success}，失败 {score_failed}")
+        
+        print("[INFO] 全部关键词处理完成。开始自动总结主关键词...")
+        
+        # 步骤4：自动总结主关键词
+        date_arg = f'--date {date}' if date else ''
+        print("\n🌟 开始执行步骤4：智能摘要阶段")
+        summarize_success = run_step(
+            f'python news_summarizer.py {date_arg}', 
+            '自动总结主关键词', 
+            'news_summarizer.py', 
+            '对所有主关键词进行总结，自动合并搜索关键词新闻'
+        )
+        
+        # 步骤5：自动写入数据库
+        print("\n🌟 开始执行步骤5：数据库写入阶段")
+        database_success = run_step(
+            f'python write_to_mysql.py {date_arg}', 
+            '自动写入数据库', 
+            'write_to_mysql.py', 
+            '将scored和summary结果写入数据库'
+        )
+        
+        # 统计整体执行情况
+        total_steps = 5
+        successful_steps = sum([
+            1 if fetch_failed == 0 else 0,
+            1 if content_failed == 0 else 0, 
+            1 if score_failed == 0 else 0,
+            1 if summarize_success else 0,
+            1 if database_success else 0
+        ])
+        
+        success_rate = successful_steps / total_steps * 100
+        
+        completion_message = (
+            f"总体完成情况：{successful_steps}/{total_steps} 步骤成功 ({success_rate:.1f}%)\n"
+            f"新闻采集：{fetch_success}成功/{fetch_failed}失败\n"
+            f"正文抓取：{content_success}成功/{content_failed}失败\n"
+            f"AI评分：{score_success}成功/{score_failed}失败\n"
+            f"智能摘要：{'成功' if summarize_success else '失败'}\n"
+            f"数据库写入：{'成功' if database_success else '失败'}"
+        )
+        
+        print(f"\n🎉 全部流程执行完成！")
+        print(f"📊 {completion_message}")
+        
+        # 记录脚本完成
+        log_script_complete("main.py", success=True, message=completion_message)
+        
+        return True
+        
+    except KeyboardInterrupt:
+        print(f"\n[INFO] 用户中断程序执行")
+        log_script_complete("main.py", success=False, message="用户中断执行")
+        sys.exit(130)
+    except Exception as e:
+        error_msg = f"main函数执行过程中发生异常: {str(e)}"
+        print(f"[ERROR] {error_msg}")
+        log_script_complete("main.py", success=False, message=error_msg)
+        return False
 
 if __name__ == "__main__":
     import sys
     date = None
     if len(sys.argv) > 1:
         date = sys.argv[1]
-    main(date) 
+    
+    # 执行主函数
+    success = main(date)
+    
+    # 根据执行结果设置退出码
+    if success:
+        sys.exit(0)
+    else:
+        sys.exit(1) 

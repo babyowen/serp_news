@@ -1,18 +1,27 @@
 # -*- coding: utf-8 -*-
 # =========================================
-# 新闻采集与过滤主程序
-# 主要功能：采集四大新闻API，按日期过滤、去重、黑名单过滤，保存结果并记录日志
+# 新闻采集过滤主程序
+# 主要功能：从四大新闻API采集新闻，过滤昨天新闻，去重、黑名单过滤，保存结果
 # =========================================
-from news_fetcher import fetch_serpapi_baidu_news, fetch_serpapi_google_news, fetch_serpapi_bing_news, fetch_serpapi_duckduckgo_news
-from config import DEFAULT_KEYWORDS, blacklist_keywords
-from config import SEARCH_KEYWORDS
+import os
+import sys
 import json
+import argparse
 from datetime import datetime, timedelta
 import re
 from dateutil import parser
-import os
-import sys
-import argparse
+from news_fetcher import fetch_serpapi_google_news, fetch_serpapi_baidu_news, fetch_serpapi_bing_news, fetch_serpapi_duckduckgo_news
+from config import DEFAULT_KEYWORDS, SEARCH_KEYWORDS, blacklist_keywords
+from error_handler import (
+    setup_global_exception_handler,
+    with_error_handling,
+    log_script_start,
+    log_script_complete,
+    ErrorHandler
+)
+
+# 设置全局异常处理器
+setup_global_exception_handler()
 
 # 判断Baidu News返回的date字段是否为昨天
 def is_baidu_news_yesterday(date_str):
@@ -237,147 +246,178 @@ def parse_duckduckgo_news_date(date_str):
     return None
 
 # 主流程入口，采集四大新闻API，按日期过滤、去重、黑名单过滤、保存结果并写日志
+@with_error_handling("fetch_and_filter.py", "main")
 def main():
-    # 参数解析：第一个参数为关键词，第二个为日期，新增 --output、--main_keyword、--search_keyword
-    parser = argparse.ArgumentParser()
-    parser.add_argument('keyword', nargs='?', default=None)
-    parser.add_argument('fetch_date', nargs='?', default=None)
-    parser.add_argument('--output', type=str, default=None, help='指定输出文件路径')
-    parser.add_argument('--main_keyword', type=str, default=None, help='主关键词')
-    parser.add_argument('--search_keyword', type=str, default=None, help='搜索用关键词')
-    args = parser.parse_args()
+    """主函数：处理新闻采集和过滤任务"""
+    # 记录脚本开始
+    log_script_start("fetch_and_filter.py", sys.argv[1:])
+    
+    error_handler = ErrorHandler()
+    success = True
+    
+    try:
+        # 参数解析：第一个参数为关键词，第二个为日期，新增 --output、--main_keyword、--search_keyword
+        parser = argparse.ArgumentParser()
+        parser.add_argument('keyword', nargs='?', default=None)
+        parser.add_argument('fetch_date', nargs='?', default=None)
+        parser.add_argument('--output', type=str, default=None, help='指定输出文件路径')
+        parser.add_argument('--main_keyword', type=str, default=None, help='主关键词')
+        parser.add_argument('--search_keyword', type=str, default=None, help='搜索用关键词')
+        args = parser.parse_args()
 
-    keyword = args.keyword
-    fetch_date = args.fetch_date
-    output_path = args.output
-    main_keyword = args.main_keyword
-    search_keyword = args.search_keyword
+        keyword = args.keyword
+        fetch_date = args.fetch_date
+        output_path = args.output
+        main_keyword = args.main_keyword
+        search_keyword = args.search_keyword
 
-    if not fetch_date or fetch_date.lower() == 'none':
-        fetch_date = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
-    if not keyword:
-        print("[ERROR] 必须指定搜索用关键词")
-        return
-    os.makedirs(os.path.join("output", fetch_date), exist_ok=True)
-    log_lines = []
-    run_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    log_lines.append(f"=====🕒 本次运行时间: {run_time}=====")
-    # 采集四大新闻API
-    print("[INFO] 正在采集 Google News ...")
-    google_data = fetch_serpapi_google_news(keyword)
-    print("[INFO] 正在采集 Baidu News ...")
-    baidu_data = fetch_serpapi_baidu_news(keyword)
-    print("[INFO] 正在采集 Bing News ...")
-    bing_data = fetch_serpapi_bing_news(keyword)
-    print("[INFO] 正在采集 DuckDuckGo News ...")
-    duck_data = fetch_serpapi_duckduckgo_news(keyword)
+        if not fetch_date or fetch_date.lower() == 'none':
+            fetch_date = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
+        if not keyword:
+            print("[ERROR] 必须指定搜索用关键词")
+            return False
+        os.makedirs(os.path.join("output", fetch_date), exist_ok=True)
+        log_lines = []
+        run_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        log_lines.append(f"=====🕒 本次运行时间: {run_time}=====")
+        
+        # 采集四大新闻API
+        print("[INFO] 正在采集 Google News ...")
+        google_data = fetch_serpapi_google_news(keyword)
+        print("[INFO] 正在采集 Baidu News ...")
+        baidu_data = fetch_serpapi_baidu_news(keyword)
+        print("[INFO] 正在采集 Bing News ...")
+        bing_data = fetch_serpapi_bing_news(keyword)
+        print("[INFO] 正在采集 DuckDuckGo News ...")
+        duck_data = fetch_serpapi_duckduckgo_news(keyword)
 
-    # 处理各个搜索引擎的数据
-    baidu_news = []
-    for item in baidu_data.get('organic_results', []):
-        date_str = item.get('date', '')
-        if is_baidu_news_yesterday(date_str):
-            item = item.copy()
-            item['fetchdate'] = fetch_date
-            item['sourceapi'] = 'serp_baidunews'
-            baidu_news.append(item)
+        # 处理各个搜索引擎的数据
+        baidu_news = []
+        for item in baidu_data.get('organic_results', []):
+            date_str = item.get('date', '')
+            if is_baidu_news_yesterday(date_str):
+                item = item.copy()
+                item['fetchdate'] = fetch_date
+                item['sourceapi'] = 'serp_baidunews'
+                baidu_news.append(item)
 
-    bing_news = []
-    for item in bing_data.get('organic_results', []):
-        date_str = item.get('date', '')
-        if is_bing_news_yesterday(date_str):
-            item = item.copy()
-            item['fetchdate'] = fetch_date
-            item['sourceapi'] = 'serp_bingnews'
-            bing_news.append(item)
+        bing_news = []
+        for item in bing_data.get('organic_results', []):
+            date_str = item.get('date', '')
+            if is_bing_news_yesterday(date_str):
+                item = item.copy()
+                item['fetchdate'] = fetch_date
+                item['sourceapi'] = 'serp_bingnews'
+                bing_news.append(item)
 
-    duck_news = []
-    for item in duck_data.get('news_results', []):
-        date_str = item.get('date', '')
-        if is_duckduckgo_news_yesterday(date_str):
-            item = item.copy()
-            item['fetchdate'] = fetch_date
-            item['sourceapi'] = 'serp_duckduckgo_news'
-            duck_news.append(item)
+        duck_news = []
+        for item in duck_data.get('news_results', []):
+            date_str = item.get('date', '')
+            if is_duckduckgo_news_yesterday(date_str):
+                item = item.copy()
+                item['fetchdate'] = fetch_date
+                item['sourceapi'] = 'serp_duckduckgo_news'
+                duck_news.append(item)
 
-    google_news = []
-    for item in google_data.get('news_results', []):
-        date_str = item.get('date', '')
-        if is_google_news_yesterday(date_str):
-            item = item.copy()
-            # 保留原始date
-            item['fetchdate'] = fetch_date
-            item['sourceapi'] = 'serp_googlenews'
-            google_news.append(item)
+        google_news = []
+        for item in google_data.get('news_results', []):
+            date_str = item.get('date', '')
+            if is_google_news_yesterday(date_str):
+                item = item.copy()
+                # 保留原始date
+                item['fetchdate'] = fetch_date
+                item['sourceapi'] = 'serp_googlenews'
+                google_news.append(item)
 
-    # 统一处理 source 字段为字符串
-    def normalize_source(item):
-        source = item.get('source')
-        if isinstance(source, dict):
-            return source.get('name', '')
-        elif isinstance(source, str):
-            return source
+        # 统一处理 source 字段为字符串
+        def normalize_source(item):
+            source = item.get('source')
+            if isinstance(source, dict):
+                return source.get('name', '')
+            elif isinstance(source, str):
+                return source
+            else:
+                return ''
+
+        for news_list in [baidu_news, google_news, bing_news, duck_news]:
+            for item in news_list:
+                item['source'] = normalize_source(item)
+
+        # 合并：使用所有搜索引擎的结果
+        all_news = baidu_news + google_news + bing_news + duck_news
+
+        # 去重（按title+link）
+        unique = {}
+        for item in all_news:
+            key = (item.get('title', '').strip(), item.get('link', '').strip())
+            if key not in unique:
+                unique[key] = item
+        deduped_news = list(unique.values())
+
+        # 过滤黑名单
+        filtered_news = []
+        for item in deduped_news:
+            title = item.get('title', '')
+            if not any(bad in title for bad in blacklist_keywords):
+                filtered_news.append(item)
+
+        # 自动推断主关键词（如果未传--main_keyword）
+        if not main_keyword:
+            for mk, sk_list in SEARCH_KEYWORDS.items():
+                if keyword in sk_list:
+                    main_keyword = mk
+                    break
+            else:
+                main_keyword = keyword  # fallback
+
+        # 写入
+        if output_path:
+            with open(output_path, 'w', encoding='utf-8') as f:
+                json.dump(filtered_news, f, ensure_ascii=False, indent=2)
+            print(f"[INFO] 已保存 {len(filtered_news)} 条新闻到 {output_path}")
+            # 统一风格写日志
+            log_path = os.path.join("output", "run_log.txt")
+            now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            log = (
+                f"\n[🕒 {now}]\n"
+                f"执行程序: fetch_and_filter\n"
+                f"🔑 主关键词: {main_keyword}\n"
+                f"🔍 搜索关键词: {search_keyword or keyword}\n"
+                f"📅 日期: {fetch_date}\n"
+                f"📄 输出文件: {output_path}\n"
+                f"🌐 Google News: {len(google_news)} 条\n"
+                f"🌐 Baidu News: {len(baidu_news)} 条\n"
+                f"🌐 Bing News: {len(bing_news)} 条\n"
+                f"🌐 DuckDuckGo News: {len(duck_news)} 条\n"
+                f"🚫 黑名单过滤: {len(deduped_news) - len(filtered_news)} 条\n"
+                f"⭐️ 去重后总保存: {len(filtered_news)} 条\n"
+                f"==============================\n"
+            )
+            with open(log_path, "a", encoding="utf-8") as logf:
+                logf.write(log)
         else:
-            return ''
+            print(f"[INFO] 共采集 {len(filtered_news)} 条新闻（未指定输出文件，不保存）")
 
-    for news_list in [baidu_news, google_news, bing_news, duck_news]:
-        for item in news_list:
-            item['source'] = normalize_source(item)
-
-    # 合并：使用所有搜索引擎的结果
-    all_news = baidu_news + google_news + bing_news + duck_news
-
-    # 去重（按title+link）
-    unique = {}
-    for item in all_news:
-        key = (item.get('title', '').strip(), item.get('link', '').strip())
-        if key not in unique:
-            unique[key] = item
-    deduped_news = list(unique.values())
-
-    # 过滤黑名单
-    filtered_news = []
-    for item in deduped_news:
-        title = item.get('title', '')
-        if not any(bad in title for bad in blacklist_keywords):
-            filtered_news.append(item)
-
-    # 自动推断主关键词（如果未传--main_keyword）
-    if not main_keyword:
-        for mk, sk_list in SEARCH_KEYWORDS.items():
-            if keyword in sk_list:
-                main_keyword = mk
-                break
+        # 记录脚本完成
+        if output_path and 'filtered_news' in locals():
+            status_msg = f"采集完成，保存{len(filtered_news)}条新闻到{output_path}"
         else:
-            main_keyword = keyword  # fallback
-
-    # 写入
-    if output_path:
-        with open(output_path, 'w', encoding='utf-8') as f:
-            json.dump(filtered_news, f, ensure_ascii=False, indent=2)
-        print(f"[INFO] 已保存 {len(filtered_news)} 条新闻到 {output_path}")
-        # 统一风格写日志
-        log_path = os.path.join("output", "run_log.txt")
-        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        log = (
-            f"\n[🕒 {now}]\n"
-            f"执行程序: fetch_and_filter\n"
-            f"🔑 主关键词: {main_keyword}\n"
-            f"🔍 搜索关键词: {search_keyword or keyword}\n"
-            f"📅 日期: {fetch_date}\n"
-            f"📄 输出文件: {output_path}\n"
-            f"🌐 Google News: {len(google_news)} 条\n"
-            f"🌐 Baidu News: {len(baidu_news)} 条\n"
-            f"🌐 Bing News: {len(bing_news)} 条\n"
-            f"🌐 DuckDuckGo News: {len(duck_news)} 条\n"
-            f"🚫 黑名单过滤: {len(deduped_news) - len(filtered_news)} 条\n"
-            f"⭐️ 去重后总保存: {len(filtered_news)} 条\n"
-            f"==============================\n"
+            status_msg = "采集完成"
+        log_script_complete("fetch_and_filter.py", success=success, message=status_msg)
+        return success
+        
+    except Exception as e:
+        error_msg = f"fetch_and_filter.py 执行过程中发生异常: {str(e)}"
+        print(f"[ERROR] {error_msg}")
+        error_handler.log_error(
+            error_type="MAIN_FUNCTION_ERROR",
+            error_msg=error_msg,
+            script_name="fetch_and_filter.py",
+            keyword=keyword if 'keyword' in locals() else None
         )
-        with open(log_path, "a", encoding="utf-8") as logf:
-            logf.write(log)
-    else:
-        print(f"[INFO] 共采集 {len(filtered_news)} 条新闻（未指定输出文件，不保存）")
+        success = False
+        log_script_complete("fetch_and_filter.py", success=success, message=error_msg)
+        return success
 
 # 命令行入口
 if __name__ == "__main__":

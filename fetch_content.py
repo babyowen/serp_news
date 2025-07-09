@@ -25,6 +25,16 @@ from readability import Document
 from bs4 import BeautifulSoup
 from config import DEFAULT_KEYWORDS
 import re
+from error_handler import (
+    setup_global_exception_handler,
+    with_error_handling,
+    log_script_start,
+    log_script_complete,
+    ErrorHandler
+)
+
+# 设置全局异常处理器
+setup_global_exception_handler()
 
 # 判断文本是否为乱码
 def is_garbled(text):
@@ -326,6 +336,7 @@ def get_domain(url):
         return ''
 
 # 处理指定关键词和日期的json，抓取正文并写入，统计日志
+@with_error_handling("fetch_content.py", "正文抓取处理")
 def process_json(keyword, date_str=None, mode='正式'):
     json_path = get_json_path(keyword, date_str)
     log_path = get_log_path(date_str)
@@ -481,42 +492,84 @@ def process_json(keyword, date_str=None, mode='正式'):
     print(f"已写入新闻源分布统计: {stats_path}")
 
 # 命令行入口，支持批量/单条/测试模式
-if __name__ == '__main__':
-    if len(sys.argv) > 2:
-        keyword = sys.argv[1]
-        date_str = sys.argv[2]
-        if not date_str or date_str.lower() == 'none':
+@with_error_handling("fetch_content.py", "main")
+def main():
+    """主函数：处理命令行参数和执行正文抓取"""
+    # 记录脚本开始
+    log_script_start("fetch_content.py", sys.argv[1:])
+    
+    error_handler = ErrorHandler()
+    success = True
+    
+    try:
+        if len(sys.argv) > 2:
+            keyword = sys.argv[1]
+            date_str = sys.argv[2]
+            if not date_str or date_str.lower() == 'none':
+                date_str = get_yesterday_str()
+            mode = '正式'
+            test_url = None
+            for arg in sys.argv[3:]:
+                if arg in ('--test', '-test'):
+                    mode = '测试'
+                elif arg.startswith('--url'):
+                    if '=' in arg:
+                        test_url = arg.split('=', 1)[1]
+                    else:
+                        idx = sys.argv.index(arg)
+                        if idx + 1 < len(sys.argv):
+                            test_url = sys.argv[idx + 1]
+                elif date_str is None and not arg.startswith('--'):
+                    date_str = arg
+            if test_url:
+                print(f"测试抓取单个新闻链接: {test_url}")
+                content, wordcount, used_custom = fetch_article_content(test_url)
+                print(f"\n【抓取结果】\n字数: {wordcount}\n定制化: {used_custom}\n正文预览:\n{content[:500]}{'...' if len(content) > 500 else ''}")
+            else:
+                result = process_json(keyword, date_str, mode)
+                if result is None:
+                    success = False
+        elif len(sys.argv) > 1:
+            keyword = sys.argv[1]
             date_str = get_yesterday_str()
-        mode = '正式'
-        test_url = None
-        for arg in sys.argv[3:]:
-            if arg in ('--test', '-test'):
-                mode = '测试'
-            elif arg.startswith('--url'):
-                if '=' in arg:
-                    test_url = arg.split('=', 1)[1]
-                else:
-                    idx = sys.argv.index(arg)
-                    if idx + 1 < len(sys.argv):
-                        test_url = sys.argv[idx + 1]
-            elif date_str is None and not arg.startswith('--'):
-                date_str = arg
-        if test_url:
-            print(f"测试抓取单个新闻链接: {test_url}")
-            content, wordcount, used_custom = fetch_article_content(test_url)
-            print(f"\n【抓取结果】\n字数: {wordcount}\n定制化: {used_custom}\n正文预览:\n{content[:500]}{'...' if len(content) > 500 else ''}")
+            mode = '正式'
+            result = process_json(keyword, date_str, mode)
+            if result is None:
+                success = False
         else:
-            process_json(keyword, date_str, mode)
-    elif len(sys.argv) > 1:
-        keyword = sys.argv[1]
-        date_str = get_yesterday_str()
-        mode = '正式'
-        process_json(keyword, date_str, mode)
-    else:
-        # 无参数，自动批量处理昨天所有关键词
-        date_str = get_yesterday_str()
-        mode = '正式'
-        for keyword in DEFAULT_KEYWORDS:
-            json_path = os.path.join("output", date_str, f"{date_str}_{keyword}.json")
-            print(f"自动抓取: {json_path}")
-            process_json(keyword, date_str, mode) 
+            # 无参数，自动批量处理昨天所有关键词
+            date_str = get_yesterday_str()
+            mode = '正式'
+            processed_count = 0
+            total_count = len(DEFAULT_KEYWORDS)
+            
+            for keyword in DEFAULT_KEYWORDS:
+                json_path = os.path.join("output", date_str, f"{date_str}_{keyword}.json")
+                print(f"自动抓取: {json_path}")
+                result = process_json(keyword, date_str, mode)
+                if result is not None:
+                    processed_count += 1
+                else:
+                    success = False
+            
+            print(f"\n📊 批量处理完成：{processed_count}/{total_count} 个关键词处理成功")
+    
+    except Exception as e:
+        error_msg = f"fetch_content.py 执行过程中发生异常: {str(e)}"
+        print(f"[ERROR] {error_msg}")
+        error_handler.log_error(
+            error_type="MAIN_FUNCTION_ERROR",
+            error_msg=error_msg,
+            script_name="fetch_content.py"
+        )
+        success = False
+    
+    # 记录脚本完成
+    status_msg = "执行成功" if success else "执行过程中出现错误"
+    log_script_complete("fetch_content.py", success=success, message=status_msg)
+    
+    return success
+
+if __name__ == '__main__':
+    success = main()
+    sys.exit(0 if success else 1) 
