@@ -4,12 +4,23 @@
 # 主要功能：将抓取和处理后的新闻、摘要、新闻源等数据写入MySQL数据库，支持查重、日志记录
 # =========================================
 import os
+import sys
 import json
 import pymysql
 from dotenv import load_dotenv
 import argparse
 import datetime
 from config import DEFAULT_KEYWORDS
+from error_handler import (
+    setup_global_exception_handler,
+    with_error_handling,
+    log_script_start,
+    log_script_complete,
+    ErrorHandler
+)
+
+# 设置全局异常处理器
+setup_global_exception_handler()
 
 # 加载.env文件，获取数据库连接信息
 load_dotenv()
@@ -239,45 +250,86 @@ def fetch_latest_summary(date, keyword):
 # 数据获取：命令行参数、配置文件、各类json/txt文件
 # 执行：依次调用各类insert函数，完成数据导入
 # 结果：所有数据写入MySQL，日志记录导入情况
+@with_error_handling("write_to_mysql.py", "main")
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--date', type=str, help='指定日期，格式YYYY-MM-DD')
-    args = parser.parse_args()
-    target_date = get_target_date(args.date)
+    """主函数：处理数据库导入任务"""
+    # 记录脚本开始
+    log_script_start("write_to_mysql.py", sys.argv[1:])
+    
+    error_handler = ErrorHandler()
+    success = True
+    
+    try:
+        parser = argparse.ArgumentParser()
+        parser.add_argument('--date', type=str, help='指定日期，格式YYYY-MM-DD')
+        args = parser.parse_args()
+        target_date = get_target_date(args.date)
 
-    # 新增：先导入 news_websites
-    insert_news_websites(os.path.join("output", "news_sources.txt"))
+        # 新增：先导入 news_websites
+        insert_news_websites(os.path.join("output", "news_sources.txt"))
 
-    # 新增：导入 news_source_stats
-    stats_json_path = os.path.join("output", "news_source_stats.json")
-    if os.path.exists(stats_json_path):
-        print(f"正在导入: {stats_json_path} 到 news_source_stats ...")
-        insert_news_source_stats(stats_json_path, target_date)
-    else:
-        print(f"文件不存在，跳过: {stats_json_path}")
+        # 新增：导入 news_source_stats
+        stats_json_path = os.path.join("output", "news_source_stats.json")
+        if os.path.exists(stats_json_path):
+            print(f"正在导入: {stats_json_path} 到 news_source_stats ...")
+            insert_news_source_stats(stats_json_path, target_date)
+        else:
+            print(f"文件不存在，跳过: {stats_json_path}")
 
-    for keyword in DEFAULT_KEYWORDS:
-        for suffix in ['scored', 'summary']:
-            filename = f"{target_date}_{keyword}_{suffix}.json"
-            filepath = os.path.join("output", target_date, filename)
-            if not os.path.exists(filepath):
-                print(f"文件不存在，跳过: {filepath}")
-                continue
-            try:
-                if suffix == 'scored':
-                    print(f"正在导入: {filepath} 到 scored_news ...")
-                    insert_scored_news(filepath, keyword)
-                else:
-                    print(f"正在导入: {filepath} 到 summary_news ...")
-                    insert_summary_news(filepath, keyword)
-            except Exception as e:
-                now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                log_msg = f"[{now}] 导入数据库\n  关键词: {keyword}\n  文件: {filepath}\n  表: {suffix}_news\n  错误: {e}\n------------------------------"
-                write_log(log_msg)
-                print(f"导入 {filepath} 时出错: {e}")
+        for keyword in DEFAULT_KEYWORDS:
+            for suffix in ['scored', 'summary']:
+                filename = f"{target_date}_{keyword}_{suffix}.json"
+                filepath = os.path.join("output", target_date, filename)
+                if not os.path.exists(filepath):
+                    print(f"文件不存在，跳过: {filepath}")
+                    continue
+                try:
+                    if suffix == 'scored':
+                        print(f"正在导入: {filepath} 到 scored_news ...")
+                        insert_scored_news(filepath, keyword)
+                    else:
+                        print(f"正在导入: {filepath} 到 summary_news ...")
+                        insert_summary_news(filepath, keyword)
+                except Exception as e:
+                    now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                    log_msg = f"[{now}] 导入数据库\n  关键词: {keyword}\n  文件: {filepath}\n  表: {suffix}_news\n  错误: {e}\n------------------------------"
+                    write_log(log_msg)
+                    print(f"导入 {filepath} 时出错: {e}")
+                    error_handler.log_error(
+                        error_type="DATABASE_IMPORT_ERROR",
+                        error_msg=f"导入数据库失败: {filepath}, 错误: {e}",
+                        script_name="write_to_mysql.py",
+                        keyword=keyword,
+                        context={"file_path": filepath, "table": f"{suffix}_news"}
+                    )
+                    success = False
 
-    cursor.close()
-    conn.close()
+        print(f"📊 数据库导入完成，日期: {target_date}")
+        
+    except Exception as e:
+        error_msg = f"write_to_mysql.py 执行过程中发生异常: {str(e)}"
+        print(f"[ERROR] {error_msg}")
+        error_handler.log_error(
+            error_type="MAIN_FUNCTION_ERROR", 
+            error_msg=error_msg,
+            script_name="write_to_mysql.py"
+        )
+        success = False
+    finally:
+        # 确保数据库连接正确关闭
+        try:
+            if 'cursor' in locals():
+                cursor.close()
+            if 'conn' in locals():
+                conn.close()
+        except Exception as e:
+            print(f"[WARN] 关闭数据库连接时出错: {e}")
+    
+    # 记录脚本完成
+    status_msg = "数据库导入成功" if success else "数据库导入过程中出现错误"
+    log_script_complete("write_to_mysql.py", success=success, message=status_msg)
+    
+    return success
 
 # 命令行入口
 def __main__():

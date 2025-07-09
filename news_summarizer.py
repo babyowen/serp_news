@@ -29,6 +29,16 @@ from openai import OpenAI
 import tiktoken
 import requests
 import importlib
+from error_handler import (
+    setup_global_exception_handler,
+    with_error_handling,
+    log_script_start,
+    log_script_complete,
+    ErrorHandler
+)
+
+# 设置全局异常处理器
+setup_global_exception_handler()
 
 # ========== deepseek官方tokenizer加载（仅deepseek平台用） ==========
 deepseek_tokenizer = None
@@ -282,6 +292,7 @@ def call_llm(system_prompt, user_prompt, platform, model_name, stream_mode=False
 # model_name: 指定模型名
 # output_dir: 输出目录
 
+@with_error_handling("news_summarizer.py", "main")
 def main(date=None, keyword=None, model_name=None, output_dir=None):
     if date is None:
         date = datetime.now().strftime('%Y-%m-%d')
@@ -293,8 +304,15 @@ def main(date=None, keyword=None, model_name=None, output_dir=None):
     news_list = []
     search_keywords_set = set()
     # 只加载主关键词新闻，根据配置决定是否过滤特定来源
+    # 特殊处理：江苏省国资委关键词使用所有来源的新闻
+    if keyword == "江苏省国资委":
+        filter_sourceapi_to_use = None  # 不过滤，使用所有来源
+        print(f"[INFO] 关键词 '{keyword}' 将使用所有API来源的新闻进行摘要")
+    else:
+        filter_sourceapi_to_use = NEWS_SUMMARY_FILTER_SOURCEAPI  # 使用配置的过滤规则
+    
     if os.path.exists(scored_json):
-        news_items = load_scored_news(scored_json, min_score=3, filter_sourceapi=NEWS_SUMMARY_FILTER_SOURCEAPI)
+        news_items = load_scored_news(scored_json, min_score=3, filter_sourceapi=filter_sourceapi_to_use)
         news_list += news_items
         for n in news_items:
             if 'search_keyword' in n:
@@ -313,11 +331,18 @@ def main(date=None, keyword=None, model_name=None, output_dir=None):
     # 新增：打印涉及的搜索关键词和过滤信息
     if search_keywords_set:
         print(f"[INFO] 本批次涉及的搜索关键词: {', '.join([str(s) for s in search_keywords_set if s])}")
-    if NEWS_SUMMARY_FILTER_SOURCEAPI:
-        print(f"[INFO] 摘要只使用来源为 '{NEWS_SUMMARY_FILTER_SOURCEAPI}' 的新闻")
+    if filter_sourceapi_to_use:
+        print(f"[INFO] 摘要只使用来源为 '{filter_sourceapi_to_use}' 的新闻")
+    elif keyword == "江苏省国资委":
+        print(f"[INFO] 摘要使用所有API来源的新闻（特殊处理）")
     
     if not news_list:
-        filter_msg = f"（已过滤来源：{NEWS_SUMMARY_FILTER_SOURCEAPI}）" if NEWS_SUMMARY_FILTER_SOURCEAPI else ""
+        if filter_sourceapi_to_use:
+            filter_msg = f"（已过滤来源：{filter_sourceapi_to_use}）"
+        elif keyword == "江苏省国资委":
+            filter_msg = "（使用所有API来源，特殊处理）"
+        else:
+            filter_msg = ""
         print(f"[INFO] 无3分及以上新闻{filter_msg}，无需总结。")
         append_log(date, keyword, model_name, '', '', 0, success=True, extra_info={'search_keywords': list(search_keywords_set)})
         return
@@ -570,24 +595,73 @@ def save_summary_multi_round(date, keyword, round_entries, output_dir):
     return out_path
 
 # 命令行入口
-if __name__ == "__main__":
+@with_error_handling("news_summarizer.py", "main_entry")
+def main_entry():
+    """主程序入口"""
     import argparse
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--date', type=str, help='日期, 格式YYYY-MM-DD')
-    parser.add_argument('--keyword', type=str, help='关键词')
-    parser.add_argument('--model', type=str, default=None, help='模型名（deepseek/bailian等）')
-    args = parser.parse_args()
+    
+    # 记录脚本开始
+    log_script_start("news_summarizer.py", sys.argv[1:])
+    
+    error_handler = ErrorHandler()
+    success = True
+    
+    try:
+        parser = argparse.ArgumentParser()
+        parser.add_argument('--date', type=str, help='日期, 格式YYYY-MM-DD')
+        parser.add_argument('--keyword', type=str, help='关键词')
+        parser.add_argument('--model', type=str, default=None, help='模型名（deepseek/bailian等）')
+        args = parser.parse_args()
 
-    # 新增：无参数时自动批量处理昨天所有关键词
-    if args.keyword is None:
-        date_str = args.date or (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
-        for keyword in DEFAULT_KEYWORDS:
-            print(f"\n{'='*40}\n=== 开始总结主关键词: {keyword} ===\n{'='*40}")
-            try:
-                main(date=date_str, keyword=keyword, model_name=args.model)
-                print(f"{'='*40}\n=== 总结主关键词: {keyword} 完成 ===\n{'='*40}")
-            except Exception as e:
-                print(f"[ERROR] 总结关键词 {keyword} 失败: {e}")
-        sys.exit(0)
+        # 新增：无参数时自动批量处理昨天所有关键词
+        if args.keyword is None:
+            date_str = args.date or (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
+            processed_count = 0
+            total_count = len(DEFAULT_KEYWORDS)
+            
+            for keyword in DEFAULT_KEYWORDS:
+                print(f"\n{'='*40}\n=== 开始总结主关键词: {keyword} ===\n{'='*40}")
+                try:
+                    result = main(date=date_str, keyword=keyword, model_name=args.model)
+                    if result is not None:
+                        processed_count += 1
+                        print(f"{'='*40}\n=== 总结主关键词: {keyword} 完成 ===\n{'='*40}")
+                    else:
+                        success = False
+                        print(f"{'='*40}\n=== 总结主关键词: {keyword} 失败 ===\n{'='*40}")
+                except Exception as e:
+                    print(f"[ERROR] 总结关键词 {keyword} 失败: {e}")
+                    error_handler.log_error(
+                        error_type="SUMMARIZE_KEYWORD_ERROR",
+                        error_msg=f"总结关键词 {keyword} 失败: {e}",
+                        script_name="news_summarizer.py",
+                        keyword=keyword
+                    )
+                    success = False
+            
+            completion_msg = f"批量摘要完成：{processed_count}/{total_count} 个关键词处理成功"
+            print(f"\n📊 {completion_msg}")
+            log_script_complete("news_summarizer.py", success=success, message=completion_msg)
+            return success
+        else:
+            # 单关键词模式
+            result = main(date=args.date, keyword=args.keyword, model_name=args.model)
+            success = result is not None
+            status_msg = f"关键词 {args.keyword} 摘要完成" if success else f"关键词 {args.keyword} 摘要失败"
+            log_script_complete("news_summarizer.py", success=success, message=status_msg)
+            return success
+            
+    except Exception as e:
+        error_msg = f"news_summarizer.py 主程序执行过程中发生异常: {str(e)}"
+        print(f"[ERROR] {error_msg}")
+        error_handler.log_error(
+            error_type="MAIN_ENTRY_ERROR",
+            error_msg=error_msg,
+            script_name="news_summarizer.py"
+        )
+        log_script_complete("news_summarizer.py", success=False, message=error_msg)
+        return False
 
-    main(date=args.date, keyword=args.keyword, model_name=args.model) 
+if __name__ == "__main__":
+    success = main_entry()
+    sys.exit(0 if success else 1) 
