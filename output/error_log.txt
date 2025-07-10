@@ -1,27 +1,199 @@
-[2025-06-23 20:02:03] duckduckgo_news | 东部机场 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=duckduckgo_news&q=%E4%B8%9C%E9%83%A8%E6%9C%BA%E5%9C%BA&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&kl=cn-zh&df=w&start=90
-[2025-06-23 20:02:12] google_news | 中江集团 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E4%B8%AD%E6%B1%9F%E9%9B%86%E5%9B%A2&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
-[2025-06-23 20:02:20] baidu_news | 中江集团 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=baidu_news&q=%E4%B8%AD%E6%B1%9F%E9%9B%86%E5%9B%A2&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&rtt=4&pn=0
-[2025-06-23 20:02:29] bing_news | 中江集团 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=bing_news&q=%E4%B8%AD%E6%B1%9F%E9%9B%86%E5%9B%A2&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&mkt=zh-hk&qft=interval%3D%228%22
-[2025-06-23 20:02:38] duckduckgo_news | 中江集团 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=duckduckgo_news&q=%E4%B8%AD%E6%B1%9F%E9%9B%86%E5%9B%A2&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&kl=cn-zh&df=w
-[2025-06-23 20:02:47] google_news | 江苏农垦 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E6%B1%9F%E8%8B%8F%E5%86%9C%E5%9E%A6&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
-[2025-06-23 20:02:55] baidu_news | 江苏农垦 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=baidu_news&q=%E6%B1%9F%E8%8B%8F%E5%86%9C%E5%9E%A6&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&rtt=4&pn=0
-[2025-06-23 20:03:04] bing_news | 江苏农垦 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=bing_news&q=%E6%B1%9F%E8%8B%8F%E5%86%9C%E5%9E%A6&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&mkt=zh-hk&qft=interval%3D%228%22
-[2025-06-23 20:03:13] duckduckgo_news | 江苏农垦 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=duckduckgo_news&q=%E6%B1%9F%E8%8B%8F%E5%86%9C%E5%9E%A6&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&kl=cn-zh&df=w
-[2025-06-23 20:03:22] google_news | 徐矿集团 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E5%BE%90%E7%9F%BF%E9%9B%86%E5%9B%A2&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
-[2025-06-23 20:03:31] baidu_news | 徐矿集团 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=baidu_news&q=%E5%BE%90%E7%9F%BF%E9%9B%86%E5%9B%A2&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&rtt=4&pn=0
-[2025-06-23 20:03:40] bing_news | 徐矿集团 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=bing_news&q=%E5%BE%90%E7%9F%BF%E9%9B%86%E5%9B%A2&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&mkt=zh-hk&qft=interval%3D%228%22
-[2025-06-23 20:03:49] duckduckgo_news | 徐矿集团 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=duckduckgo_news&q=%E5%BE%90%E7%9F%BF%E9%9B%86%E5%9B%A2&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&kl=cn-zh&df=w
-[2025-06-23 20:03:57] google_news | 司库 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E5%8F%B8%E5%BA%93&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
-[2025-06-23 20:04:06] baidu_news | 司库 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=baidu_news&q=%E5%8F%B8%E5%BA%93&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&rtt=4&pn=0
-[2025-06-23 20:04:15] bing_news | 司库 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=bing_news&q=%E5%8F%B8%E5%BA%93&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&mkt=zh-hk&qft=interval%3D%228%22
-[2025-06-23 20:04:24] duckduckgo_news | 司库 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=duckduckgo_news&q=%E5%8F%B8%E5%BA%93&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&kl=cn-zh&df=w
-[2025-07-09 19:17:45] ERROR
-脚本: test_script
-关键词: 测试关键词
-错误类型: TEST_ERROR
-错误信息: 测试错误处理机制
+[2025-06-24 01:05:11] google_news | 养老 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E5%85%BB%E8%80%81&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-24 01:05:20] google_news | 公积金 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E5%85%AC%E7%A7%AF%E9%87%91&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-24 01:05:28] google_news | 政府基金 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E6%94%BF%E5%BA%9C%E5%9F%BA%E9%87%91&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-24 01:05:36] google_news | 引导基金 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E5%BC%95%E5%AF%BC%E5%9F%BA%E9%87%91&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-24 01:05:45] google_news | 母基金 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E6%AF%8D%E5%9F%BA%E9%87%91&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-24 01:05:53] google_news | 战新基金 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E6%88%98%E6%96%B0%E5%9F%BA%E9%87%91&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-24 01:06:02] google_news | 江苏省国资委 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E6%B1%9F%E8%8B%8F%E7%9C%81%E5%9B%BD%E8%B5%84%E5%A7%94&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-24 01:06:10] google_news | 南京市国资委 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E5%8D%97%E4%BA%AC%E5%B8%82%E5%9B%BD%E8%B5%84%E5%A7%94&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-24 01:06:19] google_news | 江苏交通控股 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E6%B1%9F%E8%8B%8F%E4%BA%A4%E9%80%9A%E6%8E%A7%E8%82%A1&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-24 01:06:28] google_news | 苏豪 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E8%8B%8F%E8%B1%AA&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-24 01:06:36] google_news | 江苏国信集团 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E6%B1%9F%E8%8B%8F%E5%9B%BD%E4%BF%A1%E9%9B%86%E5%9B%A2&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-24 01:06:45] google_news | 东部机场 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E4%B8%9C%E9%83%A8%E6%9C%BA%E5%9C%BA&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-24 01:06:54] google_news | 中江集团 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E4%B8%AD%E6%B1%9F%E9%9B%86%E5%9B%A2&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-24 01:07:03] google_news | 江苏农垦 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E6%B1%9F%E8%8B%8F%E5%86%9C%E5%9E%A6&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-24 01:07:12] google_news | 徐矿集团 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E5%BE%90%E7%9F%BF%E9%9B%86%E5%9B%A2&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-24 01:07:20] google_news | 司库 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E5%8F%B8%E5%BA%93&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-25 01:05:11] google_news | 养老 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E5%85%BB%E8%80%81&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-25 01:05:20] google_news | 公积金 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E5%85%AC%E7%A7%AF%E9%87%91&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-25 01:05:29] google_news | 政府基金 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E6%94%BF%E5%BA%9C%E5%9F%BA%E9%87%91&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-25 01:05:37] google_news | 引导基金 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E5%BC%95%E5%AF%BC%E5%9F%BA%E9%87%91&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-25 01:05:46] google_news | 母基金 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E6%AF%8D%E5%9F%BA%E9%87%91&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-25 01:05:55] google_news | 战新基金 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E6%88%98%E6%96%B0%E5%9F%BA%E9%87%91&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-25 01:06:04] google_news | 江苏省国资委 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E6%B1%9F%E8%8B%8F%E7%9C%81%E5%9B%BD%E8%B5%84%E5%A7%94&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-25 01:06:12] google_news | 南京市国资委 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E5%8D%97%E4%BA%AC%E5%B8%82%E5%9B%BD%E8%B5%84%E5%A7%94&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-25 01:06:21] google_news | 江苏交通控股 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E6%B1%9F%E8%8B%8F%E4%BA%A4%E9%80%9A%E6%8E%A7%E8%82%A1&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-25 01:06:29] google_news | 苏豪 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E8%8B%8F%E8%B1%AA&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-25 01:06:38] google_news | 江苏国信集团 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E6%B1%9F%E8%8B%8F%E5%9B%BD%E4%BF%A1%E9%9B%86%E5%9B%A2&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-25 01:06:47] google_news | 东部机场 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E4%B8%9C%E9%83%A8%E6%9C%BA%E5%9C%BA&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-25 01:06:55] google_news | 中江集团 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E4%B8%AD%E6%B1%9F%E9%9B%86%E5%9B%A2&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-25 01:07:04] google_news | 江苏农垦 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E6%B1%9F%E8%8B%8F%E5%86%9C%E5%9E%A6&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-25 01:07:15] google_news | 徐矿集团 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E5%BE%90%E7%9F%BF%E9%9B%86%E5%9B%A2&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-25 01:07:24] google_news | 司库 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E5%8F%B8%E5%BA%93&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-26 01:05:12] google_news | 养老 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E5%85%BB%E8%80%81&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-26 01:05:22] google_news | 公积金 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E5%85%AC%E7%A7%AF%E9%87%91&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-26 01:05:32] google_news | 政府基金 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E6%94%BF%E5%BA%9C%E5%9F%BA%E9%87%91&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-26 01:05:42] google_news | 引导基金 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E5%BC%95%E5%AF%BC%E5%9F%BA%E9%87%91&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-26 01:05:52] google_news | 母基金 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E6%AF%8D%E5%9F%BA%E9%87%91&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-26 01:06:01] google_news | 战新基金 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E6%88%98%E6%96%B0%E5%9F%BA%E9%87%91&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-26 01:06:13] google_news | 江苏省国资委 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E6%B1%9F%E8%8B%8F%E7%9C%81%E5%9B%BD%E8%B5%84%E5%A7%94&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-26 01:06:22] google_news | 南京市国资委 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E5%8D%97%E4%BA%AC%E5%B8%82%E5%9B%BD%E8%B5%84%E5%A7%94&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-26 01:06:31] google_news | 江苏交通控股 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E6%B1%9F%E8%8B%8F%E4%BA%A4%E9%80%9A%E6%8E%A7%E8%82%A1&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-26 01:06:41] google_news | 苏豪 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E8%8B%8F%E8%B1%AA&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-26 01:06:52] google_news | 江苏国信集团 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E6%B1%9F%E8%8B%8F%E5%9B%BD%E4%BF%A1%E9%9B%86%E5%9B%A2&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-26 01:07:00] google_news | 东部机场 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E4%B8%9C%E9%83%A8%E6%9C%BA%E5%9C%BA&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-26 01:07:11] google_news | 中江集团 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E4%B8%AD%E6%B1%9F%E9%9B%86%E5%9B%A2&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-26 01:07:22] google_news | 江苏农垦 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E6%B1%9F%E8%8B%8F%E5%86%9C%E5%9E%A6&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-26 01:07:31] google_news | 徐矿集团 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E5%BE%90%E7%9F%BF%E9%9B%86%E5%9B%A2&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-26 01:07:40] google_news | 司库 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E5%8F%B8%E5%BA%93&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-27 01:05:11] google_news | 养老 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E5%85%BB%E8%80%81&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-27 01:05:20] google_news | 公积金 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E5%85%AC%E7%A7%AF%E9%87%91&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-27 01:05:29] google_news | 政府基金 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E6%94%BF%E5%BA%9C%E5%9F%BA%E9%87%91&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-27 01:05:37] google_news | 引导基金 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E5%BC%95%E5%AF%BC%E5%9F%BA%E9%87%91&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-27 01:05:45] google_news | 母基金 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E6%AF%8D%E5%9F%BA%E9%87%91&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-27 01:05:54] google_news | 战新基金 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E6%88%98%E6%96%B0%E5%9F%BA%E9%87%91&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-27 01:06:02] google_news | 江苏省国资委 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E6%B1%9F%E8%8B%8F%E7%9C%81%E5%9B%BD%E8%B5%84%E5%A7%94&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-27 01:06:10] google_news | 南京市国资委 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E5%8D%97%E4%BA%AC%E5%B8%82%E5%9B%BD%E8%B5%84%E5%A7%94&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-27 01:06:19] google_news | 江苏交通控股 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E6%B1%9F%E8%8B%8F%E4%BA%A4%E9%80%9A%E6%8E%A7%E8%82%A1&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-27 01:06:28] google_news | 苏豪 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E8%8B%8F%E8%B1%AA&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-27 01:06:36] google_news | 江苏国信集团 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E6%B1%9F%E8%8B%8F%E5%9B%BD%E4%BF%A1%E9%9B%86%E5%9B%A2&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-27 01:06:44] google_news | 东部机场 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E4%B8%9C%E9%83%A8%E6%9C%BA%E5%9C%BA&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-27 01:06:53] google_news | 中江集团 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E4%B8%AD%E6%B1%9F%E9%9B%86%E5%9B%A2&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-27 01:07:01] google_news | 江苏农垦 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E6%B1%9F%E8%8B%8F%E5%86%9C%E5%9E%A6&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-27 01:07:09] google_news | 徐矿集团 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E5%BE%90%E7%9F%BF%E9%9B%86%E5%9B%A2&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-27 01:07:20] google_news | 司库 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E5%8F%B8%E5%BA%93&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-28 01:05:12] google_news | 养老 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E5%85%BB%E8%80%81&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-28 01:05:22] google_news | 公积金 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E5%85%AC%E7%A7%AF%E9%87%91&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-28 01:05:31] google_news | 政府基金 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E6%94%BF%E5%BA%9C%E5%9F%BA%E9%87%91&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-28 01:05:40] google_news | 引导基金 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E5%BC%95%E5%AF%BC%E5%9F%BA%E9%87%91&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-28 01:05:50] google_news | 母基金 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E6%AF%8D%E5%9F%BA%E9%87%91&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-28 01:05:59] google_news | 战新基金 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E6%88%98%E6%96%B0%E5%9F%BA%E9%87%91&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-28 01:06:08] google_news | 江苏省国资委 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E6%B1%9F%E8%8B%8F%E7%9C%81%E5%9B%BD%E8%B5%84%E5%A7%94&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-28 01:06:17] google_news | 南京市国资委 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E5%8D%97%E4%BA%AC%E5%B8%82%E5%9B%BD%E8%B5%84%E5%A7%94&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-28 01:06:28] google_news | 江苏交通控股 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E6%B1%9F%E8%8B%8F%E4%BA%A4%E9%80%9A%E6%8E%A7%E8%82%A1&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-28 01:06:39] google_news | 苏豪 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E8%8B%8F%E8%B1%AA&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-28 01:06:49] google_news | 江苏国信集团 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E6%B1%9F%E8%8B%8F%E5%9B%BD%E4%BF%A1%E9%9B%86%E5%9B%A2&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-28 01:06:59] google_news | 东部机场 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E4%B8%9C%E9%83%A8%E6%9C%BA%E5%9C%BA&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-28 01:07:08] google_news | 中江集团 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E4%B8%AD%E6%B1%9F%E9%9B%86%E5%9B%A2&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-28 01:07:20] google_news | 江苏农垦 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E6%B1%9F%E8%8B%8F%E5%86%9C%E5%9E%A6&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-28 01:07:31] google_news | 徐矿集团 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E5%BE%90%E7%9F%BF%E9%9B%86%E5%9B%A2&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-28 01:07:40] google_news | 司库 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E5%8F%B8%E5%BA%93&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-29 01:05:12] google_news | 养老 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E5%85%BB%E8%80%81&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-29 01:05:20] google_news | 公积金 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E5%85%AC%E7%A7%AF%E9%87%91&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-29 01:05:30] google_news | 政府基金 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E6%94%BF%E5%BA%9C%E5%9F%BA%E9%87%91&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-29 01:05:40] google_news | 引导基金 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E5%BC%95%E5%AF%BC%E5%9F%BA%E9%87%91&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-29 01:05:50] google_news | 母基金 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E6%AF%8D%E5%9F%BA%E9%87%91&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-29 01:05:59] google_news | 战新基金 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E6%88%98%E6%96%B0%E5%9F%BA%E9%87%91&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-29 01:06:08] google_news | 江苏省国资委 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E6%B1%9F%E8%8B%8F%E7%9C%81%E5%9B%BD%E8%B5%84%E5%A7%94&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-29 01:06:18] google_news | 南京市国资委 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E5%8D%97%E4%BA%AC%E5%B8%82%E5%9B%BD%E8%B5%84%E5%A7%94&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-29 01:06:27] google_news | 江苏交通控股 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E6%B1%9F%E8%8B%8F%E4%BA%A4%E9%80%9A%E6%8E%A7%E8%82%A1&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-29 01:06:36] google_news | 苏豪 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E8%8B%8F%E8%B1%AA&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-29 01:06:45] google_news | 江苏国信集团 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E6%B1%9F%E8%8B%8F%E5%9B%BD%E4%BF%A1%E9%9B%86%E5%9B%A2&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-29 01:06:54] google_news | 东部机场 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E4%B8%9C%E9%83%A8%E6%9C%BA%E5%9C%BA&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-29 01:07:03] google_news | 中江集团 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E4%B8%AD%E6%B1%9F%E9%9B%86%E5%9B%A2&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-29 01:07:13] google_news | 江苏农垦 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E6%B1%9F%E8%8B%8F%E5%86%9C%E5%9E%A6&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-29 01:07:23] google_news | 徐矿集团 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E5%BE%90%E7%9F%BF%E9%9B%86%E5%9B%A2&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-29 01:07:33] google_news | 司库 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E5%8F%B8%E5%BA%93&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-30 01:05:13] google_news | 养老 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E5%85%BB%E8%80%81&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-30 01:05:22] google_news | 公积金 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E5%85%AC%E7%A7%AF%E9%87%91&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-30 01:05:32] google_news | 政府基金 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E6%94%BF%E5%BA%9C%E5%9F%BA%E9%87%91&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-30 01:05:41] google_news | 引导基金 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E5%BC%95%E5%AF%BC%E5%9F%BA%E9%87%91&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-30 01:05:50] google_news | 母基金 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E6%AF%8D%E5%9F%BA%E9%87%91&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-30 01:06:00] google_news | 战新基金 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E6%88%98%E6%96%B0%E5%9F%BA%E9%87%91&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-30 01:06:09] google_news | 江苏省国资委 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E6%B1%9F%E8%8B%8F%E7%9C%81%E5%9B%BD%E8%B5%84%E5%A7%94&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-30 01:06:18] google_news | 南京市国资委 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E5%8D%97%E4%BA%AC%E5%B8%82%E5%9B%BD%E8%B5%84%E5%A7%94&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-30 01:06:27] google_news | 江苏交通控股 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E6%B1%9F%E8%8B%8F%E4%BA%A4%E9%80%9A%E6%8E%A7%E8%82%A1&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-30 01:06:43] google_news | 苏豪 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E8%8B%8F%E8%B1%AA&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-30 01:06:52] google_news | 江苏国信集团 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E6%B1%9F%E8%8B%8F%E5%9B%BD%E4%BF%A1%E9%9B%86%E5%9B%A2&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-30 01:07:01] google_news | 东部机场 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E4%B8%9C%E9%83%A8%E6%9C%BA%E5%9C%BA&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-30 01:07:10] google_news | 中江集团 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E4%B8%AD%E6%B1%9F%E9%9B%86%E5%9B%A2&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-30 01:07:20] google_news | 江苏农垦 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E6%B1%9F%E8%8B%8F%E5%86%9C%E5%9E%A6&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-30 01:07:29] google_news | 徐矿集团 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E5%BE%90%E7%9F%BF%E9%9B%86%E5%9B%A2&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-06-30 01:07:38] google_news | 司库 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E5%8F%B8%E5%BA%93&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-07-01 01:05:14] google_news | 养老 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E5%85%BB%E8%80%81&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-07-01 01:05:23] google_news | 公积金 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E5%85%AC%E7%A7%AF%E9%87%91&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-07-01 01:05:32] google_news | 政府基金 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E6%94%BF%E5%BA%9C%E5%9F%BA%E9%87%91&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-07-01 01:05:41] google_news | 引导基金 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E5%BC%95%E5%AF%BC%E5%9F%BA%E9%87%91&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-07-01 01:05:50] google_news | 母基金 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E6%AF%8D%E5%9F%BA%E9%87%91&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-07-01 01:05:59] google_news | 战新基金 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E6%88%98%E6%96%B0%E5%9F%BA%E9%87%91&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-07-01 01:06:09] google_news | 江苏省国资委 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E6%B1%9F%E8%8B%8F%E7%9C%81%E5%9B%BD%E8%B5%84%E5%A7%94&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-07-01 01:06:18] google_news | 南京市国资委 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E5%8D%97%E4%BA%AC%E5%B8%82%E5%9B%BD%E8%B5%84%E5%A7%94&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-07-01 01:06:29] google_news | 江苏交通控股 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E6%B1%9F%E8%8B%8F%E4%BA%A4%E9%80%9A%E6%8E%A7%E8%82%A1&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-07-01 01:06:37] google_news | 苏豪 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E8%8B%8F%E8%B1%AA&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-07-01 01:06:47] google_news | 江苏国信集团 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E6%B1%9F%E8%8B%8F%E5%9B%BD%E4%BF%A1%E9%9B%86%E5%9B%A2&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-07-01 01:06:55] google_news | 东部机场 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E4%B8%9C%E9%83%A8%E6%9C%BA%E5%9C%BA&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-07-01 01:07:04] google_news | 中江集团 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E4%B8%AD%E6%B1%9F%E9%9B%86%E5%9B%A2&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-07-01 01:07:13] google_news | 江苏农垦 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E6%B1%9F%E8%8B%8F%E5%86%9C%E5%9E%A6&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-07-01 01:07:23] google_news | 徐矿集团 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E5%BE%90%E7%9F%BF%E9%9B%86%E5%9B%A2&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-07-01 01:07:31] google_news | 司库 | 429 Client Error: Too Many Requests for url: https://serpapi.com/search.json?engine=google_news&q=%E5%8F%B8%E5%BA%93&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN
+[2025-07-10 02:52:10] ERROR
+脚本: news_scorer.py
+关键词: unknown
+错误类型: MAIN_FUNCTION_ERROR
+错误信息: news_scorer.py 执行过程中发生异常: 'gbk' codec can't encode character '\xa9' in position 938: illegal multibyte sequence
+==================================================
+
+[2025-07-10 03:04:10] ERROR
+脚本: news_scorer.py
+关键词: unknown
+错误类型: MAIN_FUNCTION_ERROR
+错误信息: news_scorer.py 执行过程中发生异常: 'gbk' codec can't encode character '\u2714' in position 821: illegal multibyte sequence
+==================================================
+
+[2025-07-10 03:21:38] ERROR
+脚本: news_scorer.py
+关键词: unknown
+错误类型: MAIN_FUNCTION_ERROR
+错误信息: news_scorer.py 执行过程中发生异常: 'gbk' codec can't encode character '\U0001f552' in position 25: illegal multibyte sequence
+==================================================
+
+[2025-07-10 03:53:32] ERROR
+脚本: news_scorer.py
+关键词: unknown
+错误类型: MAIN_FUNCTION_ERROR
+错误信息: news_scorer.py 执行过程中发生异常: 'gbk' codec can't encode character '\u261e' in position 2623: illegal multibyte sequence
+==================================================
+
+[2025-07-10 03:53:54] ERROR
+脚本: news_summarizer.py
+关键词: unknown
+错误类型: PROGRAM_CRASH
+错误信息: 'gbk' codec can't encode character '\U0001f4f0' in position 317: illegal multibyte sequence
+详细堆栈:
+Traceback (most recent call last):
+  File "C:\serp_news_mainkeyword\error_handler.py", line 119, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\serp_news_mainkeyword\news_summarizer.py", line 373, in main
+    prompt, summary, system_tokens, user_tokens, result_tokens, used_platform, used_model, token_limit_info = summarize_news(news_list, platform=platform, model_name=model, keyword=keyword)
+                                                                                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\serp_news_mainkeyword\news_summarizer.py", line 136, in summarize_news
+    print(f"[system] {NEWS_SUMMARY_SYSTEM_PROMPT.strip()}")
+UnicodeEncodeError: 'gbk' codec can't encode character '\U0001f4f0' in position 317: illegal multibyte sequence
+
 上下文信息: {
-  "test": true
+  "stage": "main"
+}
+==================================================
+
+[2025-07-10 03:53:54] ERROR
+脚本: news_summarizer.py
+关键词: unknown
+错误类型: MAIN_ENTRY_ERROR
+错误信息: news_summarizer.py 主程序执行过程中发生异常: 'gbk' codec can't encode character '\U0001f4ca' in position 2: illegal multibyte sequence
+==================================================
+
+[2025-07-10 03:53:54] ERROR
+脚本: main.py
+关键词: unknown
+错误类型: SUBPROCESS_ERROR
+错误信息: 命令执行失败，返回码: 1
+错误输出: None of PyTorch, TensorFlow >= 2.0, or Flax have been found. Models won't be available and only tokenizers, configuration and file/data utilities can be used.
+
+上下文信息: {
+  "command": "python news_summarizer.py --date 2025-07-09",
+  "step": "自动总结主关键词",
+  "returncode": 1
 }
 ==================================================
 

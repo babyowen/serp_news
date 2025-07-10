@@ -25,6 +25,49 @@ from config import (
     NEWS_SUMMARY_HOTSPOT_USER_PROMPT,   # 新增：热点追踪user prompt
     NEWS_SUMMARY_FILTER_SOURCEAPI,      # 新增：摘要源过滤配置
 )
+
+def clean_unicode_for_console(text):
+    """
+    清理文本中的特殊Unicode字符，避免Windows GBK编码错误
+    """
+    if not text:
+        return text
+    
+    # 常见的需要替换的Unicode字符
+    replacements = {
+        '\xa9': '(C)',      # 版权符号
+        '\u2714': '[OK]',   # 勾选符号
+        '\u261e': '[->]',   # 手指符号
+        '\U0001f552': '[TIME]',  # 时钟emoji
+        '\U0001f4f0': '[NEWS]',  # 新闻emoji
+        '\U0001f4ca': '[CHART]', # 图表emoji
+        '\U0001f4f1': '[PHONE]', # 手机emoji
+        '\U0001f4bb': '[PC]',    # 电脑emoji
+        '\U0001f310': '[GLOBE]', # 地球emoji
+        '\U0001f4c8': '[TREND]', # 趋势图emoji
+        # 添加更多需要替换的字符...
+    }
+    
+    cleaned_text = text
+    for unicode_char, replacement in replacements.items():
+        cleaned_text = cleaned_text.replace(unicode_char, replacement)
+    
+    # 移除其他可能导致GBK编码错误的字符
+    try:
+        # 尝试编码为GBK，如果失败则移除有问题的字符
+        cleaned_text.encode('gbk')
+    except UnicodeEncodeError as e:
+        # 逐字符检查，移除无法编码的字符
+        safe_chars = []
+        for char in cleaned_text:
+            try:
+                char.encode('gbk')
+                safe_chars.append(char)
+            except UnicodeEncodeError:
+                safe_chars.append('?')  # 用?替代无法编码的字符
+        cleaned_text = ''.join(safe_chars)
+    
+    return cleaned_text
 from openai import OpenAI
 import tiktoken
 import requests
@@ -133,8 +176,8 @@ def summarize_news(news_list, platform=None, model_name=None, keyword=None):
     user_tokens = count_tokens(user_prompt, platform, model_name)
     print(f"[INFO] 新闻关键词: {keyword}")
     print("\n===== 送给大模型的内容 =====")
-    print(f"[system] {NEWS_SUMMARY_SYSTEM_PROMPT.strip()}")
-    print(f"[user] {user_prompt[:1000]}{'...（已截断）' if len(user_prompt)>1000 else ''}")
+    print(f"[system] {clean_unicode_for_console(NEWS_SUMMARY_SYSTEM_PROMPT.strip())}")
+    print(f"[user] {clean_unicode_for_console(user_prompt[:1000])}{'...（已截断）' if len(user_prompt)>1000 else ''}")
     print(f"[INFO] system prompt tokens: {system_tokens}")
     print(f"[INFO] user prompt tokens: {user_tokens}")
     print("==========================\n")
@@ -386,11 +429,11 @@ def main(date=None, keyword=None, model_name=None, output_dir=None):
     # ========== 第一轮摘要结果保存 ==========
     print("\n===== 第1轮-初稿摘要 =====")
     print("[system prompt]")
-    print(NEWS_SUMMARY_SYSTEM_PROMPT.strip())
+    print(clean_unicode_for_console(NEWS_SUMMARY_SYSTEM_PROMPT.strip()))
     print("\n[user prompt]")
-    print(prompt.strip())
+    print(clean_unicode_for_console(prompt.strip()))
     print("\n[大模型输出]")
-    print(summary.strip())
+    print(clean_unicode_for_console(summary.strip()))
 
     round1_entry = {
         "summary": summary,
@@ -419,9 +462,9 @@ def main(date=None, keyword=None, model_name=None, output_dir=None):
             f.write(f"[WARN] 评判官token数超限，已切换到bailian平台qwen-plus-latest模型，token数: {judge_user_tokens + judge_system_tokens}\n")
     print("\n===== 第2-1轮-评判官意见 =====")
     print("[system prompt]")
-    print(judge_system_prompt.strip())
+    print(clean_unicode_for_console(judge_system_prompt.strip()))
     print("\n[user prompt]")
-    print(judge_user_prompt.strip())
+    print(clean_unicode_for_console(judge_user_prompt.strip()))
     judge_suggestion, _ = call_llm(judge_system_prompt, judge_user_prompt, judge_platform, judge_model)
     if judge_suggestion is None:
         now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -434,7 +477,7 @@ def main(date=None, keyword=None, model_name=None, output_dir=None):
         print(f"[SKIP] 跳过关键词: {keyword}，原因: 评判官环节大模型API连续多次失败或超时")
         return
     print("\n[大模型输出]")
-    print(judge_suggestion.strip())
+    print(clean_unicode_for_console(judge_suggestion.strip()))
     # ========== 第二轮优化摘要 ==========
     optimize_user_prompt = NEWS_SUMMARY_OPTIMIZE_USER_PROMPT.format(
         system_prompt=NEWS_SUMMARY_SYSTEM_PROMPT.strip(),
