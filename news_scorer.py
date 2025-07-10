@@ -31,8 +31,8 @@ setup_global_exception_handler()
 def score_news(title: str, content: str, keyword: str) -> int:
     prompt = NEWS_SCORE_PROMPT.format(keyword=keyword, title=title, content=content)
     print("\n===== 送给大模型的内容 =====")
-    print(f"[system] {NEWS_SCORE_SYSTEM_MSG}")
-    print(f"[user] {prompt}")
+    print(f"[system] {clean_unicode_for_console(NEWS_SCORE_SYSTEM_MSG)}")
+    print(f"[user] {clean_unicode_for_console(prompt)}")
     print("==========================\n")
     # 新增：token超限主动监控
     try:
@@ -74,9 +74,9 @@ def score_news(title: str, content: str, keyword: str) -> int:
             with open("output/run_log.txt", "a", encoding="utf-8") as f:
                 f.write(f"[WARN] 评分API返回token超限，prompt开头200字: {prompt[:200]}\n")
                 f.write(f"[WARN] 评分API返回token超限，prompt结尾200字: {prompt[-200:]}\n")
-        print(f"[ERROR] 评分异常，关键词: {keyword}, 标题: {title}")
+        print(f"[ERROR] 评分异常，关键词: {keyword}, 标题: {clean_unicode_for_console(title)}")
         print(f"[ERROR] 异常类型: {type(e).__name__}, 内容: {e}")
-        print(f"[ERROR] prompt前200字: {prompt[:200]}")
+        print(f"[ERROR] prompt前200字: {clean_unicode_for_console(prompt[:200])}")
         score = 0
     return score
 
@@ -193,6 +193,50 @@ def append_log(keyword, json_path, total, score_counter, scored_count, scored_js
 def get_yesterday_str():
     yesterday = datetime.now() - timedelta(days=1)
     return yesterday.strftime("%Y-%m-%d")
+
+def clean_unicode_for_console(text):
+    """
+    清理文本中的特殊Unicode字符，避免Windows GBK编码错误
+    """
+    if not text:
+        return text
+    
+    # 常见的需要替换的Unicode字符
+    replacements = {
+        '\xa9': '(C)',      # 版权符号
+        '\u2714': '[OK]',   # 勾选符号
+        '\u261e': '[->]',   # 手指符号
+        '\U0001f552': '[TIME]',  # 时钟emoji
+        '\U0001f4f0': '[NEWS]',  # 新闻emoji
+        '\U0001f4ca': '[CHART]', # 图表emoji
+        '\U0001f4f1': '[PHONE]', # 手机emoji
+        '\U0001f4bb': '[PC]',    # 电脑emoji
+        '\U0001f310': '[GLOBE]', # 地球emoji
+        '\U0001f4c8': '[TREND]', # 趋势图emoji
+        # 添加更多需要替换的字符...
+    }
+    
+    cleaned_text = text
+    for unicode_char, replacement in replacements.items():
+        cleaned_text = cleaned_text.replace(unicode_char, replacement)
+    
+    # 移除其他可能导致GBK编码错误的字符
+    # 保留中文、英文、数字和常用标点符号
+    try:
+        # 尝试编码为GBK，如果失败则移除有问题的字符
+        cleaned_text.encode('gbk')
+    except UnicodeEncodeError as e:
+        # 逐字符检查，移除无法编码的字符
+        safe_chars = []
+        for char in cleaned_text:
+            try:
+                char.encode('gbk')
+                safe_chars.append(char)
+            except UnicodeEncodeError:
+                safe_chars.append('?')  # 用?替代无法编码的字符
+        cleaned_text = ''.join(safe_chars)
+    
+    return cleaned_text
 
 # 主流程入口，支持批量/单条/测试模式
 @with_error_handling("news_scorer.py", "main")

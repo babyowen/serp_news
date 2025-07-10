@@ -80,11 +80,17 @@
 - ✅ API调用异常处理和重试机制
 - ✅ Token超限错误的详细记录
 - ✅ 批量处理统计和错误跟踪
+- ✅ **新增Unicode编码处理**：`clean_unicode_for_console()` 函数处理新闻内容中的特殊字符
 
 **特殊处理**：
 - 规则匹配自动打分（节省token）
 - API错误详细日志记录
 - 支持多种AI模型配置
+
+**✅ 编码问题修复**（2025年最新更新）：
+- **问题识别**：新闻内容中包含emoji和特殊Unicode字符（如©、✔、📰等）导致Windows GBK编码错误
+- **解决方案**：添加`clean_unicode_for_console()`函数，自动替换或移除有问题的字符
+- **应用范围**：所有控制台输出都经过Unicode清理处理
 
 ### 4. `news_summarizer.py` - 智能摘要模块 ✅
 
@@ -94,6 +100,7 @@
 - ✅ 使用 `@with_error_handling` 装饰器
 - ✅ API调用错误处理和重试机制
 - ✅ 脚本生命周期记录
+- ✅ **新增Unicode编码处理**：同样应用了`clean_unicode_for_console()`函数
 
 **摘要流程**：
 1. 初稿摘要生成
