@@ -54,13 +54,22 @@ cursor = conn.cursor()
 
 # 写入 scored_news 表（新闻正文及评分）
 # 数据获取：从json_path读取新闻列表
-# 执行：查重（title+link），不存在则插入scored_news表
+# 执行：查重（title+link），过滤空内容，不存在则插入scored_news表
 # 结果：成功/跳过/失败数统计，写入日志
 def insert_scored_news(json_path, keyword):
     with open(json_path, 'r', encoding='utf-8') as f:
         data = json.load(f)
     success, fail, skip = 0, 0, 0
+    empty_content_skip = 0  # 新增：记录因内容为空而跳过的数量
+    
     for item in data:
+        # 新增：过滤空内容
+        content = item.get('content', '')
+        if not content or content.strip() == '':
+            empty_content_skip += 1
+            write_log(f"[跳过空内容] scored_news: {item.get('title', '')[:50]}... (内容为空)")
+            continue
+            
         # 查重：title+link
         cursor.execute(
             "SELECT id FROM scored_news WHERE title=%s AND link=%s",
@@ -69,10 +78,11 @@ def insert_scored_news(json_path, keyword):
         if cursor.fetchone():
             skip += 1
             continue
+            
         sql = '''
         INSERT INTO scored_news (
-            date, title, link, source, fetchdate, sourceapi, thumbnail, keyword, content, wordcount, custom_grab, score
-        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            date, title, link, source, fetchdate, sourceapi, thumbnail, keyword, content, wordcount, custom_grab, score, search_keyword
+        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         '''
         date = item.get('date', None)
         fetchdate = item.get('fetchdate', None)
@@ -89,10 +99,11 @@ def insert_scored_news(json_path, keyword):
                 item.get('sourceapi'),
                 item.get('thumbnail'),
                 item.get('keyword'),
-                item.get('content'),
+                content,  # 使用已验证的content变量
                 item.get('wordcount'),
                 int(custom_grab),
-                item.get('score')
+                item.get('score'),
+                item.get('search_keyword')  # 新增：从JSON中获取search_keyword字段
             ))
             success += 1
         except Exception as e:
@@ -100,7 +111,8 @@ def insert_scored_news(json_path, keyword):
             write_log(f"[导入异常] scored_news: {item.get('title', '')} 错误: {e}")
     conn.commit()
     now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    log_msg = f"[{now}] 导入数据库\n  关键词: {keyword}\n  文件: {json_path}\n  表: scored_news\n  成功写入: {success} 条\n  跳过: {skip} 条\n  失败: {fail} 条\n------------------------------"
+    # 修改日志信息，添加空内容跳过统计
+    log_msg = f"[{now}] 导入数据库\n  关键词: {keyword}\n  文件: {json_path}\n  表: scored_news\n  成功写入: {success} 条\n  跳过(已存在): {skip} 条\n  跳过(空内容): {empty_content_skip} 条\n  失败: {fail} 条\n------------------------------"
     write_log(log_msg)
 
 # 写入 summary_news 表（新闻摘要）
