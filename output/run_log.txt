@@ -17756,3 +17756,193 @@ urllib3.exceptions.ReadTimeoutError: HTTPConnectionPool(host='localhost', port=5
 🚀 开始执行: news_scorer.py
 📋 执行参数: 江苏省国资委 2025-07-10
 ==============================
+
+[🕒 2025-07-11 20:00:41]
+🚀 开始执行: write_to_mysql.py
+📋 执行参数: --date 2025-07-10
+==============================
+[查重] news_websites 已存在，跳过部分已存在网站（仅提示一次）
+[2025-07-11 20:00:48] 导入数据库
+  文件: output/news_sources.txt
+  表: news_websites
+  成功写入: 0 条
+  跳过: 569 条
+------------------------------
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | baijiahao.baidu.com
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.gov.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.cnr.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | tech.sina.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.ce.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.thepaper.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.southcn.com
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.bjnews.com.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.news.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | finance.sina.com.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.jiangmen.gov.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.yicai.com
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | news.sjtu.edu.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | finance.sina.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | ori.hangzhou.com.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.xhby.net
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.gxnews.com.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.dailyqd.com
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.chinanews.com.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | sichuan.scol.com.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.tianshui.com.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | cj.sina.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.donews.com
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | finance.66wz.com
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.jwview.com
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.cs.com.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | web.shobserver.com
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | news.sina.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | m.gmw.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | finance.stockstar.com
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | m.sohu.com
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.jfdaily.com
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | jjckb.xinhuanet.com
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | news.anhuinews.com
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | t.qianzhan.com
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.sohu.com
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | news.qq.com
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.xinhuanet.com
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | sz.bendibao.com
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | society.people.com.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | news.sina.com.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | finance.cnr.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.hangzhou.gov.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.bbtnews.com.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.jiemian.com
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | sqtv.net
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.zaobao.com.sg
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.msn.com
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.cac.gov.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.workercn.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | beijing.qianlong.com
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | news.cctv.com
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | xycity.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | news.emoney.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | finance.sina.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | www.thepaper.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | finance.sina.com.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | www.nbd.com.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | finance.ifeng.com
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | cj.sina.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | www.yicai.com
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | www.news.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | www.qlwb.com.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | www.yynews.com.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | www.donews.com
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | sichuan.scol.com.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | www.guandian.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | www.cfi.net.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | sc.stock.cnfol.com
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | gov.rednet.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | stock.stockstar.com
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | m.sohu.com
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | news.qq.com
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | www.sohu.com
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | finance.china.com.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | news.dichan.sina.com.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | www.jlcity.gov.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | www.xinhuanet.com
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | www.bjnews.com.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | www.stcn.com
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | www.ce.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | news.ifeng.com
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | www.mnw.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | views.ce.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | news.china.com.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | yn.yunnan.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | news.yunnan.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 政府基金 | www.msn.com
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 政府基金 | www.aastocks.com
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 政府基金 | www.wenweipo.com
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 政府基金 | news.qq.com
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 政府基金 | www.gov.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 政府基金 | world.people.com.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 政府基金 | finance.sina.com.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 政府基金 | news.youth.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 政府基金 | m.dutenews.com
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 政府基金 | finance.sina.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 政府基金 | www.sohu.com
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 政府基金 | sd.china.com
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 政府基金 | www.zmdnews.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 政府基金 | sd.ifeng.com
+[查重] news_source_stats 已存在，跳过: 2025-07-10 | 政府基金 | www.ce.cn
+[2025-07-11 20:00:49] 导入数据库
+  文件: output/news_source_stats.json
+  表: news_source_stats
+  成功写入: 0 条
+  跳过: 102 条
+  失败: 0 条
+------------------------------
+[2025-07-11 20:00:54] 导入数据库
+  关键词: 养老
+  文件: output/2025-07-10/2025-07-10_养老_scored.json
+  表: scored_news
+  成功写入: 0 条
+  跳过: 115 条
+  失败: 0 条
+------------------------------
+[2025-07-11 20:00:54] 导入数据库
+  关键词: 养老
+  文件: output/2025-07-10/2025-07-10_养老_summary.json
+  表: summary_news
+  成功写入: 0 条
+  跳过: 3 条
+  失败: 0 条
+------------------------------
+[2025-07-11 20:00:56] 导入数据库
+  关键词: 公积金
+  文件: output/2025-07-10/2025-07-10_公积金_scored.json
+  表: scored_news
+  成功写入: 0 条
+  跳过: 53 条
+  失败: 0 条
+------------------------------
+[2025-07-11 20:00:56] 导入数据库
+  关键词: 公积金
+  文件: output/2025-07-10/2025-07-10_公积金_summary.json
+  表: summary_news
+  成功写入: 0 条
+  跳过: 3 条
+  失败: 0 条
+------------------------------
+[2025-07-11 20:00:57] 导入数据库
+  关键词: 政府基金
+  文件: output/2025-07-10/2025-07-10_政府基金_scored.json
+  表: scored_news
+  成功写入: 0 条
+  跳过: 32 条
+  失败: 0 条
+------------------------------
+[2025-07-11 20:00:57] 导入数据库
+  关键词: 政府基金
+  文件: output/2025-07-10/2025-07-10_政府基金_summary.json
+  表: summary_news
+  成功写入: 0 条
+  跳过: 3 条
+  失败: 0 条
+------------------------------
+[2025-07-11 20:01:08] 导入数据库
+  关键词: 江苏省国资委
+  文件: output/2025-07-10/2025-07-10_江苏省国资委_scored.json
+  表: scored_news
+  成功写入: 0 条
+  跳过: 268 条
+  失败: 0 条
+------------------------------
+[2025-07-11 20:01:09] 导入数据库
+  关键词: 江苏省国资委
+  文件: output/2025-07-10/2025-07-10_江苏省国资委_summary.json
+  表: summary_news
+  成功写入: 0 条
+  跳过: 3 条
+  失败: 0 条
+------------------------------
+
+[🕒 2025-07-11 20:01:09]
+✅ 执行完成: write_to_mysql.py
+📝 说明: 数据库导入成功
+==============================
