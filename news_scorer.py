@@ -180,11 +180,14 @@ def append_log(keyword, json_path, total, score_counter, scored_count, scored_js
         if rule_based_titles:
             log += "规则打分新闻标题：\n"
             for t in rule_based_titles:
-                log += f"- {t}\n"
+                log += f"- {clean_unicode_for_console(t)}\n"
     log += f"==============================\n"
-    print(f"[DEBUG] 日志内容预览（前100字）：{log[:100]}")
+    print(f"[DEBUG] 日志内容预览（前100字）：{clean_unicode_for_console(log[:100])}")
+    
+    # 对整个日志字符串进行Unicode清理，避免GBK编码错误
+    cleaned_log = clean_unicode_for_console(log)
     with open(log_path, "a", encoding="utf-8") as f:
-        f.write(log)
+        f.write(cleaned_log)
     print(f"[DEBUG] 日志写入完成，关键词: {keyword}")
     print(f"评分完成，日志已写入: {log_path}")
     print(f"评分结果文件: {scored_json_path}")
@@ -296,8 +299,10 @@ def main():
                         skip_log = (
                             f"[🕒 {now}]\n[SKIP] 跳过关键词: {keyword}\n原因: 已存在 {scored_json_path}，已完成打分\n==============================\n"
                         )
+                        # 对日志字符串进行Unicode清理，避免GBK编码错误
+                        cleaned_skip_log = clean_unicode_for_console(skip_log)
                         with open(log_path, "a", encoding="utf-8") as f:
-                            f.write(skip_log)
+                            f.write(cleaned_skip_log)
                         processed_count += 1  # 跳过也算处理成功
                         continue
                     # 检查是否已打分（兼容旧流程）
@@ -334,7 +339,7 @@ def main():
                     )
                     success = False
             
-            print(f"\n📊 批量评分完成：{processed_count}/{total_count} 个关键词处理成功")
+            print(f"\n📊 批量评分完成：{processed_count}/{total_count} 个关键词处理成功" if not os.name == 'nt' else f"\n[批量评分完成] {processed_count}/{total_count} 个关键词处理成功")
             log_script_complete("news_scorer.py", success=success, message=f"批量评分完成：{processed_count}/{total_count}")
             return success
 
@@ -354,8 +359,10 @@ def main():
             skip_log = (
                 f"[🕒 {now}]\n[SKIP] 跳过关键词: {keyword}\n原因: 已存在 {scored_json_path}，已完成打分\n==============================\n"
             )
+            # 对日志字符串进行Unicode清理，避免GBK编码错误
+            cleaned_skip_log = clean_unicode_for_console(skip_log)
             with open(log_path, "a", encoding="utf-8") as f:
-                f.write(skip_log)
+                f.write(cleaned_skip_log)
             log_script_complete("news_scorer.py", success=True, message=f"跳过已处理的关键词: {keyword}")
             return True
             
