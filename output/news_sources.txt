@@ -88,6 +88,7 @@ gx.people.com.cn
 gz.house.163.com
 ha.people.com.cn
 hainan.ifeng.com
+hb.dzwww.com
 hb.ifeng.com
 health.bandao.cn
 health.hangzhou.com.cn
@@ -95,6 +96,7 @@ health.hsw.cn
 health.jschina.com.cn
 health.people.com.cn
 henan.china.com
+hk.crntt.com
 hk.finance.yahoo.com
 hk.stockstar.com
 hlj.rednet.cn
@@ -113,6 +115,7 @@ hznews.hangzhou.com.cn
 i.ifeng.com
 iguangming.sznews.com
 industry.cfi.cn
+info.texnet.com.cn
 intl.ce.cn
 ishare.ifeng.com
 it.hangzhou.com.cn
@@ -160,6 +163,7 @@ m.voc.com.cn
 mcn.solarbe.com
 mil.news.sina.com.cn
 military.china.com
+military.people.com.cn
 money.hangzhou.com.cn
 money.stockstar.com
 montsame.mn
@@ -192,6 +196,7 @@ news.emoney.cn
 news.fang.com
 news.fjsen.com
 news.fznews.com.cn
+news.gmw.cn
 news.gqsoso.com
 news.gscn.com.cn
 news.guilinlife.com
@@ -200,6 +205,7 @@ news.hangzhou.com.cn
 news.hexun.com
 news.hsw.cn
 news.ifeng.com
+news.inewsweek.cn
 news.iqilu.com
 news.jcrb.com
 news.jschina.com.cn
@@ -223,6 +229,7 @@ news.xnnews.com.cn
 news.ycwb.com
 news.youth.cn
 news.yunnan.cn
+news.zol.com.cn
 nt.focus.cn
 nx.cnr.cn
 opinion.people.com.cn
@@ -278,6 +285,7 @@ time-weekly.com
 tj.people.com.cn
 tour.jschina.com.cn
 travel.hangzhou.com.cn
+ttgchina.com
 tz.zjol.com.cn
 union.china.com.cn
 user.guancha.cn
@@ -288,6 +296,7 @@ wap.eastmoney.com
 wap.stockstar.com
 web.shobserver.com
 wenews.caixin.com
+world.gmw.cn
 world.people.com.cn
 www.12371.cn
 www.163.com
@@ -332,6 +341,7 @@ www.chinapipe.net
 www.chinaqw.com
 www.chinaseed114.com
 www.chinatimes.com
+www.chinaz.com
 www.chisa.edu.cn
 www.chnfund.com
 www.chuzhou.cn
@@ -444,6 +454,7 @@ www.keyin.cn
 www.kf.cn
 www.lbnews.com.cn
 www.legaldaily.com.cn
+www.leidacj.com
 www.lexology.com
 www.licai18.com
 www.ln.gov.cn
@@ -466,7 +477,9 @@ www.nmwbk.com
 www.nxnews.net
 www.oilcn.com
 www.ordos.gov.cn
+www.orientaldaily.com.my
 www.pai.com.cn
+www.peopo.org
 www.prnasia.com
 www.pvnews.cn
 www.qhbtv.com

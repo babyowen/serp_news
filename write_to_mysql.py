@@ -251,12 +251,39 @@ def get_target_date(date_arg):
 
 # 新增：获取指定日期和关键词的最大轮次摘要
 def fetch_latest_summary(date, keyword):
-    sql = "SELECT summary, round FROM summary_news WHERE date=%s AND keyword=%s ORDER BY round DESC LIMIT 1"
-    cursor.execute(sql, (date, keyword))
-    row = cursor.fetchone()
-    if row:
-        return row[0], row[1]
-    return None, None
+    """
+    获取指定日期和关键词的最新摘要
+    注意：此函数创建独立的数据库连接，避免依赖全局cursor
+    """
+    # 创建独立的数据库连接
+    try:
+        temp_conn = pymysql.connect(
+            host=MYSQL_HOST,
+            port=MYSQL_PORT,
+            user=MYSQL_USER,
+            password=MYSQL_PASSWORD,
+            database=MYSQL_DB,
+            charset='utf8mb4'
+        )
+        temp_cursor = temp_conn.cursor()
+        
+        sql = "SELECT summary, round FROM summary_news WHERE date=%s AND keyword=%s ORDER BY round DESC LIMIT 1"
+        temp_cursor.execute(sql, (date, keyword))
+        row = temp_cursor.fetchone()
+        
+        result_summary, result_round = None, None
+        if row:
+            result_summary, result_round = row[0], row[1]
+            
+        # 关闭临时连接
+        temp_cursor.close()
+        temp_conn.close()
+        
+        return result_summary, result_round
+        
+    except Exception as e:
+        print(f"[ERROR] fetch_latest_summary查询失败: {e}")
+        return None, None
 
 # 主流程入口，按顺序导入新闻源、新闻源统计、新闻正文及评分、新闻摘要
 # 数据获取：命令行参数、配置文件、各类json/txt文件

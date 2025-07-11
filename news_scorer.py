@@ -25,12 +25,14 @@ setup_global_exception_handler()
 
 # 调用大模型对单条新闻进行评分
 # title: 新闻标题
-# content: 新闻正文
-# keyword: 关键词
+# content: 新闻正文  
+# keyword: 用于AI评分的关键词（通常是search_keyword）
+# main_keyword: 用于模型选择判断的主关键词（用于决定使用哪个模型）
 # 返回分数（int）
-def score_news(title: str, content: str, keyword: str) -> int:
+def score_news(title: str, content: str, keyword: str, main_keyword: str = None) -> int:
     prompt = NEWS_SCORE_PROMPT.format(keyword=keyword, title=title, content=content)
     print("\n===== 送给大模型的内容 =====")
+    print(f"[评分关键词] {keyword}")
     print(f"[system] {clean_unicode_for_console(NEWS_SCORE_SYSTEM_MSG)}")
     print(f"[user] {clean_unicode_for_console(prompt)}")
     print("==========================\n")
@@ -49,8 +51,12 @@ def score_news(title: str, content: str, keyword: str) -> int:
                 f.write(f"[WARN] prompt结尾200字: {prompt[-200:]}\n")
     except Exception as e:
         print(f"[WARN] tiktoken统计token失败: {e}")
-    # 新增：根据关键词选择模型
-    model_to_use = 'deepseek-chat' if keyword == '国资委测试' else 'deepseek-reasoner'
+    # 新增：根据主关键词选择模型，但评分使用搜索关键词
+    # 对于数据量大的主关键词使用V3模型提高评分速度
+    model_decision_keyword = main_keyword if main_keyword else keyword  # 用于模型选择判断的关键词
+    fast_keywords = ['国资委测试', '江苏省国资委']
+    model_to_use = 'deepseek-chat' if model_decision_keyword in fast_keywords else 'deepseek-reasoner'
+    print(f"[模型选择] 主关键词: {model_decision_keyword}, 评分关键词: {keyword}, 使用模型: {model_to_use}")
     client = OpenAI(api_key=DEEPSEEK_API_KEY, base_url=DEEPSEEK_BASE_URL)
     try:
         response = client.chat.completions.create(
@@ -110,17 +116,21 @@ def batch_score_news(json_path, keyword):
         title = news.get("title", "")
         content = news.get("content", "")
         wordcount = news.get("wordcount", None)
+        # 新增：优先使用更精确的搜索关键词进行AI评分
+        search_keyword = news.get("search_keyword", keyword)  # 如果没有search_keyword则回退到主关键词
+        
         # 新增：如果 wordcount 为 0，直接打 0 分
         if wordcount == 0:
             score = 0
         else:
-            # 先规则打分
+            # 先规则打分（规则打分仍使用主关键词）
             rule_score = rule_based_score(title, keyword)
             if rule_score is not None:
                 score = rule_score
                 rule_based_titles.append(title)  # 记录规则打分的标题
             else:
-                score = score_news(title, content, keyword)
+                # AI评分使用更精确的搜索关键词，但模型选择基于主关键词
+                score = score_news(title, content, search_keyword, keyword)
         news_with_score = dict(news)
         news_with_score["score"] = score  # 用英文key
         results.append(news_with_score)
@@ -164,8 +174,8 @@ def append_log(keyword, json_path, total, score_counter, scored_count, scored_js
                 total_wordcount_3plus += len(news.get("content", ""))
     log = (
         f"\n[🕒 {now}]\n"
-        f"执行程序: ai评分\n"
-        f"🔑 关键词: {keyword}\n"
+        f"执行程序: ai评分（使用搜索关键词优化）\n"
+        f"🔑 主关键词: {keyword}\n"
         f"📄 原json文件: {json_path}\n"
         f"🆕 评分结果文件: {scored_json_path}\n"
         f"📊 新闻总数: {total}\n"
