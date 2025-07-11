@@ -355,8 +355,34 @@ def process_json(keyword, date_str=None, mode='正式'):
         skip_log = (
             f"[🕒 {now}]\n[SKIP] 跳过关键词: {keyword}\n原因: {json_path} 所有新闻已包含content字段，正文抓取已执行\n==============================\n"
         )
+        # 清理Unicode字符
+        def clean_unicode_for_log(text):
+            if not text:
+                return text
+            replacements = {
+                '🕒': '[时间]',
+                '📰': '[新闻]',
+                '🔑': '[关键词]'
+            }
+            cleaned_text = text
+            for emoji, replacement in replacements.items():
+                cleaned_text = cleaned_text.replace(emoji, replacement)
+            try:
+                cleaned_text.encode('gbk')
+            except UnicodeEncodeError:
+                safe_chars = []
+                for char in cleaned_text:
+                    try:
+                        char.encode('gbk')
+                        safe_chars.append(char)
+                    except UnicodeEncodeError:
+                        safe_chars.append('?')
+                cleaned_text = ''.join(safe_chars)
+            return cleaned_text
+        
+        cleaned_skip_log = clean_unicode_for_log(skip_log)
         with open(log_path, "a", encoding="utf-8") as f:
-            f.write(skip_log)
+            f.write(cleaned_skip_log)
         return
     # 新增：将 https://people.com.cn 及其所有子域名替换为 http
     for item in news_list:
@@ -389,11 +415,45 @@ def process_json(keyword, date_str=None, mode='正式'):
             item['custom_grab'] = False
             filtered_news_list.append(item)
             continue
-        print(f"Fetching: {url}")
-        content, wordcount, custom_grab = fetch_article_content(url)
-        item['content'] = content
-        item['wordcount'] = wordcount
-        item['custom_grab'] = custom_grab
+        
+        # 增强日志记录：添加关键词和新闻标题信息
+        title = item.get('title', '无标题')
+        print(f"[{keyword}] 正在抓取: {title}")
+        print(f"[{keyword}] URL: {url}")
+        
+        try:
+            content, wordcount, custom_grab = fetch_article_content(url)
+            item['content'] = content
+            item['wordcount'] = wordcount
+            item['custom_grab'] = custom_grab
+            
+            # 记录抓取结果
+            if wordcount > 0:
+                grab_type = "定制化" if custom_grab else "通用"
+                print(f"[{keyword}] ✅ 抓取成功 ({grab_type}): {wordcount} 字")
+            else:
+                print(f"[{keyword}] ❌ 抓取失败: 未获取到正文")
+                
+        except Exception as e:
+            print(f"[{keyword}] ❌ 抓取异常: {str(e)}")
+            print(f"[{keyword}] 标题: {title}")
+            print(f"[{keyword}] URL: {url}")
+            
+            # 记录到错误日志
+            error_handler = ErrorHandler()
+            error_handler.log_error(
+                error_type="CONTENT_FETCH_ERROR",
+                error_msg=f"抓取正文时发生异常: {str(e)}",
+                script_name="fetch_content.py",
+                keyword=keyword,
+                context={"url": url, "title": title}
+            )
+            
+            # 设置默认值，继续处理
+            item['content'] = ''
+            item['wordcount'] = 0
+            item['custom_grab'] = False
+            
         filtered_news_list.append(item)
     # 2. 写回json（只写入非tv.cctv.com）
     with open(json_path, 'w', encoding='utf-8') as f:
@@ -458,34 +518,81 @@ def process_json(keyword, date_str=None, mode='正式'):
     with open(stats_path, 'w', encoding='utf-8') as sf:
         json.dump(stats_records, sf, ensure_ascii=False, indent=2)
     # 写日志
+    log_content = f"\n==============================\n"
+    log_content += f"📰 [抓取新闻正文] {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"
+    log_content += f"🔑 关键词: {keyword}\n"
+    log_content += f"🗂️ 模式: {mode}\n"
+    log_content += f"📄 处理的json文件: {json_path}\n"
+    log_content += f"\n📊 抓取统计：\n"
+    log_content += f"  ✅ 成功抓取正文: {success_count} 篇\n"
+    log_content += f"  ✨ 其中定制化抓取: {len(custom_used_items)} 篇\n"
+    log_content += f"  🌐 本次采集新闻源数量: {len(current_domains)}\n"
+    log_content += f"  ❌ 抓取失败: {len(fail_items)} 篇\n"
+    if custom_grab_domain_count:
+        log_content += "\n🎯 定制化抓取命中统计：\n"
+        for domain, count in custom_grab_domain_count.items():
+            log_content += f"  - {domain}: {count} 篇\n"
+            for item in custom_grab_domain_items[domain]:
+                log_content += f"      • {item['title']} | {item['link']}\n"
+    if fail_items:
+        log_content += "\n⚠️ 未能抓取的新闻：\n"
+        for fail in fail_items:
+            mark = "(定制化)" if fail.get('custom') else ""
+            log_content += f"  - {fail['title']} | {fail['link']} {mark}\n"
+    # 在日志中单独记录tv.cctv.com跳过情况
+    if skipped_video_items:
+        log_content += "\n📺 跳过仅含视频的新闻（tv.cctv.com）：\n"
+        for item in skipped_video_items:
+            log_content += f"  - {item['title']} | {item['link']}\n"
+    log_content += "==============================\n\n"
+    
+    # 添加Unicode清理机制
+    def clean_unicode_for_log(text):
+        """清理日志中的Unicode字符，避免Windows GBK编码错误"""
+        if not text:
+            return text
+        
+        # 替换emoji字符
+        replacements = {
+            '📰': '[新闻]',
+            '🔑': '[关键词]',
+            '🗂️': '[模式]',
+            '📄': '[文件]',
+            '📊': '[统计]',
+            '✅': '[成功]',
+            '✨': '[定制]',
+            '🌐': '[来源]',
+            '❌': '[失败]',
+            '🎯': '[命中]',
+            '⚠️': '[警告]',
+            '📺': '[视频]',
+            '•': '*'
+        }
+        
+        cleaned_text = text
+        for emoji, replacement in replacements.items():
+            cleaned_text = cleaned_text.replace(emoji, replacement)
+        
+        # 进一步清理可能的Unicode问题
+        try:
+            cleaned_text.encode('gbk')
+        except UnicodeEncodeError:
+            # 逐字符检查并替换
+            safe_chars = []
+            for char in cleaned_text:
+                try:
+                    char.encode('gbk')
+                    safe_chars.append(char)
+                except UnicodeEncodeError:
+                    safe_chars.append('?')
+            cleaned_text = ''.join(safe_chars)
+        
+        return cleaned_text
+    
+    # 清理并写入日志
+    cleaned_log_content = clean_unicode_for_log(log_content)
     with open(log_path, 'a', encoding='utf-8') as logf:
-        logf.write(f"\n==============================\n")
-        logf.write(f"📰 [抓取新闻正文] {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
-        logf.write(f"🔑 关键词: {keyword}\n")
-        logf.write(f"🗂️ 模式: {mode}\n")
-        logf.write(f"📄 处理的json文件: {json_path}\n")
-        logf.write(f"\n📊 抓取统计：\n")
-        logf.write(f"  ✅ 成功抓取正文: {success_count} 篇\n")
-        logf.write(f"  ✨ 其中定制化抓取: {len(custom_used_items)} 篇\n")
-        logf.write(f"  🌐 本次采集新闻源数量: {len(current_domains)}\n")
-        logf.write(f"  ❌ 抓取失败: {len(fail_items)} 篇\n")
-        if custom_grab_domain_count:
-            logf.write("\n🎯 定制化抓取命中统计：\n")
-            for domain, count in custom_grab_domain_count.items():
-                logf.write(f"  - {domain}: {count} 篇\n")
-                for item in custom_grab_domain_items[domain]:
-                    logf.write(f"      • {item['title']} | {item['link']}\n")
-        if fail_items:
-            logf.write("\n⚠️ 未能抓取的新闻：\n")
-            for fail in fail_items:
-                mark = "(定制化)" if fail.get('custom') else ""
-                logf.write(f"  - {fail['title']} | {fail['link']} {mark}\n")
-        # 在日志中单独记录tv.cctv.com跳过情况
-        if skipped_video_items:
-            logf.write("\n📺 跳过仅含视频的新闻（tv.cctv.com）：\n")
-            for item in skipped_video_items:
-                logf.write(f"  - {item['title']} | {item['link']}\n")
-        logf.write("==============================\n\n")
+        logf.write(cleaned_log_content)
     print(f"Updated: {json_path}")
     print(f"日志已写入 {log_path}")
     print(f"已写入新闻来源统计: {sources_path}")

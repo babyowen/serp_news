@@ -197,3 +197,106 @@ UnicodeEncodeError: 'gbk' codec can't encode character '\U0001f4f0' in position 
 }
 ==================================================
 
+[2025-07-11 02:54:01] ERROR
+脚本: fetch_content.py
+关键词: unknown
+错误类型: PROGRAM_CRASH
+错误信息: HTTPConnectionPool(host='localhost', port=50709): Read timed out. (read timeout=120)
+详细堆栈:
+Traceback (most recent call last):
+  File "c:\serp_news_mainkeyword\venv\Lib\site-packages\urllib3\connectionpool.py", line 534, in _make_request
+    response = conn.getresponse()
+               ^^^^^^^^^^^^^^^^^^
+  File "c:\serp_news_mainkeyword\venv\Lib\site-packages\urllib3\connection.py", line 516, in getresponse
+    httplib_response = super().getresponse()
+                       ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python311\Lib\http\client.py", line 1390, in getresponse
+    response.begin()
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python311\Lib\http\client.py", line 325, in begin
+    version, status, reason = self._read_status()
+                              ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python311\Lib\http\client.py", line 286, in _read_status
+    line = str(self.fp.readline(_MAXLINE + 1), "iso-8859-1")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python311\Lib\socket.py", line 706, in readinto
+    return self._sock.recv_into(b)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+TimeoutError: timed out
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\serp_news_mainkeyword\error_handler.py", line 119, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\serp_news_mainkeyword\fetch_content.py", line 393, in process_json
+    content, wordcount, custom_grab = fetch_article_content(url)
+                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\serp_news_mainkeyword\fetch_content.py", line 203, in fetch_article_content
+    text, grab_type = grab_func(fetch_article_content_with_selenium_driver(url))
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\serp_news_mainkeyword\fetch_content.py", line 322, in fetch_article_content_with_selenium_driver
+    driver.get(url)
+  File "c:\serp_news_mainkeyword\venv\Lib\site-packages\selenium\webdriver\remote\webdriver.py", line 472, in get
+    self.execute(Command.GET, {"url": url})
+  File "c:\serp_news_mainkeyword\venv\Lib\site-packages\selenium\webdriver\remote\webdriver.py", line 445, in execute
+    response = self.command_executor.execute(driver_command, params)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\serp_news_mainkeyword\venv\Lib\site-packages\selenium\webdriver\remote\remote_connection.py", line 404, in execute
+    return self._request(command_info[0], url, body=data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\serp_news_mainkeyword\venv\Lib\site-packages\selenium\webdriver\remote\remote_connection.py", line 428, in _request
+    response = self._conn.request(method, url, body=body, headers=headers, timeout=self._client_config.timeout)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\serp_news_mainkeyword\venv\Lib\site-packages\urllib3\_request_methods.py", line 143, in request
+    return self.request_encode_body(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\serp_news_mainkeyword\venv\Lib\site-packages\urllib3\_request_methods.py", line 278, in request_encode_body
+    return self.urlopen(method, url, **extra_kw)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\serp_news_mainkeyword\venv\Lib\site-packages\urllib3\poolmanager.py", line 443, in urlopen
+    response = conn.urlopen(method, u.request_uri, **kw)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\serp_news_mainkeyword\venv\Lib\site-packages\urllib3\connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "c:\serp_news_mainkeyword\venv\Lib\site-packages\urllib3\util\retry.py", line 474, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\serp_news_mainkeyword\venv\Lib\site-packages\urllib3\util\util.py", line 39, in reraise
+    raise value
+  File "c:\serp_news_mainkeyword\venv\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "c:\serp_news_mainkeyword\venv\Lib\site-packages\urllib3\connectionpool.py", line 536, in _make_request
+    self._raise_timeout(err=e, url=url, timeout_value=read_timeout)
+  File "c:\serp_news_mainkeyword\venv\Lib\site-packages\urllib3\connectionpool.py", line 367, in _raise_timeout
+    raise ReadTimeoutError(
+urllib3.exceptions.ReadTimeoutError: HTTPConnectionPool(host='localhost', port=50709): Read timed out. (read timeout=120)
+
+上下文信息: {
+  "stage": "正文抓取处理"
+}
+==================================================
+
+[2025-07-11 04:27:55] ERROR
+脚本: news_scorer.py
+关键词: unknown
+错误类型: MAIN_FUNCTION_ERROR
+错误信息: news_scorer.py 执行过程中发生异常: 'gbk' codec can't encode character '\U0001f552' in position 25: illegal multibyte sequence
+==================================================
+
+[2025-07-11 05:06:56] ERROR
+脚本: news_scorer.py
+关键词: unknown
+错误类型: MAIN_FUNCTION_ERROR
+错误信息: news_scorer.py 执行过程中发生异常: 'gbk' codec can't encode character '\U0001f552' in position 25: illegal multibyte sequence
+==================================================
+
+[2025-07-11 05:23:23] ERROR
+脚本: news_scorer.py
+关键词: unknown
+错误类型: MAIN_FUNCTION_ERROR
+错误信息: news_scorer.py 执行过程中发生异常: 'gbk' codec can't encode character '\U0001f552' in position 25: illegal multibyte sequence
+==================================================
+

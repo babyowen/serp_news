@@ -3,6 +3,7 @@ import sys
 import datetime
 import os
 import json
+import concurrent.futures
 from config import DEFAULT_KEYWORDS, SEARCH_KEYWORDS
 from error_handler import (
     setup_global_exception_handler, 
@@ -188,6 +189,96 @@ def execute_scoring(date, kw):
     
     return safe_subprocess_run(cmd, f"AI评分-{kw}", keyword=kw, check=False)
 
+@with_error_handling("main.py", "AI评分并发处理")
+def execute_scoring_concurrent(date, keywords, max_workers=3):
+    """并发执行AI评分阶段"""
+    print(f"[INFO] 开始并发AI评分，最大并发数: {max_workers}")
+    
+    # 记录开始时间
+    start_time = datetime.datetime.now()
+    
+    # 使用ThreadPoolExecutor进行并发处理
+    results = {}
+    with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+        # 提交所有任务
+        future_to_keyword = {
+            executor.submit(execute_scoring, date, kw): kw 
+            for kw in keywords
+        }
+        
+        # 收集结果
+        for future in concurrent.futures.as_completed(future_to_keyword):
+            kw = future_to_keyword[future]
+            try:
+                result = future.result()
+                results[kw] = result
+                status = "成功" if result else "失败"
+                print(f"[INFO] [{kw}] 评分完成: {status}")
+            except Exception as e:
+                print(f"[ERROR] [{kw}] 评分异常: {str(e)}")
+                results[kw] = False
+                
+                # 记录错误
+                error_handler = ErrorHandler()
+                error_handler.log_error(
+                    error_type="CONCURRENT_SCORING_ERROR",
+                    error_msg=f"并发评分时发生异常: {str(e)}",
+                    script_name="main.py",
+                    keyword=kw,
+                    context={"date": date, "stage": "concurrent_scoring"}
+                )
+    
+    # 计算统计信息
+    end_time = datetime.datetime.now()
+    duration = end_time - start_time
+    
+    success_count = sum(1 for result in results.values() if result)
+    fail_count = len(results) - success_count
+    
+    print(f"[INFO] 并发AI评分完成，耗时: {duration.total_seconds():.1f}秒")
+    print(f"[INFO] 成功: {success_count}，失败: {fail_count}")
+    
+    # 记录详细结果到日志
+    now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    log_path = os.path.join("output", "run_log.txt")
+    
+    concurrent_log = f"\n[{now}]\n"
+    concurrent_log += f"执行程序: main.py (并发AI评分)\n"
+    concurrent_log += f"并发处理关键词: {', '.join(keywords)}\n"
+    concurrent_log += f"最大并发数: {max_workers}\n"
+    concurrent_log += f"总耗时: {duration.total_seconds():.1f}秒\n"
+    concurrent_log += f"成功: {success_count}，失败: {fail_count}\n"
+    concurrent_log += f"详细结果:\n"
+    
+    for kw, result in results.items():
+        status = "成功" if result else "失败"
+        concurrent_log += f"  - {kw}: {status}\n"
+    
+    concurrent_log += f"==============================\n"
+    
+    # 清理Unicode字符
+    def clean_unicode_for_log(text):
+        if not text:
+            return text
+        try:
+            text.encode('gbk')
+        except UnicodeEncodeError:
+            safe_chars = []
+            for char in text:
+                try:
+                    char.encode('gbk')
+                    safe_chars.append(char)
+                except UnicodeEncodeError:
+                    safe_chars.append('?')
+            text = ''.join(safe_chars)
+        return text
+    
+    cleaned_log = clean_unicode_for_log(concurrent_log)
+    with open(log_path, "a", encoding="utf-8") as f:
+        f.write(cleaned_log)
+    
+    return success_count, fail_count
+
 @with_error_handling("main.py", "main")
 def main(date=None):
     """主函数，控制整个新闻处理流程"""
@@ -236,13 +327,9 @@ def main(date=None):
         
         print(f"\n📊 步骤2完成统计：成功 {content_success}，失败 {content_failed}")
         
-        # 步骤3：评分
-        print(f"\n🌟 开始执行步骤3：AI评分阶段")
-        for kw in DEFAULT_KEYWORDS:
-            if execute_scoring(date, kw):
-                score_success += 1
-            else:
-                score_failed += 1
+        # 步骤3：评分（并发处理）
+        print(f"\n🌟 开始执行步骤3：AI评分阶段（并发处理）")
+        score_success, score_failed = execute_scoring_concurrent(date, DEFAULT_KEYWORDS, max_workers=3)
         
         print(f"\n📊 步骤3完成统计：成功 {score_success}，失败 {score_failed}")
         

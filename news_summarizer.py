@@ -267,12 +267,15 @@ def append_log(date, keyword, model_name, prompt, summary_path, news_count, succ
     if extra_info and 'secondary_keywords' in extra_info:
         log += f"合并的二级关键词: {extra_info['secondary_keywords']}\n"
     if error_msg:
-        log += f"❌ 错误信息: {error_msg}\n"
+        log += f"❌ 错误信息: {clean_unicode_for_console(error_msg)}\n"
     if extra_info and 'merge_status' in extra_info:
         log += f"合并情况: {extra_info['merge_status']}\n"
     log += f"==============================\n"
+    
+    # 对整个日志字符串进行Unicode清理，避免GBK编码错误
+    cleaned_log = clean_unicode_for_console(log)
     with open(log_path, "a", encoding="utf-8") as f:
-        f.write(log)
+        f.write(cleaned_log)
     print(f"[INFO] 日志已写入: {log_path}")
 
 def call_llm(system_prompt, user_prompt, platform, model_name, stream_mode=False, max_retries=3, timeout=700, retry_interval=10):
@@ -422,8 +425,10 @@ def main(date=None, keyword=None, model_name=None, output_dir=None):
         skip_log = (
             f"[🕒 {now}]\n[SKIP] 跳过关键词: {keyword}\n原因: 大模型API连续多次失败或超时，未能完成总结\n==============================\n"
         )
+        # 对日志字符串进行Unicode清理，避免GBK编码错误
+        cleaned_skip_log = clean_unicode_for_console(skip_log)
         with open(log_path, "a", encoding="utf-8") as f:
-            f.write(skip_log)
+            f.write(cleaned_skip_log)
         print(f"[SKIP] 跳过关键词: {keyword}，原因: 大模型API连续多次失败或超时")
         return
     # ========== 第一轮摘要结果保存 ==========
