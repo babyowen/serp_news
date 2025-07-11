@@ -278,7 +278,7 @@ def append_log(date, keyword, model_name, prompt, summary_path, news_count, succ
         f.write(cleaned_log)
     print(f"[INFO] 日志已写入: {log_path}")
 
-def call_llm(system_prompt, user_prompt, platform, model_name, stream_mode=False, max_retries=3, timeout=700, retry_interval=10):
+def call_llm(system_prompt, user_prompt, platform, model_name, stream_mode=False, max_retries=3, timeout=300, retry_interval=10):
     model_cfg = NEWS_SUMMARY_MODELS[platform][model_name]
     client = OpenAI(api_key=model_cfg['api_key'], base_url=model_cfg['base_url'])
     messages = [
@@ -287,6 +287,12 @@ def call_llm(system_prompt, user_prompt, platform, model_name, stream_mode=False
     ]
     token_limit_info = None
     for attempt in range(1, max_retries + 1):
+        print(f"🤖 [尝试 {attempt}/{max_retries}] 正在调用 {platform}-{model_name} 模型...")
+        print(f"⏱️  [超时设置] {timeout}秒，请耐心等待...")
+        
+        # 记录开始时间
+        start_time = datetime.now()
+        
         try:
             response = client.chat.completions.create(
                 model=model_cfg['model'],
@@ -294,18 +300,40 @@ def call_llm(system_prompt, user_prompt, platform, model_name, stream_mode=False
                 stream=stream_mode,
                 timeout=timeout
             )
+            
             if stream_mode:
+                print("📝 [流式输出] 开始接收模型响应...")
                 result = ""
+                chunk_count = 0
                 for chunk in response:
                     if hasattr(chunk.choices[0].delta, "content") and chunk.choices[0].delta.content:
                         result += chunk.choices[0].delta.content
+                        chunk_count += 1
+                        # 每100个chunk显示一次进度
+                        if chunk_count % 100 == 0:
+                            print(f"📝 [流式输出] 已接收 {chunk_count} 个数据块，当前长度: {len(result)} 字符")
+                print(f"✅ [流式输出] 完成，总共接收 {chunk_count} 个数据块")
             else:
+                print("📝 [非流式] 等待模型完整响应...")
                 result = response.choices[0].message.content.strip()
+            
+            # 计算耗时
+            end_time = datetime.now()
+            duration = (end_time - start_time).total_seconds()
+            print(f"✅ [API调用成功] 耗时: {duration:.1f}秒，响应长度: {len(result)} 字符")
+            
             return result, token_limit_info
         except Exception as e:
+            # 计算失败耗时
+            end_time = datetime.now()
+            duration = (end_time - start_time).total_seconds()
+            
             err_str = str(e)
             is_token_limit = any(x in err_str.lower() for x in ["token", "context length", "input length", "max input limit", "too long"])
+            is_timeout = any(x in err_str.lower() for x in ["timeout", "timed out", "time out"])
+            
             if is_token_limit:
+                print(f"❌ [Token超限] 请求失败，耗时: {duration:.1f}秒")
                 print(f"[WARN] API返回token超限，prompt开头200字: {user_prompt[:200]}")
                 print(f"[WARN] API返回token超限，prompt结尾200字: {user_prompt[-200:]}")
                 token_limit_info = {
@@ -313,11 +341,20 @@ def call_llm(system_prompt, user_prompt, platform, model_name, stream_mode=False
                     "prompt_tail": user_prompt[-200:],
                     "token_count": len(user_prompt)
                 }
-            print(f"[WARN] 第{attempt}次请求失败: {e}，将在{retry_interval}s后重试...")
+            elif is_timeout:
+                print(f"⏰ [超时失败] 请求超时，耗时: {duration:.1f}秒（超过{timeout}秒限制）")
+            else:
+                print(f"❌ [请求失败] 耗时: {duration:.1f}秒")
+            
+            print(f"🔄 [第{attempt}次失败] 错误类型: {type(e).__name__}")
+            print(f"🔄 [错误详情] {str(e)[:200]}...")
+            
+            # 详细调试信息
             response = getattr(e, 'response', None)
             if response is not None:
                 try:
-                    print(f"[DEBUG] 原始响应内容: {response.text}")
+                    print(f"[DEBUG] 原始响应状态: {response.status_code}")
+                    print(f"[DEBUG] 原始响应内容前500字: {response.text[:500]}")
                 except Exception as ex:
                     print(f"[DEBUG] 无法打印原始响应内容: {ex}")
             else:
@@ -325,10 +362,18 @@ def call_llm(system_prompt, user_prompt, platform, model_name, stream_mode=False
                     print(f"[DEBUG] 异常args: {e.args}")
                     if isinstance(e.args[0], str):
                         print(f"[DEBUG] 异常args[0]内容前500字: {e.args[0][:500]}")
-                print(f"[DEBUG] 异常类型: {type(e)}, 内容: {e}")
+        
+        # 重试逻辑
         if attempt < max_retries:
+            print(f"⏳ [准备重试] {retry_interval}秒后进行第{attempt + 1}次尝试...")
             import time
-            time.sleep(retry_interval)
+            for i in range(retry_interval):
+                time.sleep(1)
+                if i % 3 == 0:  # 每3秒显示一次倒计时
+                    remaining = retry_interval - i
+                    print(f"⏳ [倒计时] 还有 {remaining} 秒...")
+        else:
+            print(f"💥 [最终失败] 已达到最大重试次数({max_retries}次)")
     print(f"[ERROR] 连续{max_retries}次请求均失败，已放弃。")
     return None, token_limit_info
 
@@ -470,6 +515,7 @@ def main(date=None, keyword=None, model_name=None, output_dir=None):
     print(clean_unicode_for_console(judge_system_prompt.strip()))
     print("\n[user prompt]")
     print(clean_unicode_for_console(judge_user_prompt.strip()))
+    print(f"\n🎯 [开始评判] 使用模型: {judge_platform}-{judge_model}")
     judge_suggestion, _ = call_llm(judge_system_prompt, judge_user_prompt, judge_platform, judge_model)
     if judge_suggestion is None:
         now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -507,6 +553,7 @@ def main(date=None, keyword=None, model_name=None, output_dir=None):
     print(optimize_system_prompt.strip())
     print("\n[user prompt]")
     print(optimize_user_prompt.strip())
+    print(f"\n🔧 [开始优化] 使用模型: {optimize_platform}-{optimize_model}")
     improved_summary, _ = call_llm(optimize_system_prompt, optimize_user_prompt, optimize_platform, optimize_model)
     if improved_summary is None:
         now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -531,7 +578,25 @@ def main(date=None, keyword=None, model_name=None, output_dir=None):
     # 动态import write_to_mysql，避免循环依赖
     write_to_mysql = importlib.import_module('write_to_mysql')
     prev_date = (datetime.strptime(date, '%Y-%m-%d') - timedelta(days=1)).strftime('%Y-%m-%d')
+
+    # 新增：详细的调试信息
+    print(f"\n🔍 [热点追踪调试] 当前日期: {date}")
+    print(f"🔍 [热点追踪调试] 昨天日期: {prev_date}")
+    print(f"🔍 [热点追踪调试] 查询关键词: {keyword}")
+
     prev_summary, prev_round = write_to_mysql.fetch_latest_summary(prev_date, keyword)
+
+    # 新增：显示查询结果
+    if prev_summary:
+        print(f"✅ [热点追踪调试] 成功找到昨天的摘要，轮次: {prev_round}")
+        print(f"📝 [热点追踪调试] 昨天摘要前200字: {prev_summary[:200]}...")
+    else:
+        print(f"❌ [热点追踪调试] 未找到昨天的摘要数据")
+        print(f"💡 [热点追踪调试] 可能原因:")
+        print(f"   1. 昨天({prev_date})的摘要还未写入数据库")
+        print(f"   2. 数据库连接问题")
+        print(f"   3. 关键词({keyword})在昨天没有摘要记录")
+
     round3_entry = None
     if prev_summary:
         hotspot_system_prompt = NEWS_SUMMARY_HOTSPOT_SYSTEM_PROMPT.strip()
@@ -541,6 +606,7 @@ def main(date=None, keyword=None, model_name=None, output_dir=None):
         print(hotspot_system_prompt)
         print("\n[user prompt]")
         print(hotspot_user_prompt)
+        print(f"\n🔥 [开始热点追踪] 使用模型: {optimize_platform}-{optimize_model}")
         hotspot_summary, _ = call_llm(hotspot_system_prompt, hotspot_user_prompt, optimize_platform, optimize_model)
         if hotspot_summary is None:
             now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -561,6 +627,8 @@ def main(date=None, keyword=None, model_name=None, output_dir=None):
             "round": 3,
             "prev_date": prev_date
         }
+    else:
+        print(f"\n⚠️  [跳过热点追踪] 无昨天({prev_date})的摘要数据，跳过第3轮热点追踪")
     # ========== 保存所有轮次摘要 ==========
     all_rounds = [round1_entry, round2_entry]
     if round3_entry:
