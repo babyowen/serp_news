@@ -436,7 +436,7 @@ def main(date=None, keyword=None, model_name=None, output_dir=None):
             filter_msg = ""
         print(f"[INFO] 无3分及以上新闻{filter_msg}，无需总结。")
         append_log(date, keyword, model_name, '', '', 0, success=True, extra_info={'search_keywords': list(search_keywords_set)})
-        return
+        return True
     # 后续流程保持不变
     # token超限多级预判
     platform = NEWS_SUMMARY_PLATFORM
@@ -475,7 +475,7 @@ def main(date=None, keyword=None, model_name=None, output_dir=None):
         with open(log_path, "a", encoding="utf-8") as f:
             f.write(cleaned_skip_log)
         print(f"[SKIP] 跳过关键词: {keyword}，原因: 大模型API连续多次失败或超时")
-        return
+        return False
     # ========== 第一轮摘要结果保存 ==========
     print("\n===== 第1轮-初稿摘要 =====")
     print("[system prompt]")
@@ -526,7 +526,7 @@ def main(date=None, keyword=None, model_name=None, output_dir=None):
         with open(log_path, "a", encoding="utf-8") as f:
             f.write(skip_log)
         print(f"[SKIP] 跳过关键词: {keyword}，原因: 评判官环节大模型API连续多次失败或超时")
-        return
+        return False
     print("\n[大模型输出]")
     print(clean_unicode_for_console(judge_suggestion.strip()))
     # ========== 第二轮优化摘要 ==========
@@ -564,7 +564,7 @@ def main(date=None, keyword=None, model_name=None, output_dir=None):
         with open(log_path, "a", encoding="utf-8") as f:
             f.write(skip_log)
         print(f"[SKIP] 跳过关键词: {keyword}，原因: 优化环节大模型API连续多次失败或超时")
-        return
+        return False
     print("\n[大模型输出]")
     print(improved_summary.strip())
     round2_entry = {
@@ -617,7 +617,7 @@ def main(date=None, keyword=None, model_name=None, output_dir=None):
             with open(log_path, "a", encoding="utf-8") as f:
                 f.write(skip_log)
             print(f"[SKIP] 跳过关键词: {keyword}，原因: 热点追踪环节大模型API连续多次失败或超时")
-            return
+            return False
         print("\n[大模型输出]")
         print(hotspot_summary.strip())
         round3_entry = {
@@ -688,6 +688,9 @@ def main(date=None, keyword=None, model_name=None, output_dir=None):
             f.write(f"[WARN] API返回token超限，prompt token数: {token_limit_info['token_count']}\n")
             f.write(f"[WARN] prompt开头200字: {token_limit_info['prompt_head']}\n")
             f.write(f"[WARN] prompt结尾200字: {token_limit_info['prompt_tail']}\n")
+    
+    # 明确返回True表示成功完成
+    return True
 
 # 新增：多轮摘要保存，保留所有轮次和相关信息
 def save_summary_multi_round(date, keyword, round_entries, output_dir):

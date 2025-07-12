@@ -8,7 +8,7 @@ import sys
 import os
 from datetime import datetime, timedelta
 from openai import OpenAI
-from config import NEWS_SCORE_PROMPT, DEEPSEEK_API_KEY, DEEPSEEK_BASE_URL, DEEPSEEK_MODEL, DEFAULT_KEYWORD, NEWS_SCORE_SYSTEM_MSG, DEFAULT_KEYWORDS
+from config import NEWS_SCORE_PROMPT, DEEPSEEK_API_KEY, DEEPSEEK_BASE_URL, DEEPSEEK_MODEL, DEFAULT_KEYWORD, NEWS_SCORE_SYSTEM_MSG, DEFAULT_KEYWORDS, KEYWORD_SPECIFIC_SYSTEM_PROMPTS
 import argparse
 # 新增导入规则打分配置
 from config import NEWS_RULE_BASED_SCORING
@@ -31,9 +31,15 @@ setup_global_exception_handler()
 # 返回分数（int）
 def score_news(title: str, content: str, keyword: str, main_keyword: str = None) -> int:
     prompt = NEWS_SCORE_PROMPT.format(keyword=keyword, title=title, content=content)
+    
+    # 根据主关键词选择合适的system prompt
+    model_decision_keyword = main_keyword if main_keyword else keyword
+    system_msg = KEYWORD_SPECIFIC_SYSTEM_PROMPTS.get(model_decision_keyword, NEWS_SCORE_SYSTEM_MSG)
+    
     print("\n===== 送给大模型的内容 =====")
     print(f"[评分关键词] {keyword}")
-    print(f"[system] {clean_unicode_for_console(NEWS_SCORE_SYSTEM_MSG)}")
+    print(f"[主关键词] {model_decision_keyword}")
+    print(f"[system] {clean_unicode_for_console(system_msg)}")
     print(f"[user] {clean_unicode_for_console(prompt)}")
     print("==========================\n")
     # 新增：token超限主动监控
@@ -51,18 +57,16 @@ def score_news(title: str, content: str, keyword: str, main_keyword: str = None)
                 f.write(f"[WARN] prompt结尾200字: {prompt[-200:]}\n")
     except Exception as e:
         print(f"[WARN] tiktoken统计token失败: {e}")
-    # 新增：根据主关键词选择模型，但评分使用搜索关键词
-    # 对于数据量大的主关键词使用V3模型提高评分速度
+    # 统一使用DeepSeek V3模型进行评分
     model_decision_keyword = main_keyword if main_keyword else keyword  # 用于模型选择判断的关键词
-    fast_keywords = ['国资委测试', '江苏省国资委']
-    model_to_use = 'deepseek-chat' if model_decision_keyword in fast_keywords else 'deepseek-reasoner'
-    print(f"[模型选择] 主关键词: {model_decision_keyword}, 评分关键词: {keyword}, 使用模型: {model_to_use}")
+    model_to_use = 'deepseek-chat'  # 统一使用V3模型
+    print(f"[模型选择] 主关键词: {model_decision_keyword}, 评分关键词: {keyword}, 使用模型: {model_to_use} (统一使用V3)")
     client = OpenAI(api_key=DEEPSEEK_API_KEY, base_url=DEEPSEEK_BASE_URL)
     try:
         response = client.chat.completions.create(
             model=model_to_use,
             messages=[
-                {"role": "system", "content": NEWS_SCORE_SYSTEM_MSG},
+                {"role": "system", "content": system_msg},
                 {"role": "user", "content": prompt}
             ],
             stream=False,
@@ -174,7 +178,7 @@ def append_log(keyword, json_path, total, score_counter, scored_count, scored_js
                 total_wordcount_3plus += len(news.get("content", ""))
     log = (
         f"\n[{now}]\n"
-        f"执行程序: ai评分（使用搜索关键词优化）\n"
+        f"执行程序: ai评分（统一使用DeepSeek V3模型）\n"
         f"[关键词] 主关键词: {keyword}\n"
         f"[文件] 原json文件: {json_path}\n"
         f"[结果] 评分结果文件: {scored_json_path}\n"
