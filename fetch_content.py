@@ -342,7 +342,7 @@ def process_json(keyword, date_str=None, mode='正式'):
     log_path = get_log_path(date_str)
     if not os.path.exists(json_path):
         print(f"File not found: {json_path}")
-        return
+        return False  # 文件不存在算失败
     with open(json_path, 'r', encoding='utf-8') as f:
         news_list = json.load(f)
     # 跳过机制：如所有新闻条目都已包含content字段（不论内容是否为空），说明已跑过正文抓取，无需重复处理
@@ -353,7 +353,7 @@ def process_json(keyword, date_str=None, mode='正式'):
         now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         log_path = os.path.join("output", "run_log.txt")
         skip_log = (
-            f"[🕒 {now}]\n[SKIP] 跳过关键词: {keyword}\n原因: {json_path} 所有新闻已包含content字段，正文抓取已执行\n==============================\n"
+            f"[{now}]\n[SKIP] 跳过关键词: {keyword}\n原因: {json_path} 所有新闻已包含content字段，正文抓取已执行\n==============================\n"
         )
         # 清理Unicode字符
         def clean_unicode_for_log(text):
@@ -383,7 +383,7 @@ def process_json(keyword, date_str=None, mode='正式'):
         cleaned_skip_log = clean_unicode_for_log(skip_log)
         with open(log_path, "a", encoding="utf-8") as f:
             f.write(cleaned_skip_log)
-        return
+        return True  # 跳过也算成功
     # 新增：将 https://people.com.cn 及其所有子域名替换为 http
     for item in news_list:
         url = item.get('link')
@@ -430,12 +430,12 @@ def process_json(keyword, date_str=None, mode='正式'):
             # 记录抓取结果
             if wordcount > 0:
                 grab_type = "定制化" if custom_grab else "通用"
-                print(f"[{keyword}] ✅ 抓取成功 ({grab_type}): {wordcount} 字")
+                print(f"[{keyword}] [成功] 抓取成功 ({grab_type}): {wordcount} 字")
             else:
-                print(f"[{keyword}] ❌ 抓取失败: 未获取到正文")
+                print(f"[{keyword}] [失败] 抓取失败: 未获取到正文")
                 
         except Exception as e:
-            print(f"[{keyword}] ❌ 抓取异常: {str(e)}")
+            print(f"[{keyword}] [异常] 抓取异常: {str(e)}")
             print(f"[{keyword}] 标题: {title}")
             print(f"[{keyword}] URL: {url}")
             
@@ -519,29 +519,29 @@ def process_json(keyword, date_str=None, mode='正式'):
         json.dump(stats_records, sf, ensure_ascii=False, indent=2)
     # 写日志
     log_content = f"\n==============================\n"
-    log_content += f"📰 [抓取新闻正文] {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"
-    log_content += f"🔑 关键词: {keyword}\n"
-    log_content += f"🗂️ 模式: {mode}\n"
-    log_content += f"📄 处理的json文件: {json_path}\n"
-    log_content += f"\n📊 抓取统计：\n"
-    log_content += f"  ✅ 成功抓取正文: {success_count} 篇\n"
-    log_content += f"  ✨ 其中定制化抓取: {len(custom_used_items)} 篇\n"
-    log_content += f"  🌐 本次采集新闻源数量: {len(current_domains)}\n"
-    log_content += f"  ❌ 抓取失败: {len(fail_items)} 篇\n"
+    log_content += f"[时间] {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"
+    log_content += f"[关键词] 关键词: {keyword}\n"
+    log_content += f"[模式] 模式: {mode}\n"
+    log_content += f"[文件] 处理的json文件: {json_path}\n"
+    log_content += f"\n[统计] 抓取统计：\n"
+    log_content += f"  [成功] 成功抓取正文: {success_count} 篇\n"
+    log_content += f"  [定制] 其中定制化抓取: {len(custom_used_items)} 篇\n"
+    log_content += f"  [来源] 本次采集新闻源数量: {len(current_domains)}\n"
+    log_content += f"  [失败] 抓取失败: {len(fail_items)} 篇\n"
     if custom_grab_domain_count:
-        log_content += "\n🎯 定制化抓取命中统计：\n"
+        log_content += "\n[命中] 定制化抓取命中统计：\n"
         for domain, count in custom_grab_domain_count.items():
             log_content += f"  - {domain}: {count} 篇\n"
             for item in custom_grab_domain_items[domain]:
                 log_content += f"      • {item['title']} | {item['link']}\n"
     if fail_items:
-        log_content += "\n⚠️ 未能抓取的新闻：\n"
+        log_content += "\n[警告] 未能抓取的新闻：\n"
         for fail in fail_items:
             mark = "(定制化)" if fail.get('custom') else ""
             log_content += f"  - {fail['title']} | {fail['link']} {mark}\n"
     # 在日志中单独记录tv.cctv.com跳过情况
     if skipped_video_items:
-        log_content += "\n📺 跳过仅含视频的新闻（tv.cctv.com）：\n"
+        log_content += "\n[视频] 跳过仅含视频的新闻（tv.cctv.com）：\n"
         for item in skipped_video_items:
             log_content += f"  - {item['title']} | {item['link']}\n"
     log_content += "==============================\n\n"
@@ -597,6 +597,9 @@ def process_json(keyword, date_str=None, mode='正式'):
     print(f"日志已写入 {log_path}")
     print(f"已写入新闻来源统计: {sources_path}")
     print(f"已写入新闻源分布统计: {stats_path}")
+    
+    # 返回True表示执行成功
+    return True
 
 # 命令行入口，支持批量/单条/测试模式
 @with_error_handling("fetch_content.py", "main")
@@ -634,14 +637,14 @@ def main():
                 print(f"\n【抓取结果】\n字数: {wordcount}\n定制化: {used_custom}\n正文预览:\n{content[:500]}{'...' if len(content) > 500 else ''}")
             else:
                 result = process_json(keyword, date_str, mode)
-                if result is None:
+                if result is None or result is False:
                     success = False
         elif len(sys.argv) > 1:
             keyword = sys.argv[1]
             date_str = get_yesterday_str()
             mode = '正式'
             result = process_json(keyword, date_str, mode)
-            if result is None:
+            if result is None or result is False:
                 success = False
         else:
             # 无参数，自动批量处理昨天所有关键词
@@ -654,12 +657,12 @@ def main():
                 json_path = os.path.join("output", date_str, f"{date_str}_{keyword}.json")
                 print(f"自动抓取: {json_path}")
                 result = process_json(keyword, date_str, mode)
-                if result is not None:
+                if result is not None and result is not False:
                     processed_count += 1
                 else:
                     success = False
             
-            print(f"\n📊 批量处理完成：{processed_count}/{total_count} 个关键词处理成功")
+            print(f"\n[统计] 批量处理完成：{processed_count}/{total_count} 个关键词处理成功")
     
     except Exception as e:
         error_msg = f"fetch_content.py 执行过程中发生异常: {str(e)}"

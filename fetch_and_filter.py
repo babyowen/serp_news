@@ -279,7 +279,7 @@ def main():
         os.makedirs(os.path.join("output", fetch_date), exist_ok=True)
         log_lines = []
         run_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        log_lines.append(f"=====🕒 本次运行时间: {run_time}=====")
+        log_lines.append(f"=====[时间] 本次运行时间: {run_time}=====")
         
         # 采集四大新闻API
         print("[INFO] 正在采集 Google News ...")
@@ -379,18 +379,18 @@ def main():
             log_path = os.path.join("output", "run_log.txt")
             now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             log = (
-                f"\n[🕒 {now}]\n"
+                f"\n[{now}]\n"
                 f"执行程序: fetch_and_filter\n"
-                f"🔑 主关键词: {main_keyword}\n"
-                f"🔍 搜索关键词: {search_keyword or keyword}\n"
-                f"📅 日期: {fetch_date}\n"
-                f"📄 输出文件: {output_path}\n"
-                f"🌐 Google News: {len(google_news)} 条\n"
-                f"🌐 Baidu News: {len(baidu_news)} 条\n"
-                f"🌐 Bing News: {len(bing_news)} 条\n"
-                f"🌐 DuckDuckGo News: {len(duck_news)} 条\n"
-                f"🚫 黑名单过滤: {len(deduped_news) - len(filtered_news)} 条\n"
-                f"⭐️ 去重后总保存: {len(filtered_news)} 条\n"
+                f"[关键词] 主关键词: {main_keyword}\n"
+                f"[搜索] 搜索关键词: {search_keyword or keyword}\n"
+                f"[日期] 日期: {fetch_date}\n"
+                f"[输出] 输出文件: {output_path}\n"
+                f"[来源] Google News: {len(google_news)} 条\n"
+                f"[来源] Baidu News: {len(baidu_news)} 条\n"
+                f"[来源] Bing News: {len(bing_news)} 条\n"
+                f"[来源] DuckDuckGo News: {len(duck_news)} 条\n"
+                f"[过滤] 黑名单过滤: {len(deduped_news) - len(filtered_news)} 条\n"
+                f"[保存] 去重后总保存: {len(filtered_news)} 条\n"
                 f"==============================\n"
             )
             with open(log_path, "a", encoding="utf-8") as logf:

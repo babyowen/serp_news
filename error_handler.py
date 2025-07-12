@@ -61,15 +61,15 @@ class ErrorHandler:
         now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         
         log_entry = (
-            f"\n[🕒 {now}]\n"
-            f"❌ 执行失败: {step_name}\n"
-            f"🔑 关键词: {keyword or 'unknown'}\n"
+            f"\n[{now}]\n"
+            f"[失败] 执行失败: {step_name}\n"
+            f"[关键词] 关键词: {keyword or 'unknown'}\n"
         )
         
         if cmd:
-            log_entry += f"📋 执行命令: {cmd}\n"
+            log_entry += f"[命令] 执行命令: {cmd}\n"
         if error_msg:
-            log_entry += f"❗ 错误信息: {error_msg}\n"
+            log_entry += f"[错误信息] 错误信息: {error_msg}\n"
         
         log_entry += f"==============================\n"
         
@@ -83,16 +83,16 @@ class ErrorHandler:
         now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         
         crash_log = (
-            f"\n[🕒 {now}]\n"
-            f"💥 程序异常终止\n"
-            f"📋 程序名: {program_name}\n"
-            f"🎯 执行阶段: {stage}\n"
-            f"🔑 关键词: {keyword or 'unknown'}\n"
-            f"❗ 错误信息: {error_msg}\n"
+            f"\n[{now}]\n"
+            f"[异常终止] 程序异常终止\n"
+            f"[程序名] 程序名: {program_name}\n"
+            f"[执行阶段] 执行阶段: {stage}\n"
+            f"[关键词] 关键词: {keyword or 'unknown'}\n"
+            f"[错误信息] 错误信息: {error_msg}\n"
         )
         
         if traceback_info:
-            crash_log += f"📝 详细错误:\n{traceback_info}\n"
+            crash_log += f"[详细错误] 详细错误:\n{traceback_info}\n"
         
         crash_log += f"==============================\n"
         
@@ -153,10 +153,10 @@ def safe_subprocess_run(cmd: str, step_name: str, keyword: str = None,
     error_handler = ErrorHandler()
     
     print(f"\n==============================")
-    print(f"🚩 开始执行步骤: {step_name}")
+    print(f"[开始] 开始执行步骤: {step_name}")
     if keyword:
-        print(f"🔑 关键词: {keyword}")
-    print(f"📋 执行命令: {cmd}")
+        print(f"[关键词] 关键词: {keyword}")
+    print(f"[命令] 执行命令: {cmd}")
     print(f"==============================")
     
     try:
@@ -164,7 +164,7 @@ def safe_subprocess_run(cmd: str, step_name: str, keyword: str = None,
                               capture_output=True, text=True, encoding='utf-8')
         
         print(f"==============================")
-        print(f"✅ 步骤完成: {step_name}")
+        print(f"[完成] 步骤完成: {step_name}")
         print(f"==============================\n")
         
         return True
@@ -177,7 +177,7 @@ def safe_subprocess_run(cmd: str, step_name: str, keyword: str = None,
         if e.stderr:
             error_msg += f"\n错误输出: {e.stderr}"
         
-        print(f"[❌ 错误] {step_name} 执行失败")
+        print(f"[错误] {step_name} 执行失败")
         print(f"[ERROR] 返回码: {e.returncode}")
         if e.stderr:
             print(f"[ERROR] 错误信息: {e.stderr}")
@@ -206,7 +206,7 @@ def safe_subprocess_run(cmd: str, step_name: str, keyword: str = None,
         error_msg = f"执行命令时发生异常: {str(e)}"
         traceback_info = traceback.format_exc()
         
-        print(f"[❌ 错误] {step_name} 发生异常: {e}")
+        print(f"[错误] {step_name} 发生异常: {e}")
         print(f"==============================\n")
         
         error_handler.log_step_failure(
@@ -265,12 +265,12 @@ def log_script_start(script_name: str, args: List[str] = None):
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     
     log_entry = (
-        f"\n[🕒 {now}]\n"
-        f"🚀 开始执行: {script_name}\n"
+        f"\n[{now}]\n"
+        f"[开始执行] 开始执行: {script_name}\n"
     )
     
     if args:
-        log_entry += f"📋 执行参数: {' '.join(args)}\n"
+        log_entry += f"[参数] 执行参数: {' '.join(args)}\n"
     
     log_entry += f"==============================\n"
     
@@ -282,15 +282,15 @@ def log_script_complete(script_name: str, success: bool = True, message: str = N
     error_handler = ErrorHandler()
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     
-    status = "✅ 执行完成" if success else "❌ 执行失败"
+    status = "[执行完成] 执行完成" if success else "[执行失败] 执行失败"
     
     log_entry = (
-        f"\n[🕒 {now}]\n"
+        f"\n[{now}]\n"
         f"{status}: {script_name}\n"
     )
     
     if message:
-        log_entry += f"📝 说明: {message}\n"
+        log_entry += f"[说明] 说明: {message}\n"
     
     log_entry += f"==============================\n"
     

@@ -343,7 +343,7 @@ def main():
                     )
                     success = False
 
-        print(f"📊 数据库导入完成，日期: {target_date}")
+        print(f"[统计] 数据库导入完成，日期: {target_date}")
         
     except Exception as e:
         error_msg = f"write_to_mysql.py 执行过程中发生异常: {str(e)}"

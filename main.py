@@ -54,7 +54,7 @@ def write_skip_log(keyword, reason, file_path):
     now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     log_path = os.path.join("output", "run_log.txt")
     skip_log = (
-        f"[🕒 {now}]\n[SKIP] 跳过关键词: {keyword}\n原因: {reason} {file_path}\n==============================\n"
+        f"[{now}]\n[SKIP] 跳过关键词: {keyword}\n原因: {reason} {file_path}\n==============================\n"
     )
     try:
         with open(log_path, "a", encoding="utf-8") as f:
@@ -308,36 +308,36 @@ def main(date=None):
         score_failed = 0
         
         # 步骤1：抓取API
-        print(f"\n🌟 开始执行步骤1：新闻采集阶段")
+        print(f"\n[步骤1] 开始执行步骤1：新闻采集阶段")
         for main_kw in DEFAULT_KEYWORDS:
             if execute_news_fetching(date, main_kw):
                 fetch_success += 1
             else:
                 fetch_failed += 1
         
-        print(f"\n📊 步骤1完成统计：成功 {fetch_success}，失败 {fetch_failed}")
+        print(f"\n[统计] 步骤1完成统计：成功 {fetch_success}，失败 {fetch_failed}")
         
         # 步骤2：抓正文
-        print(f"\n🌟 开始执行步骤2：正文抓取阶段")
+        print(f"\n[步骤2] 开始执行步骤2：正文抓取阶段")
         for kw in DEFAULT_KEYWORDS:
             if execute_content_fetching(date, kw):
                 content_success += 1
             else:
                 content_failed += 1
         
-        print(f"\n📊 步骤2完成统计：成功 {content_success}，失败 {content_failed}")
+        print(f"\n[统计] 步骤2完成统计：成功 {content_success}，失败 {content_failed}")
         
         # 步骤3：评分（并发处理）
-        print(f"\n🌟 开始执行步骤3：AI评分阶段（并发处理）")
+        print(f"\n[步骤3] 开始执行步骤3：AI评分阶段（并发处理）")
         score_success, score_failed = execute_scoring_concurrent(date, DEFAULT_KEYWORDS, max_workers=3)
         
-        print(f"\n📊 步骤3完成统计：成功 {score_success}，失败 {score_failed}")
+        print(f"\n[统计] 步骤3完成统计：成功 {score_success}，失败 {score_failed}")
         
         print("[INFO] 全部关键词处理完成。开始自动总结主关键词...")
         
         # 步骤4：自动总结主关键词
         date_arg = f'--date {date}' if date else ''
-        print("\n🌟 开始执行步骤4：智能摘要阶段")
+        print("\n[步骤4] 开始执行步骤4：智能摘要阶段")
         summarize_success = run_step(
             f'python news_summarizer.py {date_arg}', 
             '自动总结主关键词', 
@@ -346,7 +346,7 @@ def main(date=None):
         )
         
         # 步骤5：自动写入数据库
-        print("\n🌟 开始执行步骤5：数据库写入阶段")
+        print("\n[步骤5] 开始执行步骤5：数据库写入阶段")
         database_success = run_step(
             f'python write_to_mysql.py {date_arg}', 
             '自动写入数据库', 
@@ -375,8 +375,8 @@ def main(date=None):
             f"数据库写入：{'成功' if database_success else '失败'}"
         )
         
-        print(f"\n🎉 全部流程执行完成！")
-        print(f"📊 {completion_message}")
+        print(f"\n[完成] 全部流程执行完成！")
+        print(f"[统计] {completion_message}")
         
         # 记录脚本完成
         log_script_complete("main.py", success=True, message=completion_message)
