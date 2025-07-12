@@ -17757,726 +17757,1421 @@ urllib3.exceptions.ReadTimeoutError: HTTPConnectionPool(host='localhost', port=5
 📋 执行参数: 江苏省国资委 2025-07-10
 ==============================
 
-[🕒 2025-07-11 20:00:41]
-🚀 开始执行: write_to_mysql.py
+[🕒 2025-07-11 10:27:40]
+❌ 执行失败: news_scorer.py
+📝 说明: news_scorer.py 执行过程中发生异常: 'gbk' codec can't encode character '\U0001f552' in position 25: illegal multibyte sequence
+==============================
+
+[🕒 2025-07-11 10:27:48]
+🚀 开始执行: news_summarizer.py
 📋 执行参数: --date 2025-07-10
 ==============================
-[查重] news_websites 已存在，跳过部分已存在网站（仅提示一次）
-[2025-07-11 20:00:48] 导入数据库
-  文件: output/news_sources.txt
-  表: news_websites
-  成功写入: 0 条
-  跳过: 569 条
-------------------------------
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | baijiahao.baidu.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.gov.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.cnr.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | tech.sina.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.ce.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.thepaper.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.southcn.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.bjnews.com.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.news.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | finance.sina.com.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.jiangmen.gov.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.yicai.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | news.sjtu.edu.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | finance.sina.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | ori.hangzhou.com.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.xhby.net
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.gxnews.com.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.dailyqd.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.chinanews.com.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | sichuan.scol.com.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.tianshui.com.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | cj.sina.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.donews.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | finance.66wz.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.jwview.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.cs.com.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | web.shobserver.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | news.sina.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | m.gmw.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | finance.stockstar.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | m.sohu.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.jfdaily.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | jjckb.xinhuanet.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | news.anhuinews.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | t.qianzhan.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.sohu.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | news.qq.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.xinhuanet.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | sz.bendibao.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | society.people.com.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | news.sina.com.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | finance.cnr.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.hangzhou.gov.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.bbtnews.com.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.jiemian.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | sqtv.net
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.zaobao.com.sg
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.msn.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.cac.gov.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.workercn.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | beijing.qianlong.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | news.cctv.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | xycity.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | news.emoney.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | finance.sina.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | www.thepaper.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | finance.sina.com.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | www.nbd.com.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | finance.ifeng.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | cj.sina.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | www.yicai.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | www.news.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | www.qlwb.com.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | www.yynews.com.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | www.donews.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | sichuan.scol.com.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | www.guandian.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | www.cfi.net.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | sc.stock.cnfol.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | gov.rednet.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | stock.stockstar.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | m.sohu.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | news.qq.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | www.sohu.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | finance.china.com.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | news.dichan.sina.com.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | www.jlcity.gov.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | www.xinhuanet.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | www.bjnews.com.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | www.stcn.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | www.ce.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | news.ifeng.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | www.mnw.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | views.ce.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | news.china.com.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | yn.yunnan.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | news.yunnan.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 政府基金 | www.msn.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 政府基金 | www.aastocks.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 政府基金 | www.wenweipo.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 政府基金 | news.qq.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 政府基金 | www.gov.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 政府基金 | world.people.com.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 政府基金 | finance.sina.com.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 政府基金 | news.youth.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 政府基金 | m.dutenews.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 政府基金 | finance.sina.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 政府基金 | www.sohu.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 政府基金 | sd.china.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 政府基金 | www.zmdnews.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 政府基金 | sd.ifeng.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 政府基金 | www.ce.cn
-[2025-07-11 20:00:49] 导入数据库
-  文件: output/news_source_stats.json
-  表: news_source_stats
-  成功写入: 0 条
-  跳过: 102 条
-  失败: 0 条
-------------------------------
-[2025-07-11 20:00:54] 导入数据库
-  关键词: 养老
-  文件: output/2025-07-10/2025-07-10_养老_scored.json
-  表: scored_news
-  成功写入: 0 条
-  跳过: 115 条
-  失败: 0 条
-------------------------------
-[2025-07-11 20:00:54] 导入数据库
-  关键词: 养老
-  文件: output/2025-07-10/2025-07-10_养老_summary.json
-  表: summary_news
-  成功写入: 0 条
-  跳过: 3 条
-  失败: 0 条
-------------------------------
-[2025-07-11 20:00:56] 导入数据库
-  关键词: 公积金
-  文件: output/2025-07-10/2025-07-10_公积金_scored.json
-  表: scored_news
-  成功写入: 0 条
-  跳过: 53 条
-  失败: 0 条
-------------------------------
-[2025-07-11 20:00:56] 导入数据库
-  关键词: 公积金
-  文件: output/2025-07-10/2025-07-10_公积金_summary.json
-  表: summary_news
-  成功写入: 0 条
-  跳过: 3 条
-  失败: 0 条
-------------------------------
-[2025-07-11 20:00:57] 导入数据库
-  关键词: 政府基金
-  文件: output/2025-07-10/2025-07-10_政府基金_scored.json
-  表: scored_news
-  成功写入: 0 条
-  跳过: 32 条
-  失败: 0 条
-------------------------------
-[2025-07-11 20:00:57] 导入数据库
-  关键词: 政府基金
-  文件: output/2025-07-10/2025-07-10_政府基金_summary.json
-  表: summary_news
-  成功写入: 0 条
-  跳过: 3 条
-  失败: 0 条
-------------------------------
-[2025-07-11 20:01:08] 导入数据库
-  关键词: 江苏省国资委
-  文件: output/2025-07-10/2025-07-10_江苏省国资委_scored.json
-  表: scored_news
-  成功写入: 0 条
-  跳过: 268 条
-  失败: 0 条
-------------------------------
-[2025-07-11 20:01:09] 导入数据库
-  关键词: 江苏省国资委
-  文件: output/2025-07-10/2025-07-10_江苏省国资委_summary.json
-  表: summary_news
-  成功写入: 0 条
-  跳过: 3 条
-  失败: 0 条
-------------------------------
 
-[🕒 2025-07-11 20:01:09]
-✅ 执行完成: write_to_mysql.py
-📝 说明: 数据库导入成功
-==============================
-
-[🕒 2025-07-11 21:47:59]
-🚀 开始执行: fetch_content.py
-📋 执行参数: 江苏省公积金 2025-07-10
-==============================
-
-[🕒 2025-07-11 21:47:59]
-❌ 执行失败: fetch_content.py
-📝 说明: 执行过程中出现错误
-==============================
-
-[🕒 2025-07-11 21:48:16]
-🚀 开始执行: fetch_content.py
-📋 执行参数: 江苏省国资委 2025-07-10
-==============================
-
-==============================
-[新闻] [抓取新闻正文] 2025-07-11 22:04:39
-[关键词] 关键词: 江苏省国资委
-[模式] 模式: 正式
-[文件] 处理的json文件: output/2025-07-10/2025-07-10_江苏省国资委.json
-
-[统计] 抓取统计：
-  [成功] 成功抓取正文: 244 篇
-  [定制] 其中定制化抓取: 2 篇
-  [来源] 本次采集新闻源数量: 86
-  [失败] 抓取失败: 51 篇
-
-[命中] 定制化抓取命中统计：
-  - www.yicai.com: 2 篇
-      * 煤价持续低位徘徊，煤炭、火电企业何以应对︱晨读能源 | https://www.yicai.com/news/102714307.html
-      * 上半年江苏铁路客发总量位居长三角之首 | https://www.yicai.com/news/102715188.html
-
-[警告] 未能抓取的新闻：
-  - 股市必读：联环药业（600513）7月9日收盘跌5.35%，主力净流出9627.11万元 | https://www.msn.cn/zh-cn/news/other/%E8%82%A1%E5%B8%82%E5%BF%85%E8%AF%BB-%E8%81%94%E7%8E%AF%E8%8D%AF%E4%B8%9A-600513-7%E6%9C%889%E6%97%A5%E6%94%B6%E7%9B%98%E8%B7%8C535-%E4%B8%BB%E5%8A%9B%E5%87%80%E6%B5%81%E5%87%BA962711%E4%B8%87%E5%85%83/ar-AA1IjPyY?ocid=BingNewsVerp 
-  - 江苏新能: 江苏新能2025年第一次临时股东大会会议资料 | https://stock.stockstar.com/notice/SN2025071000000180.shtml 
-  - 股市必读：联环药业（600513）7月9日收盘跌5.35%，主力净流出9627.11万元 | https://www.msn.cn/zh-cn/news/other/%E8%82%A1%E5%B8%82%E5%BF%85%E8%AF%BB-%E8%81%94%E7%8E%AF%E8%8D%AF%E4%B8%9A-600513-7%E6%9C%889%E6%97%A5%E6%94%B6%E7%9B%98%E8%B7%8C535-%E4%B8%BB%E5%8A%9B%E5%87%80%E6%B5%81%E5%87%BA962711%E4%B8%87%E5%85%83/ar-AA1IjPyY 
-  - 股市必读：江苏新能（603693）7月9日主力资金净流出5015.65万元，占总成交额14.97% | https://www.msn.cn/zh-cn/news/other/%E8%82%A1%E5%B8%82%E5%BF%85%E8%AF%BB-%E6%B1%9F%E8%8B%8F%E6%96%B0%E8%83%BD-603693-7%E6%9C%889%E6%97%A5%E4%B8%BB%E5%8A%9B%E8%B5%84%E9%87%91%E5%87%80%E6%B5%81%E5%87%BA501565%E4%B8%87%E5%85%83-%E5%8D%A0%E6%80%BB%E6%88%90%E4%BA%A4%E9%A2%9D1497/ar-AA1IjPxv?ocid=BingNewsVerp 
-  - 股市必读：江苏国信（002608）7月9日主力资金净流出3290.15万元 | https://www.msn.cn/zh-cn/money/other/%E8%82%A1%E5%B8%82%E5%BF%85%E8%AF%BB-%E6%B1%9F%E8%8B%8F%E5%9B%BD%E4%BF%A1-002608-7%E6%9C%889%E6%97%A5%E4%B8%BB%E5%8A%9B%E8%B5%84%E9%87%91%E5%87%80%E6%B5%81%E5%87%BA3290-15%E4%B8%87%E5%85%83/ar-AA1Ik3xV 
-  - 江苏国信（002608）7月10日主力资金净卖出1073.07万元 | https://www.msn.cn/zh-cn/money/other/%E6%B1%9F%E8%8B%8F%E5%9B%BD%E4%BF%A1-002608-7%E6%9C%8810%E6%97%A5%E4%B8%BB%E5%8A%9B%E8%B5%84%E9%87%91%E5%87%80%E5%8D%96%E5%87%BA1073-07%E4%B8%87%E5%85%83/ar-AA1IkaUv 
-  - 中诚信亚太授予镇江交通产业集团拟发行的美元债券评级为BBBg+ | https://www.msn.cn/zh-cn/money/%E7%BB%8F%E6%B5%8E/%E4%B8%AD%E8%AF%9A%E4%BF%A1%E4%BA%9A%E5%A4%AA%E6%8E%88%E4%BA%88%E9%95%87%E6%B1%9F%E4%BA%A4%E9%80%9A%E4%BA%A7%E4%B8%9A%E9%9B%86%E5%9B%A2%E6%8B%9F%E5%8F%91%E8%A1%8C%E7%9A%84%E7%BE%8E%E5%85%83%E5%80%BA%E5%88%B8%E8%AF%84%E7%BA%A7%E4%B8%BAbbbg/ar-AA1Ih70s?ocid=BingNewsVerp 
-  - 购房网7月9日讯：竞价197轮 君一9.89亿元夺得青岛崂山区地块 | http://house.dl.goufang.com/zixun/16613.html 
-  - 中诚信亚太授予镇江交通产业集团拟发行的美元债券评级为BBBg+ | https://www.msn.cn/zh-cn/money/%E7%BB%8F%E6%B5%8E/%E4%B8%AD%E8%AF%9A%E4%BF%A1%E4%BA%9A%E5%A4%AA%E6%8E%88%E4%BA%88%E9%95%87%E6%B1%9F%E4%BA%A4%E9%80%9A%E4%BA%A7%E4%B8%9A%E9%9B%86%E5%9B%A2%E6%8B%9F%E5%8F%91%E8%A1%8C%E7%9A%84%E7%BE%8E%E5%85%83%E5%80%BA%E5%88%B8%E8%AF%84%E7%BA%A7%E4%B8%BAbbbg/ar-AA1Ih70s 
-  - 南京-巴黎新航线首航！12小时从秦淮河畔到塞纳河畔 | https://www.msn.cn/zh-cn/%E6%8A%80%E6%9C%AF/%E8%88%AA%E7%A9%BA/%E5%8D%97%E4%BA%AC-%E5%B7%B4%E9%BB%8E%E6%96%B0%E8%88%AA%E7%BA%BF%E9%A6%96%E8%88%AA-12%E5%B0%8F%E6%97%B6%E4%BB%8E%E7%A7%A6%E6%B7%AE%E6%B2%B3%E7%95%94%E5%88%B0%E5%A1%9E%E7%BA%B3%E6%B2%B3%E7%95%94/ar-AA1IfZLf?ocid=BingNewsVerp 
-  - 12小时直达，南京今首开直飞巴黎航线 | https://www.msn.cn/zh-cn/%E6%8A%80%E6%9C%AF/%E8%88%AA%E7%A9%BA/12%E5%B0%8F%E6%97%B6%E7%9B%B4%E8%BE%BE-%E5%8D%97%E4%BA%AC%E4%BB%8A%E9%A6%96%E5%BC%80%E7%9B%B4%E9%A3%9E%E5%B7%B4%E9%BB%8E%E8%88%AA%E7%BA%BF/ar-AA1IdBV2?ocid=BingNewsVerp 
-  - 天太热 雅典卫城暂时关闭 | https://www.msn.cn/zh-cn/news/other/%E5%A4%A9%E5%A4%AA%E7%83%AD-%E9%9B%85%E5%85%B8%E5%8D%AB%E5%9F%8E%E6%9A%82%E6%97%B6%E5%85%B3%E9%97%AD/ar-AA1IeHIS 
-  - 希腊遭遇极端高温!雅典卫城暂时关闭、暂停户外作业 | https://www.msn.cn/zh-cn/news/other/%E5%B8%8C%E8%85%8A%E9%81%AD%E9%81%87%E6%9E%81%E7%AB%AF%E9%AB%98%E6%B8%A9-%E9%9B%85%E5%85%B8%E5%8D%AB%E5%9F%8E%E6%9A%82%E6%97%B6%E5%85%B3%E9%97%AD-%E6%9A%82%E5%81%9C%E6%88%B7%E5%A4%96%E4%BD%9C%E4%B8%9A/ar-AA1IglI0 
-  - 苏豪弘业：7月10日召开董事会会议 | https://www.msn.cn/zh-cn/money/%E9%80%9A%E7%94%A8/%E8%8B%8F%E8%B1%AA%E5%BC%98%E4%B8%9A-7%E6%9C%8810%E6%97%A5%E5%8F%AC%E5%BC%80%E8%91%A3%E4%BA%8B%E4%BC%9A%E4%BC%9A%E8%AE%AE/ar-AA1IkM9d?ocid=BingNewsVerp 
-  - 苏豪弘业：聘任曹橙女士为证券事务代表 | https://www.msn.cn/zh-cn/news/other/%E8%8B%8F%E8%B1%AA%E5%BC%98%E4%B8%9A-%E8%81%98%E4%BB%BB%E6%9B%B9%E6%A9%99%E5%A5%B3%E5%A3%AB%E4%B8%BA%E8%AF%81%E5%88%B8%E4%BA%8B%E5%8A%A1%E4%BB%A3%E8%A1%A8/ar-AA1IlAxx?ocid=BingNewsVerp 
-  - 苏豪弘业：2025年第一次临时股东大会决议公告 | https://www.msn.cn/zh-cn/news/other/%E8%8B%8F%E8%B1%AA%E5%BC%98%E4%B8%9A-2025%E5%B9%B4%E7%AC%AC%E4%B8%80%E6%AC%A1%E4%B8%B4%E6%97%B6%E8%82%A1%E4%B8%9C%E5%A4%A7%E4%BC%9A%E5%86%B3%E8%AE%AE%E5%85%AC%E5%91%8A/ar-AA1IlgaD?ocid=BingNewsVerp 
-  - 苏豪弘业：7月10日召开董事会会议 | https://www.msn.cn/zh-cn/money/%E9%80%9A%E7%94%A8/%E8%8B%8F%E8%B1%AA%E5%BC%98%E4%B8%9A-7%E6%9C%8810%E6%97%A5%E5%8F%AC%E5%BC%80%E8%91%A3%E4%BA%8B%E4%BC%9A%E4%BC%9A%E8%AE%AE/ar-AA1IkM9d 
-  - 苏豪弘业：聘任曹橙女士为证券事务代表 | https://www.msn.cn/zh-cn/news/other/%E8%8B%8F%E8%B1%AA%E5%BC%98%E4%B8%9A-%E8%81%98%E4%BB%BB%E6%9B%B9%E6%A9%99%E5%A5%B3%E5%A3%AB%E4%B8%BA%E8%AF%81%E5%88%B8%E4%BA%8B%E5%8A%A1%E4%BB%A3%E8%A1%A8/ar-AA1IlAxx 
-  - 苏垦农发(601952.SH):获得政府补贴1.12亿元 | https://baijiahao.baidu.com/s?id=1837249369511285352&wfr=spider&for=pc 
-  - 江苏新能：补选覃空先生为公司第四届董事会非独立董事候选人 | https://www.msn.cn/zh-cn/money/%E9%80%9A%E7%94%A8/%E6%B1%9F%E8%8B%8F%E6%96%B0%E8%83%BD-%E8%A1%A5%E9%80%89%E8%A6%83%E7%A9%BA%E5%85%88%E7%94%9F%E4%B8%BA%E5%85%AC%E5%8F%B8%E7%AC%AC%E5%9B%9B%E5%B1%8A%E8%91%A3%E4%BA%8B%E4%BC%9A%E9%9D%9E%E7%8B%AC%E7%AB%8B%E8%91%A3%E4%BA%8B%E5%80%99%E9%80%89%E4%BA%BA/ar-AA1IgZWr?ocid=BingNewsVerp 
-  - 城郊休闲农业如何打开新局面？ | https://www.msn.cn/zh-cn/travel/%E6%88%B7%E5%A4%96%E6%B4%BB%E5%8A%A8/%E5%9F%8E%E9%83%8A%E4%BC%91%E9%97%B2%E5%86%9C%E4%B8%9A%E5%A6%82%E4%BD%95%E6%89%93%E5%BC%80%E6%96%B0%E5%B1%80%E9%9D%A2/ar-AA1Ie2LN?ocid=BingNewsVerp 
-  - 江苏新能：补选覃空先生为公司第四届董事会非独立董事候选人 | https://www.msn.cn/zh-cn/money/%E9%80%9A%E7%94%A8/%E6%B1%9F%E8%8B%8F%E6%96%B0%E8%83%BD-%E8%A1%A5%E9%80%89%E8%A6%83%E7%A9%BA%E5%85%88%E7%94%9F%E4%B8%BA%E5%85%AC%E5%8F%B8%E7%AC%AC%E5%9B%9B%E5%B1%8A%E8%91%A3%E4%BA%8B%E4%BC%9A%E9%9D%9E%E7%8B%AC%E7%AB%8B%E8%91%A3%E4%BA%8B%E5%80%99%E9%80%89%E4%BA%BA/ar-AA1IgZWr 
-  - 新知号：有连云 的报道 | https://www.msn.cn/zh-cn/news/other/%E5%87%8F%E6%8C%81%E9%80%9F%E6%8A%A5-%E6%98%BE%E7%9B%88%E7%A7%91%E6%8A%80301067sz%E8%91%A3%E4%BA%8B%E9%95%BF%E8%82%96%E6%9D%B0%E7%AD%89%E5%90%88%E8%AE%A1%E6%8B%9F%E5%87%8F%E6%8C%816-%E5%85%B4%E9%80%9A%E8%82%A1%E4%BB%BD603209sh%E5%A4%9A%E8%82%A1%E4%B8%9C%E5%90%88%E8%AE%A1%E6%8B%9F%E5%87%8F%E6%8C%81%E8%BF%915/ar-AA1IiCvc 
-  - 超900家外贸企业从下沙港出海 | https://www.msn.cn/zh-cn/money/%E9%80%9A%E7%94%A8/%E8%B6%85900%E5%AE%B6%E5%A4%96%E8%B4%B8%E4%BC%81%E4%B8%9A%E4%BB%8E%E4%B8%8B%E6%B2%99%E6%B8%AF%E5%87%BA%E6%B5%B7/ar-AA1Iicp3?ocid=BingNewsVerp 
-  - 铁路水运深融合，物流降本开新途 | https://www.msn.cn/zh-cn/money/%E9%80%9A%E7%94%A8/%E9%93%81%E8%B7%AF%E6%B0%B4%E8%BF%90%E6%B7%B1%E8%9E%8D%E5%90%88-%E7%89%A9%E6%B5%81%E9%99%8D%E6%9C%AC%E5%BC%80%E6%96%B0%E9%80%94/ar-AA1IfRLg?ocid=BingNewsVerp 
-  - 上半年江苏铁路客发总量位居长三角之首 | https://www.msn.cn/zh-cn/news/other/%E4%B8%8A%E5%8D%8A%E5%B9%B4%E6%B1%9F%E8%8B%8F%E9%93%81%E8%B7%AF%E5%AE%A2%E5%8F%91%E6%80%BB%E9%87%8F%E4%BD%8D%E5%B1%85%E9%95%BF%E4%B8%89%E8%A7%92%E4%B9%8B%E9%A6%96/ar-AA1IixYY?ocid=BingNewsVerp 
-  - 今年上半年江苏铁路累计发送旅客近1.6亿人次 | https://www.msn.cn/zh-cn/news/other/%E4%BB%8A%E5%B9%B4%E4%B8%8A%E5%8D%8A%E5%B9%B4%E6%B1%9F%E8%8B%8F%E9%93%81%E8%B7%AF%E7%B4%AF%E8%AE%A1%E5%8F%91%E9%80%81%E6%97%85%E5%AE%A2%E8%BF%9116%E4%BA%BF%E4%BA%BA%E6%AC%A1/ar-AA1IklnQ?ocid=BingNewsVerp 
-  - 为世界高铁发展贡献中国智慧 | https://www.msn.cn/zh-cn/news/other/%E4%B8%BA%E4%B8%96%E7%95%8C%E9%AB%98%E9%93%81%E5%8F%91%E5%B1%95%E8%B4%A1%E7%8C%AE%E4%B8%AD%E5%9B%BD%E6%99%BA%E6%85%A7/ar-AA1Ijnfv?ocid=BingNewsVerp 
-  - “心手相牵共赋能 融合奋进新征程”第十五个全国阳光助残志愿服务主题日活动在安徽芜湖举行 | https://news.youth.cn/jsxw/202507/t20250710_16109357.htm 
-  - 上半年江苏铁路客发总量位居长三角之首 | https://www.msn.cn/zh-cn/news/other/%E4%B8%8A%E5%8D%8A%E5%B9%B4%E6%B1%9F%E8%8B%8F%E9%93%81%E8%B7%AF%E5%AE%A2%E5%8F%91%E6%80%BB%E9%87%8F%E4%BD%8D%E5%B1%85%E9%95%BF%E4%B8%89%E8%A7%92%E4%B9%8B%E9%A6%96/ar-AA1IixYY 
-  - 今年上半年江苏铁路累计发送旅客近1.6亿人次 | https://www.msn.cn/zh-cn/travel/%E9%93%81%E8%B7%AF%E6%97%85%E8%A1%8C/%E4%BB%8A%E5%B9%B4%E4%B8%8A%E5%8D%8A%E5%B9%B4%E6%B1%9F%E8%8B%8F%E9%93%81%E8%B7%AF%E7%B4%AF%E8%AE%A1%E5%8F%91%E9%80%81%E6%97%85%E5%AE%A2%E8%BF%911-6%E4%BA%BF%E4%BA%BA%E6%AC%A1/ar-AA1IklnQ 
-  - 铁路水运深融合，物流降本开新途 | https://www.msn.cn/zh-cn/money/%E9%80%9A%E7%94%A8/%E9%93%81%E8%B7%AF%E6%B0%B4%E8%BF%90%E6%B7%B1%E8%9E%8D%E5%90%88-%E7%89%A9%E6%B5%81%E9%99%8D%E6%9C%AC%E5%BC%80%E6%96%B0%E9%80%94/ar-AA1IfRLg 
-  - "心手相牵共赋能 融合奋进新征程"第十五个全国阳光助残志愿服务 ... | https://news.youth.cn/jsxw/202507/t20250710_16109357.htm 
-  - 从濒临倒闭到年销3亿，民营企业靠啥翻身？ | https://www.msn.cn/zh-cn/money/%E7%BB%8F%E6%B5%8E/%E4%BB%8E%E6%BF%92%E4%B8%B4%E5%80%92%E9%97%AD%E5%88%B0%E5%B9%B4%E9%94%803%E4%BA%BF-%E6%B0%91%E8%90%A5%E4%BC%81%E4%B8%9A%E9%9D%A0%E5%95%A5%E7%BF%BB%E8%BA%AB/ar-AA1IiZ8a 
-  - 人民日报｜江苏射阳等粮食主产区加快提升农业产业化水平 | https://www.tibet.cn/cn/Instant/local/202507/t20250710_7823938.html 
-  - 更多"好粮食"变成"好产品"（三夏进行时） | https://www.tibet.cn/cn/Instant/local/202507/t20250710_7823925.html 
-  - 机器人概念板块大爆发，年内已诞生29只翻倍股 | https://www.msn.cn/zh-cn/news/other/%E6%9C%BA%E5%99%A8%E4%BA%BA%E6%A6%82%E5%BF%B5%E6%9D%BF%E5%9D%97%E5%A4%A7%E7%88%86%E5%8F%91-%E5%B9%B4%E5%86%85%E5%B7%B2%E8%AF%9E%E7%94%9F29%E5%8F%AA%E7%BF%BB%E5%80%8D%E8%82%A1/ar-AA1Ig2k4 
-  - 上市公司半年报业绩频预喜 | https://www.msn.cn/zh-cn/news/other/%E4%B8%8A%E5%B8%82%E5%85%AC%E5%8F%B8%E5%8D%8A%E5%B9%B4%E6%8A%A5%E4%B8%9A%E7%BB%A9%E9%A2%91%E9%A2%84%E5%96%9C%E7%A7%91%E6%8A%80%E8%B5%9B%E9%81%93%E5%A2%9E%E9%95%BF%E5%8A%A8%E8%83%BD%E5%BC%BA%E5%8A%B2/ar-AA1IeT9B?ocid=BingNewsVerp 
-  - 遇高温大“烤”，这里的新品种“不怕热” | https://www.msn.cn/zh-cn/%E9%A3%9F%E5%93%81%E5%92%8C%E9%A5%AE%E6%96%99/%E8%8F%9C%E8%B0%B1/%E9%81%87%E9%AB%98%E6%B8%A9%E5%A4%A7-%E7%83%A4-%E8%BF%99%E9%87%8C%E7%9A%84%E6%96%B0%E5%93%81%E7%A7%8D-%E4%B8%8D%E6%80%95%E7%83%AD/ar-AA1IdEh7?ocid=BingNewsVerp 
-  - "债券市场'科技板'一落地，我们忙得要'起飞'" | https://www.msn.cn/zh-cn/money/%E6%8A%80%E6%9C%AF/%E5%80%BA%E5%88%B8%E5%B8%82%E5%9C%BA-%E7%A7%91%E6%8A%80%E6%9D%BF-%E4%B8%80%E8%90%BD%E5%9C%B0-%E6%88%91%E4%BB%AC%E5%BF%99%E5%BE%97%E8%A6%81-%E8%B5%B7%E9%A3%9E/ar-AA1Ii8W1 
-  - 金陵饭店集团打造“赛事＋酒店”消费新体验 | https://www.msn.cn/zh-cn/news/other/%E9%87%91%E9%99%B5%E9%A5%AD%E5%BA%97%E9%9B%86%E5%9B%A2%E6%89%93%E9%80%A0-%E8%B5%9B%E4%BA%8B-%E9%85%92%E5%BA%97-%E6%B6%88%E8%B4%B9%E6%96%B0%E4%BD%93%E9%AA%8C/ar-AA1Idswm?ocid=BingNewsVerp 
-  - 人去楼空！南京传奇地标1.73亿拍卖！一个时代退场 | http://news.nj.house365.com/zx/20250710/030213202.html 
-  - 南京金陵饭店集团入驻徐州淮海国际博览中心 | https://www.msn.cn/zh-cn/news/other/%E5%8D%97%E4%BA%AC%E9%87%91%E9%99%B5%E9%A5%AD%E5%BA%97%E9%9B%86%E5%9B%A2%E5%85%A5%E9%A9%BB%E5%BE%90%E5%B7%9E%E6%B7%AE%E6%B5%B7%E5%9B%BD%E9%99%85%E5%8D%9A%E8%A7%88%E4%B8%AD%E5%BF%83/ar-AA1IiUeH 
-  - 人去楼空!南京传奇地标1.73亿拍卖!一个时代退场 | http://news.nj.house365.com/zx/20250710/030213202.html 
-  - 南京金陵饭店集团入驻徐州淮海国际博览中心 | https://www.msn.cn/zh-cn/travel/%E9%85%92%E5%90%A7%E5%92%8C%E9%A4%90%E9%A6%86/%E5%8D%97%E4%BA%AC%E9%87%91%E9%99%B5%E9%A5%AD%E5%BA%97%E9%9B%86%E5%9B%A2%E5%85%A5%E9%A9%BB%E5%BE%90%E5%B7%9E%E6%B7%AE%E6%B5%B7%E5%9B%BD%E9%99%85%E5%8D%9A%E8%A7%88%E4%B8%AD%E5%BF%83/ar-AA1IiUeH 
-  - 已接到16例！南京市急救中心紧急提醒 | https://www.msn.cn/zh-cn/%E5%85%AC%E5%85%B1%E5%AE%89%E5%85%A8%E5%92%8C%E7%B4%A7%E6%80%A5%E6%83%85%E5%86%B5/%E5%81%A5%E5%BA%B7%E4%B8%8E%E5%AE%89%E5%85%A8%E8%AD%A6%E6%8A%A5/%E5%B7%B2%E6%8E%A5%E5%88%B016%E4%BE%8B-%E5%8D%97%E4%BA%AC%E5%B8%82%E6%80%A5%E6%95%91%E4%B8%AD%E5%BF%83%E7%B4%A7%E6%80%A5%E6%8F%90%E9%86%92/ar-AA1IkZKw?ocid=BingNewsVerp 
-  - 蝙蝠进家健康有啥风险？该咋处理你知道吗？ | https://www.msn.cn/zh-cn/health/%E9%80%9A%E7%94%A8/%E8%9D%99%E8%9D%A0%E8%BF%9B%E5%AE%B6%E5%81%A5%E5%BA%B7%E6%9C%89%E5%95%A5%E9%A3%8E%E9%99%A9-%E8%AF%A5%E5%92%8B%E5%A4%84%E7%90%86%E4%BD%A0%E7%9F%A5%E9%81%93%E5%90%97/ar-AA1Ieh3y?ocid=BingNewsVerp 
-  - 苏超火爆！南京商旅大动作！五百亿资产整合来了！ | https://www.msn.cn/zh-cn/news/other/%E8%8B%8F%E8%B6%85%E7%81%AB%E7%88%86-%E5%8D%97%E4%BA%AC%E5%95%86%E6%97%85%E5%A4%A7%E5%8A%A8%E4%BD%9C-%E4%BA%94%E7%99%BE%E4%BA%BF%E8%B5%84%E4%BA%A7%E6%95%B4%E5%90%88%E6%9D%A5%E4%BA%86/ar-AA1I9wSN?ocid=BingNewsVerp 
-  - 沃尔玛最大自行车供应商想回到祖国闯一闯 | https://www.msn.cn/zh-cn/news/other/%E6%B2%83%E5%B0%94%E7%8E%9B%E6%9C%80%E5%A4%A7%E8%87%AA%E8%A1%8C%E8%BD%A6%E4%BE%9B%E5%BA%94%E5%95%86%E6%83%B3%E5%9B%9E%E5%88%B0%E7%A5%96%E5%9B%BD%E9%97%AF%E4%B8%80%E9%97%AF/ar-AA1IjUq1?ocid=BingNewsVerp 
-  - 家家有花园 户户有庭院 | https://www.msn.cn/zh-cn/news/other/%E5%AE%B6%E5%AE%B6%E6%9C%89%E8%8A%B1%E5%9B%AD-%E6%88%B7%E6%88%B7%E6%9C%89%E5%BA%AD%E9%99%A2/ar-AA1IimQZ?ocid=BingNewsVerp 
-  - 今年上半年江苏铁路累计发送旅客近1.6亿人次 | https://www.msn.cn/zh-cn/news/other/%E4%BB%8A%E5%B9%B4%E4%B8%8A%E5%8D%8A%E5%B9%B4%E6%B1%9F%E8%8B%8F%E9%93%81%E8%B7%AF%E7%B4%AF%E8%AE%A1%E5%8F%91%E9%80%81%E6%97%85%E5%AE%A2%E8%BF%9116%E4%BA%BF%E4%BA%BA%E6%AC%A1/ar-AA1IklnQ 
-==============================
-
-
-[🕒 2025-07-11 22:04:39]
-❌ 执行失败: fetch_content.py
-📝 说明: 执行过程中出现错误
-==============================
-
-[🕒 2025-07-11 22:14:18]
-🚀 开始执行: news_scorer.py
-📋 执行参数: 江苏省国资委 2025-07-10
-==============================
-
-[🕒 2025-07-11 22:15:51]
+[🕒 2025-07-11 10:31:39]
 💥 程序异常终止
-📋 程序名: news_scorer.py
+📋 程序名: news_summarizer.py
 🎯 执行阶段: main
 🔑 关键词: unknown
-❗ 错误信息: 用户中断程序执行
+❗ 错误信息: 'gbk' codec can't encode character '\U0001f4f0' in position 320: illegal multibyte sequence
+📝 详细错误:
+Traceback (most recent call last):
+  File "C:\serp_news_mainkeyword\error_handler.py", line 119, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\serp_news_mainkeyword\news_summarizer.py", line 502, in main
+    print(optimize_system_prompt.strip())
+UnicodeEncodeError: 'gbk' codec can't encode character '\U0001f4f0' in position 320: illegal multibyte sequence
+
 ==============================
 
-[🕒 2025-07-11 22:23:13]
-🚀 开始执行: news_scorer.py
-📋 执行参数: 江苏省国资委 2025-07-10
-==============================
-
-[🕒 2025-07-11 22:23:52]
+[🕒 2025-07-11 10:36:19]
 💥 程序异常终止
-📋 程序名: news_scorer.py
+📋 程序名: news_summarizer.py
 🎯 执行阶段: main
 🔑 关键词: unknown
-❗ 错误信息: 用户中断程序执行
+❗ 错误信息: 'gbk' codec can't encode character '\U0001f4f0' in position 320: illegal multibyte sequence
+📝 详细错误:
+Traceback (most recent call last):
+  File "C:\serp_news_mainkeyword\error_handler.py", line 119, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\serp_news_mainkeyword\news_summarizer.py", line 502, in main
+    print(optimize_system_prompt.strip())
+UnicodeEncodeError: 'gbk' codec can't encode character '\U0001f4f0' in position 320: illegal multibyte sequence
+
 ==============================
 
-[🕒 2025-07-11 22:25:56]
-🚀 开始执行: news_scorer.py
-📋 执行参数: 江苏省国资委 2025-07-10
-==============================
-
-[🕒 2025-07-11 22:27:21]
+[🕒 2025-07-11 10:40:04]
 💥 程序异常终止
-📋 程序名: news_scorer.py
+📋 程序名: news_summarizer.py
 🎯 执行阶段: main
 🔑 关键词: unknown
-❗ 错误信息: 用户中断程序执行
+❗ 错误信息: 'gbk' codec can't encode character '\U0001f4f0' in position 320: illegal multibyte sequence
+📝 详细错误:
+Traceback (most recent call last):
+  File "C:\serp_news_mainkeyword\error_handler.py", line 119, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\serp_news_mainkeyword\news_summarizer.py", line 502, in main
+    print(optimize_system_prompt.strip())
+UnicodeEncodeError: 'gbk' codec can't encode character '\U0001f4f0' in position 320: illegal multibyte sequence
+
 ==============================
 
-[🕒 2025-07-11 22:27:23]
-🚀 开始执行: news_scorer.py
-📋 执行参数: 江苏省国资委 2025-07-10
-==============================
-
-[🕒 2025-07-11 22:30:41]
+[🕒 2025-07-11 10:44:31]
 💥 程序异常终止
-📋 程序名: news_scorer.py
+📋 程序名: news_summarizer.py
 🎯 执行阶段: main
 🔑 关键词: unknown
-❗ 错误信息: 用户中断程序执行
+❗ 错误信息: 'gbk' codec can't encode character '\U0001f4f0' in position 320: illegal multibyte sequence
+📝 详细错误:
+Traceback (most recent call last):
+  File "C:\serp_news_mainkeyword\error_handler.py", line 119, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\serp_news_mainkeyword\news_summarizer.py", line 502, in main
+    print(optimize_system_prompt.strip())
+UnicodeEncodeError: 'gbk' codec can't encode character '\U0001f4f0' in position 320: illegal multibyte sequence
+
 ==============================
 
-[🕒 2025-07-11 22:35:02]
-🚀 开始执行: news_scorer.py
-📋 执行参数: 江苏省国资委 2025-07-10
+[🕒 2025-07-11 10:44:32]
+❌ 执行失败: news_summarizer.py
+📝 说明: news_summarizer.py 主程序执行过程中发生异常: 'gbk' codec can't encode character '\U0001f4ca' in position 2: illegal multibyte sequence
 ==============================
 
-[[TIME] 2025-07-11 22:50:07]
-执行程序: ai评分（使用搜索关键词优化）
-? 主关键词: 江苏省国资委
-? 原json文件: output/2025-07-10/2025-07-10_江苏省国资委.json
-? 评分结果文件: output/2025-07-10/2025-07-10_江苏省国资委_scored.json
-[CHART] 新闻总数: 268
-? 完成评分: 268
-0分:57 1分:82 2分:51 3分:38 4分:40 5分:0
-? 3分及以上新闻正文总字数: 127588
-? 规则打分新闻数: 0
+[🕒 2025-07-11 10:44:36]
+❌ 执行失败: 自动总结主关键词
+🔑 关键词: unknown
+📋 执行命令: python news_summarizer.py --date 2025-07-10
+❗ 错误信息: 命令执行失败，返回码: 1
+错误输出: None of PyTorch, TensorFlow >= 2.0, or Flax have been found. Models won't be available and only tokenizers, configuration and file/data utilities can be used.
+Token indices sequence length is longer than the specified maximum sequence length for this model (30822 > 16384). Running this sequence through the model will result in indexing errors
+
 ==============================
 
-[🕒 2025-07-11 22:50:07]
-✅ 执行完成: news_scorer.py
-📝 说明: 关键词 江苏省国资委 评分完成
+[🕒 2025-07-11 10:44:36]
+❌ 执行失败: main.py
+📝 说明: main函数执行过程中发生异常: Command 'python news_summarizer.py --date 2025-07-10' returned non-zero exit status 1.
 ==============================
 
-[🕒 2025-07-11 22:52:01]
+[🕒 2025-07-11 17:16:57]
 🚀 开始执行: news_summarizer.py
-📋 执行参数: --keyword 江苏省国资委 --date 2025-07-10
+📋 执行参数: --date 2025-07-10
 ==============================
-[WARN] token数超限（主动判断），已切换到bailian平台qwen-plus-latest模型，token数: 78857
-[WARN] 超限prompt开头200字: 
-【新闻关键词】是:
-江苏省国资委
 
-【新闻列表】:
-标题1: 三堂会审丨违规经商办企业还是贪污
-分数1: 4
-新闻1: 特邀嘉宾
-郭飞 江苏省南京市江宁区纪委监委第六纪检监察室副主任
-翟元梅 江苏省南京市江宁区纪委监委案件审理室主任
-李弋 江苏省南京市江宁区人民检察院第一检察部副主任
-洪超兰 江苏省南京市江宁区人民法院刑事审判庭庭长
-编者按
-本案中，车某以甲公司名义“入股”B公司，获取415万余
-[WARN] 超限prompt结尾200字: 团作为改革开放前沿阵地的标杆媒体集团，在媒体融合、产业运营、技术创新等方面拥有丰富的经验和显著的成果。江苏有线期待能与深圳广电集团建立更加紧密的联系，互相学习先进经验，在数字经济发展大潮中携手并进，共同探索广电网络转型升级与高质量发展的新路径、新模式。
-
-交流座谈前，季彤一行实地参观了江苏有线三网融合枢纽中心播控大厅和数据公司“数聚空间”展厅。
-
-来源：省公司企业发展部、党委办公室（行政办公室）
-
-
-[[TIME] 2025-07-11 23:11:05]
+[[TIME] 2025-07-11 17:23:50]
 执行程序: news_summarizer
-? 主关键词: 江苏省国资委
-涉及搜索关键词: 江苏沿海集团, 江苏省高投, 江苏水源, 江苏省数据集团, 江苏铁路集团, 金陵饭店, 江苏体育集团, 江苏规划设计集团, 南京市国资委, 江苏港口集团, 江苏粮食集团, 江苏农垦, 江苏国信集团, 苏豪, 江苏环保集团, 江苏省国资委, 江苏国金集团, 东部机场
+? 主关键词: 养老
+涉及搜索关键词: 养老
 ? 日期: 2025-07-10
-? 平台: bailian
-? 模型: qwen-plus-latest
-? 3分及以上新闻数量: 78
-? 送给大模型的prompt前300字:  【新闻关键词】是: 江苏省国资委  【新闻列表】: 标题1: 三堂会审丨违规经商办企业还是贪污 分数1: 4 新闻1: 特邀嘉宾 郭飞 江苏省南京市江宁区纪委监委第六纪检监察室副主任 翟元梅 江苏省南京市江宁区纪委监委案件审理室主任 李弋 江苏省南京市江宁区人民检察院第一检察部副主任 洪超兰 江苏省南京市江宁区人民法院刑事审判庭庭长 编者按 本案中，车某以甲公司名义“入股”B公司，获取415万余元“分红款”，是违规经商办企业的违纪行为还是贪污犯罪？车某通过隐瞒股权性质、做低股价、他人代持等手段，以B公司自有资金完成股权转让交易，最终将B公司股权全部变更至其指定的人名下，致使B公司脱离国家监管
-? 总结结果文件: output/2025-07-10/2025-07-10_江苏省国资委_summary.json
-[Token统计] 平台: bailian，模型: qwen-plus-latest，system: 834, user: 151098, result: 2909
+? 平台: deepseek
+? 模型: deepseek-reasoner
+? 3分及以上新闻数量: 56
+? 送给大模型的prompt前300字:  【新闻关键词】是: 养老  【新闻列表】: 标题1: 退休人员基本养老金上调2% 重点向中低收入群体倾斜 分数1: 5 新闻1: 退休人员基本养老金上调2% 重点向中低收入群体倾斜 日前，人力资源社会保障部、财政部印发《关于2025年调整退休人员基本养老金的通知》。《通知》明确，从2025年1月1日起，为2024年底前已按规定办理退休手续并按月领取基本养老金的退休人员提高基本养老金水平，总体调整水平为2024年退休人员月人均基本养老金的2%。 此次调整是综合考虑物价变动和职工工资增长等各方面因素，合理确定养老金调整比例。继续采取定额调整、挂钩调整与适当倾斜相结合的调整办法，重点是向养老金水平
+? 总结结果文件: output\2025-07-10\2025-07-10_养老_summary.json
+[Token统计] 平台: deepseek，模型: deepseek-reasoner，system: 499, user: 30822, result: 680
 ? 运行结果: 成功
 ==============================
 
-[🕒 2025-07-11 23:11:05]
-❌ 执行失败: news_summarizer.py
-📝 说明: 关键词 江苏省国资委 摘要失败
-==============================
-
-[🕒 2025-07-11 23:16:47]
-🚀 开始执行: news_summarizer.py
-📋 执行参数: --keyword 江苏省国资委 --date 2025-07-10
-==============================
-[WARN] token数超限（主动判断），已切换到bailian平台qwen-plus-latest模型，token数: 78857
-[WARN] 超限prompt开头200字: 
-【新闻关键词】是:
-江苏省国资委
-
-【新闻列表】:
-标题1: 三堂会审丨违规经商办企业还是贪污
-分数1: 4
-新闻1: 特邀嘉宾
-郭飞 江苏省南京市江宁区纪委监委第六纪检监察室副主任
-翟元梅 江苏省南京市江宁区纪委监委案件审理室主任
-李弋 江苏省南京市江宁区人民检察院第一检察部副主任
-洪超兰 江苏省南京市江宁区人民法院刑事审判庭庭长
-编者按
-本案中，车某以甲公司名义“入股”B公司，获取415万余
-[WARN] 超限prompt结尾200字: 团作为改革开放前沿阵地的标杆媒体集团，在媒体融合、产业运营、技术创新等方面拥有丰富的经验和显著的成果。江苏有线期待能与深圳广电集团建立更加紧密的联系，互相学习先进经验，在数字经济发展大潮中携手并进，共同探索广电网络转型升级与高质量发展的新路径、新模式。
-
-交流座谈前，季彤一行实地参观了江苏有线三网融合枢纽中心播控大厅和数据公司“数聚空间”展厅。
-
-来源：省公司企业发展部、党委办公室（行政办公室）
-
-
-[[TIME] 2025-07-11 23:33:45]
+[[TIME] 2025-07-11 17:31:41]
 执行程序: news_summarizer
-? 主关键词: 江苏省国资委
-涉及搜索关键词: 江苏农垦, 江苏水源, 江苏省国资委, 苏豪, 江苏环保集团, 江苏国金集团, 江苏粮食集团, 江苏体育集团, 江苏港口集团, 江苏省数据集团, 江苏铁路集团, 江苏规划设计集团, 江苏省高投, 东部机场, 江苏沿海集团, 金陵饭店, 南京市国资委, 江苏国信集团
+? 主关键词: 公积金
+涉及搜索关键词: 公积金
 ? 日期: 2025-07-10
-? 平台: bailian
-? 模型: qwen-plus-latest
-? 3分及以上新闻数量: 78
-? 送给大模型的prompt前300字:  【新闻关键词】是: 江苏省国资委  【新闻列表】: 标题1: 三堂会审丨违规经商办企业还是贪污 分数1: 4 新闻1: 特邀嘉宾 郭飞 江苏省南京市江宁区纪委监委第六纪检监察室副主任 翟元梅 江苏省南京市江宁区纪委监委案件审理室主任 李弋 江苏省南京市江宁区人民检察院第一检察部副主任 洪超兰 江苏省南京市江宁区人民法院刑事审判庭庭长 编者按 本案中，车某以甲公司名义“入股”B公司，获取415万余元“分红款”，是违规经商办企业的违纪行为还是贪污犯罪？车某通过隐瞒股权性质、做低股价、他人代持等手段，以B公司自有资金完成股权转让交易，最终将B公司股权全部变更至其指定的人名下，致使B公司脱离国家监管
-? 总结结果文件: output/2025-07-10/2025-07-10_江苏省国资委_summary.json
-[Token统计] 平台: bailian，模型: qwen-plus-latest，system: 854, user: 151098, result: 2168
+? 平台: deepseek
+? 模型: deepseek-reasoner
+? 3分及以上新闻数量: 20
+? 送给大模型的prompt前300字:  【新闻关键词】是: 公积金  【新闻列表】: 标题1: 今年来各地优化公积金政策超150次，三大一线城市支持提取公积金支付首付款 分数1: 5 新闻1: - +1 今年来各地优化公积金政策超150次，三大一线城市支持提取公积金支付首付款 在中央强调扩大住房公积金使用范围后，各地公积金优化政策力度也在逐渐加大。7月10日，北京发文优化住房消费新供给，提出住房公积金“既提又贷”及研究“带押过户”等政策，成为一线城市响应国家政策、提振住房消费的又一举措。据机构不完全统计，今年以来各地已优化住房公积金政策超150次。 三大一线城市支持提取公积金支付首付款 7月10日，北京市人民政府印发《北京市深化改
+? 总结结果文件: output\2025-07-10\2025-07-10_公积金_summary.json
+[Token统计] 平台: deepseek，模型: deepseek-reasoner，system: 499, user: 11255, result: 799
 ? 运行结果: 成功
 ==============================
 
-[🕒 2025-07-11 23:33:45]
-❌ 执行失败: news_summarizer.py
-📝 说明: 关键词 江苏省国资委 摘要失败
+[[TIME] 2025-07-11 17:38:31]
+执行程序: news_summarizer
+? 主关键词: 政府基金
+涉及搜索关键词: 引导基金
+? 日期: 2025-07-10
+? 平台: deepseek
+? 模型: deepseek-reasoner
+? 3分及以上新闻数量: 2
+? 送给大模型的prompt前300字:  【新闻关键词】是: 政府基金  【新闻列表】: 标题1: 深圳政府引导基金，能否“大胆”成为创新企业“耐心”天使？ 分数1: 4 新闻1: 自2018年起，深圳引导基金对大疆创新进行连续多轮投资，累计投入超7.6亿元，助力其成长为无人机、手持影像系统等领域的全球领先企业，成为基金赋能产业发展的生动注脚。 2024年，在“科技自立自强”国家战略指引下，深圳创业投资生态步入关键阶段，深圳引导基金在取得辉煌成就的同时，也面临着新的挑战与机遇。深圳引导基金能否通过一系列改革举措，再次助力深圳创新征程。 //大疆“天空之城” 国内培育上市公司最多的政府引导基金 多年来，深圳引导基金的发展与特区产业转型
+? 总结结果文件: output\2025-07-10\2025-07-10_政府基金_summary.json
+[Token统计] 平台: deepseek，模型: deepseek-reasoner，system: 499, user: 3207, result: 806
+? 运行结果: 成功
 ==============================
 
-[🕒 2025-07-11 23:35:11]
+[[TIME] 2025-07-11 17:45:55]
+执行程序: news_summarizer
+? 主关键词: 江苏省国资委
+涉及搜索关键词: 南京市国资委, 江苏规划设计集团, 江苏体育集团, 江苏港口集团, 江苏粮食集团, 江苏环保集团, 金陵饭店, 江苏农垦, 江苏省高投, 江苏沿海集团, 江苏铁路集团, 江苏交通控股, 江苏国信集团, 江苏水源, 江苏省数据集团, 苏豪, 江苏省国资委
+? 日期: 2025-07-10
+? 平台: deepseek
+? 模型: deepseek-reasoner
+? 3分及以上新闻数量: 51
+? 送给大模型的prompt前300字:  【新闻关键词】是: 江苏省国资委  【新闻列表】: 标题1: 多个百万电厂接连核准！股价也涨疯了！ 分数1: 4 新闻1:   标题2: 江苏：县级以下禁止开发政务服务APP｜营商环境周报 分数2: 4 新闻2:   标题3: 苏超火爆！南京商旅大动作！五百亿资产整合来了 分数3: 4 新闻3:   标题4: 三堂会审丨违规经商办企业还是贪污 分数4: 4 新闻4:   标题5: 全国首创 江苏推广"专利产业化+认股权"新模式 分数5: 4 新闻5:   标题6: 苏超火爆！南京商旅大动作！五百亿资产整合来了！ 分数6: 4 新闻6:   标题7: 三堂会审丨违规经商办企业还是贪污 分数7:
+? 总结结果文件: output\2025-07-10\2025-07-10_江苏省国资委_summary.json
+[Token统计] 平台: deepseek，模型: deepseek-reasoner，system: 499, user: 1573, result: 667
+? 运行结果: 成功
+==============================
+
+[🕒 2025-07-11 17:45:55]
+❌ 执行失败: news_summarizer.py
+📝 说明: 批量摘要完成：0/4 个关键词处理成功
+==============================
+
+[🕒 2025-07-11 18:02:39]
 🚀 开始执行: write_to_mysql.py
 📋 执行参数: --date 2025-07-10
 ==============================
-[写入] news_websites 新增: news.inewsweek.cn
-[写入] news_websites 新增: military.people.com.cn
-[写入] news_websites 新增: www.chinaz.com
-[写入] news_websites 新增: www.peopo.org
-[写入] news_websites 新增: www.leidacj.com
-[写入] news_websites 新增: news.zol.com.cn
-[写入] news_websites 新增: hb.dzwww.com
-[写入] news_websites 新增: info.texnet.com.cn
-[写入] news_websites 新增: ttgchina.com
-[写入] news_websites 新增: hk.crntt.com
+[写入] news_websites 新增: web.shobserver.com
+[写入] news_websites 新增: www.ordos.gov.cn
+[写入] news_websites 新增: www.fujian.gov.cn
+[写入] news_websites 新增: guzhen.news.fang.com
+[写入] news_websites 新增: news.sjtu.edu.cn
+[写入] news_websites 新增: zfrx.jschina.com.cn
+[写入] news_websites 新增: sqtv.net
+[写入] news_websites 新增: world.people.com.cn
+[写入] news_websites 新增: m.mp.oeeee.com
+[写入] news_websites 新增: huaian.focus.cn
+[写入] news_websites 新增: www.chinajsb.cn
+[写入] news_websites 新增: www.qingdaonews.com
+[写入] news_websites 新增: www.southcn.com
+[写入] news_websites 新增: www.cac.gov.cn
+[写入] news_websites 新增: www.gxnews.com.cn
+[写入] news_websites 新增: www.jlcity.gov.cn
+[写入] news_websites 新增: industry.cfi.cn
+[写入] news_websites 新增: jxgz.jxnews.com.cn
+[写入] news_websites 新增: www.zqrb.cn
+[写入] news_websites 新增: news.anhuinews.com
+[写入] news_websites 新增: www.yynews.com.cn
+[写入] news_websites 新增: jiangsu.sina.com.cn
+[写入] news_websites 新增: www.zmdnews.cn
+[写入] news_websites 新增: sd.china.com
+[写入] news_websites 新增: www.jwview.com
+[写入] news_websites 新增: finance.66wz.com
+[写入] news_websites 新增: www.jian.gov.cn
+[写入] news_websites 新增: www.chinaqw.com
 [查重] news_websites 已存在，跳过部分已存在网站（仅提示一次）
-[2025-07-11 23:35:17] 导入数据库
-  文件: output/news_sources.txt
+[2025-07-11 18:02:45] 导入数据库
+  文件: output\news_sources.txt
   表: news_websites
-  成功写入: 10 条
-  跳过: 572 条
+  成功写入: 28 条
+  跳过: 541 条
 ------------------------------
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | baijiahao.baidu.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.gov.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.cnr.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | tech.sina.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.ce.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.thepaper.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.southcn.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.bjnews.com.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.news.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | finance.sina.com.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.jiangmen.gov.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.yicai.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | news.sjtu.edu.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | finance.sina.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | ori.hangzhou.com.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.xhby.net
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.gxnews.com.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.dailyqd.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.chinanews.com.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | sichuan.scol.com.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.tianshui.com.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | cj.sina.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.donews.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | finance.66wz.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.jwview.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.cs.com.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | web.shobserver.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | news.sina.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | m.gmw.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | finance.stockstar.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | m.sohu.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.jfdaily.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | jjckb.xinhuanet.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | news.anhuinews.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | t.qianzhan.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.sohu.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | news.qq.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.xinhuanet.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | sz.bendibao.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | society.people.com.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | news.sina.com.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | finance.cnr.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.hangzhou.gov.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.bbtnews.com.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.jiemian.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | sqtv.net
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.zaobao.com.sg
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.msn.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.cac.gov.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | www.workercn.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | beijing.qianlong.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | news.cctv.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | xycity.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 养老 | news.emoney.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | finance.sina.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | www.thepaper.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | finance.sina.com.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | www.nbd.com.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | finance.ifeng.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | cj.sina.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | www.yicai.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | www.news.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | www.qlwb.com.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | www.yynews.com.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | www.donews.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | sichuan.scol.com.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | www.guandian.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | www.cfi.net.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | sc.stock.cnfol.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | gov.rednet.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | stock.stockstar.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | m.sohu.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | news.qq.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | www.sohu.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | finance.china.com.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | news.dichan.sina.com.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | www.jlcity.gov.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | www.xinhuanet.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | www.bjnews.com.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | www.stcn.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | www.ce.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | news.ifeng.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | www.mnw.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | views.ce.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | news.china.com.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | yn.yunnan.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 公积金 | news.yunnan.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 政府基金 | www.msn.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 政府基金 | www.aastocks.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 政府基金 | www.wenweipo.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 政府基金 | news.qq.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 政府基金 | www.gov.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 政府基金 | world.people.com.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 政府基金 | finance.sina.com.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 政府基金 | news.youth.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 政府基金 | m.dutenews.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 政府基金 | finance.sina.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 政府基金 | www.sohu.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 政府基金 | sd.china.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 政府基金 | www.zmdnews.cn
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 政府基金 | sd.ifeng.com
-[查重] news_source_stats 已存在，跳过: 2025-07-10 | 政府基金 | www.ce.cn
-[2025-07-11 23:35:20] 导入数据库
-  文件: output/news_source_stats.json
+[2025-07-11 18:02:47] 导入数据库
+  文件: output\news_source_stats.json
   表: news_source_stats
-  成功写入: 86 条
-  跳过: 102 条
+  成功写入: 102 条
+  跳过: 0 条
   失败: 0 条
 ------------------------------
-[跳过空内容] scored_news: 中国宣布基本养老金普遍提高2%，对于养老金超过一万元和养老金3000元上下的人来说，心情是不一样的。... (内容为空)
-[跳过空内容] scored_news: 山西垣曲：家门口的日间照料中心让“养老”变“享老”... (内容为空)
-[跳过空内容] scored_news: 养老机器人火了!3亿老人新帮手，价格却让人犯难？... (内容为空)
-[跳过空内容] scored_news: 《养老领域具身人工智能应用框架》国际标准制定在渝启动... (内容为空)
-[跳过空内容] scored_news: 发放消费券和补贴 全国"养老服务消费季"活动今天启动... (内容为空)
-[跳过空内容] scored_news: 养老服务师纳入国家职业资格目录，怎么评、怎么考将有新规... (内容为空)
-[跳过空内容] scored_news: 西藏辟谣自媒体称"可代办一次性补缴职工养老保险业务"：此类 ...... (内容为空)
-[跳过空内容] scored_news: 古老儒学在文明对话中闪耀当代... (内容为空)
-[2025-07-11 23:35:25] 导入数据库
+[2025-07-11 18:02:53] 导入数据库
   关键词: 养老
-  文件: output/2025-07-10/2025-07-10_养老_scored.json
+  文件: output\2025-07-10\2025-07-10_养老_scored.json
   表: scored_news
-  成功写入: 0 条
-  跳过(已存在): 107 条
-  跳过(空内容): 8 条
+  成功写入: 108 条
+  跳过: 7 条
   失败: 0 条
 ------------------------------
-[2025-07-11 23:35:25] 导入数据库
+[2025-07-11 18:02:53] 导入数据库
   关键词: 养老
-  文件: output/2025-07-10/2025-07-10_养老_summary.json
+  文件: output\2025-07-10\2025-07-10_养老_summary.json
   表: summary_news
-  成功写入: 0 条
-  跳过: 3 条
+  成功写入: 3 条
+  跳过: 0 条
   失败: 0 条
 ------------------------------
-[跳过空内容] scored_news: 多城探索公积金多场景应用... (内容为空)
-[跳过空内容] scored_news: 贵州“智能大树”火爆论坛，3秒刷脸查公积金，政务效率翻3倍！... (内容为空)
-[跳过空内容] scored_news: 提取住房公积金直付房租的额度是多少？... (内容为空)
-[跳过空内容] scored_news: 北京公积金贷款额度计算公式... (内容为空)
-[跳过空内容] scored_news: 国行降息效应:减贷款成本 刺激消费 4领域喜获甘霖... (内容为空)
-[跳过空内容] scored_news: 贵州"智能大树"火爆论坛，3秒刷脸查公积金，政务效率翻3倍!... (内容为空)
-[跳过空内容] scored_news: 织密便民服务网，赋能安居新生活，建行上海市分行携手公积金中心 ...... (内容为空)
-[2025-07-11 23:35:27] 导入数据库
+[2025-07-11 18:02:56] 导入数据库
   关键词: 公积金
-  文件: output/2025-07-10/2025-07-10_公积金_scored.json
+  文件: output\2025-07-10\2025-07-10_公积金_scored.json
   表: scored_news
-  成功写入: 0 条
-  跳过(已存在): 46 条
-  跳过(空内容): 7 条
+  成功写入: 50 条
+  跳过: 3 条
   失败: 0 条
 ------------------------------
-[2025-07-11 23:35:27] 导入数据库
+[2025-07-11 18:02:56] 导入数据库
   关键词: 公积金
-  文件: output/2025-07-10/2025-07-10_公积金_summary.json
+  文件: output\2025-07-10\2025-07-10_公积金_summary.json
   表: summary_news
-  成功写入: 0 条
-  跳过: 3 条
+  成功写入: 3 条
+  跳过: 0 条
   失败: 0 条
 ------------------------------
-[跳过空内容] scored_news: 團結香港基金倡推動更全面晚期照顧服務 包括完善在居所離世服務... (内容为空)
-[跳过空内容] scored_news: LINE Bank新募集ETF平台滿月 銷量再翻倍 主動、被動式基金接連開售... (内容为空)
-[跳过空内容] scored_news: 羅淑佩: 財赤下有基金推動文化發展... (内容为空)
-[跳过空内容] scored_news: 特朗普宣布8月1日起对铜征收50%关税... (内容为空)
-[跳过空内容] scored_news: 聚焦智慧医疗装备!政府搭台精准"牵线"，16项创新成果现场"相亲"... (内容为空)
-[跳过空内容] scored_news: 独家专访珀莱雅公益基金会理事长方爱琴：探索公益模式的专业化 ...... (内容为空)
-[跳过空内容] scored_news: 聚焦智慧医疗装备！政府搭台精准“牵线”，16项创新成果现场“相亲”... (内容为空)
-[跳过空内容] scored_news: 油價與匯率雙重打擊 台塑四寶上半年合虧212億元... (内容为空)
-[跳过空内容] scored_news: 7-11母公司利润增长9.7%，超出市场预期... (内容为空)
-[跳过空内容] scored_news: 药明康德预计上半年实现经调整归母净利润约63.15亿元... (内容为空)
-[2025-07-11 23:35:28] 导入数据库
+[2025-07-11 18:02:57] 导入数据库
   关键词: 政府基金
-  文件: output/2025-07-10/2025-07-10_政府基金_scored.json
+  文件: output\2025-07-10\2025-07-10_政府基金_scored.json
   表: scored_news
-  成功写入: 0 条
-  跳过(已存在): 22 条
-  跳过(空内容): 10 条
+  成功写入: 30 条
+  跳过: 2 条
   失败: 0 条
 ------------------------------
-[2025-07-11 23:35:28] 导入数据库
+[2025-07-11 18:02:57] 导入数据库
   关键词: 政府基金
-  文件: output/2025-07-10/2025-07-10_政府基金_summary.json
+  文件: output\2025-07-10\2025-07-10_政府基金_summary.json
   表: summary_news
-  成功写入: 0 条
-  跳过: 3 条
+  成功写入: 3 条
+  跳过: 0 条
   失败: 0 条
 ------------------------------
-[跳过空内容] scored_news: 股市必读：联环药业（600513）7月9日收盘跌5.35%，主力净流出9627.11万元... (内容为空)
-[跳过空内容] scored_news: 江苏新能: 江苏新能2025年第一次临时股东大会会议资料... (内容为空)
-[跳过空内容] scored_news: 股市必读：联环药业（600513）7月9日收盘跌5.35%，主力净流出9627.11万元... (内容为空)
-[跳过空内容] scored_news: 股市必读：江苏新能（603693）7月9日主力资金净流出5015.65万元，占总成交额14.97%... (内容为空)
-[跳过空内容] scored_news: 股市必读：江苏国信（002608）7月9日主力资金净流出3290.15万元... (内容为空)
-[跳过空内容] scored_news: 江苏国信（002608）7月10日主力资金净卖出1073.07万元... (内容为空)
-[跳过空内容] scored_news: 中诚信亚太授予镇江交通产业集团拟发行的美元债券评级为BBBg+... (内容为空)
-[跳过空内容] scored_news: 购房网7月9日讯：竞价197轮 君一9.89亿元夺得青岛崂山区地块... (内容为空)
-[跳过空内容] scored_news: 中诚信亚太授予镇江交通产业集团拟发行的美元债券评级为BBBg+... (内容为空)
-[跳过空内容] scored_news: 南京-巴黎新航线首航！12小时从秦淮河畔到塞纳河畔... (内容为空)
-[跳过空内容] scored_news: 12小时直达，南京今首开直飞巴黎航线... (内容为空)
-[跳过空内容] scored_news: 天太热 雅典卫城暂时关闭... (内容为空)
-[跳过空内容] scored_news: 希腊遭遇极端高温!雅典卫城暂时关闭、暂停户外作业... (内容为空)
-[跳过空内容] scored_news: 苏豪弘业：7月10日召开董事会会议... (内容为空)
-[跳过空内容] scored_news: 苏豪弘业：聘任曹橙女士为证券事务代表... (内容为空)
-[跳过空内容] scored_news: 苏豪弘业：2025年第一次临时股东大会决议公告... (内容为空)
-[跳过空内容] scored_news: 苏豪弘业：7月10日召开董事会会议... (内容为空)
-[跳过空内容] scored_news: 苏豪弘业：聘任曹橙女士为证券事务代表... (内容为空)
-[跳过空内容] scored_news: 苏垦农发(601952.SH):获得政府补贴1.12亿元... (内容为空)
-[跳过空内容] scored_news: 江苏新能：补选覃空先生为公司第四届董事会非独立董事候选人... (内容为空)
-[跳过空内容] scored_news: 城郊休闲农业如何打开新局面？... (内容为空)
-[跳过空内容] scored_news: 江苏新能：补选覃空先生为公司第四届董事会非独立董事候选人... (内容为空)
-[跳过空内容] scored_news: 新知号：有连云 的报道... (内容为空)
-[跳过空内容] scored_news: 超900家外贸企业从下沙港出海... (内容为空)
-[跳过空内容] scored_news: 铁路水运深融合，物流降本开新途... (内容为空)
-[跳过空内容] scored_news: 上半年江苏铁路客发总量位居长三角之首... (内容为空)
-[跳过空内容] scored_news: 今年上半年江苏铁路累计发送旅客近1.6亿人次... (内容为空)
-[跳过空内容] scored_news: 为世界高铁发展贡献中国智慧... (内容为空)
-[跳过空内容] scored_news: “心手相牵共赋能 融合奋进新征程”第十五个全国阳光助残志愿服务主题日活动在安徽芜湖举行... (内容为空)
-[跳过空内容] scored_news: 上半年江苏铁路客发总量位居长三角之首... (内容为空)
-[跳过空内容] scored_news: 今年上半年江苏铁路累计发送旅客近1.6亿人次... (内容为空)
-[跳过空内容] scored_news: 铁路水运深融合，物流降本开新途... (内容为空)
-[跳过空内容] scored_news: 从濒临倒闭到年销3亿，民营企业靠啥翻身？... (内容为空)
-[跳过空内容] scored_news: 人民日报｜江苏射阳等粮食主产区加快提升农业产业化水平... (内容为空)
-[跳过空内容] scored_news: 更多"好粮食"变成"好产品"（三夏进行时）... (内容为空)
-[跳过空内容] scored_news: 机器人概念板块大爆发，年内已诞生29只翻倍股... (内容为空)
-[跳过空内容] scored_news: 上市公司半年报业绩频预喜... (内容为空)
-[跳过空内容] scored_news: 遇高温大“烤”，这里的新品种“不怕热”... (内容为空)
-[跳过空内容] scored_news: "债券市场'科技板'一落地，我们忙得要'起飞'"... (内容为空)
-[跳过空内容] scored_news: 金陵饭店集团打造“赛事＋酒店”消费新体验... (内容为空)
-[跳过空内容] scored_news: 人去楼空！南京传奇地标1.73亿拍卖！一个时代退场... (内容为空)
-[跳过空内容] scored_news: 南京金陵饭店集团入驻徐州淮海国际博览中心... (内容为空)
-[跳过空内容] scored_news: 南京金陵饭店集团入驻徐州淮海国际博览中心... (内容为空)
-[跳过空内容] scored_news: 已接到16例！南京市急救中心紧急提醒... (内容为空)
-[跳过空内容] scored_news: 蝙蝠进家健康有啥风险？该咋处理你知道吗？... (内容为空)
-[跳过空内容] scored_news: 苏超火爆！南京商旅大动作！五百亿资产整合来了！... (内容为空)
-[跳过空内容] scored_news: 沃尔玛最大自行车供应商想回到祖国闯一闯... (内容为空)
-[跳过空内容] scored_news: 家家有花园 户户有庭院... (内容为空)
-[跳过空内容] scored_news: 今年上半年江苏铁路累计发送旅客近1.6亿人次... (内容为空)
-[2025-07-11 23:35:42] 导入数据库
+[2025-07-11 18:03:10] 导入数据库
   关键词: 江苏省国资委
-  文件: output/2025-07-10/2025-07-10_江苏省国资委_scored.json
+  文件: output\2025-07-10\2025-07-10_江苏省国资委_scored.json
   表: scored_news
-  成功写入: 168 条
-  跳过(已存在): 51 条
-  跳过(空内容): 49 条
+  成功写入: 210 条
+  跳过: 58 条
   失败: 0 条
 ------------------------------
-[2025-07-11 23:35:42] 导入数据库
+[2025-07-11 18:03:10] 导入数据库
   关键词: 江苏省国资委
-  文件: output/2025-07-10/2025-07-10_江苏省国资委_summary.json
+  文件: output\2025-07-10\2025-07-10_江苏省国资委_summary.json
   表: summary_news
   成功写入: 3 条
   跳过: 0 条
   失败: 0 条
 ------------------------------
 
-[🕒 2025-07-11 23:35:42]
+[🕒 2025-07-11 18:03:10]
 ✅ 执行完成: write_to_mysql.py
 📝 说明: 数据库导入成功
+==============================
+
+[🕒 2025-07-12 00:05:02]
+🚀 开始执行: main.py
+==============================
+
+[🕒 2025-07-12 00:05:04]
+🚀 开始执行: fetch_and_filter.py
+📋 执行参数: 养老 2025-07-11 --output output/2025-07-11/tmp_2025-07-11_养老_养老.json
+==============================
+
+[🕒 2025-07-12 00:06:29]
+执行程序: fetch_and_filter
+🔑 主关键词: 养老
+🔍 搜索关键词: 养老
+📅 日期: 2025-07-11
+📄 输出文件: output/2025-07-11/tmp_2025-07-11_养老_养老.json
+🌐 Google News: 260 条
+🌐 Baidu News: 20 条
+🌐 Bing News: 30 条
+🌐 DuckDuckGo News: 50 条
+🚫 黑名单过滤: 0 条
+⭐️ 去重后总保存: 142 条
+==============================
+
+[🕒 2025-07-12 00:06:29]
+✅ 执行完成: fetch_and_filter.py
+📝 说明: 采集完成，保存142条新闻到output/2025-07-11/tmp_2025-07-11_养老_养老.json
+==============================
+
+[🕒 2025-07-12 00:06:31]
+🚀 开始执行: fetch_and_filter.py
+📋 执行参数: 公积金 2025-07-11 --output output/2025-07-11/tmp_2025-07-11_公积金_公积金.json
+==============================
+
+[🕒 2025-07-12 00:08:03]
+执行程序: fetch_and_filter
+🔑 主关键词: 公积金
+🔍 搜索关键词: 公积金
+📅 日期: 2025-07-11
+📄 输出文件: output/2025-07-11/tmp_2025-07-11_公积金_公积金.json
+🌐 Google News: 50 条
+🌐 Baidu News: 1 条
+🌐 Bing News: 18 条
+🌐 DuckDuckGo News: 26 条
+🚫 黑名单过滤: 0 条
+⭐️ 去重后总保存: 46 条
+==============================
+
+[🕒 2025-07-12 00:08:03]
+✅ 执行完成: fetch_and_filter.py
+📝 说明: 采集完成，保存46条新闻到output/2025-07-11/tmp_2025-07-11_公积金_公积金.json
+==============================
+
+[🕒 2025-07-12 00:08:04]
+🚀 开始执行: fetch_and_filter.py
+📋 执行参数: 政府基金 2025-07-11 --output output/2025-07-11/tmp_2025-07-11_政府基金_政府基金.json
+==============================
+
+[🕒 2025-07-12 00:09:41]
+执行程序: fetch_and_filter
+🔑 主关键词: 政府基金
+🔍 搜索关键词: 政府基金
+📅 日期: 2025-07-11
+📄 输出文件: output/2025-07-11/tmp_2025-07-11_政府基金_政府基金.json
+🌐 Google News: 5 条
+🌐 Baidu News: 0 条
+🌐 Bing News: 15 条
+🌐 DuckDuckGo News: 21 条
+🚫 黑名单过滤: 0 条
+⭐️ 去重后总保存: 21 条
+==============================
+
+[🕒 2025-07-12 00:09:41]
+✅ 执行完成: fetch_and_filter.py
+📝 说明: 采集完成，保存21条新闻到output/2025-07-11/tmp_2025-07-11_政府基金_政府基金.json
+==============================
+
+[🕒 2025-07-12 00:09:43]
+🚀 开始执行: fetch_and_filter.py
+📋 执行参数: 引导基金 2025-07-11 --output output/2025-07-11/tmp_2025-07-11_政府基金_引导基金.json
+==============================
+
+[🕒 2025-07-12 00:11:34]
+执行程序: fetch_and_filter
+🔑 主关键词: 政府基金
+🔍 搜索关键词: 引导基金
+📅 日期: 2025-07-11
+📄 输出文件: output/2025-07-11/tmp_2025-07-11_政府基金_引导基金.json
+🌐 Google News: 5 条
+🌐 Baidu News: 0 条
+🌐 Bing News: 2 条
+🌐 DuckDuckGo News: 10 条
+🚫 黑名单过滤: 0 条
+⭐️ 去重后总保存: 4 条
+==============================
+
+[🕒 2025-07-12 00:11:34]
+✅ 执行完成: fetch_and_filter.py
+📝 说明: 采集完成，保存4条新闻到output/2025-07-11/tmp_2025-07-11_政府基金_引导基金.json
+==============================
+
+[🕒 2025-07-12 00:11:35]
+🚀 开始执行: fetch_and_filter.py
+📋 执行参数: 母基金 2025-07-11 --output output/2025-07-11/tmp_2025-07-11_政府基金_母基金.json
+==============================
+
+[🕒 2025-07-12 00:13:16]
+执行程序: fetch_and_filter
+🔑 主关键词: 政府基金
+🔍 搜索关键词: 母基金
+📅 日期: 2025-07-11
+📄 输出文件: output/2025-07-11/tmp_2025-07-11_政府基金_母基金.json
+🌐 Google News: 30 条
+🌐 Baidu News: 3 条
+🌐 Bing News: 15 条
+🌐 DuckDuckGo News: 45 条
+🚫 黑名单过滤: 0 条
+⭐️ 去重后总保存: 22 条
+==============================
+
+[🕒 2025-07-12 00:13:16]
+✅ 执行完成: fetch_and_filter.py
+📝 说明: 采集完成，保存22条新闻到output/2025-07-11/tmp_2025-07-11_政府基金_母基金.json
+==============================
+
+[🕒 2025-07-12 00:13:17]
+🚀 开始执行: fetch_and_filter.py
+📋 执行参数: 江苏省国资委 2025-07-11 --output output/2025-07-11/tmp_2025-07-11_江苏省国资委_江苏省国资委.json
+==============================
+
+[🕒 2025-07-12 00:14:58]
+执行程序: fetch_and_filter
+🔑 主关键词: 江苏省国资委
+🔍 搜索关键词: 江苏省国资委
+📅 日期: 2025-07-11
+📄 输出文件: output/2025-07-11/tmp_2025-07-11_江苏省国资委_江苏省国资委.json
+🌐 Google News: 15 条
+🌐 Baidu News: 0 条
+🌐 Bing News: 13 条
+🌐 DuckDuckGo News: 10 条
+🚫 黑名单过滤: 0 条
+⭐️ 去重后总保存: 20 条
+==============================
+
+[🕒 2025-07-12 00:14:58]
+✅ 执行完成: fetch_and_filter.py
+📝 说明: 采集完成，保存20条新闻到output/2025-07-11/tmp_2025-07-11_江苏省国资委_江苏省国资委.json
+==============================
+
+[🕒 2025-07-12 00:14:59]
+🚀 开始执行: fetch_and_filter.py
+📋 执行参数: 江苏国信集团 2025-07-11 --output output/2025-07-11/tmp_2025-07-11_江苏省国资委_江苏国信集团.json
+==============================
+
+[🕒 2025-07-12 00:16:21]
+执行程序: fetch_and_filter
+🔑 主关键词: 江苏省国资委
+🔍 搜索关键词: 江苏国信集团
+📅 日期: 2025-07-11
+📄 输出文件: output/2025-07-11/tmp_2025-07-11_江苏省国资委_江苏国信集团.json
+🌐 Google News: 0 条
+🌐 Baidu News: 0 条
+🌐 Bing News: 4 条
+🌐 DuckDuckGo News: 4 条
+🚫 黑名单过滤: 0 条
+⭐️ 去重后总保存: 8 条
+==============================
+
+[🕒 2025-07-12 00:16:21]
+✅ 执行完成: fetch_and_filter.py
+📝 说明: 采集完成，保存8条新闻到output/2025-07-11/tmp_2025-07-11_江苏省国资委_江苏国信集团.json
+==============================
+
+[🕒 2025-07-12 00:16:22]
+🚀 开始执行: fetch_and_filter.py
+📋 执行参数: 江苏交通控股 2025-07-11 --output output/2025-07-11/tmp_2025-07-11_江苏省国资委_江苏交通控股.json
+==============================
+
+[🕒 2025-07-12 00:18:02]
+执行程序: fetch_and_filter
+🔑 主关键词: 江苏省国资委
+🔍 搜索关键词: 江苏交通控股
+📅 日期: 2025-07-11
+📄 输出文件: output/2025-07-11/tmp_2025-07-11_江苏省国资委_江苏交通控股.json
+🌐 Google News: 0 条
+🌐 Baidu News: 0 条
+🌐 Bing News: 6 条
+🌐 DuckDuckGo News: 23 条
+🚫 黑名单过滤: 0 条
+⭐️ 去重后总保存: 21 条
+==============================
+
+[🕒 2025-07-12 00:18:02]
+✅ 执行完成: fetch_and_filter.py
+📝 说明: 采集完成，保存21条新闻到output/2025-07-11/tmp_2025-07-11_江苏省国资委_江苏交通控股.json
+==============================
+
+[🕒 2025-07-12 00:18:04]
+🚀 开始执行: fetch_and_filter.py
+📋 执行参数: 东部机场 2025-07-11 --output output/2025-07-11/tmp_2025-07-11_江苏省国资委_东部机场.json
+==============================
+
+[🕒 2025-07-12 00:19:26]
+执行程序: fetch_and_filter
+🔑 主关键词: 江苏省国资委
+🔍 搜索关键词: 东部机场
+📅 日期: 2025-07-11
+📄 输出文件: output/2025-07-11/tmp_2025-07-11_江苏省国资委_东部机场.json
+🌐 Google News: 0 条
+🌐 Baidu News: 0 条
+🌐 Bing News: 27 条
+🌐 DuckDuckGo News: 14 条
+🚫 黑名单过滤: 0 条
+⭐️ 去重后总保存: 29 条
+==============================
+
+[🕒 2025-07-12 00:19:26]
+✅ 执行完成: fetch_and_filter.py
+📝 说明: 采集完成，保存29条新闻到output/2025-07-11/tmp_2025-07-11_江苏省国资委_东部机场.json
+==============================
+
+[🕒 2025-07-12 00:19:29]
+🚀 开始执行: fetch_and_filter.py
+📋 执行参数: 苏豪 2025-07-11 --output output/2025-07-11/tmp_2025-07-11_江苏省国资委_苏豪.json
+==============================
+
+[🕒 2025-07-12 00:20:55]
+执行程序: fetch_and_filter
+🔑 主关键词: 江苏省国资委
+🔍 搜索关键词: 苏豪
+📅 日期: 2025-07-11
+📄 输出文件: output/2025-07-11/tmp_2025-07-11_江苏省国资委_苏豪.json
+🌐 Google News: 5 条
+🌐 Baidu News: 2 条
+🌐 Bing News: 35 条
+🌐 DuckDuckGo News: 34 条
+🚫 黑名单过滤: 0 条
+⭐️ 去重后总保存: 16 条
+==============================
+
+[🕒 2025-07-12 00:20:55]
+✅ 执行完成: fetch_and_filter.py
+📝 说明: 采集完成，保存16条新闻到output/2025-07-11/tmp_2025-07-11_江苏省国资委_苏豪.json
+==============================
+
+[🕒 2025-07-12 00:20:56]
+🚀 开始执行: fetch_and_filter.py
+📋 执行参数: 中江集团 2025-07-11 --output output/2025-07-11/tmp_2025-07-11_江苏省国资委_中江集团.json
+==============================
+
+[🕒 2025-07-12 00:22:45]
+执行程序: fetch_and_filter
+🔑 主关键词: 江苏省国资委
+🔍 搜索关键词: 中江集团
+📅 日期: 2025-07-11
+📄 输出文件: output/2025-07-11/tmp_2025-07-11_江苏省国资委_中江集团.json
+🌐 Google News: 0 条
+🌐 Baidu News: 0 条
+🌐 Bing News: 3 条
+🌐 DuckDuckGo News: 18 条
+🚫 黑名单过滤: 0 条
+⭐️ 去重后总保存: 7 条
+==============================
+
+[🕒 2025-07-12 00:22:45]
+✅ 执行完成: fetch_and_filter.py
+📝 说明: 采集完成，保存7条新闻到output/2025-07-11/tmp_2025-07-11_江苏省国资委_中江集团.json
+==============================
+
+[🕒 2025-07-12 00:22:46]
+🚀 开始执行: fetch_and_filter.py
+📋 执行参数: 江苏农垦 2025-07-11 --output output/2025-07-11/tmp_2025-07-11_江苏省国资委_江苏农垦.json
+==============================
+
+[🕒 2025-07-12 00:24:10]
+执行程序: fetch_and_filter
+🔑 主关键词: 江苏省国资委
+🔍 搜索关键词: 江苏农垦
+📅 日期: 2025-07-11
+📄 输出文件: output/2025-07-11/tmp_2025-07-11_江苏省国资委_江苏农垦.json
+🌐 Google News: 0 条
+🌐 Baidu News: 1 条
+🌐 Bing News: 15 条
+🌐 DuckDuckGo News: 39 条
+🚫 黑名单过滤: 0 条
+⭐️ 去重后总保存: 15 条
+==============================
+
+[🕒 2025-07-12 00:24:10]
+✅ 执行完成: fetch_and_filter.py
+📝 说明: 采集完成，保存15条新闻到output/2025-07-11/tmp_2025-07-11_江苏省国资委_江苏农垦.json
+==============================
+
+[🕒 2025-07-12 00:24:11]
+🚀 开始执行: fetch_and_filter.py
+📋 执行参数: 徐矿集团 2025-07-11 --output output/2025-07-11/tmp_2025-07-11_江苏省国资委_徐矿集团.json
+==============================
+
+[🕒 2025-07-12 00:25:49]
+执行程序: fetch_and_filter
+🔑 主关键词: 江苏省国资委
+🔍 搜索关键词: 徐矿集团
+📅 日期: 2025-07-11
+📄 输出文件: output/2025-07-11/tmp_2025-07-11_江苏省国资委_徐矿集团.json
+🌐 Google News: 0 条
+🌐 Baidu News: 0 条
+🌐 Bing News: 0 条
+🌐 DuckDuckGo News: 18 条
+🚫 黑名单过滤: 0 条
+⭐️ 去重后总保存: 6 条
+==============================
+
+[🕒 2025-07-12 00:25:49]
+✅ 执行完成: fetch_and_filter.py
+📝 说明: 采集完成，保存6条新闻到output/2025-07-11/tmp_2025-07-11_江苏省国资委_徐矿集团.json
+==============================
+
+[🕒 2025-07-12 00:25:50]
+🚀 开始执行: fetch_and_filter.py
+📋 执行参数: 江苏沿海集团 2025-07-11 --output output/2025-07-11/tmp_2025-07-11_江苏省国资委_江苏沿海集团.json
+==============================
+
+[🕒 2025-07-12 00:27:23]
+执行程序: fetch_and_filter
+🔑 主关键词: 江苏省国资委
+🔍 搜索关键词: 江苏沿海集团
+📅 日期: 2025-07-11
+📄 输出文件: output/2025-07-11/tmp_2025-07-11_江苏省国资委_江苏沿海集团.json
+🌐 Google News: 0 条
+🌐 Baidu News: 0 条
+🌐 Bing News: 21 条
+🌐 DuckDuckGo News: 17 条
+🚫 黑名单过滤: 0 条
+⭐️ 去重后总保存: 24 条
+==============================
+
+[🕒 2025-07-12 00:27:23]
+✅ 执行完成: fetch_and_filter.py
+📝 说明: 采集完成，保存24条新闻到output/2025-07-11/tmp_2025-07-11_江苏省国资委_江苏沿海集团.json
+==============================
+
+[🕒 2025-07-12 00:27:24]
+🚀 开始执行: fetch_and_filter.py
+📋 执行参数: 江苏港口集团 2025-07-11 --output output/2025-07-11/tmp_2025-07-11_江苏省国资委_江苏港口集团.json
+==============================
+
+[🕒 2025-07-12 00:28:50]
+执行程序: fetch_and_filter
+🔑 主关键词: 江苏省国资委
+🔍 搜索关键词: 江苏港口集团
+📅 日期: 2025-07-11
+📄 输出文件: output/2025-07-11/tmp_2025-07-11_江苏省国资委_江苏港口集团.json
+🌐 Google News: 0 条
+🌐 Baidu News: 0 条
+🌐 Bing News: 17 条
+🌐 DuckDuckGo News: 18 条
+🚫 黑名单过滤: 0 条
+⭐️ 去重后总保存: 22 条
+==============================
+
+[🕒 2025-07-12 00:28:50]
+✅ 执行完成: fetch_and_filter.py
+📝 说明: 采集完成，保存22条新闻到output/2025-07-11/tmp_2025-07-11_江苏省国资委_江苏港口集团.json
+==============================
+
+[🕒 2025-07-12 00:28:51]
+🚀 开始执行: fetch_and_filter.py
+📋 执行参数: 江苏铁路集团 2025-07-11 --output output/2025-07-11/tmp_2025-07-11_江苏省国资委_江苏铁路集团.json
+==============================
+
+[🕒 2025-07-12 00:30:30]
+执行程序: fetch_and_filter
+🔑 主关键词: 江苏省国资委
+🔍 搜索关键词: 江苏铁路集团
+📅 日期: 2025-07-11
+📄 输出文件: output/2025-07-11/tmp_2025-07-11_江苏省国资委_江苏铁路集团.json
+🌐 Google News: 0 条
+🌐 Baidu News: 0 条
+🌐 Bing News: 12 条
+🌐 DuckDuckGo News: 15 条
+🚫 黑名单过滤: 1 条
+⭐️ 去重后总保存: 22 条
+==============================
+
+[🕒 2025-07-12 00:30:30]
+✅ 执行完成: fetch_and_filter.py
+📝 说明: 采集完成，保存22条新闻到output/2025-07-11/tmp_2025-07-11_江苏省国资委_江苏铁路集团.json
+==============================
+
+[🕒 2025-07-12 00:30:31]
+🚀 开始执行: fetch_and_filter.py
+📋 执行参数: 江苏环保集团 2025-07-11 --output output/2025-07-11/tmp_2025-07-11_江苏省国资委_江苏环保集团.json
+==============================
+
+[🕒 2025-07-12 00:32:20]
+执行程序: fetch_and_filter
+🔑 主关键词: 江苏省国资委
+🔍 搜索关键词: 江苏环保集团
+📅 日期: 2025-07-11
+📄 输出文件: output/2025-07-11/tmp_2025-07-11_江苏省国资委_江苏环保集团.json
+🌐 Google News: 0 条
+🌐 Baidu News: 0 条
+🌐 Bing News: 8 条
+🌐 DuckDuckGo News: 30 条
+🚫 黑名单过滤: 0 条
+⭐️ 去重后总保存: 31 条
+==============================
+
+[🕒 2025-07-12 00:32:20]
+✅ 执行完成: fetch_and_filter.py
+📝 说明: 采集完成，保存31条新闻到output/2025-07-11/tmp_2025-07-11_江苏省国资委_江苏环保集团.json
+==============================
+
+[🕒 2025-07-12 00:32:20]
+🚀 开始执行: fetch_and_filter.py
+📋 执行参数: 江苏盐业集团 2025-07-11 --output output/2025-07-11/tmp_2025-07-11_江苏省国资委_江苏盐业集团.json
+==============================
+
+[🕒 2025-07-12 00:33:52]
+执行程序: fetch_and_filter
+🔑 主关键词: 江苏省国资委
+🔍 搜索关键词: 江苏盐业集团
+📅 日期: 2025-07-11
+📄 输出文件: output/2025-07-11/tmp_2025-07-11_江苏省国资委_江苏盐业集团.json
+🌐 Google News: 0 条
+🌐 Baidu News: 0 条
+🌐 Bing News: 4 条
+🌐 DuckDuckGo News: 10 条
+🚫 黑名单过滤: 0 条
+⭐️ 去重后总保存: 3 条
+==============================
+
+[🕒 2025-07-12 00:33:52]
+✅ 执行完成: fetch_and_filter.py
+📝 说明: 采集完成，保存3条新闻到output/2025-07-11/tmp_2025-07-11_江苏省国资委_江苏盐业集团.json
+==============================
+
+[🕒 2025-07-12 00:33:53]
+🚀 开始执行: fetch_and_filter.py
+📋 执行参数: 江苏粮食集团 2025-07-11 --output output/2025-07-11/tmp_2025-07-11_江苏省国资委_江苏粮食集团.json
+==============================
+
+[🕒 2025-07-12 00:35:17]
+执行程序: fetch_and_filter
+🔑 主关键词: 江苏省国资委
+🔍 搜索关键词: 江苏粮食集团
+📅 日期: 2025-07-11
+📄 输出文件: output/2025-07-11/tmp_2025-07-11_江苏省国资委_江苏粮食集团.json
+🌐 Google News: 5 条
+🌐 Baidu News: 0 条
+🌐 Bing News: 19 条
+🌐 DuckDuckGo News: 11 条
+🚫 黑名单过滤: 0 条
+⭐️ 去重后总保存: 26 条
+==============================
+
+[🕒 2025-07-12 00:35:17]
+✅ 执行完成: fetch_and_filter.py
+📝 说明: 采集完成，保存26条新闻到output/2025-07-11/tmp_2025-07-11_江苏省国资委_江苏粮食集团.json
+==============================
+
+[🕒 2025-07-12 00:35:18]
+🚀 开始执行: fetch_and_filter.py
+📋 执行参数: 江苏省高投 2025-07-11 --output output/2025-07-11/tmp_2025-07-11_江苏省国资委_江苏省高投.json
+==============================
+
+[🕒 2025-07-12 00:37:07]
+执行程序: fetch_and_filter
+🔑 主关键词: 江苏省国资委
+🔍 搜索关键词: 江苏省高投
+📅 日期: 2025-07-11
+📄 输出文件: output/2025-07-11/tmp_2025-07-11_江苏省国资委_江苏省高投.json
+🌐 Google News: 0 条
+🌐 Baidu News: 0 条
+🌐 Bing News: 0 条
+🌐 DuckDuckGo News: 42 条
+🚫 黑名单过滤: 0 条
+⭐️ 去重后总保存: 10 条
+==============================
+
+[🕒 2025-07-12 00:37:07]
+✅ 执行完成: fetch_and_filter.py
+📝 说明: 采集完成，保存10条新闻到output/2025-07-11/tmp_2025-07-11_江苏省国资委_江苏省高投.json
+==============================
+
+[🕒 2025-07-12 00:37:08]
+🚀 开始执行: fetch_and_filter.py
+📋 执行参数: 金陵饭店 2025-07-11 --output output/2025-07-11/tmp_2025-07-11_江苏省国资委_金陵饭店.json
+==============================
+
+[🕒 2025-07-12 00:38:18]
+执行程序: fetch_and_filter
+🔑 主关键词: 江苏省国资委
+🔍 搜索关键词: 金陵饭店
+📅 日期: 2025-07-11
+📄 输出文件: output/2025-07-11/tmp_2025-07-11_江苏省国资委_金陵饭店.json
+🌐 Google News: 5 条
+🌐 Baidu News: 2 条
+🌐 Bing News: 19 条
+🌐 DuckDuckGo News: 25 条
+🚫 黑名单过滤: 0 条
+⭐️ 去重后总保存: 25 条
+==============================
+
+[🕒 2025-07-12 00:38:18]
+✅ 执行完成: fetch_and_filter.py
+📝 说明: 采集完成，保存25条新闻到output/2025-07-11/tmp_2025-07-11_江苏省国资委_金陵饭店.json
+==============================
+
+[🕒 2025-07-12 00:38:19]
+🚀 开始执行: fetch_and_filter.py
+📋 执行参数: 钟山宾馆 2025-07-11 --output output/2025-07-11/tmp_2025-07-11_江苏省国资委_钟山宾馆.json
+==============================
+
+[🕒 2025-07-12 00:39:54]
+执行程序: fetch_and_filter
+🔑 主关键词: 江苏省国资委
+🔍 搜索关键词: 钟山宾馆
+📅 日期: 2025-07-11
+📄 输出文件: output/2025-07-11/tmp_2025-07-11_江苏省国资委_钟山宾馆.json
+🌐 Google News: 0 条
+🌐 Baidu News: 0 条
+🌐 Bing News: 0 条
+🌐 DuckDuckGo News: 0 条
+🚫 黑名单过滤: 0 条
+⭐️ 去重后总保存: 0 条
+==============================
+
+[🕒 2025-07-12 00:39:54]
+✅ 执行完成: fetch_and_filter.py
+📝 说明: 采集完成，保存0条新闻到output/2025-07-11/tmp_2025-07-11_江苏省国资委_钟山宾馆.json
+==============================
+
+[🕒 2025-07-12 00:39:55]
+🚀 开始执行: fetch_and_filter.py
+📋 执行参数: 江苏水源 2025-07-11 --output output/2025-07-11/tmp_2025-07-11_江苏省国资委_江苏水源.json
+==============================
+
+[🕒 2025-07-12 00:41:18]
+执行程序: fetch_and_filter
+🔑 主关键词: 江苏省国资委
+🔍 搜索关键词: 江苏水源
+📅 日期: 2025-07-11
+📄 输出文件: output/2025-07-11/tmp_2025-07-11_江苏省国资委_江苏水源.json
+🌐 Google News: 0 条
+🌐 Baidu News: 0 条
+🌐 Bing News: 17 条
+🌐 DuckDuckGo News: 16 条
+🚫 黑名单过滤: 0 条
+⭐️ 去重后总保存: 20 条
+==============================
+
+[🕒 2025-07-12 00:41:18]
+✅ 执行完成: fetch_and_filter.py
+📝 说明: 采集完成，保存20条新闻到output/2025-07-11/tmp_2025-07-11_江苏省国资委_江苏水源.json
+==============================
+
+[🕒 2025-07-12 00:41:19]
+🚀 开始执行: fetch_and_filter.py
+📋 执行参数: 江苏体育集团 2025-07-11 --output output/2025-07-11/tmp_2025-07-11_江苏省国资委_江苏体育集团.json
+==============================
+
+[🕒 2025-07-12 00:43:29]
+执行程序: fetch_and_filter
+🔑 主关键词: 江苏省国资委
+🔍 搜索关键词: 江苏体育集团
+📅 日期: 2025-07-11
+📄 输出文件: output/2025-07-11/tmp_2025-07-11_江苏省国资委_江苏体育集团.json
+🌐 Google News: 10 条
+🌐 Baidu News: 0 条
+🌐 Bing News: 15 条
+🌐 DuckDuckGo News: 11 条
+🚫 黑名单过滤: 0 条
+⭐️ 去重后总保存: 20 条
+==============================
+
+[🕒 2025-07-12 00:43:29]
+✅ 执行完成: fetch_and_filter.py
+📝 说明: 采集完成，保存20条新闻到output/2025-07-11/tmp_2025-07-11_江苏省国资委_江苏体育集团.json
+==============================
+
+[🕒 2025-07-12 00:43:30]
+🚀 开始执行: fetch_and_filter.py
+📋 执行参数: 江苏国金集团 2025-07-11 --output output/2025-07-11/tmp_2025-07-11_江苏省国资委_江苏国金集团.json
+==============================
+
+[🕒 2025-07-12 00:44:46]
+执行程序: fetch_and_filter
+🔑 主关键词: 江苏省国资委
+🔍 搜索关键词: 江苏国金集团
+📅 日期: 2025-07-11
+📄 输出文件: output/2025-07-11/tmp_2025-07-11_江苏省国资委_江苏国金集团.json
+🌐 Google News: 0 条
+🌐 Baidu News: 0 条
+🌐 Bing News: 0 条
+🌐 DuckDuckGo News: 14 条
+🚫 黑名单过滤: 0 条
+⭐️ 去重后总保存: 3 条
+==============================
+
+[🕒 2025-07-12 00:44:46]
+✅ 执行完成: fetch_and_filter.py
+📝 说明: 采集完成，保存3条新闻到output/2025-07-11/tmp_2025-07-11_江苏省国资委_江苏国金集团.json
+==============================
+
+[🕒 2025-07-12 00:44:49]
+🚀 开始执行: fetch_and_filter.py
+📋 执行参数: 江苏规划设计集团 2025-07-11 --output output/2025-07-11/tmp_2025-07-11_江苏省国资委_江苏规划设计集团.json
+==============================
+
+[🕒 2025-07-12 00:46:25]
+执行程序: fetch_and_filter
+🔑 主关键词: 江苏省国资委
+🔍 搜索关键词: 江苏规划设计集团
+📅 日期: 2025-07-11
+📄 输出文件: output/2025-07-11/tmp_2025-07-11_江苏省国资委_江苏规划设计集团.json
+🌐 Google News: 0 条
+🌐 Baidu News: 0 条
+🌐 Bing News: 13 条
+🌐 DuckDuckGo News: 12 条
+🚫 黑名单过滤: 0 条
+⭐️ 去重后总保存: 18 条
+==============================
+
+[🕒 2025-07-12 00:46:25]
+✅ 执行完成: fetch_and_filter.py
+📝 说明: 采集完成，保存18条新闻到output/2025-07-11/tmp_2025-07-11_江苏省国资委_江苏规划设计集团.json
+==============================
+
+[🕒 2025-07-12 00:46:26]
+🚀 开始执行: fetch_and_filter.py
+📋 执行参数: 江苏省数据集团 2025-07-11 --output output/2025-07-11/tmp_2025-07-11_江苏省国资委_江苏省数据集团.json
+==============================
+
+[🕒 2025-07-12 00:47:41]
+执行程序: fetch_and_filter
+🔑 主关键词: 江苏省国资委
+🔍 搜索关键词: 江苏省数据集团
+📅 日期: 2025-07-11
+📄 输出文件: output/2025-07-11/tmp_2025-07-11_江苏省国资委_江苏省数据集团.json
+🌐 Google News: 0 条
+🌐 Baidu News: 0 条
+🌐 Bing News: 0 条
+🌐 DuckDuckGo News: 34 条
+🚫 黑名单过滤: 0 条
+⭐️ 去重后总保存: 8 条
+==============================
+
+[🕒 2025-07-12 00:47:41]
+✅ 执行完成: fetch_and_filter.py
+📝 说明: 采集完成，保存8条新闻到output/2025-07-11/tmp_2025-07-11_江苏省国资委_江苏省数据集团.json
+==============================
+
+[🕒 2025-07-12 00:47:46]
+🚀 开始执行: fetch_content.py
+📋 执行参数: 养老 2025-07-11
+==============================
+
+[🕒 2025-07-12 00:48:29]
+💥 程序异常终止
+📋 程序名: fetch_content.py
+🎯 执行阶段: 正文抓取处理
+🔑 关键词: unknown
+❗ 错误信息: 'gbk' codec can't encode character '\u274c' in position 5: illegal multibyte sequence
+📝 详细错误:
+Traceback (most recent call last):
+  File "C:\serp_news_mainkeyword\fetch_content.py", line 433, in process_json
+    print(f"[{keyword}] ✅ 抓取成功 ({grab_type}): {wordcount} 字")
+UnicodeEncodeError: 'gbk' codec can't encode character '\u2705' in position 5: illegal multibyte sequence
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\serp_news_mainkeyword\error_handler.py", line 119, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\serp_news_mainkeyword\fetch_content.py", line 438, in process_json
+    print(f"[{keyword}] ❌ 抓取异常: {str(e)}")
+UnicodeEncodeError: 'gbk' codec can't encode character '\u274c' in position 5: illegal multibyte sequence
+
+==============================
+
+[🕒 2025-07-12 00:48:29]
+❌ 执行失败: fetch_content.py
+📝 说明: 执行过程中出现错误
+==============================
+
+[🕒 2025-07-12 00:48:36]
+🚀 开始执行: fetch_content.py
+📋 执行参数: 公积金 2025-07-11
+==============================
+
+[🕒 2025-07-12 00:49:02]
+💥 程序异常终止
+📋 程序名: fetch_content.py
+🎯 执行阶段: 正文抓取处理
+🔑 关键词: unknown
+❗ 错误信息: 'gbk' codec can't encode character '\u274c' in position 6: illegal multibyte sequence
+📝 详细错误:
+Traceback (most recent call last):
+  File "C:\serp_news_mainkeyword\fetch_content.py", line 433, in process_json
+    print(f"[{keyword}] ✅ 抓取成功 ({grab_type}): {wordcount} 字")
+UnicodeEncodeError: 'gbk' codec can't encode character '\u2705' in position 6: illegal multibyte sequence
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\serp_news_mainkeyword\error_handler.py", line 119, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\serp_news_mainkeyword\fetch_content.py", line 438, in process_json
+    print(f"[{keyword}] ❌ 抓取异常: {str(e)}")
+UnicodeEncodeError: 'gbk' codec can't encode character '\u274c' in position 6: illegal multibyte sequence
+
+==============================
+
+[🕒 2025-07-12 00:49:02]
+❌ 执行失败: fetch_content.py
+📝 说明: 执行过程中出现错误
+==============================
+
+[🕒 2025-07-12 00:49:09]
+🚀 开始执行: fetch_content.py
+📋 执行参数: 政府基金 2025-07-11
+==============================
+
+[🕒 2025-07-12 00:49:16]
+💥 程序异常终止
+📋 程序名: fetch_content.py
+🎯 执行阶段: 正文抓取处理
+🔑 关键词: unknown
+❗ 错误信息: 'gbk' codec can't encode character '\u274c' in position 7: illegal multibyte sequence
+📝 详细错误:
+Traceback (most recent call last):
+  File "C:\serp_news_mainkeyword\fetch_content.py", line 433, in process_json
+    print(f"[{keyword}] ✅ 抓取成功 ({grab_type}): {wordcount} 字")
+UnicodeEncodeError: 'gbk' codec can't encode character '\u2705' in position 7: illegal multibyte sequence
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\serp_news_mainkeyword\error_handler.py", line 119, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\serp_news_mainkeyword\fetch_content.py", line 438, in process_json
+    print(f"[{keyword}] ❌ 抓取异常: {str(e)}")
+UnicodeEncodeError: 'gbk' codec can't encode character '\u274c' in position 7: illegal multibyte sequence
+
+==============================
+
+[🕒 2025-07-12 00:49:16]
+❌ 执行失败: fetch_content.py
+📝 说明: 执行过程中出现错误
+==============================
+
+[🕒 2025-07-12 00:49:18]
+🚀 开始执行: fetch_content.py
+📋 执行参数: 江苏省国资委 2025-07-11
+==============================
+
+[🕒 2025-07-12 00:49:19]
+💥 程序异常终止
+📋 程序名: fetch_content.py
+🎯 执行阶段: 正文抓取处理
+🔑 关键词: unknown
+❗ 错误信息: 'gbk' codec can't encode character '\u274c' in position 9: illegal multibyte sequence
+📝 详细错误:
+Traceback (most recent call last):
+  File "C:\serp_news_mainkeyword\fetch_content.py", line 433, in process_json
+    print(f"[{keyword}] ✅ 抓取成功 ({grab_type}): {wordcount} 字")
+UnicodeEncodeError: 'gbk' codec can't encode character '\u2705' in position 9: illegal multibyte sequence
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\serp_news_mainkeyword\error_handler.py", line 119, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\serp_news_mainkeyword\fetch_content.py", line 438, in process_json
+    print(f"[{keyword}] ❌ 抓取异常: {str(e)}")
+UnicodeEncodeError: 'gbk' codec can't encode character '\u274c' in position 9: illegal multibyte sequence
+
+==============================
+
+[🕒 2025-07-12 00:49:19]
+❌ 执行失败: fetch_content.py
+📝 说明: 执行过程中出现错误
+==============================
+
+[🕒 2025-07-12 00:49:25]
+🚀 开始执行: news_scorer.py
+📋 执行参数: 养老 2025-07-11
+==============================
+
+[🕒 2025-07-12 00:49:25]
+🚀 开始执行: news_scorer.py
+📋 执行参数: 政府基金 2025-07-11
+==============================
+
+[🕒 2025-07-12 00:49:25]
+🚀 开始执行: news_scorer.py
+📋 执行参数: 公积金 2025-07-11
+==============================
+
+[[TIME] 2025-07-12 01:24:39]
+执行程序: ai评分（使用搜索关键词优化）
+? 主关键词: 公积金
+? 原json文件: output\2025-07-11\2025-07-11_公积金.json
+? 评分结果文件: output\2025-07-11\2025-07-11_公积金_scored.json
+[CHART] 新闻总数: 41
+? 完成评分: 41
+0分:1 1分:3 2分:9 3分:9 4分:17 5分:2
+? 3分及以上新闻正文总字数: 0
+? 规则打分新闻数: 0
+==============================
+
+[🕒 2025-07-12 01:24:39]
+❌ 执行失败: news_scorer.py
+📝 说明: news_scorer.py 执行过程中发生异常: 'gbk' codec can't encode character '\u2705' in position 0: illegal multibyte sequence
+==============================
+
+[🕒 2025-07-12 01:24:44]
+🚀 开始执行: news_scorer.py
+📋 执行参数: 江苏省国资委 2025-07-11
+==============================
+
+[[TIME] 2025-07-12 01:30:01]
+执行程序: ai评分（使用搜索关键词优化）
+? 主关键词: 政府基金
+? 原json文件: output\2025-07-11\2025-07-11_政府基金.json
+? 评分结果文件: output\2025-07-11\2025-07-11_政府基金_scored.json
+[CHART] 新闻总数: 47
+? 完成评分: 47
+0分:0 1分:17 2分:14 3分:6 4分:10 5分:0
+? 3分及以上新闻正文总字数: 0
+? 规则打分新闻数: 0
+==============================
+
+[🕒 2025-07-12 01:30:01]
+❌ 执行失败: news_scorer.py
+📝 说明: news_scorer.py 执行过程中发生异常: 'gbk' codec can't encode character '\u2705' in position 0: illegal multibyte sequence
+==============================
+
+[[TIME] 2025-07-12 01:46:11]
+执行程序: ai评分（使用搜索关键词优化）
+? 主关键词: 江苏省国资委
+? 原json文件: output\2025-07-11\2025-07-11_江苏省国资委.json
+? 评分结果文件: output\2025-07-11\2025-07-11_江苏省国资委_scored.json
+[CHART] 新闻总数: 287
+? 完成评分: 287
+0分:3 1分:133 2分:70 3分:59 4分:22 5分:0
+? 3分及以上新闻正文总字数: 0
+? 规则打分新闻数: 0
+==============================
+
+[🕒 2025-07-12 01:46:11]
+❌ 执行失败: news_scorer.py
+📝 说明: news_scorer.py 执行过程中发生异常: 'gbk' codec can't encode character '\u2705' in position 0: illegal multibyte sequence
+==============================
+
+[[TIME] 2025-07-12 02:44:39]
+执行程序: ai评分（使用搜索关键词优化）
+? 主关键词: 养老
+? 原json文件: output\2025-07-11\2025-07-11_养老.json
+? 评分结果文件: output\2025-07-11\2025-07-11_养老_scored.json
+[CHART] 新闻总数: 138
+? 完成评分: 138
+0分:2 1分:24 2分:23 3分:27 4分:20 5分:42
+? 3分及以上新闻正文总字数: 0
+? 规则打分新闻数: 0
+==============================
+
+[🕒 2025-07-12 02:44:39]
+❌ 执行失败: news_scorer.py
+📝 说明: news_scorer.py 执行过程中发生异常: 'gbk' codec can't encode character '\u2705' in position 0: illegal multibyte sequence
+==============================
+
+[2025-07-12 02:44:41]
+执行程序: main.py (并发AI评分)
+并发处理关键词: 养老, 公积金, 政府基金, 江苏省国资委
+最大并发数: 3
+总耗时: 6921.8秒
+成功: 4，失败: 0
+详细结果:
+  - 公积金: 成功
+  - 政府基金: 成功
+  - 江苏省国资委: 成功
+  - 养老: 成功
+==============================
+
+[🕒 2025-07-12 02:44:45]
+🚀 开始执行: news_summarizer.py
+📋 执行参数: --date 2025-07-11
+==============================
+
+[🕒 2025-07-12 02:45:15]
+💥 程序异常终止
+📋 程序名: news_summarizer.py
+🎯 执行阶段: main
+🔑 关键词: unknown
+❗ 错误信息: 'gbk' codec can't encode character '\U0001f916' in position 0: illegal multibyte sequence
+📝 详细错误:
+Traceback (most recent call last):
+  File "C:\serp_news_mainkeyword\error_handler.py", line 119, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\serp_news_mainkeyword\news_summarizer.py", line 464, in main
+    prompt, summary, system_tokens, user_tokens, result_tokens, used_platform, used_model, token_limit_info = summarize_news(news_list, platform=platform, model_name=model, keyword=keyword)
+                                                                                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\serp_news_mainkeyword\news_summarizer.py", line 189, in summarize_news
+    result, token_limit_info = call_llm(
+                               ^^^^^^^^^
+  File "C:\serp_news_mainkeyword\news_summarizer.py", line 290, in call_llm
+    print(f"🤖 [尝试 {attempt}/{max_retries}] 正在调用 {platform}-{model_name} 模型...")
+UnicodeEncodeError: 'gbk' codec can't encode character '\U0001f916' in position 0: illegal multibyte sequence
+
+==============================
+
+[🕒 2025-07-12 02:45:16]
+💥 程序异常终止
+📋 程序名: news_summarizer.py
+🎯 执行阶段: main
+🔑 关键词: unknown
+❗ 错误信息: 'gbk' codec can't encode character '\U0001f916' in position 0: illegal multibyte sequence
+📝 详细错误:
+Traceback (most recent call last):
+  File "C:\serp_news_mainkeyword\error_handler.py", line 119, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\serp_news_mainkeyword\news_summarizer.py", line 464, in main
+    prompt, summary, system_tokens, user_tokens, result_tokens, used_platform, used_model, token_limit_info = summarize_news(news_list, platform=platform, model_name=model, keyword=keyword)
+                                                                                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\serp_news_mainkeyword\news_summarizer.py", line 189, in summarize_news
+    result, token_limit_info = call_llm(
+                               ^^^^^^^^^
+  File "C:\serp_news_mainkeyword\news_summarizer.py", line 290, in call_llm
+    print(f"🤖 [尝试 {attempt}/{max_retries}] 正在调用 {platform}-{model_name} 模型...")
+UnicodeEncodeError: 'gbk' codec can't encode character '\U0001f916' in position 0: illegal multibyte sequence
+
+==============================
+
+[🕒 2025-07-12 02:45:16]
+💥 程序异常终止
+📋 程序名: news_summarizer.py
+🎯 执行阶段: main
+🔑 关键词: unknown
+❗ 错误信息: 'gbk' codec can't encode character '\U0001f916' in position 0: illegal multibyte sequence
+📝 详细错误:
+Traceback (most recent call last):
+  File "C:\serp_news_mainkeyword\error_handler.py", line 119, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\serp_news_mainkeyword\news_summarizer.py", line 464, in main
+    prompt, summary, system_tokens, user_tokens, result_tokens, used_platform, used_model, token_limit_info = summarize_news(news_list, platform=platform, model_name=model, keyword=keyword)
+                                                                                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\serp_news_mainkeyword\news_summarizer.py", line 189, in summarize_news
+    result, token_limit_info = call_llm(
+                               ^^^^^^^^^
+  File "C:\serp_news_mainkeyword\news_summarizer.py", line 290, in call_llm
+    print(f"🤖 [尝试 {attempt}/{max_retries}] 正在调用 {platform}-{model_name} 模型...")
+UnicodeEncodeError: 'gbk' codec can't encode character '\U0001f916' in position 0: illegal multibyte sequence
+
+==============================
+
+[🕒 2025-07-12 02:45:17]
+💥 程序异常终止
+📋 程序名: news_summarizer.py
+🎯 执行阶段: main
+🔑 关键词: unknown
+❗ 错误信息: 'gbk' codec can't encode character '\U0001f916' in position 0: illegal multibyte sequence
+📝 详细错误:
+Traceback (most recent call last):
+  File "C:\serp_news_mainkeyword\error_handler.py", line 119, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\serp_news_mainkeyword\news_summarizer.py", line 464, in main
+    prompt, summary, system_tokens, user_tokens, result_tokens, used_platform, used_model, token_limit_info = summarize_news(news_list, platform=platform, model_name=model, keyword=keyword)
+                                                                                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\serp_news_mainkeyword\news_summarizer.py", line 189, in summarize_news
+    result, token_limit_info = call_llm(
+                               ^^^^^^^^^
+  File "C:\serp_news_mainkeyword\news_summarizer.py", line 290, in call_llm
+    print(f"🤖 [尝试 {attempt}/{max_retries}] 正在调用 {platform}-{model_name} 模型...")
+UnicodeEncodeError: 'gbk' codec can't encode character '\U0001f916' in position 0: illegal multibyte sequence
+
+==============================
+
+[🕒 2025-07-12 02:45:17]
+❌ 执行失败: news_summarizer.py
+📝 说明: news_summarizer.py 主程序执行过程中发生异常: 'gbk' codec can't encode character '\U0001f4ca' in position 2: illegal multibyte sequence
+==============================
+
+[🕒 2025-07-12 02:45:17]
+❌ 执行失败: 自动总结主关键词
+🔑 关键词: unknown
+📋 执行命令: python news_summarizer.py --date 2025-07-11
+❗ 错误信息: 命令执行失败，返回码: 1
+错误输出: None of PyTorch, TensorFlow >= 2.0, or Flax have been found. Models won't be available and only tokenizers, configuration and file/data utilities can be used.
+
+==============================
+
+[🕒 2025-07-12 02:45:17]
+❌ 执行失败: main.py
+📝 说明: main函数执行过程中发生异常: Command 'python news_summarizer.py --date 2025-07-11' returned non-zero exit status 1.
+==============================
+
+[2025-07-12 07:18:56]
+[开始执行] 开始执行: fetch_content.py
+[参数] 执行参数: 公积金 2025-07-11
+==============================
+
+==============================
+[时间] 2025-07-12 07:31:13
+[关键词] 关键词: 公积金
+[模式] 模式: 正式
+[文件] 处理的json文件: output\2025-07-11\2025-07-11_公积金.json
+
+[统计] 抓取统计：
+  [成功] 成功抓取正文: 40 篇
+  [定制] 其中定制化抓取: 3 篇
+  [来源] 本次采集新闻源数量: 26
+  [失败] 抓取失败: 6 篇
+
+[命中] 定制化抓取命中统计：
+  - www.yicai.com: 3 篇
+      * 大连：实施高层次人才个人住房公积金贷款支持政策 | https://www.yicai.com/news/102718655.html
+      * 分享到微信 | https://www.yicai.com/video/102717064.html
+      * 存量房贷从3.2%降到2.6%，广州拟推"商转公"新政 | https://www.yicai.com/news/102716366.html
+
+[警告] 未能抓取的新闻：
+  - 大连实施高层次人才个人住房公积金贷款支持政策 | http://m.hexun.com/house/2025-07-11/220146878.html 
+  - 江门公积金提取新规9月1日起实施， 提取条件更宽松 | https://m.mp.oeeee.com/a/BAAFRD0000202507111102113.html 
+  - 北京提振住房消费出实招：公积金可“既提又贷” | https://house.ifeng.com/news/2025_07_11-57098219_0.shtml 
+  - 北京提振住房消费出实招：公积金可"既提又贷" | https://house.ifeng.com/news/2025_07_11-57098219_0.shtml 
+  - 织密便民服务网，赋能安居新生活，建行上海市分行携手公积金中心 ... | https://www.msn.cn/zh-cn/money/other/%E7%BB%87%E5%AF%86%E4%BE%BF%E6%B0%91%E6%9C%8D%E5%8A%A1%E7%BD%91-%E8%B5%8B%E8%83%BD%E5%AE%89%E5%B1%85%E6%96%B0%E7%94%9F%E6%B4%BB-%E5%BB%BA%E8%A1%8C%E4%B8%8A%E6%B5%B7%E5%B8%82%E5%88%86%E8%A1%8C%E6%90%BA%E6%89%8B%E5%85%AC%E7%A7%AF%E9%87%91%E4%B8%AD%E5%BF%83%E6%89%A9%E5%AE%B9%E5%91%A8%E6%9C%AB%E6%9C%8D%E5%8A%A1%E7%BD%91%E7%82%B9%E8%87%B319%E5%AE%B6/ar-AA1IjovZ 
+  - 申请提取公积金为啥"卡起了"？ | https://www.msn.cn/zh-cn/money/other/%E7%94%B3%E8%AF%B7%E6%8F%90%E5%8F%96%E5%85%AC%E7%A7%AF%E9%87%91%E4%B8%BA%E5%95%A5-%E5%8D%A1%E8%B5%B7%E4%BA%86/ar-AA1InykU 
+==============================
+
+
+[2025-07-12 07:31:13]
+[执行失败] 执行失败: fetch_content.py
+[说明] 说明: 执行过程中出现错误
+==============================
+
+[2025-07-12 07:46:25]
+[开始执行] 开始执行: fetch_content.py
+[参数] 执行参数: --help
+==============================
+
+[2025-07-12 07:46:25]
+[执行失败] 执行失败: fetch_content.py
+[说明] 说明: 执行过程中出现错误
+==============================
+
+[2025-07-12 07:46:58]
+[开始执行] 开始执行: fetch_content.py
+[参数] 执行参数: 公积金 2025-07-11 --test
+==============================
+
+[2025-07-12 07:46:58]
+[执行失败] 执行失败: fetch_content.py
+[说明] 说明: 执行过程中出现错误
+==============================
+
+[2025-07-12 07:47:19]
+[开始执行] 开始执行: fetch_content.py
+[参数] 执行参数: 公积金 2025-07-10 --test
+==============================
+[2025-07-12 07:47:19]
+[SKIP] 跳过关键词: 公积金
+原因: output/2025-07-10/2025-07-10_公积金.json 所有新闻已包含content字段，正文抓取已执行
+==============================
+
+[2025-07-12 07:47:19]
+[执行失败] 执行失败: fetch_content.py
+[说明] 说明: 执行过程中出现错误
+==============================
+
+[2025-07-12 07:47:26]
+[开始执行] 开始执行: fetch_content.py
+[参数] 执行参数: 公积金 2025-07-10 --test
+==============================
+[2025-07-12 07:47:26]
+[SKIP] 跳过关键词: 公积金
+原因: output/2025-07-10/2025-07-10_公积金.json 所有新闻已包含content字段，正文抓取已执行
+==============================
+
+[2025-07-12 07:47:26]
+[执行失败] 执行失败: fetch_content.py
+[说明] 说明: 执行过程中出现错误
+==============================
+
+[2025-07-12 07:48:08]
+[开始执行] 开始执行: fetch_content.py
+[参数] 执行参数: 公积金 2025-07-10 --test
+==============================
+[2025-07-12 07:48:08]
+[SKIP] 跳过关键词: 公积金
+原因: output/2025-07-10/2025-07-10_公积金.json 所有新闻已包含content字段，正文抓取已执行
+==============================
+
+[2025-07-12 07:48:08]
+[执行完成] 执行完成: fetch_content.py
+[说明] 说明: 执行成功
+==============================
+
+[2025-07-12 07:48:14]
+[开始执行] 开始执行: fetch_content.py
+[参数] 执行参数: 测试关键词 2025-07-10 --test
+==============================
+
+[2025-07-12 07:48:14]
+[执行完成] 执行完成: fetch_content.py
+[说明] 说明: 执行成功
+==============================
+
+[2025-07-12 07:48:50]
+[开始执行] 开始执行: fetch_content.py
+[参数] 执行参数: 测试关键词 2025-07-10 --test
+==============================
+
+[2025-07-12 07:48:50]
+[执行失败] 执行失败: fetch_content.py
+[说明] 说明: 执行过程中出现错误
+==============================
+
+[2025-07-12 07:48:56]
+[开始执行] 开始执行: fetch_content.py
+[参数] 执行参数: 公积金 2025-07-10 --test
+==============================
+[2025-07-12 07:48:56]
+[SKIP] 跳过关键词: 公积金
+原因: output/2025-07-10/2025-07-10_公积金.json 所有新闻已包含content字段，正文抓取已执行
+==============================
+
+[2025-07-12 07:48:56]
+[执行完成] 执行完成: fetch_content.py
+[说明] 说明: 执行成功
 ==============================

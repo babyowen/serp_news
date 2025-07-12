@@ -173,20 +173,20 @@ def append_log(keyword, json_path, total, score_counter, scored_count, scored_js
             if news.get("score", 0) >= 3:
                 total_wordcount_3plus += len(news.get("content", ""))
     log = (
-        f"\n[🕒 {now}]\n"
+        f"\n[{now}]\n"
         f"执行程序: ai评分（使用搜索关键词优化）\n"
-        f"🔑 主关键词: {keyword}\n"
-        f"📄 原json文件: {json_path}\n"
-        f"🆕 评分结果文件: {scored_json_path}\n"
-        f"📊 新闻总数: {total}\n"
-        f"✅ 完成评分: {scored_count}\n"
+        f"[关键词] 主关键词: {keyword}\n"
+        f"[文件] 原json文件: {json_path}\n"
+        f"[结果] 评分结果文件: {scored_json_path}\n"
+        f"[统计] 新闻总数: {total}\n"
+        f"[完成] 完成评分: {scored_count}\n"
         f"{emoji_score_line}\n"
     )
     if results is not None:
-        log += f"📝 3分及以上新闻正文总字数: {total_wordcount_3plus}\n"
+        log += f"[字数] 3分及以上新闻正文总字数: {total_wordcount_3plus}\n"
     # 新增：规则打分统计
     if rule_based_titles is not None:
-        log += f"📋 规则打分新闻数: {len(rule_based_titles)}\n"
+        log += f"[规则打分] 规则打分新闻数: {len(rule_based_titles)}\n"
         if rule_based_titles:
             log += "规则打分新闻标题：\n"
             for t in rule_based_titles:
@@ -307,7 +307,7 @@ def main():
                         now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                         log_path = os.path.join("output", "run_log.txt")
                         skip_log = (
-                            f"[🕒 {now}]\n[SKIP] 跳过关键词: {keyword}\n原因: 已存在 {scored_json_path}，已完成打分\n==============================\n"
+                            f"[{now}]\n[SKIP] 跳过关键词: {keyword}\n原因: 已存在 {scored_json_path}，已完成打分\n==============================\n"
                         )
                         # 对日志字符串进行Unicode清理，避免GBK编码错误
                         cleaned_skip_log = clean_unicode_for_console(skip_log)
@@ -349,7 +349,7 @@ def main():
                     )
                     success = False
             
-            print(f"\n📊 批量评分完成：{processed_count}/{total_count} 个关键词处理成功" if not os.name == 'nt' else f"\n[批量评分完成] {processed_count}/{total_count} 个关键词处理成功")
+            print(f"\n[统计] 批量评分完成：{processed_count}/{total_count} 个关键词处理成功")
             log_script_complete("news_scorer.py", success=success, message=f"批量评分完成：{processed_count}/{total_count}")
             return success
 
@@ -367,7 +367,7 @@ def main():
             now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             log_path = os.path.join("output", "run_log.txt")
             skip_log = (
-                f"[🕒 {now}]\n[SKIP] 跳过关键词: {keyword}\n原因: 已存在 {scored_json_path}，已完成打分\n==============================\n"
+                f"[{now}]\n[SKIP] 跳过关键词: {keyword}\n原因: 已存在 {scored_json_path}，已完成打分\n==============================\n"
             )
             # 对日志字符串进行Unicode清理，避免GBK编码错误
             cleaned_skip_log = clean_unicode_for_console(skip_log)
@@ -390,8 +390,7 @@ def main():
         results, score_counter, total, rule_based_titles = batch_score_news(json_path, keyword)
         scored_json_path = write_scored_json(results, json_path)
         append_log(keyword, json_path, total, score_counter, len(results), scored_json_path, results, rule_based_titles)
-        
-        print(f"✅ 关键词 {keyword} 评分完成")
+        print(f"[完成] 关键词 {keyword} 评分完成")
         log_script_complete("news_scorer.py", success=True, message=f"关键词 {keyword} 评分完成")
         return True
         

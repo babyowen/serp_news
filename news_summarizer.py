@@ -246,30 +246,30 @@ def append_log(date, keyword, model_name, prompt, summary_path, news_count, succ
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     log_path = os.path.join("output", "run_log.txt")
     log = (
-        f"\n[🕒 {now}]\n"
+        f"\n[{now}]\n"
         f"执行程序: news_summarizer\n"
-        f"🔑 主关键词: {keyword}\n"
+        f"[关键词] 主关键词: {keyword}\n"
     )
     # 新增：记录涉及的搜索关键词
     if extra_info and 'search_keywords' in extra_info and extra_info['search_keywords']:
-        log += f"涉及搜索关键词: {', '.join([str(s) for s in extra_info['search_keywords'] if s])}\n"
+        log += f"[搜索关键词] 涉及搜索关键词: {', '.join([str(s) for s in extra_info['search_keywords'] if s])}\n"
     log += (
-        f"📅 日期: {date}\n"
-        f"🤖 平台: {platform if platform else 'unknown'}\n"
-        f"🤖 模型: {model_str if model_str else model_name}\n"
-        f"📄 3分及以上新闻数量: {news_count}\n"
-        f"📝 送给大模型的prompt前300字: {prompt[:300].replace(chr(10),' ')}\n"
-        f"💾 总结结果文件: {summary_path if summary_path else '无'}\n"
+        f"[日期] 日期: {date}\n"
+        f"[平台] 平台: {platform if platform else 'unknown'}\n"
+        f"[模型] 模型: {model_str if model_str else model_name}\n"
+        f"[新闻数量] 3分及以上新闻数量: {news_count}\n"
+        f"[Prompt] 送给大模型的prompt前300字: {prompt[:300].replace(chr(10),' ')}\n"
+        f"[总结结果文件] 总结结果文件: {summary_path if summary_path else '无'}\n"
         f"[Token统计] 平台: {platform if platform else 'unknown'}，模型: {model_str if model_str else model_name}，system: {system_tokens}, user: {user_tokens}, result: {result_tokens}\n"
-        f"✅ 运行结果: {'成功' if success else '失败'}\n"
+        f"[运行结果] 运行结果: {'成功' if success else '失败'}\n"
     )
     # 新增：记录合并的二级关键词
     if extra_info and 'secondary_keywords' in extra_info:
-        log += f"合并的二级关键词: {extra_info['secondary_keywords']}\n"
+        log += f"[合并关键词] 合并的二级关键词: {extra_info['secondary_keywords']}\n"
     if error_msg:
-        log += f"❌ 错误信息: {clean_unicode_for_console(error_msg)}\n"
+        log += f"[错误信息] 错误信息: {clean_unicode_for_console(error_msg)}\n"
     if extra_info and 'merge_status' in extra_info:
-        log += f"合并情况: {extra_info['merge_status']}\n"
+        log += f"[合并情况] 合并情况: {extra_info['merge_status']}\n"
     log += f"==============================\n"
     
     # 对整个日志字符串进行Unicode清理，避免GBK编码错误
@@ -287,8 +287,8 @@ def call_llm(system_prompt, user_prompt, platform, model_name, stream_mode=False
     ]
     token_limit_info = None
     for attempt in range(1, max_retries + 1):
-        print(f"🤖 [尝试 {attempt}/{max_retries}] 正在调用 {platform}-{model_name} 模型...")
-        print(f"⏱️  [超时设置] {timeout}秒，请耐心等待...")
+        print(f"[尝试] [尝试 {attempt}/{max_retries}] 正在调用 {platform}-{model_name} 模型...")
+        print(f"[超时设置] {timeout}秒，请耐心等待...")
         
         # 记录开始时间
         start_time = datetime.now()
@@ -302,7 +302,7 @@ def call_llm(system_prompt, user_prompt, platform, model_name, stream_mode=False
             )
             
             if stream_mode:
-                print("📝 [流式输出] 开始接收模型响应...")
+                print("[流式输出] 开始接收模型响应...")
                 result = ""
                 chunk_count = 0
                 for chunk in response:
@@ -311,16 +311,16 @@ def call_llm(system_prompt, user_prompt, platform, model_name, stream_mode=False
                         chunk_count += 1
                         # 每100个chunk显示一次进度
                         if chunk_count % 100 == 0:
-                            print(f"📝 [流式输出] 已接收 {chunk_count} 个数据块，当前长度: {len(result)} 字符")
-                print(f"✅ [流式输出] 完成，总共接收 {chunk_count} 个数据块")
+                            print(f"[流式输出] 已接收 {chunk_count} 个数据块，当前长度: {len(result)} 字符")
+                print(f"[完成] [流式输出] 完成，总共接收 {chunk_count} 个数据块")
             else:
-                print("📝 [非流式] 等待模型完整响应...")
+                print("[非流式] 等待模型完整响应...")
                 result = response.choices[0].message.content.strip()
             
             # 计算耗时
             end_time = datetime.now()
             duration = (end_time - start_time).total_seconds()
-            print(f"✅ [API调用成功] 耗时: {duration:.1f}秒，响应长度: {len(result)} 字符")
+            print(f"[成功] [API调用成功] 耗时: {duration:.1f}秒，响应长度: {len(result)} 字符")
             
             return result, token_limit_info
         except Exception as e:
@@ -333,7 +333,7 @@ def call_llm(system_prompt, user_prompt, platform, model_name, stream_mode=False
             is_timeout = any(x in err_str.lower() for x in ["timeout", "timed out", "time out"])
             
             if is_token_limit:
-                print(f"❌ [Token超限] 请求失败，耗时: {duration:.1f}秒")
+                print(f"[失败] [Token超限] 请求失败，耗时: {duration:.1f}秒")
                 print(f"[WARN] API返回token超限，prompt开头200字: {user_prompt[:200]}")
                 print(f"[WARN] API返回token超限，prompt结尾200字: {user_prompt[-200:]}")
                 token_limit_info = {
@@ -342,12 +342,12 @@ def call_llm(system_prompt, user_prompt, platform, model_name, stream_mode=False
                     "token_count": len(user_prompt)
                 }
             elif is_timeout:
-                print(f"⏰ [超时失败] 请求超时，耗时: {duration:.1f}秒（超过{timeout}秒限制）")
+                print(f"[失败] [超时失败] 请求超时，耗时: {duration:.1f}秒（超过{timeout}秒限制）")
             else:
-                print(f"❌ [请求失败] 耗时: {duration:.1f}秒")
+                print(f"[失败] [请求失败] 耗时: {duration:.1f}秒")
             
-            print(f"🔄 [第{attempt}次失败] 错误类型: {type(e).__name__}")
-            print(f"🔄 [错误详情] {str(e)[:200]}...")
+            print(f"[第{attempt}次失败] 错误类型: {type(e).__name__}")
+            print(f"[错误详情] {str(e)[:200]}...")
             
             # 详细调试信息
             response = getattr(e, 'response', None)
@@ -365,15 +365,15 @@ def call_llm(system_prompt, user_prompt, platform, model_name, stream_mode=False
         
         # 重试逻辑
         if attempt < max_retries:
-            print(f"⏳ [准备重试] {retry_interval}秒后进行第{attempt + 1}次尝试...")
+            print(f"[准备重试] {retry_interval}秒后进行第{attempt + 1}次尝试...")
             import time
             for i in range(retry_interval):
                 time.sleep(1)
                 if i % 3 == 0:  # 每3秒显示一次倒计时
                     remaining = retry_interval - i
-                    print(f"⏳ [倒计时] 还有 {remaining} 秒...")
+                    print(f"[倒计时] 还有 {remaining} 秒...")
         else:
-            print(f"💥 [最终失败] 已达到最大重试次数({max_retries}次)")
+            print(f"[最终失败] 已达到最大重试次数({max_retries}次)")
     print(f"[ERROR] 连续{max_retries}次请求均失败，已放弃。")
     return None, token_limit_info
 
@@ -468,7 +468,7 @@ def main(date=None, keyword=None, model_name=None, output_dir=None):
         now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         log_path = os.path.join("output", "run_log.txt")
         skip_log = (
-            f"[🕒 {now}]\n[SKIP] 跳过关键词: {keyword}\n原因: 大模型API连续多次失败或超时，未能完成总结\n==============================\n"
+            f"[{now}]\n[SKIP] 跳过关键词: {keyword}\n原因: 大模型API连续多次失败或超时，未能完成总结\n==============================\n"
         )
         # 对日志字符串进行Unicode清理，避免GBK编码错误
         cleaned_skip_log = clean_unicode_for_console(skip_log)
@@ -515,13 +515,13 @@ def main(date=None, keyword=None, model_name=None, output_dir=None):
     print(clean_unicode_for_console(judge_system_prompt.strip()))
     print("\n[user prompt]")
     print(clean_unicode_for_console(judge_user_prompt.strip()))
-    print(f"\n🎯 [开始评判] 使用模型: {judge_platform}-{judge_model}")
+    print(f"\n[开始评判] 使用模型: {judge_platform}-{judge_model}")
     judge_suggestion, _ = call_llm(judge_system_prompt, judge_user_prompt, judge_platform, judge_model)
     if judge_suggestion is None:
         now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         log_path = os.path.join("output", "run_log.txt")
         skip_log = (
-            f"[🕒 {now}]\n[SKIP] 跳过关键词: {keyword}\n原因: 评判官环节大模型API连续多次失败或超时，未能完成总结\n==============================\n"
+            f"[{now}]\n[SKIP] 跳过关键词: {keyword}\n原因: 评判官环节大模型API连续多次失败或超时，未能完成总结\n==============================\n"
         )
         with open(log_path, "a", encoding="utf-8") as f:
             f.write(skip_log)
@@ -559,7 +559,7 @@ def main(date=None, keyword=None, model_name=None, output_dir=None):
         now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         log_path = os.path.join("output", "run_log.txt")
         skip_log = (
-            f"[🕒 {now}]\n[SKIP] 跳过关键词: {keyword}\n原因: 优化环节大模型API连续多次失败或超时，未能完成总结\n==============================\n"
+            f"[{now}]\n[SKIP] 跳过关键词: {keyword}\n原因: 优化环节大模型API连续多次失败或超时，未能完成总结\n==============================\n"
         )
         with open(log_path, "a", encoding="utf-8") as f:
             f.write(skip_log)
@@ -580,19 +580,19 @@ def main(date=None, keyword=None, model_name=None, output_dir=None):
     prev_date = (datetime.strptime(date, '%Y-%m-%d') - timedelta(days=1)).strftime('%Y-%m-%d')
 
     # 新增：详细的调试信息
-    print(f"\n🔍 [热点追踪调试] 当前日期: {date}")
-    print(f"🔍 [热点追踪调试] 昨天日期: {prev_date}")
-    print(f"🔍 [热点追踪调试] 查询关键词: {keyword}")
+    print(f"\n[热点追踪调试] 当前日期: {date}")
+    print(f"[热点追踪调试] 昨天日期: {prev_date}")
+    print(f"[热点追踪调试] 查询关键词: {keyword}")
 
     prev_summary, prev_round = write_to_mysql.fetch_latest_summary(prev_date, keyword)
 
     # 新增：显示查询结果
     if prev_summary:
-        print(f"✅ [热点追踪调试] 成功找到昨天的摘要，轮次: {prev_round}")
-        print(f"📝 [热点追踪调试] 昨天摘要前200字: {prev_summary[:200]}...")
+        print(f"[成功] [热点追踪调试] 成功找到昨天的摘要，轮次: {prev_round}")
+        print(f"[热点追踪调试] 昨天摘要前200字: {prev_summary[:200]}...")
     else:
-        print(f"❌ [热点追踪调试] 未找到昨天的摘要数据")
-        print(f"💡 [热点追踪调试] 可能原因:")
+        print(f"[失败] [热点追踪调试] 未找到昨天的摘要数据")
+        print(f"[热点追踪调试] 可能原因:")
         print(f"   1. 昨天({prev_date})的摘要还未写入数据库")
         print(f"   2. 数据库连接问题")
         print(f"   3. 关键词({keyword})在昨天没有摘要记录")
@@ -606,13 +606,13 @@ def main(date=None, keyword=None, model_name=None, output_dir=None):
         print(hotspot_system_prompt)
         print("\n[user prompt]")
         print(hotspot_user_prompt)
-        print(f"\n🔥 [开始热点追踪] 使用模型: {optimize_platform}-{optimize_model}")
+        print(f"\n[开始热点追踪] 使用模型: {optimize_platform}-{optimize_model}")
         hotspot_summary, _ = call_llm(hotspot_system_prompt, hotspot_user_prompt, optimize_platform, optimize_model)
         if hotspot_summary is None:
             now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             log_path = os.path.join("output", "run_log.txt")
             skip_log = (
-                f"[🕒 {now}]\n[SKIP] 跳过关键词: {keyword}\n原因: 热点追踪环节大模型API连续多次失败或超时，未能完成总结\n==============================\n"
+                f"[{now}]\n[SKIP] 跳过关键词: {keyword}\n原因: 热点追踪环节大模型API连续多次失败或超时，未能完成总结\n==============================\n"
             )
             with open(log_path, "a", encoding="utf-8") as f:
                 f.write(skip_log)
@@ -628,7 +628,7 @@ def main(date=None, keyword=None, model_name=None, output_dir=None):
             "prev_date": prev_date
         }
     else:
-        print(f"\n⚠️  [跳过热点追踪] 无昨天({prev_date})的摘要数据，跳过第3轮热点追踪")
+        print(f"\n[警告] [跳过热点追踪] 无昨天({prev_date})的摘要数据，跳过第3轮热点追踪")
     # ========== 保存所有轮次摘要 ==========
     all_rounds = [round1_entry, round2_entry]
     if round3_entry:
@@ -756,7 +756,7 @@ def main_entry():
                     success = False
             
             completion_msg = f"批量摘要完成：{processed_count}/{total_count} 个关键词处理成功"
-            print(f"\n📊 {completion_msg}")
+            print(f"\n[统计] {completion_msg}")
             log_script_complete("news_summarizer.py", success=success, message=completion_msg)
             return success
         else:
