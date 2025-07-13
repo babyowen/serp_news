@@ -20573,3 +20573,13 @@ UnicodeEncodeError: 'gbk' codec can't encode character '\U0001f4f0' in position 
 [2025-07-13 12:20:06] [DEBUG] [news-unknown] [测试] URL: https://test.com
 [2025-07-13 12:20:06] [SUCCESS] [news-unknown] [测试] 抓取成功 (定制化): 1000 字
 [2025-07-13 12:23:22] [SUCCESS] [news-unknown] 测试成功
+
+[2025-07-13 14:06:47]
+[开始执行] 开始执行: fetch_content.py
+[参数] 执行参数: test --url=https://finance.sina.com.cn/chanjing/gsnews/2025-07-13/doc-incckfnp7890162.shtml
+==============================
+
+[2025-07-13 14:06:47]
+[执行失败] 执行失败: fetch_content.py
+[说明] 说明: 执行过程中出现错误
+==============================

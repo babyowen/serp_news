@@ -29,6 +29,65 @@ from error_handler import (
 from icon_manager import safe_print, get_icon
 from logger_utils import NewsLogger, get_news_logger
 
+# ========== 新增：评分专用连接池管理 ==========
+class ScoringClientPool:
+    """评分专用OpenAI客户端连接池管理器"""
+    
+    def __init__(self):
+        self._client = None
+        self._usage_count = 0
+        self._max_usage_per_client = 100  # 评分客户端可以使用更多次
+    
+    def get_client(self):
+        """获取或创建评分客户端"""
+        # 检查是否需要创建新客户端
+        if (self._client is None or 
+            self._usage_count >= self._max_usage_per_client):
+            
+            # 关闭旧客户端（如果存在）
+            if self._client is not None:
+                self._close_client()
+            
+            # 创建新客户端
+            self._client = OpenAI(
+                api_key=DEEPSEEK_API_KEY, 
+                base_url=DEEPSEEK_BASE_URL
+            )
+            self._usage_count = 0
+        
+        # 增加使用计数
+        self._usage_count += 1
+        return self._client
+    
+    def _close_client(self):
+        """安全关闭客户端"""
+        if self._client is not None:
+            try:
+                if hasattr(self._client, 'close'):
+                    self._client.close()
+                elif hasattr(self._client, '_client') and hasattr(self._client._client, 'close'):
+                    self._client._client.close()
+            except Exception as e:
+                pass  # 静默处理关闭异常
+            finally:
+                self._client = None
+                self._usage_count = 0
+    
+    def close_all(self):
+        """关闭所有连接"""
+        self._close_client()
+    
+    def get_stats(self):
+        """获取连接池状态统计"""
+        return {
+            'has_client': self._client is not None,
+            'usage_count': self._usage_count,
+            'max_usage': self._max_usage_per_client
+        }
+
+# 全局评分连接池实例
+_scoring_client_pool = ScoringClientPool()
+
 # 创建新闻日志记录器
 scoring_logger = NewsLogger()
 
@@ -38,7 +97,7 @@ scoring_logger = NewsLogger()
 # keyword: 用于AI评分的关键词（通常是search_keyword）
 # main_keyword: 用于模型选择判断的主关键词（用于决定使用哪个模型）
 # 返回分数（int）
-def score_news(title: str, content: str, keyword: str, main_keyword: str = None) -> int:
+def score_news(title: str, content: str, keyword: str, main_keyword: str = None, max_retries: int = 3, retry_interval: int = 5) -> int:
     prompt = NEWS_SCORE_PROMPT.format(keyword=keyword, title=title, content=content)
     
     # 根据主关键词选择合适的system prompt
@@ -51,6 +110,7 @@ def score_news(title: str, content: str, keyword: str, main_keyword: str = None)
     safe_print(f"[system] {clean_unicode_for_console(system_msg)}")
     safe_print(f"[user] {clean_unicode_for_console(prompt)}")
     safe_print("==========================\n")
+    
     # 新增：token超限主动监控
     try:
         import tiktoken
@@ -66,38 +126,102 @@ def score_news(title: str, content: str, keyword: str, main_keyword: str = None)
                 f.write(f"[WARN] prompt结尾200字: {prompt[-200:]}\n")
     except Exception as e:
         safe_print(f"[WARN] tiktoken统计token失败: {e}")
+    
     # 统一使用DeepSeek V3模型进行评分
-    model_decision_keyword = main_keyword if main_keyword else keyword  # 用于模型选择判断的关键词
+    model_decision_keyword = main_keyword if main_keyword else keyword
     model_to_use = 'deepseek-chat'  # 统一使用V3模型
     safe_print(f"[模型选择] 主关键词: {model_decision_keyword}, 评分关键词: {keyword}, 使用模型: {model_to_use} (统一使用V3)")
-    client = OpenAI(api_key=DEEPSEEK_API_KEY, base_url=DEEPSEEK_BASE_URL)
-    try:
-        response = client.chat.completions.create(
-            model=model_to_use,
-            messages=[
-                {"role": "system", "content": system_msg},
-                {"role": "user", "content": prompt}
-            ],
-            stream=False,
-            temperature=1
-        )
-        score_str = response.choices[0].message.content.strip()
-        score = int(score_str[0])  # 只取第一个数字
-    except Exception as e:
-        # 新增：API返回token超限时记录prompt头尾
-        err_str = str(e)
-        is_token_limit = any(x in err_str.lower() for x in ["token", "context length", "input length", "max input limit", "too long"])
-        if is_token_limit:
-            safe_print(f"[WARN] 评分API返回token超限，prompt开头200字: {prompt[:200]}")
-            safe_print(f"[WARN] 评分API返回token超限，prompt结尾200字: {prompt[-200:]}")
-            with open("output/run_log.txt", "a", encoding="utf-8") as f:
-                f.write(f"[WARN] 评分API返回token超限，prompt开头200字: {prompt[:200]}\n")
-                f.write(f"[WARN] 评分API返回token超限，prompt结尾200字: {prompt[-200:]}\n")
-        safe_print(f"[ERROR] 评分异常，关键词: {keyword}, 标题: {clean_unicode_for_console(title)}")
-        safe_print(f"[ERROR] 异常类型: {type(e).__name__}, 内容: {e}")
-        safe_print(f"[ERROR] prompt前200字: {clean_unicode_for_console(prompt[:200])}")
-        score = 0
-    return score
+    
+    # 智能重试机制
+    for attempt in range(1, max_retries + 1):
+        # 从连接池获取客户端
+        client = _scoring_client_pool.get_client()
+        
+        try:
+            safe_print(f"[评分尝试] [尝试 {attempt}/{max_retries}] 正在调用评分模型...")
+            
+            # 记录开始时间
+            start_time = datetime.now()
+            
+            response = client.chat.completions.create(
+                model=model_to_use,
+                messages=[
+                    {"role": "system", "content": system_msg},
+                    {"role": "user", "content": prompt}
+                ],
+                stream=False,
+                temperature=1,
+                timeout=60  # 设置60秒超时
+            )
+            
+            # 计算耗时
+            end_time = datetime.now()
+            duration = (end_time - start_time).total_seconds()
+            
+            score_str = response.choices[0].message.content.strip()
+            score = int(score_str[0])  # 只取第一个数字
+            
+            safe_print(f"[评分成功] 耗时: {duration:.1f}秒，得分: {score}")
+            return score
+            
+        except Exception as e:
+            # 计算失败耗时
+            end_time = datetime.now()
+            duration = (end_time - start_time).total_seconds()
+            
+            err_str = str(e)
+            # 分类错误类型
+            is_ssl_error = any(x in err_str.lower() for x in ["ssl", "connection", "socket", "handshake", "certificate"])
+            is_timeout = any(x in err_str.lower() for x in ["timeout", "timed out", "time out"])
+            is_token_limit = any(x in err_str.lower() for x in ["token", "context length", "input length", "max input limit", "too long"])
+            is_network_error = any(x in err_str.lower() for x in ["network", "dns", "resolve", "unreachable", "connection refused"])
+            
+            if is_token_limit:
+                safe_print(f"[评分失败] [Token超限] 请求失败，耗时: {duration:.1f}秒")
+                safe_print(f"[WARN] 评分API返回token超限，prompt开头200字: {prompt[:200]}")
+                safe_print(f"[WARN] 评分API返回token超限，prompt结尾200字: {prompt[-200:]}")
+                with open("output/run_log.txt", "a", encoding="utf-8") as f:
+                    f.write(f"[WARN] 评分API返回token超限，prompt开头200字: {prompt[:200]}\n")
+                    f.write(f"[WARN] 评分API返回token超限，prompt结尾200字: {prompt[-200:]}\n")
+                # Token超限是不可重试的错误，直接返回0分
+                return 0
+            elif is_ssl_error:
+                safe_print(f"[评分失败] [SSL错误] 请求失败，耗时: {duration:.1f}秒")
+                safe_print(f"[SSL错误] {err_str[:200]}...")
+            elif is_timeout:
+                safe_print(f"[评分失败] [超时错误] 请求失败，耗时: {duration:.1f}秒")
+            elif is_network_error:
+                safe_print(f"[评分失败] [网络错误] 请求失败，耗时: {duration:.1f}秒")
+            else:
+                safe_print(f"[评分失败] [其他错误] 请求失败，耗时: {duration:.1f}秒")
+            
+            safe_print(f"[第{attempt}次失败] 错误类型: {type(e).__name__}")
+            safe_print(f"[错误详情] {str(e)[:200]}...")
+            
+            # 重试逻辑
+            if attempt < max_retries:
+                # 根据错误类型调整重试间隔
+                if is_ssl_error or is_network_error:
+                    actual_retry_interval = retry_interval * 2  # SSL/网络错误延长重试间隔
+                else:
+                    actual_retry_interval = retry_interval
+                
+                safe_print(f"[准备重试] {actual_retry_interval}秒后进行第{attempt + 1}次尝试...")
+                
+                # 倒计时显示
+                import time
+                for i in range(actual_retry_interval):
+                    time.sleep(1)
+                    if i % 2 == 0:  # 每2秒显示一次倒计时
+                        remaining = actual_retry_interval - i
+                        safe_print(f"[倒计时] 还有 {remaining} 秒...")
+            else:
+                safe_print(f"[最终失败] 已达到最大重试次数({max_retries}次)")
+    
+    # 所有重试都失败后返回0分
+    safe_print(f"[ERROR] 评分连续{max_retries}次失败，关键词: {keyword}, 标题: {clean_unicode_for_console(title)}")
+    safe_print(f"[ERROR] 返回默认分数: 0")
+    return 0
 
 # 规则打分函数
 # 返回分数（int），未命中规则返回None
@@ -418,6 +542,16 @@ def main():
         success = False
         log_script_complete("news_scorer.py", success=False, message=error_msg)
         return False
+    
+    finally:
+        # 程序结束时清理连接池
+        try:
+            stats = _scoring_client_pool.get_stats()
+            safe_print(f"[连接池统计] 关闭前状态: {stats}")
+            _scoring_client_pool.close_all()
+            safe_print("[连接池] 评分客户端连接已关闭")
+        except Exception as e:
+            safe_print(f"[WARN] 清理评分连接池时发生异常: {e}")
 
 if __name__ == "__main__":
     success = main()

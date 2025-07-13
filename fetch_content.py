@@ -87,19 +87,131 @@ def get_chromedriver_path():
     driver_path = ChromeDriverManager().install()
     return driver_path
 
+# 获取针对Windows优化的Chrome选项
+def get_chrome_options_for_windows():
+    """
+    获取针对Windows环境优化的Chrome选项，减少SSL错误和日志输出
+    """
+    options = Options()
+    
+    # 基础无头模式配置
+    options.add_argument('--headless')
+    options.add_argument('--no-sandbox')
+    options.add_argument('--disable-dev-shm-usage')
+    options.add_argument('--disable-gpu')
+    
+    # Windows特有的SSL和安全配置
+    options.add_argument('--ignore-certificate-errors')
+    options.add_argument('--ignore-ssl-errors')
+    options.add_argument('--ignore-certificate-errors-spki-list')
+    options.add_argument('--ignore-urlfetcher-cert-requests')
+    options.add_argument('--disable-web-security')
+    options.add_argument('--allow-running-insecure-content')
+    options.add_argument('--disable-features=VizDisplayCompositor')
+    options.add_argument('--disable-site-isolation-trials')
+    
+    # Windows下的日志和输出控制（最重要的部分）
+    options.add_argument('--disable-logging')
+    options.add_argument('--log-level=3')  # 只显示致命错误
+    options.add_argument('--silent')
+    options.add_argument('--disable-dev-tools')
+    options.add_argument('--disable-extensions')
+    options.add_argument('--disable-plugins')
+    options.add_argument('--disable-background-networking')
+    options.add_argument('--disable-background-timer-throttling')
+    options.add_argument('--disable-backgrounding-occluded-windows')
+    options.add_argument('--disable-renderer-backgrounding')
+    options.add_argument('--disable-device-discovery-notifications')
+    options.add_argument('--disable-infobars')
+    options.add_argument('--disable-notifications')
+    options.add_argument('--disable-desktop-notifications')
+    
+    # 性能优化（Windows特有）
+    options.add_argument('--disable-images')
+    options.add_argument('--disable-javascript')  # 大多数新闻网站不需要JS
+    options.add_argument('--disable-plugins')
+    options.add_argument('--disable-java')
+    options.add_argument('--disable-flash')
+    options.add_argument('--disable-popup-blocking')
+    options.add_argument('--disable-translate')
+    options.add_argument('--disable-features=TranslateUI')
+    options.add_argument('--disable-ipc-flooding-protection')
+    
+    # 网络和连接优化
+    options.add_argument('--aggressive-cache-discard')
+    options.add_argument('--disable-background-sync')
+    options.add_argument('--disable-sync')
+    options.add_argument('--disable-default-apps')
+    options.add_argument('--disable-component-update')
+    
+    # Windows特有的Chrome进程管理
+    options.add_argument('--disable-hang-monitor')
+    options.add_argument('--disable-prompt-on-repost')
+    options.add_argument('--disable-domain-reliability')
+    options.add_argument('--disable-component-extensions-with-background-pages')
+    
+    # User-Agent伪装
+    options.add_argument('--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36')
+    
+    # 设置页面加载策略
+    options.page_load_strategy = 'eager'  # 不等待所有资源加载完成
+    
+    # Windows专用实验性选项
+    options.add_experimental_option('excludeSwitches', ['enable-logging', 'enable-automation'])
+    options.add_experimental_option('useAutomationExtension', False)
+    options.add_experimental_option('detach', True)
+    
+    # Windows环境下的首选项设置
+    prefs = {
+        'profile.default_content_setting_values': {
+            'notifications': 2,  # 阻止通知
+            'media_stream': 2,   # 阻止媒体流
+            'geolocation': 2,    # 阻止地理位置
+            'desktop_notifications': 2,  # 阻止桌面通知
+        },
+        'profile.default_content_settings.popups': 0,  # 阻止弹窗
+        'profile.managed_default_content_settings.images': 2,  # 阻止图片
+    }
+    options.add_experimental_option('prefs', prefs)
+    
+    return options
+
+# 获取针对Windows优化的Chrome服务配置
+def get_chrome_service_for_windows():
+    """
+    获取针对Windows环境优化的Chrome服务配置
+    """
+    driver_path = get_chromedriver_path()
+    service = Service(driver_path)
+    
+    # Windows环境下的服务配置
+    service.log_level = 'ERROR'  # 只输出错误级别的日志
+    
+    # 在Windows环境下设置service参数
+    if sys.platform.startswith('win'):
+        try:
+            # Windows下尝试隐藏控制台窗口
+            service.creation_flags = 0x08000000  # CREATE_NO_WINDOW
+        except:
+            # 如果设置失败，继续使用默认配置
+            pass
+    
+    return service
+
 # 用Selenium抓取新闻正文，支持定制化规则和通用抓取
 def fetch_article_content_with_selenium(url):
     print(f"[调试] fetch_article_content_with_selenium 启动, url={url}")
-    options = Options()
-    options.add_argument('--headless')
-    options.add_argument('--disable-gpu')
-    options.add_argument('--no-sandbox')
-    options.add_argument('--disable-dev-shm-usage')
-    options.add_argument('--ignore-certificate-errors')
-    options.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36')
-    driver_path = get_chromedriver_path()
-    service = Service(driver_path)
+    
+    # 使用Windows优化的Chrome选项和服务
+    options = get_chrome_options_for_windows()
+    service = get_chrome_service_for_windows()
+    
     driver = webdriver.Chrome(service=service, options=options)
+    
+    # 设置超时时间
+    driver.set_page_load_timeout(30)
+    driver.implicitly_wait(10)
+    
     custom_grab = False
     try:
         driver.get(url)
@@ -128,7 +240,10 @@ def fetch_article_content_with_selenium(url):
         print(f"[调试] fetch_article_content_with_selenium 异常: {e}")
         return '', 0, custom_grab
     finally:
-        driver.quit()
+        try:
+            driver.quit()
+        except:
+            pass  # 忽略退出时的异常
 
 # 用requests+trafilatura/newspaper3k抓取正文，适合特殊编码站点
 def fetch_article_content_with_requests(url):
@@ -315,23 +430,26 @@ def fetch_article_content(url, max_retries=3):
 
 # 用Selenium驱动返回driver对象，供定制化规则使用
 def fetch_article_content_with_selenium_driver(url):
-    options = Options()
-    options.add_argument('--headless')
-    options.add_argument('--disable-gpu')
-    options.add_argument('--no-sandbox')
-    options.add_argument('--disable-dev-shm-usage')
-    options.add_argument('--ignore-certificate-errors')
-    options.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36')
-    driver_path = get_chromedriver_path()
-    service = Service(driver_path)
+    # 使用Windows优化的Chrome选项和服务
+    options = get_chrome_options_for_windows()
+    service = get_chrome_service_for_windows()
+    
     driver = webdriver.Chrome(service=service, options=options)
+    
+    # 设置超时时间
+    driver.set_page_load_timeout(30)
+    driver.implicitly_wait(10)
+    
     try:
         driver.get(url)
         time.sleep(5)
         return driver
     except Exception as e:
         print(f"[调试] fetch_article_content_with_selenium_driver 异常: {e}")
-        driver.quit()
+        try:
+            driver.quit()
+        except:
+            pass  # 忽略退出时的异常
         raise
 
 # 获取url的主域名
