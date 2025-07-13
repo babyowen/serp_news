@@ -1,17 +1,22 @@
 # -*- coding: utf-8 -*-
 # =========================================
-# 新闻自动评分主程序
-# 主要功能：加载新闻、去重、调用大模型评分、保存结果、记录日志
+# 新闻评分程序
+# 主要功能：对新闻进行AI评分，同时支持基于规则的评分
+# 使用DeepSeek V3模型进行智能评分
 # =========================================
+
 import json
-import sys
 import os
+import sys
+import time
 from datetime import datetime, timedelta
+from collections import Counter
 from openai import OpenAI
-from config import NEWS_SCORE_PROMPT, DEEPSEEK_API_KEY, DEEPSEEK_BASE_URL, DEEPSEEK_MODEL, DEFAULT_KEYWORD, NEWS_SCORE_SYSTEM_MSG, DEFAULT_KEYWORDS, KEYWORD_SPECIFIC_SYSTEM_PROMPTS
+from config import (
+    DEEPSEEK_API_KEY, DEEPSEEK_BASE_URL, DEEPSEEK_MODEL, 
+    NEWS_SCORE_PROMPT, NEWS_RULE_BASED_SCORING, NEWS_SCORE_SYSTEM_MSG, DEFAULT_KEYWORD, DEFAULT_KEYWORDS, KEYWORD_SPECIFIC_SYSTEM_PROMPTS
+)
 import argparse
-# 新增导入规则打分配置
-from config import NEWS_RULE_BASED_SCORING
 from error_handler import (
     setup_global_exception_handler,
     with_error_handling,
@@ -20,8 +25,12 @@ from error_handler import (
     ErrorHandler
 )
 
-# 设置全局异常处理器
-setup_global_exception_handler()
+# 导入图标管理系统
+from icon_manager import safe_print, get_icon
+from logger_utils import NewsLogger, get_news_logger
+
+# 创建新闻日志记录器
+scoring_logger = NewsLogger()
 
 # 调用大模型对单条新闻进行评分
 # title: 新闻标题
@@ -36,31 +45,31 @@ def score_news(title: str, content: str, keyword: str, main_keyword: str = None)
     model_decision_keyword = main_keyword if main_keyword else keyword
     system_msg = KEYWORD_SPECIFIC_SYSTEM_PROMPTS.get(model_decision_keyword, NEWS_SCORE_SYSTEM_MSG)
     
-    print("\n===== 送给大模型的内容 =====")
-    print(f"[评分关键词] {keyword}")
-    print(f"[主关键词] {model_decision_keyword}")
-    print(f"[system] {clean_unicode_for_console(system_msg)}")
-    print(f"[user] {clean_unicode_for_console(prompt)}")
-    print("==========================\n")
+    safe_print("\n===== 送给大模型的内容 =====")
+    safe_print(f"[评分关键词] {keyword}")
+    safe_print(f"[主关键词] {model_decision_keyword}")
+    safe_print(f"[system] {clean_unicode_for_console(system_msg)}")
+    safe_print(f"[user] {clean_unicode_for_console(prompt)}")
+    safe_print("==========================\n")
     # 新增：token超限主动监控
     try:
         import tiktoken
         enc = tiktoken.get_encoding('cl100k_base')
         token_count = len(enc.encode(prompt))
         if token_count > 61000:
-            print(f"[WARN] 评分prompt token数超限（主动判断），token数: {token_count}")
-            print(f"[WARN] prompt开头200字: {prompt[:200]}")
-            print(f"[WARN] prompt结尾200字: {prompt[-200:]}")
+            safe_print(f"[WARN] 评分prompt token数超限（主动判断），token数: {token_count}")
+            safe_print(f"[WARN] prompt开头200字: {prompt[:200]}")
+            safe_print(f"[WARN] prompt结尾200字: {prompt[-200:]}")
             with open("output/run_log.txt", "a", encoding="utf-8") as f:
                 f.write(f"[WARN] 评分prompt token数超限（主动判断），token数: {token_count}\n")
                 f.write(f"[WARN] prompt开头200字: {prompt[:200]}\n")
                 f.write(f"[WARN] prompt结尾200字: {prompt[-200:]}\n")
     except Exception as e:
-        print(f"[WARN] tiktoken统计token失败: {e}")
+        safe_print(f"[WARN] tiktoken统计token失败: {e}")
     # 统一使用DeepSeek V3模型进行评分
     model_decision_keyword = main_keyword if main_keyword else keyword  # 用于模型选择判断的关键词
     model_to_use = 'deepseek-chat'  # 统一使用V3模型
-    print(f"[模型选择] 主关键词: {model_decision_keyword}, 评分关键词: {keyword}, 使用模型: {model_to_use} (统一使用V3)")
+    safe_print(f"[模型选择] 主关键词: {model_decision_keyword}, 评分关键词: {keyword}, 使用模型: {model_to_use} (统一使用V3)")
     client = OpenAI(api_key=DEEPSEEK_API_KEY, base_url=DEEPSEEK_BASE_URL)
     try:
         response = client.chat.completions.create(
@@ -79,14 +88,14 @@ def score_news(title: str, content: str, keyword: str, main_keyword: str = None)
         err_str = str(e)
         is_token_limit = any(x in err_str.lower() for x in ["token", "context length", "input length", "max input limit", "too long"])
         if is_token_limit:
-            print(f"[WARN] 评分API返回token超限，prompt开头200字: {prompt[:200]}")
-            print(f"[WARN] 评分API返回token超限，prompt结尾200字: {prompt[-200:]}")
+            safe_print(f"[WARN] 评分API返回token超限，prompt开头200字: {prompt[:200]}")
+            safe_print(f"[WARN] 评分API返回token超限，prompt结尾200字: {prompt[-200:]}")
             with open("output/run_log.txt", "a", encoding="utf-8") as f:
                 f.write(f"[WARN] 评分API返回token超限，prompt开头200字: {prompt[:200]}\n")
                 f.write(f"[WARN] 评分API返回token超限，prompt结尾200字: {prompt[-200:]}\n")
-        print(f"[ERROR] 评分异常，关键词: {keyword}, 标题: {clean_unicode_for_console(title)}")
-        print(f"[ERROR] 异常类型: {type(e).__name__}, 内容: {e}")
-        print(f"[ERROR] prompt前200字: {clean_unicode_for_console(prompt[:200])}")
+        safe_print(f"[ERROR] 评分异常，关键词: {keyword}, 标题: {clean_unicode_for_console(title)}")
+        safe_print(f"[ERROR] 异常类型: {type(e).__name__}, 内容: {e}")
+        safe_print(f"[ERROR] prompt前200字: {clean_unicode_for_console(prompt[:200])}")
         score = 0
     return score
 
@@ -139,7 +148,7 @@ def batch_score_news(json_path, keyword):
         news_with_score["score"] = score  # 用英文key
         results.append(news_with_score)
         score_counter[score] = score_counter.get(score, 0) + 1
-        print(f"标题: {title}\n分数: {score}\n")
+        safe_print(f"标题: {title}\n分数: {score}\n")
     return results, score_counter, len(unique_news_list), rule_based_titles
 
 # 保存带分数的新闻到新json文件，按分数降序排列
@@ -165,7 +174,7 @@ def write_scored_json(results, json_path):
 # results: 可选，带分数的新闻列表
 # rule_based_titles: 可选，规则打分标题列表
 def append_log(keyword, json_path, total, score_counter, scored_count, scored_json_path, results=None, rule_based_titles=None):
-    print(f"[DEBUG] 准备写入日志，关键词: {keyword}")
+    safe_print(f"[DEBUG] 准备写入日志，关键词: {keyword}")
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     log_path = os.path.join("output", "run_log.txt")
     score_line = " ".join([f"{i}分: {score_counter.get(i,0)}" for i in range(6)])
@@ -196,15 +205,15 @@ def append_log(keyword, json_path, total, score_counter, scored_count, scored_js
             for t in rule_based_titles:
                 log += f"- {clean_unicode_for_console(t)}\n"
     log += f"==============================\n"
-    print(f"[DEBUG] 日志内容预览（前100字）：{clean_unicode_for_console(log[:100])}")
+    safe_print(f"[DEBUG] 日志内容预览（前100字）：{clean_unicode_for_console(log[:100])}")
     
     # 对整个日志字符串进行Unicode清理，避免GBK编码错误
     cleaned_log = clean_unicode_for_console(log)
     with open(log_path, "a", encoding="utf-8") as f:
         f.write(cleaned_log)
-    print(f"[DEBUG] 日志写入完成，关键词: {keyword}")
-    print(f"评分完成，日志已写入: {log_path}")
-    print(f"评分结果文件: {scored_json_path}")
+    safe_print(f"[DEBUG] 日志写入完成，关键词: {keyword}")
+    safe_print(f"评分完成，日志已写入: {log_path}")
+    safe_print(f"评分结果文件: {scored_json_path}")
 
 # 获取昨天日期字符串，格式YYYY-MM-DD
 def get_yesterday_str():
@@ -280,11 +289,11 @@ def main():
                 title = news.get("title", "")
                 content = news.get("content", "")
                 keyword = news.get("keyword", DEFAULT_KEYWORD)
-                print(f"测试模式：\n新闻标题: {title}\n新闻正文: {content}\n关键词: {keyword}")
+                safe_print(f"测试模式：\n新闻标题: {title}\n新闻正文: {content}\n关键词: {keyword}")
                 score = score_news(title, content, keyword)
-                print(f"评分结果: {score}")
+                safe_print(f"评分结果: {score}")
             except Exception as e:
-                print(f"测试模式解析失败: {e}")
+                safe_print(f"测试模式解析失败: {e}")
                 success = False
             log_script_complete("news_scorer.py", success=success, message="测试模式完成")
             return success
@@ -298,15 +307,15 @@ def main():
             for keyword in DEFAULT_KEYWORDS:
                 json_path = os.path.join("output", date_str, f"{date_str}_{keyword}.json")
                 scored_json_path = os.path.splitext(json_path)[0] + "_scored.json"
-                print(f"\n=== 开始处理关键词: {keyword} ===")
+                safe_print(f"\n=== 开始处理关键词: {keyword} ===")
                 
                 try:
                     if not os.path.exists(json_path):
-                        print(f"未找到文件: {json_path}")
+                        safe_print(f"未找到文件: {json_path}")
                         continue
                     # 跳过机制：如已存在_scored.json文件，说明已完成打分，无需重复处理
                     if os.path.exists(scored_json_path):
-                        print(f"[SKIP] {scored_json_path} 已存在，跳过 {keyword}")
+                        safe_print(f"[SKIP] {scored_json_path} 已存在，跳过 {keyword}")
                         # 可选：写入日志
                         now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                         log_path = os.path.join("output", "run_log.txt")
@@ -325,7 +334,7 @@ def main():
                             news_list = json.load(f)
                         already_scored = any("score" in news for news in news_list)
                     except Exception as e:
-                        print(f"读取文件失败: {json_path}, 错误: {e}")
+                        safe_print(f"读取文件失败: {json_path}, 错误: {e}")
                         error_handler.log_error(
                             error_type="FILE_READ_ERROR",
                             error_msg=f"读取文件失败: {json_path}, 错误: {e}",
@@ -334,7 +343,7 @@ def main():
                         )
                         continue
                     if already_scored:
-                        print(f"已检测到 {json_path} 已经打分，跳过。")
+                        safe_print(f"已检测到 {json_path} 已经打分，跳过。")
                         processed_count += 1
                         continue
                     
@@ -344,7 +353,7 @@ def main():
                     processed_count += 1
                     
                 except Exception as e:
-                    print(f"处理关键词 {keyword} 时发生异常: {e}")
+                    safe_print(f"处理关键词 {keyword} 时发生异常: {e}")
                     error_handler.log_error(
                         error_type="SCORING_ERROR",
                         error_msg=f"处理关键词 {keyword} 时发生异常: {e}",
@@ -353,7 +362,7 @@ def main():
                     )
                     success = False
             
-            print(f"\n[统计] 批量评分完成：{processed_count}/{total_count} 个关键词处理成功")
+            safe_print(f"\n[统计] 批量评分完成：{processed_count}/{total_count} 个关键词处理成功")
             log_script_complete("news_scorer.py", success=success, message=f"批量评分完成：{processed_count}/{total_count}")
             return success
 
@@ -367,7 +376,7 @@ def main():
         
         # 跳过机制：如已存在_scored.json文件，说明已完成打分，无需重复处理
         if os.path.exists(scored_json_path):
-            print(f"[SKIP] {scored_json_path} 已存在，跳过 {keyword}")
+            safe_print(f"[SKIP] {scored_json_path} 已存在，跳过 {keyword}")
             now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             log_path = os.path.join("output", "run_log.txt")
             skip_log = (
@@ -381,7 +390,7 @@ def main():
             return True
             
         if not os.path.exists(json_path):
-            print(f"未找到文件: {json_path}")
+            safe_print(f"未找到文件: {json_path}")
             error_handler.log_error(
                 error_type="FILE_NOT_FOUND",
                 error_msg=f"未找到文件: {json_path}",
@@ -394,13 +403,13 @@ def main():
         results, score_counter, total, rule_based_titles = batch_score_news(json_path, keyword)
         scored_json_path = write_scored_json(results, json_path)
         append_log(keyword, json_path, total, score_counter, len(results), scored_json_path, results, rule_based_titles)
-        print(f"[完成] 关键词 {keyword} 评分完成")
+        safe_print(f"[完成] 关键词 {keyword} 评分完成")
         log_script_complete("news_scorer.py", success=True, message=f"关键词 {keyword} 评分完成")
         return True
         
     except Exception as e:
         error_msg = f"news_scorer.py 执行过程中发生异常: {str(e)}"
-        print(f"[ERROR] {error_msg}")
+        safe_print(f"[ERROR] {error_msg}")
         error_handler.log_error(
             error_type="MAIN_FUNCTION_ERROR",
             error_msg=error_msg,

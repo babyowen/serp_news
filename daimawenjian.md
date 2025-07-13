@@ -2,6 +2,128 @@
 
 ## 最新更新记录
 
+### 2025-01-18 - 彻底解决跨平台emoji问题
+
+**新增组件**：
+1. **icon_manager.py** - 跨平台图标管理器
+   - 自动检测运行环境（Windows/Mac/Linux）
+   - 支持4种主题：emoji/text/colorful/minimal
+   - 提供safe_print等安全输出函数
+   - 自动处理GBK编码问题
+
+2. **logger_utils.py** - 统一日志系统
+   - 集成图标管理器
+   - 提供Logger和NewsLogger类
+   - 支持文件和控制台双重输出
+   - 提供丰富的日志方法（start/success/error/step等）
+
+3. **migration_example.py** - 迁移示例脚本
+   - 展示新系统的各种用法
+   - 提供详细的迁移指南
+   - 包含性能对比和错误处理演示
+
+**系统特性**：
+- **自动环境检测**：根据操作系统和编码自动选择最佳主题
+- **多主题支持**：emoji（Mac/Linux）、text（Windows兼容）、colorful（ANSI彩色）、minimal（最简化）
+- **渐进迁移**：新旧系统可以并存，支持逐步迁移
+- **零配置使用**：开箱即用，也支持高级配置
+- **完整的API**：从简单的safe_print到完整的Logger类
+
+**使用方法**：
+```python
+# 最简单的用法
+from icon_manager import safe_print
+safe_print("任务完成", "success")
+
+# 推荐的日志器用法
+from logger_utils import get_logger
+logger = get_logger("main")
+logger.start("开始执行")
+logger.success("操作成功")
+
+# 新闻系统专用
+from logger_utils import get_news_logger
+news_logger = get_news_logger("关键词", "2025-01-18")
+news_logger.news_fetch("关键词", 25, "Google News")
+```
+
+**配置选项**（config.py）：
+- `USE_ICON_MANAGER = True` - 启用新系统
+- `FORCE_ICON_THEME = None` - 强制指定主题（None为自动检测）
+- `ENABLE_LEGACY_UNICODE_CLEAN = True` - 保持向后兼容
+
+**解决效果**：
+- ✅ 彻底解决Windows GBK编码错误
+- ✅ Mac开发环境保持emoji美观显示
+- ✅ 自动适配不同运行环境
+- ✅ 提供统一的API，便于维护
+- ✅ 支持渐进式迁移，风险可控
+
+### 2025-01-18 - 关键问题修复
+
+**修复内容**：
+1. **政府基金SKIP问题修复**：
+   - 修复了`fetch_content.py`中的空列表跳过逻辑
+   - 当新闻列表为空时，不再错误地跳过正文抓取
+   - 修改逻辑：`len(news_list) > 0 and all('content' in item for item in news_list)`
+
+2. **GBK编码错误修复**：
+   - 修复了`news_summarizer.py`中的emoji字符导致的GBK编码错误
+   - 为所有print语句添加了`clean_unicode_for_console()`函数包装
+   - 更新了`config.py`中的EMOJI_MAP，添加了缺失的emoji字符映射
+
+3. **PyTorch警告优化**：
+   - 添加了`TRANSFORMERS_VERBOSITY=error`环境变量设置
+   - 改善了tokenizer加载失败时的错误信息
+   - 提供了更友好的安装提示
+
+**临时文件命名说明**：
+- `tmp_2025-07-12_养老_养老.json`的双重关键词是正确的
+- 格式：`tmp_{date}_{main_keyword}_{search_keyword}.json`
+- "养老"既是主关键词又是搜索关键词，因此会重复
+
+**解决效果**：
+- 修复了Windows环境下的GBK编码错误
+- 解决了空列表的错误跳过问题
+- 优化了PyTorch相关的警告提示
+- 提高了系统的稳定性和可用性
+
+### 2025-01-18 - 核心模块图标管理系统迁移
+
+**迁移内容**：
+基于之前创建的跨平台图标管理系统，将核心的抓取、打分、总结三个环节完全迁移到新系统：
+
+1. **fetch_content.py (抓取环节)**：
+   - 导入`icon_manager`和`logger_utils`模块
+   - 创建`NewsLogger`实例替代传统print输出
+   - 新增`content_fetch_start()`和`content_fetch()`专用方法
+   - 替换所有emoji print语句为`safe_print()`或logger方法
+
+2. **news_scorer.py (打分环节)**：
+   - 导入图标管理系统并创建`scoring_logger`实例
+   - 替换所有print语句为`safe_print()`
+   - 包括debug信息、错误提示、模型选择等都已安全处理
+
+3. **news_summarizer.py (总结环节)**：
+   - 导入图标管理系统并创建`summary_logger`实例
+   - 替换所有print语句为`safe_print()`
+   - **特别修复了第553行的`optimize_system_prompt.strip()`输出**
+   - **修复了`improved_summary.strip()`输出**
+
+**迁移效果**：
+- ✅ 彻底解决了Windows GBK编码错误问题
+- ✅ 实现了跨平台兼容：Mac显示emoji，Windows显示文本
+- ✅ 统一了日志输出格式和样式
+- ✅ 提供了更好的错误处理和用户体验
+- ✅ 保持了原有功能的完整性
+
+**技术优势**：
+- 自动环境检测和主题切换
+- 优雅的错误降级处理
+- 丰富的日志记录功能
+- 高度可配置的输出格式
+- 零配置开箱即用
+
 ### 2025-01-17 - Windows GBK编码问题修复
 
 **问题描述**：

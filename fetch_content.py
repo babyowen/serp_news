@@ -33,8 +33,15 @@ from error_handler import (
     ErrorHandler
 )
 
+# 导入图标管理系统
+from icon_manager import safe_print, get_icon
+from logger_utils import NewsLogger
+
 # 设置全局异常处理器
 setup_global_exception_handler()
+
+# 创建新闻日志记录器
+news_logger = NewsLogger()
 
 # 判断文本是否为乱码
 def is_garbled(text):
@@ -346,7 +353,8 @@ def process_json(keyword, date_str=None, mode='正式'):
     with open(json_path, 'r', encoding='utf-8') as f:
         news_list = json.load(f)
     # 跳过机制：如所有新闻条目都已包含content字段（不论内容是否为空），说明已跑过正文抓取，无需重复处理
-    all_has_content_field = all('content' in item for item in news_list)
+    # 但是如果新闻列表为空，则不应该跳过
+    all_has_content_field = len(news_list) > 0 and all('content' in item for item in news_list)
     if all_has_content_field:
         print(f"[SKIP] {json_path} 所有新闻已包含content字段，跳过 {keyword}")
         # 可选：写入日志
@@ -418,8 +426,7 @@ def process_json(keyword, date_str=None, mode='正式'):
         
         # 增强日志记录：添加关键词和新闻标题信息
         title = item.get('title', '无标题')
-        print(f"[{keyword}] 正在抓取: {title}")
-        print(f"[{keyword}] URL: {url}")
+        news_logger.content_fetch_start(keyword, title, url)
         
         try:
             content, wordcount, custom_grab = fetch_article_content(url)
@@ -430,14 +437,14 @@ def process_json(keyword, date_str=None, mode='正式'):
             # 记录抓取结果
             if wordcount > 0:
                 grab_type = "定制化" if custom_grab else "通用"
-                print(f"[{keyword}] [成功] 抓取成功 ({grab_type}): {wordcount} 字")
+                news_logger.content_fetch(keyword, wordcount, grab_type, "success")
             else:
-                print(f"[{keyword}] [失败] 抓取失败: 未获取到正文")
+                news_logger.content_fetch(keyword, 0, "通用", "failed")
                 
         except Exception as e:
-            print(f"[{keyword}] [异常] 抓取异常: {str(e)}")
-            print(f"[{keyword}] 标题: {title}")
-            print(f"[{keyword}] URL: {url}")
+            news_logger.content_fetch(keyword, 0, "通用", "error", str(e))
+            safe_print(f"[{keyword}] 标题: {title}")
+            safe_print(f"[{keyword}] URL: {url}")
             
             # 记录到错误日志
             error_handler = ErrorHandler()
