@@ -470,6 +470,19 @@ EMOJI_MAP = {
     "🚫": "[BLOCK]",
     "⭐️": "[STAR]",
     "📺": "[TV]",
+    "🔧": "[OPTIMIZE]",  # 优化工具
+    "🤖": "[AI]",        # AI机器人
+    "🚀": "[START]",     # 开始执行
+    "💥": "[CRASH]",     # 程序崩溃
+    "🎯": "[TARGET]",    # 目标
+    "🔍": "[SEARCH]",    # 搜索
+    "📊": "[STATS]",     # 统计
+    "📋": "[LIST]",      # 列表
+    "🕒": "[TIME]",      # 时间
+    "🔑": "[KEY]",       # 关键词
+    "📰": "[NEWS]",      # 新闻
+    "🌟": "[STAGE]",     # 阶段
+    "🎉": "[DONE]",      # 完成
 }
 
 def get_emoji(emoji_char):
@@ -478,3 +491,39 @@ def get_emoji(emoji_char):
         return emoji_char
     else:
         return EMOJI_MAP.get(emoji_char, emoji_char)
+
+# ========== 图标管理器配置 ==========
+# 是否启用新的图标管理器系统
+USE_ICON_MANAGER = True
+
+# 强制指定图标主题，设为None则自动检测
+# 可选值: "emoji", "text", "colorful", "minimal"
+FORCE_ICON_THEME = None
+
+# 图标管理器配置
+ICON_MANAGER_CONFIG = {
+    # 是否在首次加载时显示环境信息
+    "show_environment_info": True,
+    
+    # 是否启用控制台输出
+    "console_output": True,
+    
+    # 默认日志文件路径
+    "default_log_file": "output/run_log.txt",
+    
+    # 是否启用文件日志
+    "file_logging": True,
+    
+    # 新系统的emoji映射表（扩展版）
+    "custom_emoji_map": {
+        # 可以在这里添加项目特定的图标映射
+        "fetch": "📥",
+        "process": "⚙️",
+        "analyze": "🔍",
+        "summarize": "📝",
+        "score": "⭐",
+    }
+}
+
+# 兼容性设置：是否同时使用旧的clean_unicode_for_console函数
+ENABLE_LEGACY_UNICODE_CLEAN = True
