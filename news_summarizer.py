@@ -28,6 +28,71 @@ from config import (
     NEWS_SUMMARY_FILTER_SOURCEAPI,      # 新增：摘要源过滤配置
 )
 
+# ========== 新增：SSL连接池管理 ==========
+class OpenAIClientPool:
+    """OpenAI客户端连接池管理器，用于优化SSL连接处理"""
+    
+    def __init__(self):
+        self._clients = {}
+        self._client_usage_count = {}
+        self._max_usage_per_client = 50  # 每个客户端最大使用次数
+    
+    def get_client(self, platform, model_name):
+        """获取或创建OpenAI客户端"""
+        key = f"{platform}-{model_name}"
+        model_cfg = NEWS_SUMMARY_MODELS[platform][model_name]
+        
+        # 检查是否需要创建新客户端
+        if (key not in self._clients or 
+            self._client_usage_count.get(key, 0) >= self._max_usage_per_client):
+            
+            # 关闭旧客户端（如果存在）
+            if key in self._clients:
+                self._close_client(key)
+            
+            # 创建新客户端
+            from openai import OpenAI
+            self._clients[key] = OpenAI(
+                api_key=model_cfg['api_key'], 
+                base_url=model_cfg['base_url']
+            )
+            self._client_usage_count[key] = 0
+        
+        # 增加使用计数
+        self._client_usage_count[key] += 1
+        return self._clients[key]
+    
+    def _close_client(self, key):
+        """安全关闭指定客户端"""
+        if key in self._clients:
+            try:
+                client = self._clients[key]
+                if hasattr(client, 'close'):
+                    client.close()
+                elif hasattr(client, '_client') and hasattr(client._client, 'close'):
+                    client._client.close()
+            except Exception as e:
+                pass  # 静默处理关闭异常
+            finally:
+                del self._clients[key]
+                if key in self._client_usage_count:
+                    del self._client_usage_count[key]
+    
+    def close_all(self):
+        """关闭所有客户端连接"""
+        for key in list(self._clients.keys()):
+            self._close_client(key)
+    
+    def get_stats(self):
+        """获取连接池状态统计"""
+        return {
+            'active_clients': len(self._clients),
+            'usage_counts': self._client_usage_count.copy()
+        }
+
+# 全局连接池实例
+_client_pool = OpenAIClientPool()
+
 def clean_unicode_for_console(text):
     """
     清理文本中的特殊Unicode字符，避免Windows GBK编码错误
@@ -194,12 +259,9 @@ def summarize_news(news_list, platform=None, model_name=None, keyword=None):
     system_tokens = count_tokens(NEWS_SUMMARY_SYSTEM_PROMPT, platform, model_name)
     user_tokens = count_tokens(user_prompt, platform, model_name)
     safe_print(f"[INFO] 新闻关键词: {keyword}")
-    safe_print("\n===== 送给大模型的内容 =====")
-    safe_print(f"[system] {clean_unicode_for_console(NEWS_SUMMARY_SYSTEM_PROMPT.strip())}")
-    safe_print(f"[user] {clean_unicode_for_console(user_prompt[:1000])}{'...（已截断）' if len(user_prompt)>1000 else ''}")
     safe_print(f"[INFO] system prompt tokens: {system_tokens}")
     safe_print(f"[INFO] user prompt tokens: {user_tokens}")
-    safe_print("==========================\n")
+    safe_print(f"[INFO] 总token数: {system_tokens + user_tokens}")
     stream_mode = model_cfg['model'] in ['qwq-plus']
     safe_print(f"[DEBUG] OpenAI SDK调用模型: {model_cfg['model']}")
     safe_print(f"[DEBUG] OpenAI SDK地址: {model_cfg['base_url']}")
@@ -299,20 +361,23 @@ def append_log(date, keyword, model_name, prompt, summary_path, news_count, succ
 
 def call_llm(system_prompt, user_prompt, platform, model_name, stream_mode=False, max_retries=3, timeout=300, retry_interval=10):
     model_cfg = NEWS_SUMMARY_MODELS[platform][model_name]
-    client = OpenAI(api_key=model_cfg['api_key'], base_url=model_cfg['base_url'])
     messages = [
         {"role": "system", "content": system_prompt},
         {"role": "user", "content": user_prompt}
     ]
     token_limit_info = None
+    
     for attempt in range(1, max_retries + 1):
-        safe_print(f"[尝试] [尝试 {attempt}/{max_retries}] 正在调用 {platform}-{model_name} 模型...")
-        safe_print(f"[超时设置] {timeout}秒，请耐心等待...")
-        
-        # 记录开始时间
-        start_time = datetime.now()
+        # 从连接池获取客户端
+        client = _client_pool.get_client(platform, model_name)
         
         try:
+            safe_print(f"[尝试] [尝试 {attempt}/{max_retries}] 正在调用 {platform}-{model_name} 模型...")
+            safe_print(f"[超时设置] {timeout}秒，请耐心等待...")
+            
+            # 记录开始时间
+            start_time = datetime.now()
+            
             response = client.chat.completions.create(
                 model=model_cfg['model'],
                 messages=messages,
@@ -342,14 +407,19 @@ def call_llm(system_prompt, user_prompt, platform, model_name, stream_mode=False
             safe_print(f"[成功] [API调用成功] 耗时: {duration:.1f}秒，响应长度: {len(result)} 字符")
             
             return result, token_limit_info
+            
         except Exception as e:
             # 计算失败耗时
             end_time = datetime.now()
             duration = (end_time - start_time).total_seconds()
             
             err_str = str(e)
+            # 智能错误分类
+            is_ssl_error = any(x in err_str.lower() for x in ["ssl", "connection", "socket", "handshake", "certificate"])
             is_token_limit = any(x in err_str.lower() for x in ["token", "context length", "input length", "max input limit", "too long"])
             is_timeout = any(x in err_str.lower() for x in ["timeout", "timed out", "time out"])
+            is_network_error = any(x in err_str.lower() for x in ["network", "dns", "resolve", "unreachable", "connection refused"])
+            is_rate_limit = any(x in err_str.lower() for x in ["rate limit", "rate_limit", "quota", "too many requests"])
             
             if is_token_limit:
                 safe_print(f"[失败] [Token超限] 请求失败，耗时: {duration:.1f}秒")
@@ -360,10 +430,19 @@ def call_llm(system_prompt, user_prompt, platform, model_name, stream_mode=False
                     "prompt_tail": user_prompt[-200:],
                     "token_count": len(user_prompt)
                 }
+                # Token超限是不可重试的错误，直接返回None
+                return None, token_limit_info
+            elif is_ssl_error:
+                safe_print(f"[失败] [SSL错误] 请求失败，耗时: {duration:.1f}秒")
+                safe_print(f"[SSL错误] {err_str[:200]}...")
             elif is_timeout:
                 safe_print(f"[失败] [超时失败] 请求超时，耗时: {duration:.1f}秒（超过{timeout}秒限制）")
+            elif is_network_error:
+                safe_print(f"[失败] [网络错误] 请求失败，耗时: {duration:.1f}秒")
+            elif is_rate_limit:
+                safe_print(f"[失败] [速率限制] 请求失败，耗时: {duration:.1f}秒")
             else:
-                safe_print(f"[失败] [请求失败] 耗时: {duration:.1f}秒")
+                safe_print(f"[失败] [其他错误] 请求失败，耗时: {duration:.1f}秒")
             
             safe_print(f"[第{attempt}次失败] 错误类型: {type(e).__name__}")
             safe_print(f"[错误详情] {str(e)[:200]}...")
@@ -384,15 +463,24 @@ def call_llm(system_prompt, user_prompt, platform, model_name, stream_mode=False
         
         # 重试逻辑
         if attempt < max_retries:
-            safe_print(f"[准备重试] {retry_interval}秒后进行第{attempt + 1}次尝试...")
+            # 根据错误类型调整重试间隔
+            if is_ssl_error or is_network_error:
+                actual_retry_interval = retry_interval * 2  # SSL/网络错误延长重试间隔
+            elif is_rate_limit:
+                actual_retry_interval = retry_interval * 3  # 速率限制错误更长重试间隔
+            else:
+                actual_retry_interval = retry_interval
+            
+            safe_print(f"[准备重试] {actual_retry_interval}秒后进行第{attempt + 1}次尝试...")
             import time
-            for i in range(retry_interval):
+            for i in range(actual_retry_interval):
                 time.sleep(1)
                 if i % 3 == 0:  # 每3秒显示一次倒计时
-                    remaining = retry_interval - i
+                    remaining = actual_retry_interval - i
                     safe_print(f"[倒计时] 还有 {remaining} 秒...")
         else:
             safe_print(f"[最终失败] 已达到最大重试次数({max_retries}次)")
+    
     safe_print(f"[ERROR] 连续{max_retries}次请求均失败，已放弃。")
     return None, token_limit_info
 
@@ -497,12 +585,10 @@ def main(date=None, keyword=None, model_name=None, output_dir=None):
         return False
     # ========== 第一轮摘要结果保存 ==========
     safe_print("\n===== 第1轮-初稿摘要 =====")
-    safe_print("[system prompt]")
-    safe_print(clean_unicode_for_console(NEWS_SUMMARY_SYSTEM_PROMPT.strip()))
-    safe_print("\n[user prompt]")
-    safe_print(clean_unicode_for_console(prompt.strip()))
-    safe_print("\n[大模型输出]")
-    safe_print(clean_unicode_for_console(summary.strip()))
+    safe_print(f"[INFO] 使用模型: {used_platform}-{used_model}")
+    safe_print(f"[INFO] 摘要生成成功，长度: {len(summary)} 字符")
+    safe_print(f"[INFO] 摘要token数: {result_tokens}")
+    safe_print(f"[摘要内容] {clean_unicode_for_console(summary.strip()[:200])}{'...' if len(summary) > 200 else ''}")
 
     round1_entry = {
         "summary": summary,
@@ -530,11 +616,8 @@ def main(date=None, keyword=None, model_name=None, output_dir=None):
         with open(os.path.join("output", "run_log.txt"), "a", encoding="utf-8") as f:
             f.write(f"[WARN] 评判官token数超限，已切换到bailian平台qwen-plus-latest模型，token数: {judge_user_tokens + judge_system_tokens}\n")
     safe_print("\n===== 第2-1轮-评判官意见 =====")
-    safe_print("[system prompt]")
-    safe_print(clean_unicode_for_console(judge_system_prompt.strip()))
-    safe_print("\n[user prompt]")
-    safe_print(clean_unicode_for_console(judge_user_prompt.strip()))
-    safe_print(f"\n[开始评判] 使用模型: {judge_platform}-{judge_model}")
+    safe_print(f"[INFO] 使用模型: {judge_platform}-{judge_model}")
+    safe_print(f"[INFO] 评判官token数: {judge_user_tokens + judge_system_tokens}")
     judge_suggestion, _ = call_llm(judge_system_prompt, judge_user_prompt, judge_platform, judge_model)
     if judge_suggestion is None:
         now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -546,8 +629,8 @@ def main(date=None, keyword=None, model_name=None, output_dir=None):
             f.write(skip_log)
         safe_print(f"[SKIP] 跳过关键词: {keyword}，原因: 评判官环节大模型API连续多次失败或超时")
         return False
-    safe_print("\n[大模型输出]")
-    safe_print(clean_unicode_for_console(judge_suggestion.strip()))
+    safe_print(f"[INFO] 评判官建议生成成功，长度: {len(judge_suggestion)} 字符")
+    safe_print(f"[评判建议] {clean_unicode_for_console(judge_suggestion.strip()[:200])}{'...' if len(judge_suggestion) > 200 else ''}")
     # ========== 第二轮优化摘要 ==========
     optimize_user_prompt = NEWS_SUMMARY_OPTIMIZE_USER_PROMPT.format(
         system_prompt=NEWS_SUMMARY_SYSTEM_PROMPT.strip(),
@@ -568,11 +651,8 @@ def main(date=None, keyword=None, model_name=None, output_dir=None):
         with open(os.path.join("output", "run_log.txt"), "a", encoding="utf-8") as f:
             f.write(f"[WARN] 优化摘要token数超限，已切换到bailian平台qwen-plus-latest模型，token数: {optimize_user_tokens + optimize_system_tokens}\n")
     safe_print("\n===== 第2-2轮-优化后摘要 =====")
-    safe_print("[system prompt]")
-    safe_print(clean_unicode_for_console(optimize_system_prompt.strip()))
-    safe_print("\n[user prompt]")
-    safe_print(clean_unicode_for_console(optimize_user_prompt.strip()))
-    safe_print(f"\n[OPTIMIZE] [开始优化] 使用模型: {optimize_platform}-{optimize_model}")
+    safe_print(f"[INFO] 使用模型: {optimize_platform}-{optimize_model}")
+    safe_print(f"[INFO] 优化token数: {optimize_user_tokens + optimize_system_tokens}")
     improved_summary, _ = call_llm(optimize_system_prompt, optimize_user_prompt, optimize_platform, optimize_model)
     if improved_summary is None:
         now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -584,8 +664,8 @@ def main(date=None, keyword=None, model_name=None, output_dir=None):
             f.write(skip_log)
         safe_print(f"[SKIP] 跳过关键词: {keyword}，原因: 优化环节大模型API连续多次失败或超时")
         return False
-    safe_print("\n[大模型输出]")
-    safe_print(clean_unicode_for_console(improved_summary.strip()))
+    safe_print(f"[INFO] 优化摘要生成成功，长度: {len(improved_summary)} 字符")
+    safe_print(f"[优化摘要] {clean_unicode_for_console(improved_summary.strip()[:200])}{'...' if len(improved_summary) > 200 else ''}")
     round2_entry = {
         "summary": improved_summary,
         "platform": optimize_platform,
@@ -620,12 +700,11 @@ def main(date=None, keyword=None, model_name=None, output_dir=None):
     if prev_summary:
         hotspot_system_prompt = NEWS_SUMMARY_HOTSPOT_SYSTEM_PROMPT.strip()
         hotspot_user_prompt = NEWS_SUMMARY_HOTSPOT_USER_PROMPT.format(prev_summary=prev_summary.strip(), today_summary=improved_summary.strip())
+        hotspot_tokens = count_tokens(hotspot_system_prompt, optimize_platform, optimize_model) + count_tokens(hotspot_user_prompt, optimize_platform, optimize_model)
         safe_print("\n===== 第3轮-热点追踪总结 =====")
-        safe_print("[system prompt]")
-        safe_print(hotspot_system_prompt)
-        safe_print("\n[user prompt]")
-        safe_print(hotspot_user_prompt)
-        safe_print(f"\n[开始热点追踪] 使用模型: {optimize_platform}-{optimize_model}")
+        safe_print(f"[INFO] 使用模型: {optimize_platform}-{optimize_model}")
+        safe_print(f"[INFO] 热点追踪token数: {hotspot_tokens}")
+        safe_print(f"[INFO] 对比昨天({prev_date})的摘要数据")
         hotspot_summary, _ = call_llm(hotspot_system_prompt, hotspot_user_prompt, optimize_platform, optimize_model)
         if hotspot_summary is None:
             now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -637,8 +716,8 @@ def main(date=None, keyword=None, model_name=None, output_dir=None):
                 f.write(skip_log)
             safe_print(f"[SKIP] 跳过关键词: {keyword}，原因: 热点追踪环节大模型API连续多次失败或超时")
             return False
-        safe_print("\n[大模型输出]")
-        safe_print(clean_unicode_for_console(hotspot_summary.strip()))
+        safe_print(f"[INFO] 热点追踪摘要生成成功，长度: {len(hotspot_summary)} 字符")
+        safe_print(f"[热点追踪] {clean_unicode_for_console(hotspot_summary.strip()[:200])}{'...' if len(hotspot_summary) > 200 else ''}")
         round3_entry = {
             "summary": hotspot_summary,
             "platform": optimize_platform,
@@ -799,6 +878,16 @@ def main_entry():
         )
         log_script_complete("news_summarizer.py", success=False, message=error_msg)
         return False
+    
+    finally:
+        # 程序结束时清理连接池
+        try:
+            stats = _client_pool.get_stats()
+            safe_print(f"[连接池统计] 关闭前状态: {stats}")
+            _client_pool.close_all()
+            safe_print("[连接池] 所有OpenAI客户端连接已关闭")
+        except Exception as e:
+            safe_print(f"[WARN] 清理连接池时发生异常: {e}")
 
 if __name__ == "__main__":
     success = main_entry()

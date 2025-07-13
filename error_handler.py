@@ -160,8 +160,16 @@ def safe_subprocess_run(cmd: str, step_name: str, keyword: str = None,
     print(f"==============================")
     
     try:
-        result = subprocess.run(cmd, shell=True, check=check, 
-                              capture_output=True, text=True, encoding='utf-8')
+        # Windows环境编码兼容性处理
+        import sys
+        if sys.platform.startswith('win'):
+            # Windows下使用系统默认编码，避免UTF-8解码错误
+            result = subprocess.run(cmd, shell=True, check=check, 
+                                  capture_output=True, text=True, encoding='gbk', errors='ignore')
+        else:
+            # 非Windows环境使用UTF-8
+            result = subprocess.run(cmd, shell=True, check=check, 
+                                  capture_output=True, text=True, encoding='utf-8')
         
         print(f"==============================")
         print(f"[完成] 步骤完成: {step_name}")

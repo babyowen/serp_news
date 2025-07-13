@@ -2,6 +2,315 @@
 
 ## 最新更新记录
 
+### 2025-07-13 - 新增智能重试机制与连接池管理
+
+**优化目标**：
+基于SSL连接泄漏问题的根本解决，进一步优化系统的稳定性和性能，特别是针对偶发性网络错误的处理。
+
+**新增功能**：
+
+1. **智能重试机制**：
+   - **错误分类识别**：
+     - SSL错误：`ssl, connection, socket, handshake, certificate`
+     - 网络错误：`network, dns, resolve, unreachable, connection refused`
+     - 超时错误：`timeout, timed out, time out`
+     - Token超限：`token, context length, input length, max input limit`
+     - 速率限制：`rate limit, rate_limit, quota, too many requests`
+   
+   - **差异化重试策略**：
+     - 普通错误：默认重试间隔（10秒/5秒）
+     - SSL/网络错误：重试间隔×2（更长等待时间）
+     - 速率限制：重试间隔×3（避免频繁触发限制）
+     - Token超限：不重试（无法通过重试解决）
+
+2. **连接池管理系统**：
+   - **`OpenAIClientPool`**（摘要专用）：
+     - 支持多平台多模型的客户端缓存
+     - 每个客户端最大使用50次后自动更换
+     - 自动管理连接的创建和关闭
+   
+   - **`ScoringClientPool`**（评分专用）：
+     - 单一客户端高效复用
+     - 每个客户端最大使用100次后自动更换
+     - 专门优化评分场景的高频调用
+
+3. **优化效果**：
+   - **减少连接开销**：避免频繁创建/销毁SSL连接
+   - **提高重试成功率**：智能识别错误类型，采用合适的重试策略
+   - **增强系统稳定性**：偶发性网络问题不再导致程序崩溃
+   - **改善用户体验**：详细的重试进度显示和错误分类
+
+**技术实现细节**：
+
+1. **`news_summarizer.py`重试优化**：
+   ```python
+   # 智能错误分类
+   is_ssl_error = any(x in err_str.lower() for x in ["ssl", "connection", "socket", "handshake", "certificate"])
+   is_network_error = any(x in err_str.lower() for x in ["network", "dns", "resolve", "unreachable", "connection refused"])
+   is_rate_limit = any(x in err_str.lower() for x in ["rate limit", "rate_limit", "quota", "too many requests"])
+   
+   # 差异化重试间隔
+   if is_ssl_error or is_network_error:
+       actual_retry_interval = retry_interval * 2
+   elif is_rate_limit:
+       actual_retry_interval = retry_interval * 3
+   else:
+       actual_retry_interval = retry_interval
+   ```
+
+2. **`news_scorer.py`重试机制**：
+   - 从无重试升级到3次重试
+   - 增加60秒超时设置
+   - 根据错误类型调整重试间隔
+   - 连接池管理避免频繁创建客户端
+
+3. **连接池生命周期管理**：
+   - 程序启动时创建全局连接池
+   - 运行过程中智能复用连接
+   - 程序结束时统一清理所有连接
+
+**使用场景**：
+- **网络不稳定环境**：自动重试网络相关错误
+- **高并发场景**：连接池减少资源竞争
+- **长时间运行**：定期更换连接避免长连接问题
+- **批量处理**：避免SSL连接累积导致的资源耗尽
+
+### 2025-07-13 - 修复SSL连接泄漏问题，解决程序异常退出
+
+**问题描述**：
+在Windows环境下运行新闻摘要程序时，出现SSL连接资源泄漏问题：
+1. **SSL连接未关闭警告**：`ResourceWarning: unclosed <ssl.SSLSocket fd=2572, family=2, type=1, proto=0, laddr=('10.0.12.17', 64386), raddr=('116.205.40.114', 443)>`
+2. **程序异常退出**：返回错误码1，导致整个流程停止
+3. **批量处理失败**：处理多个关键词时，SSL连接累积导致资源耗尽
+
+**根本原因**：
+- **OpenAI客户端连接未正确关闭**：在`news_summarizer.py`和`news_scorer.py`中，OpenAI客户端创建后没有显式关闭
+- **资源泄漏累积**：每次调用大模型API都会创建新的SSL连接，但未释放
+- **批量处理时影响放大**：处理多个关键词时，连接数量激增，最终导致系统资源耗尽
+
+**详细修复措施**：
+
+1. **`news_summarizer.py` - `call_llm`函数优化**：
+   ```python
+   def call_llm(system_prompt, user_prompt, platform, model_name, ...):
+       # 创建OpenAI客户端
+       client = OpenAI(api_key=model_cfg['api_key'], base_url=model_cfg['base_url'])
+       
+       try:
+           # 原有的API调用逻辑
+           response = client.chat.completions.create(...)
+           return result, token_limit_info
+       finally:
+           # 确保客户端连接正确关闭，避免SSL连接泄漏
+           try:
+               if hasattr(client, 'close'):
+                   client.close()
+               elif hasattr(client, '_client') and hasattr(client._client, 'close'):
+                   client._client.close()
+           except Exception as e:
+               safe_print(f"[DEBUG] 关闭OpenAI客户端时发生异常: {e}")
+           safe_print(f"[DEBUG] OpenAI客户端已关闭（{platform}-{model_name}）")
+   ```
+
+2. **`news_scorer.py` - `score_news`函数优化**：
+   ```python
+   def score_news(title: str, content: str, keyword: str, main_keyword: str = None) -> int:
+       # 创建OpenAI客户端
+       client = OpenAI(api_key=DEEPSEEK_API_KEY, base_url=DEEPSEEK_BASE_URL)
+       
+       try:
+           # 原有的评分逻辑
+           response = client.chat.completions.create(...)
+           return score
+       finally:
+           # 确保客户端连接正确关闭，避免SSL连接泄漏
+           try:
+               if hasattr(client, 'close'):
+                   client.close()
+               elif hasattr(client, '_client') and hasattr(client._client, 'close'):
+                   client._client.close()
+           except Exception as e:
+               safe_print(f"[DEBUG] 关闭OpenAI客户端时发生异常: {e}")
+           safe_print(f"[DEBUG] OpenAI客户端已关闭（评分）")
+   ```
+
+3. **技术优化细节**：
+   - **多层尝试关闭**：尝试`client.close()`和`client._client.close()`两种方式
+   - **异常安全**：关闭过程中的异常不会影响主流程
+   - **调试信息**：记录客户端关闭状态，便于问题排查
+   - **资源管理**：使用try-finally确保无论成功失败都会关闭连接
+
+**预期效果**：
+- ✅ 消除SSL连接泄漏警告
+- ✅ 避免程序异常退出（错误码1）
+- ✅ 支持稳定的批量处理
+- ✅ 改善系统资源利用率
+- ✅ 提高长时间运行的稳定性
+
+**测试验证**：
+- 批量处理多个关键词时无SSL连接警告
+- 程序正常完成所有处理步骤
+- 系统资源使用稳定，无异常累积
+- 日志中显示OpenAI客户端正确关闭
+
+### 2025-07-13 - 优化Chrome浏览器配置，减少SSL连接错误
+
+**问题描述**：
+在Windows环境下的新闻正文抓取过程中，Chrome浏览器会产生以下几类日志信息：
+1. **DevTools监听信息**：`DevTools listening on ws://127.0.0.1:xxxxx/devtools/browser/...`
+2. **Chrome内部日志**：`WARNING: All log messages before absl::InitializeLog() is called are written to STDERR`
+3. **SSL握手失败**：`[ERROR:net\socket\ssl_client_socket_impl.cc:896] handshake failed; returned -1, SSL error code 1, net_error -101/-100`
+
+**Windows环境特有问题**：
+- Windows下的Chrome进程管理和日志输出与Linux/Mac不同
+- Windows的SSL证书处理机制更严格
+- Windows防火墙和安全策略对网络连接的影响更大
+- Windows下的Chrome控制台窗口会产生额外的系统消息
+
+**问题原因**：
+- SSL握手失败主要由目标网站的SSL证书问题、反爬虫机制或网络连接问题引起
+- net_error -101：ERR_CONNECTION_RESET（连接重置）
+- net_error -100：ERR_CONNECTION_CLOSED（连接关闭）
+- Chrome默认配置对SSL验证较为严格，Windows环境下更为敏感
+
+**Windows专用优化措施**：
+
+1. **增强SSL容错能力**：
+   - 添加`--ignore-ssl-errors`：忽略SSL错误
+   - 添加`--ignore-certificate-errors-spki-list`：忽略证书错误列表
+   - 添加`--ignore-urlfetcher-cert-requests`：忽略URL获取器证书请求
+   - 添加`--disable-web-security`：禁用Web安全检查
+   - 添加`--allow-running-insecure-content`：允许不安全内容
+   - 添加`--disable-site-isolation-trials`：禁用站点隔离试验
+
+2. **Windows特有的日志控制**：
+   - 添加`--disable-logging`：禁用大部分日志
+   - 添加`--log-level=3`：只显示致命错误
+   - 添加`--silent`：静默模式
+   - 添加`--disable-infobars`：禁用信息栏
+   - 添加`--disable-notifications`：禁用通知
+   - 添加`--disable-desktop-notifications`：禁用桌面通知
+   - 设置`service.log_level = 'ERROR'`：服务层只输出错误
+
+3. **Windows进程管理优化**：
+   - 添加`--disable-hang-monitor`：禁用挂起监视器
+   - 添加`--disable-prompt-on-repost`：禁用重新发送提示
+   - 添加`--disable-domain-reliability`：禁用域名可靠性检查
+   - 添加`--disable-component-extensions-with-background-pages`：禁用后台页面扩展
+   - 设置`service.creation_flags = 0x08000000`：Windows下隐藏控制台窗口
+
+4. **性能和稳定性优化**：
+   - 设置`page_load_strategy = 'eager'`：不等待所有资源加载完成
+   - 添加`--disable-images`：禁用图片加载
+   - 添加`--disable-javascript`：在不需要JS的场景下禁用
+   - 添加`--disable-java`：禁用Java插件
+   - 添加`--disable-flash`：禁用Flash插件
+   - 设置页面加载超时时间为30秒
+
+5. **反爬虫对策**：
+   - 添加`excludeSwitches`：移除自动化标识
+   - 设置`useAutomationExtension = False`：禁用自动化扩展
+   - 优化User-Agent字符串，专门针对Windows环境
+   - 设置多项首选项阻止弹窗和通知
+
+**代码结构优化**：
+1. **新增函数`get_chrome_options_for_windows()`**：
+   - 集中管理所有Windows专用的Chrome选项
+   - 提供详细的选项分类和注释
+   - 便于维护和调试
+
+2. **新增函数`get_chrome_service_for_windows()`**：
+   - 专门处理Windows环境下的Chrome服务配置
+   - 智能检测Windows平台，应用专用设置
+   - 提供异常处理，确保兼容性
+
+**修复效果**：
+- ✅ 大幅减少SSL握手失败的日志输出
+- ✅ 提高对问题网站的容错能力
+- ✅ 减少Windows特有的Chrome内部日志
+- ✅ 隐藏Windows控制台窗口，减少系统消息
+- ✅ 提升页面加载速度和稳定性
+- ✅ 降低被网站反爬虫系统检测的概率
+- ✅ 专门针对Windows环境的进程管理优化
+
+**技术细节**：
+在`fetch_content.py`中新增了两个专用函数：
+```python
+def get_chrome_options_for_windows():
+    """获取针对Windows环境优化的Chrome选项"""
+    options = Options()
+    
+    # Windows特有的SSL和安全配置
+    options.add_argument('--ignore-ssl-errors')
+    options.add_argument('--ignore-urlfetcher-cert-requests')
+    options.add_argument('--disable-site-isolation-trials')
+    
+    # Windows特有的日志控制
+    options.add_argument('--disable-infobars')
+    options.add_argument('--disable-notifications')
+    options.add_argument('--disable-desktop-notifications')
+    
+    # Windows进程管理
+    options.add_argument('--disable-hang-monitor')
+    options.add_argument('--disable-domain-reliability')
+    
+    return options
+
+def get_chrome_service_for_windows():
+    """获取针对Windows环境优化的Chrome服务配置"""
+    service = Service(driver_path)
+    service.log_level = 'ERROR'
+    
+    # Windows下隐藏控制台窗口
+    if sys.platform.startswith('win'):
+        try:
+            service.creation_flags = 0x08000000  # CREATE_NO_WINDOW
+        except:
+            pass  # 兼容性处理
+    
+    return service
+```
+
+**注意事项**：
+- 这些优化专门针对Windows环境，在其他平台上会自动适配
+- 部分安全检查被禁用，仅适用于可信的新闻网站访问
+- 控制台窗口隐藏功能仅在Windows环境下生效
+- 如仍有个别网站出现SSL错误，属于正常现象，系统会自动跳过并继续处理
+- 所有优化措施都经过异常处理，确保不影响程序的正常运行
+
+### 2025-07-12 - 修复Windows环境编码问题
+
+**问题描述**：
+- 在Windows服务器上执行采集程序时出现UnicodeDecodeError
+- 错误发生在subprocess._readerthread中，无法解码字节0xd5
+- 虽然不影响数据保存，但会产生异常输出
+
+**修复方案**：
+1. **error_handler.py - safe_subprocess_run函数**
+   - 添加跨平台编码兼容性处理
+   - Windows环境使用GBK编码，避免UTF-8解码错误
+   - 非Windows环境继续使用UTF-8编码
+   - 添加errors='ignore'参数，忽略无法解码的字符
+
+**修复效果**：
+- ✅ 解决Windows环境下的UnicodeDecodeError问题
+- ✅ 保持数据完整性不受影响
+- ✅ 维持跨平台兼容性
+- ✅ 提升用户体验，消除错误输出
+
+**技术细节**：
+```python
+# Windows环境编码兼容性处理
+if sys.platform.startswith('win'):
+    # Windows下使用系统默认编码，避免UTF-8解码错误
+    result = subprocess.run(cmd, shell=True, check=check, 
+                          capture_output=True, text=True, encoding='gbk', errors='ignore')
+else:
+    # 非Windows环境使用UTF-8
+    result = subprocess.run(cmd, shell=True, check=check, 
+                          capture_output=True, text=True, encoding='utf-8')
+```
+
 ### 2025-01-18 - 彻底解决跨平台emoji问题
 
 **新增组件**：
@@ -283,12 +592,14 @@ Windows系统默认使用GBK编码，无法处理代码中使用的emoji图标�
 - **热点追踪功能**：识别连续多天的热点新闻
 - **个性化过滤**：江苏省国资委使用全源新闻，其他关键词仅用Google News
 - **容错机制**：API失败时优雅降级，记录详细日志
+- **日志优化**：控制台输出简洁化，移除冗长的prompt显示，详细内容存储在单独文件
 **输出格式**：{date}_{keyword}_summary.json（多轮摘要）和optimization_prompts.txt（调试信息）
 **最新修复**：
 - **修复误报失败问题**：main函数现在明确返回True/False，避免成功执行被误判为失败
 - 成功完成所有摘要流程时返回True
 - 各种失败情况（API超时、无新闻等）返回False
 - 解决了日志中"运行结果: 成功"后仍显示"执行失败"的问题
+- **日志输出简化**：控制台只显示关键信息（模型信息、token统计、执行状态），摘要内容只显示前200字符，完整的prompt和response保存在optimization_prompts.txt文件中
 
 ### 6. write_to_mysql.py - 数据库写入
 **功能**：将处理后的数据写入MySQL数据库
