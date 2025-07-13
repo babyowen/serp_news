@@ -502,12 +502,8 @@ def main(date=None, keyword=None, model_name=None, output_dir=None):
     news_list = []
     search_keywords_set = set()
     # 只加载主关键词新闻，根据配置决定是否过滤特定来源
-    # 特殊处理：江苏省国资委关键词使用所有来源的新闻
-    if keyword == "江苏省国资委":
-        filter_sourceapi_to_use = None  # 不过滤，使用所有来源
-        safe_print(f"[INFO] 关键词 '{keyword}' 将使用所有API来源的新闻进行摘要")
-    else:
-        filter_sourceapi_to_use = NEWS_SUMMARY_FILTER_SOURCEAPI  # 使用配置的过滤规则
+    # 所有关键词都使用所有来源的新闻
+    filter_sourceapi_to_use = NEWS_SUMMARY_FILTER_SOURCEAPI  # 使用配置的过滤规则（现在为None，表示不过滤）
     
     if os.path.exists(scored_json):
         news_items = load_scored_news(scored_json, min_score=3, filter_sourceapi=filter_sourceapi_to_use)
@@ -531,16 +527,14 @@ def main(date=None, keyword=None, model_name=None, output_dir=None):
         safe_print(f"[INFO] 本批次涉及的搜索关键词: {', '.join([str(s) for s in search_keywords_set if s])}")
     if filter_sourceapi_to_use:
         safe_print(f"[INFO] 摘要只使用来源为 '{filter_sourceapi_to_use}' 的新闻")
-    elif keyword == "江苏省国资委":
-        safe_print(f"[INFO] 摘要使用所有API来源的新闻（特殊处理）")
+    else:
+        safe_print(f"[INFO] 摘要使用所有API来源的新闻")
     
     if not news_list:
         if filter_sourceapi_to_use:
             filter_msg = f"（已过滤来源：{filter_sourceapi_to_use}）"
-        elif keyword == "江苏省国资委":
-            filter_msg = "（使用所有API来源，特殊处理）"
         else:
-            filter_msg = ""
+            filter_msg = "（使用所有API来源）"
         safe_print(f"[INFO] 无3分及以上新闻{filter_msg}，无需总结。")
         append_log(date, keyword, model_name, '', '', 0, success=True, extra_info={'search_keywords': list(search_keywords_set)})
         return True

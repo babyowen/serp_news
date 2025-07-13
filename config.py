@@ -432,7 +432,7 @@ NEWS_RULE_BASED_SCORING = [
 # ========== 摘要源过滤配置 ==========
 # 摘要时只使用指定来源的新闻，如'serp_googlenews'
 # 设为None则使用所有来源的新闻
-NEWS_SUMMARY_FILTER_SOURCEAPI = "serp_googlenews"
+NEWS_SUMMARY_FILTER_SOURCEAPI = None  # 设置为None表示不过滤，使用所有新闻源
 
 # ========== 新增：Emoji输出控制配置 ==========
 # 在Windows GBK环境下，emoji字符会导致编码错误
