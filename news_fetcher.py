@@ -30,14 +30,16 @@ def fetch_gnews(keyword, date=None, sortby="publishedAt"):
     resp.raise_for_status()
     return resp.json()
 
-def fetch_serpapi_google_news(keyword, max_pages=5):
+def fetch_serpapi_google_news(keyword, max_pages=2):
     url = "https://serpapi.com/search.json"
     params = {
         "engine": "google_news",
         "q": keyword,
         "api_key": SERPAPI_KEY,
         "gl": "cn",
-        "hl": "zh-CN"
+        "hl": "zh-CN",
+        "tbs": "qdr:d",  # 新增：只看过去一天的新闻
+        "num": "100"      # 新增：每页返回100条结果
     }
     all_results = []
     for page in range(max_pages):
@@ -63,13 +65,13 @@ def fetch_serpapi_google_news(keyword, max_pages=5):
             return {"news_results": []}
     return {"news_results": all_results}
 
-def fetch_serpapi_baidu_news(keyword, max_pages=5):
+def fetch_serpapi_baidu_news(keyword, max_pages=3):
     url = "https://serpapi.com/search.json"
     params = {
         "engine": "baidu_news",
         "q": keyword,
         "api_key": SERPAPI_KEY,
-        "rtt": 4  # 按时间排序
+        "rtt": 4  # 最终确认：使用 4 按时间排序，为后续筛选提供最全面的数据
     }
     all_results = []
     for page in range(max_pages):
@@ -131,14 +133,15 @@ def fetch_baidu_news_web(keyword="养老", max_pages=3):
             })
     return results
 
-def fetch_serpapi_bing_news(keyword, max_pages=5):
+def fetch_serpapi_bing_news(keyword, max_pages=2):
     url = "https://serpapi.com/search.json"
     params = {
         "engine": "bing_news",
         "q": keyword,
         "api_key": SERPAPI_KEY,
         "mkt": "zh-hk",
-        "qft": 'interval="8"'
+        "qft": 'interval="7"',  # 修改：从8(一周)改为7(一天)
+        "count": "50"           # 新增：每页返回50条结果
     }
     all_results = []
     for page in range(max_pages):
@@ -163,9 +166,9 @@ def fetch_serpapi_bing_news(keyword, max_pages=5):
             return {"organic_results": []}
     return {"organic_results": all_results}
 
-def fetch_serpapi_duckduckgo_news(keyword, max_pages=5):
+def fetch_serpapi_duckduckgo_news(keyword, max_pages=2):
     """
-    通过SerpApi DuckDuckGo News API获取新闻，拉取一周内新闻，分页，自动重试，错误日志。
+    通过SerpApi DuckDuckGo News API获取新闻，拉取一天内新闻，分页，自动重试，错误日志。
     返回结构：{'news_results': [...]}，内容为原始news_results
     """
     url = "https://serpapi.com/search.json"
@@ -174,7 +177,7 @@ def fetch_serpapi_duckduckgo_news(keyword, max_pages=5):
         "q": keyword,
         "api_key": SERPAPI_KEY,
         "kl": "cn-zh",
-        "df": "w"
+        "df": "d"  # 修改：从w(一周)改为d(一天)
     }
     all_results = []
     for page in range(max_pages):
