@@ -56,6 +56,7 @@ finance.66wz.com
 finance.caijing.com.cn
 finance.caixin.com
 finance.ce.cn
+finance.china.com
 finance.china.com.cn
 finance.cnr.cn
 finance.eastmoney.com
@@ -99,6 +100,7 @@ health.jschina.com.cn
 health.people.com.cn
 health.sina.com.cn
 henan.china.com
+hhht.focus.cn
 hk.crntt.com
 hk.finance.yahoo.com
 hk.stockstar.com
@@ -106,6 +108,8 @@ hlj.rednet.cn
 hn.ifeng.com
 hn.loupan.com
 hn.rednet.cn
+house.hexun.com
+house.ifeng.com
 house.mnw.cn
 huaian.focus.cn
 huanbao.bjx.com.cn
@@ -142,6 +146,7 @@ jxgz.jxnews.com.cn
 jxsr.jxnews.com.cn
 jxt.hubei.gov.cn
 kpzg.people.com.cn
+kr.news.cn
 legal.gmw.cn
 life.china.com
 luzhou.scol.com.cn
@@ -172,6 +177,7 @@ mil.news.sina.com.cn
 military.china.com
 money.hangzhou.com.cn
 money.stockstar.com
+money.udn.com
 montsame.mn
 mp.ofweek.com
 mpower.in-en.com
@@ -220,6 +226,7 @@ news.mydrivers.com
 news.online.sh.cn
 news.pconline.com.cn
 news.qq.com
+news.rthk.hk
 news.sina.cn
 news.sina.com.cn
 news.sjtu.edu.cn
@@ -278,6 +285,7 @@ stock.caijing.com.cn
 stock.cfi.cn
 stock.hexun.com
 stock.stockstar.com
+suihua.dbw.cn
 sx.sina.com.cn
 sz.bendibao.com
 szjj.china.com.cn
@@ -299,6 +307,7 @@ tour.jschina.com.cn
 travel.hangzhou.com.cn
 ttgchina.com
 tz.zjol.com.cn
+udn.com
 union.china.com.cn
 user.guancha.cn
 v.gxnews.com.cn
@@ -328,6 +337,7 @@ www.baotounews.com.cn
 www.bbtnews.com.cn
 www.beijing.gov.cn
 www.bjnews.com.cn
+www.bjwmb.gov.cn
 www.btzx.com.cn
 www.bygd.cn
 www.c-fol.net
@@ -362,6 +372,7 @@ www.chinatimes.com
 www.chisa.edu.cn
 www.chnfund.com
 www.chuzhou.cn
+www.cinic.org.cn
 www.cls.cn
 www.cma.gov.cn
 www.cmrnn.com.cn
@@ -377,6 +388,7 @@ www.cnwomen.com.cn
 www.cppcc.gov.cn
 www.cq.gov.cn
 www.cq.xinhuanet.com
+www.cqcb.com
 www.cqn.com.cn
 www.cqnews.net
 www.cs.com.cn
@@ -388,6 +400,7 @@ www.dailyqd.com
 www.dezhoudaily.com
 www.donews.com
 www.dsb.cn
+www.dutenews.com
 www.dzwww.com
 www.e0734.com
 www.ebiotrade.com
@@ -426,6 +439,7 @@ www.guandian.cn
 www.gx.xinhuanet.com
 www.gxnews.com.cn
 www.gxzf.gov.cn
+www.gz.xinhuanet.com
 www.gzw.sh.gov.cn
 www.hangzhou.gov.cn
 www.hb.chinanews.com.cn
@@ -451,6 +465,7 @@ www.infoobs.com
 www.infzm.com
 www.investgo.cn
 www.ishaanxi.com
+www.itbear.com.cn
 www.iygw.cn
 www.jfdaily.com
 www.jian.gov.cn
@@ -501,11 +516,14 @@ www.ordos.gov.cn
 www.pai.com.cn
 www.prnasia.com
 www.pvnews.cn
+www.qdcaijing.com
 www.qhbtv.com
 www.qingdaonews.com
 www.qinghai.gov.cn
 www.qlwb.com.cn
 www.rmlt.com.cn
+www.rnz.co.nz
+www.safe.gov.cn
 www.sanyarb.com.cn
 www.sasac.gov.cn
 www.sbs.com.au
@@ -516,6 +534,7 @@ www.sd.xinhuanet.com
 www.sfccn.com
 www.sh.chinanews.com.cn
 www.shanghai.gov.cn
+www.sinchew.com.my
 www.sinotf.com
 www.slrbs.com
 www.smg.cn
@@ -552,6 +571,7 @@ www.vos.com.cn
 www.wenweipo.com
 www.whnews.cn
 www.why.com.cn
+www.wj001.com
 www.women.org.cn
 www.workercn.cn
 www.woyaoce.cn
@@ -600,5 +620,6 @@ zfrx.jschina.com.cn
 zgh.wuxi.gov.cn
 zh.vietnamplus.vn
 zixun.mushroommarket.net
+zj.people.com.cn
 zjnews.zjol.com.cn
 zzhz.zjol.com.cn
