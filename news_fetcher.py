@@ -65,35 +65,27 @@ def fetch_serpapi_google_news(keyword, max_pages=2):
             return {"news_results": []}
     return {"news_results": all_results}
 
-def fetch_serpapi_baidu_news(keyword, max_pages=3):
+def fetch_serpapi_baidu_news(keyword):
     url = "https://serpapi.com/search.json"
     params = {
         "engine": "baidu_news",
         "q": keyword,
         "api_key": SERPAPI_KEY,
-        "rtt": 4  # 最终确认：使用 4 按时间排序，为后续筛选提供最全面的数据
+        "rtt": 4,  # 最终确认：使用 4 按时间排序，为后续筛选提供最全面的数据
+        "rn": 50   # 一次性获取更多结果，以减少分页，节约API调用次数
     }
-    all_results = []
-    for page in range(max_pages):
-        params["pn"] = page * 10
-        for attempt in range(3):
-            try:
-                resp = requests.get(url, params=params, timeout=15)
-                resp.raise_for_status()
-                data = resp.json()
-                results = data.get("organic_results", [])
-                if not results:
-                    break
-                all_results.extend(results)
-                break
-            except Exception as e:
-                if attempt == 2:
-                    log_error(f"baidu_news", keyword, str(e))
-                else:
-                    time.sleep(3)
-        else:
-            return {"organic_results": []}
-    return {"organic_results": all_results}
+    for attempt in range(3):
+        try:
+            resp = requests.get(url, params=params, timeout=15)
+            resp.raise_for_status()
+            return resp.json()  # 成功时直接返回JSON数据
+        except Exception as e:
+            if attempt == 2:
+                log_error(f"baidu_news", keyword, str(e))
+            else:
+                time.sleep(3)
+    # 3次都失败
+    return {"organic_results": []}
 
 def fetch_baidu_news_web(keyword="养老", max_pages=3):
     """
