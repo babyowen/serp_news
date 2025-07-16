@@ -26,6 +26,7 @@ china.caixin.com
 china.huanqiu.com
 china.kyodonews.net
 china.nmgnews.com.cn
+chuxiong.yunnan.cn
 city.ce.cn
 city.dahe.cn
 city.shenchuang.com
@@ -71,6 +72,7 @@ finance.stockstar.com
 finance.tom.com
 finance.youth.cn
 finance1.ce.cn
+finet.hk
 fj.sina.com.cn
 fjnews.fjsen.com
 flash.jin10.com
@@ -83,6 +85,7 @@ gansu.gansudaily.com.cn
 gansu.gscn.com.cn
 gd.people.com.cn
 gjnews.cn
+go.huanqiu.com
 gov.rednet.cn
 gs.cnr.cn
 guba.sina.com.cn
@@ -124,7 +127,9 @@ i.ifeng.com
 iguangming.sznews.com
 iigf.cufe.edu.cn
 industry.cfi.cn
+inews.nmgnews.com.cn
 info.texnet.com.cn
+international.caixin.com
 intl.ce.cn
 ishare.ifeng.com
 it.hangzhou.com.cn
@@ -175,6 +180,7 @@ m.voc.com.cn
 mcn.solarbe.com
 mil.news.sina.com.cn
 military.china.com
+mini.caixin.com
 money.hangzhou.com.cn
 money.stockstar.com
 money.udn.com
@@ -188,7 +194,9 @@ news.66wz.com
 news.anhuinews.com
 news.bandao.cn
 news.bjd.com.cn
+news.cau.edu.cn
 news.cctv.com
+news.changsha.cn
 news.chengdu.cn
 news.china.com
 news.china.com.cn
@@ -221,6 +229,7 @@ news.iqilu.com
 news.jcrb.com
 news.jschina.com.cn
 news.ldnews.cn
+news.lmjx.net
 news.lyd.com.cn
 news.mydrivers.com
 news.online.sh.cn
@@ -306,6 +315,7 @@ tj.people.com.cn
 tour.jschina.com.cn
 travel.hangzhou.com.cn
 ttgchina.com
+tw.news.yahoo.com
 tz.zjol.com.cn
 udn.com
 union.china.com.cn
@@ -368,6 +378,7 @@ www.chinanews.com.cn
 www.chinapipe.net
 www.chinaqw.com
 www.chinaseed114.com
+www.chinasmartgrid.com.cn
 www.chinatimes.com
 www.chisa.edu.cn
 www.chnfund.com
@@ -380,6 +391,7 @@ www.cn3x.com.cn
 www.cnena.com
 www.cnenergynews.cn
 www.cnhubei.com
+www.cnmn.com.cn
 www.cnr.cn
 www.cnsoftnews.com
 www.cnstock.com
@@ -417,6 +429,7 @@ www.evlook.com
 www.eworldship.com
 www.farmer.com.cn
 www.fccs.com
+www.financialnews.com.cn
 www.findzd.com
 www.foodjx.com
 www.fujian.gov.cn
@@ -486,6 +499,7 @@ www.jyrb.cn
 www.kepu.gov.cn
 www.keyin.cn
 www.kf.cn
+www.kunming.cn
 www.lbnews.com.cn
 www.ldqxn.com
 www.legaldaily.com.cn
@@ -501,6 +515,7 @@ www.mca.gov.cn
 www.meadin.com
 www.mk.co.kr
 www.mnw.cn
+www.moneydj.com
 www.msn.com
 www.nantong.gov.cn
 www.nbd.com.cn
@@ -584,6 +599,7 @@ www.xinhuanet.com
 www.xinjiangnet.com.cn
 www.xiongan.gov.cn
 www.xj.chinanews.com.cn
+www.xj.xinhuanet.com
 www.xkb.com.cn
 www.xmnn.cn
 www.xmtv.cn
