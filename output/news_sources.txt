@@ -39,6 +39,8 @@ cnews.chinadaily.com.cn
 cpc.people.com.cn
 cq.loupan.com
 cq.people.com.cn
+cs.loupan.com
+ctinews.com
 df.youth.cn
 difang.gmw.cn
 district.ce.cn
@@ -46,6 +48,7 @@ economy.gmw.cn
 economy.jschina.com.cn
 energy.cngold.org
 ent.china.com
+ent.ifeng.com
 epaper.tianjinwe.com
 esf.soufun.com
 estate.caijing.com.cn
@@ -76,6 +79,7 @@ finet.hk
 fj.sina.com.cn
 fjnews.fjsen.com
 flash.jin10.com
+fnc.ebc.net.tw
 fo.ifeng.com
 focus.scol.com.cn
 fund.eastmoney.com
@@ -111,6 +115,7 @@ hlj.rednet.cn
 hn.ifeng.com
 hn.loupan.com
 hn.rednet.cn
+house.hangzhou.com.cn
 house.hexun.com
 house.ifeng.com
 house.mnw.cn
@@ -127,7 +132,9 @@ i.ifeng.com
 iguangming.sznews.com
 iigf.cufe.edu.cn
 industry.cfi.cn
+inews.hket.com
 inews.nmgnews.com.cn
+info.51.ca
 info.texnet.com.cn
 international.caixin.com
 intl.ce.cn
@@ -135,6 +142,7 @@ ishare.ifeng.com
 it.hangzhou.com.cn
 jiangsu.sina.com.cn
 jiangxi.jxnews.com.cn
+jingji.cctv.com
 jining.focus.cn
 jiweipreview.laoyaoba.com
 jj.jxnews.com.cn
@@ -154,6 +162,7 @@ kpzg.people.com.cn
 kr.news.cn
 legal.gmw.cn
 life.china.com
+linyi.dzwww.com
 luzhou.scol.com.cn
 m.163.com
 m.36kr.com
@@ -270,6 +279,7 @@ qingdao.sdnews.com.cn
 qz.fjsen.com
 review.jschina.com.cn
 sc.china.com.cn
+sc.sina.com.cn
 sc.stock.cnfol.com
 sd.china.com
 sd.dzwww.com
@@ -408,6 +418,7 @@ www.csrc.gov.cn
 www.ctdsb.net
 www.cyzone.cn
 www.cztv.com
+www.dahecube.com
 www.dailyqd.com
 www.dezhoudaily.com
 www.donews.com
@@ -472,6 +483,7 @@ www.hunantoday.cn
 www.huxiu.com
 www.huyangnet.cn
 www.hxnews.com
+www.icswb.com
 www.iheima.com
 www.inewsweek.cn
 www.infoobs.com
@@ -529,6 +541,7 @@ www.nxnews.net
 www.oilcn.com
 www.ordos.gov.cn
 www.pai.com.cn
+www.pjtime.com
 www.prnasia.com
 www.pvnews.cn
 www.qdcaijing.com
@@ -542,6 +555,7 @@ www.safe.gov.cn
 www.sanyarb.com.cn
 www.sasac.gov.cn
 www.sbs.com.au
+www.sc.chinanews.com.cn
 www.sc.gov.cn
 www.sc.xinhuanet.com
 www.scjjrb.com
@@ -560,6 +574,8 @@ www.sqrb.com.cn
 www.stcn.com
 www.stdaily.com
 www.stheadline.com
+www.storm.mg
+www.sx.chinanews.com.cn
 www.sx.gov.cn
 www.sx.xinhuanet.com
 www.sxcntv.com
