@@ -993,3 +993,14 @@ Stacktrace:
 }
 ==================================================
 
+[2025-07-17 00:42:43] ERROR
+脚本: fetch_content.py
+关键词: 养老
+错误类型: CONTENT_FETCH_ERROR
+错误信息: 抓取正文时发生异常: Could not reach host. Are you offline?
+上下文信息: {
+  "url": "https://www.cnstock.com/commonDetail/471850",
+  "title": "京津冀金融科技创新监管工具项目落地天津养老社区"
+}
+==================================================
+
