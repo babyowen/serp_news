@@ -6,6 +6,7 @@ ah.sina.com.cn
 app.myzaker.com
 app.xinhuanet.com
 art.china.cn
+article.pchome.net
 auto.china.com.cn
 auto.gasgoo.com
 baijiahao.baidu.com
@@ -111,6 +112,7 @@ hhht.focus.cn
 hk.crntt.com
 hk.finance.yahoo.com
 hk.stockstar.com
+hlj.people.com.cn
 hlj.rednet.cn
 hn.ifeng.com
 hn.loupan.com
@@ -550,6 +552,7 @@ www.qingdaonews.com
 www.qinghai.gov.cn
 www.qlwb.com.cn
 www.rmlt.com.cn
+www.rmzxw.com.cn
 www.rnz.co.nz
 www.safe.gov.cn
 www.sanyarb.com.cn
