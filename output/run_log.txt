@@ -28249,6 +28249,7 @@ AI评分：4成功/0失败
 [说明] 说明: 数据库导入成功
 ==============================
 
+<<<<<<< HEAD
 [2025-07-17 21:49:43]
 [开始执行] 开始执行: main.py
 ==============================
@@ -29579,4 +29580,301 @@ AI评分：4成功/0失败
 [2025-07-18 07:24:42]
 [执行完成] 执行完成: fetch_content.py
 [说明] 说明: 执行成功
+=======
+[2025-07-17 08:55:46]
+[开始执行] 开始执行: news_summarizer.py
+[参数] 执行参数: --keyword 江苏省国资委 --date 2025-07-16
+==============================
+
+[2025-07-17 09:02:16]
+执行程序: news_summarizer
+[关键词] 主关键词: 江苏省国资委
+[搜索关键词] 涉及搜索关键词: 江苏省国资委, 江苏港口集团, 徐矿集团, 金陵饭店, 江苏国信集团, 江苏农垦, 江苏省数据集团, 东部机场, 江苏国金集团, 江苏体育集团
+[日期] 日期: 2025-07-16
+[平台] 平台: deepseek
+[模型] 模型: deepseek-reasoner
+[新闻数量] 3分及以上新闻数量: 20
+[Prompt] 送给大模型的prompt前300字:  【新闻关键词】是: 江苏省国资委  【新闻列表】: 标题1: 江苏南京至韩国仁川全货机航线正式开通 分数1: 4 新闻1: 转自：龙虎网 7月10日17时28分，装载12.8吨半导体组件、汽车配件以及跨境电商货品的B737-800全货机从江苏南京禄口机场起飞，南京至韩国仁川全货机航线正式开通。 据了解，该航线由苏南货航承运，京东航空执飞，每周3-4班，与南通往返仁川构成多段联程航班。航线开通填补了南京至仁川货运航线的运力空白，能够更好地满足本地区与韩国之间日益增长的贸易需求，为南京乃至长三角地区的集成电路等高端制造业企业提供了更便捷的物流解决方案。 今年以来，南京临空经济示范区管委会会同东部
+[总结结果文件] 总结结果文件: output/2025-07-16/2025-07-16_江苏省国资委_summary.json
+[Token统计] 平台: deepseek，模型: deepseek-reasoner，system: 621, user: 18503, result: 1240
+[运行结果] 运行结果: 成功
+==============================
+
+[2025-07-17 09:02:16]
+[执行完成] 执行完成: news_summarizer.py
+[说明] 说明: 关键词 江苏省国资委 摘要完成
+==============================
+
+[2025-07-17 09:05:05]
+[开始执行] 开始执行: write_to_mysql.py
+[参数] 执行参数: --date 2025-07-16
+==============================
+[查重] news_websites 已存在，跳过部分已存在网站（仅提示一次）
+[2025-07-17 09:05:28] 导入数据库
+  文件: output/news_sources.txt
+  表: news_websites
+  成功写入: 0 条
+  跳过: 657 条
+------------------------------
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 养老 | www.nbd.com.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 养老 | www.thepaper.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 养老 | baijiahao.baidu.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 养老 | www.ce.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 养老 | www.cnstock.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 养老 | jingji.cctv.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 养老 | cj.sina.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 养老 | finance.sina.com.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 养老 | www.sx.gov.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 养老 | www.nfnews.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 养老 | www.xj.xinhuanet.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 养老 | finance.sina.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 养老 | szjj.china.com.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 养老 | www.icswb.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 养老 | www.jjxw.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 养老 | www.jntimes.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 养老 | www.sc.chinanews.com.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 养老 | stock.stockstar.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 养老 | www.guandian.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 养老 | www.cfi.net.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 养老 | finance.stockstar.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 养老 | www.sx.chinanews.com.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 养老 | www.sohu.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 养老 | m.sohu.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 养老 | www.rnz.co.nz
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 养老 | news.sina.com.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 养老 | www.gz.xinhuanet.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 养老 | www.dzwww.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 养老 | www.chinanews.com.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 养老 | yantai.dzwww.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 养老 | www.xinhuanet.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 养老 | zjnews.zjol.com.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 养老 | www.chinanews.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 养老 | focus.scol.com.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 公积金 | baijiahao.baidu.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 公积金 | house.hangzhou.com.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 公积金 | news.bandao.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 公积金 | www.financialnews.com.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 公积金 | sc.china.com.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 公积金 | finance.ifeng.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 公积金 | www.cfi.net.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 公积金 | www.guandian.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 公积金 | m.sohu.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 公积金 | news.qq.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 公积金 | news.china.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 公积金 | hb.ifeng.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 公积金 | finance.sina.com.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 公积金 | cs.loupan.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 公积金 | news.china.com.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 公积金 | www.sohu.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 公积金 | www.xzrbw.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 公积金 | linyi.dzwww.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 公积金 | www.sznews.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 公积金 | www.cnsoftnews.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 公积金 | xycity.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 公积金 | www.yangtse.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 公积金 | www.chinanews.com.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 政府基金 | www.cnstock.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 政府基金 | money.udn.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 政府基金 | hk.finance.yahoo.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 政府基金 | www.stheadline.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 政府基金 | fnc.ebc.net.tw
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 政府基金 | ctinews.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 政府基金 | www.msn.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 政府基金 | inews.hket.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 政府基金 | www.storm.mg
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 政府基金 | baijiahao.baidu.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 政府基金 | finance.sina.com.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 政府基金 | www.donews.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 政府基金 | www.dahecube.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 政府基金 | m.sohu.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 政府基金 | udn.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 江苏省国资委 | finance.sina.com.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 江苏省国资委 | www.sohu.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 江苏省国资委 | www.36kr.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 江苏省国资委 | news.qq.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 江苏省国资委 | www.pjtime.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 江苏省国资委 | www.js.xinhuanet.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 江苏省国资委 | view.inews.qq.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 江苏省国资委 | news.china.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 江苏省国资委 | stock.stockstar.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 江苏省国资委 | news.solarbe.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 江苏省国资委 | fund.eastmoney.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 江苏省国资委 | news.online.sh.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 江苏省国资委 | www.xj.chinanews.com.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 江苏省国资委 | sc.sina.com.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 江苏省国资委 | news.ifeng.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 江苏省国资委 | www.investgo.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 江苏省国资委 | info.51.ca
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 江苏省国资委 | www.chinatimes.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 江苏省国资委 | www.msn.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 江苏省国资委 | kpzg.people.com.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 江苏省国资委 | news.fjsen.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 江苏省国资委 | sichuan.scol.com.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 江苏省国资委 | jsnews.jschina.com.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 江苏省国资委 | 36kr.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 江苏省国资委 | news.sxrb.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 江苏省国资委 | www.wuhunews.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 江苏省国资委 | www.yangtse.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 江苏省国资委 | www.yicai.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 江苏省国资委 | news.lmjx.net
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 江苏省国资委 | sh.sina.com.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 江苏省国资委 | news.sina.com.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 江苏省国资委 | news.ycwb.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 江苏省国资委 | news.youth.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 江苏省国资委 | huanbao.bjx.com.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 江苏省国资委 | www.cebike.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 江苏省国资委 | www.stcn.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 江苏省国资委 | www.findzd.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 江苏省国资委 | city.sina.com.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 江苏省国资委 | www.gkzhan.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 江苏省国资委 | stock.10jqka.com.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 江苏省国资委 | www.chinanews.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 江苏省国资委 | www.163.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 江苏省国资委 | news.jschina.com.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 江苏省国资委 | js.ifeng.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 江苏省国资委 | news.cau.edu.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 江苏省国资委 | ent.ifeng.com
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 江苏省国资委 | www.ce.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 江苏省国资委 | www.chinanews.com.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 江苏省国资委 | xycity.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 江苏省国资委 | paper.people.com.cn
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 江苏省国资委 | www.hrbtv.net
+[查重] news_source_stats 已存在，跳过: 2025-07-16 | 江苏省国资委 | www.jsw.com.cn
+[2025-07-17 09:05:33] 导入数据库
+  文件: output/news_source_stats.json
+  表: news_source_stats
+  成功写入: 0 条
+  跳过: 124 条
+  失败: 0 条
+------------------------------
+[跳过空内容] scored_news: 京津冀金融科技创新监管工具项目落地天津养老社区... (内容为空)
+[跳过空内容] scored_news: 攀枝花积极探索分类式照护养老模式... (内容为空)
+[跳过空内容] scored_news: 宁夏印发进一步推动养老服务高质量发展的实施意见 - 民政部... (内容为空)
+[跳过空内容] scored_news: 六问六答防范养老诈骗再提醒... (内容为空)
+[跳过空内容] scored_news: 最新消息！人社部公示最新职业“养老服务师”定义和工作任务... (内容为空)
+[跳过空内容] scored_news: 《品牌价值评价 养老服务业》国家标准发布实施！... (内容为空)
+[跳过空内容] scored_news: 好消息！80个产品、31项服务入选《智慧健康养老推广目录》... (内容为空)
+[跳过空内容] scored_news: 兴业安康稳健养老目标一年持有期混合(FOF) (020185)... (内容为空)
+[跳过空内容] scored_news: 兴业安康稳健养老目标一年持有期混合型发起式基金中基金(FOF)招募说明书(更新)(2025年第2号)... (内容为空)
+[跳过空内容] scored_news: 济阳街道济阳大街社区开展为养老钱“筑防线”活动... (内容为空)
+[跳过空内容] scored_news: 惠乐康养（835616）：泰州惠康养老服务有限公司通过大宗交易的方式增持挂牌公司50万股... (内容为空)
+[2025-07-17 09:05:38] 导入数据库
+  关键词: 养老
+  文件: output/2025-07-16/2025-07-16_养老_scored.json
+  表: scored_news
+  成功写入: 0 条
+  跳过(已存在): 70 条
+  跳过(空内容): 11 条
+  失败: 0 条
+------------------------------
+[2025-07-17 09:05:38] 导入数据库
+  关键词: 养老
+  文件: output/2025-07-16/2025-07-16_养老_summary.json
+  表: summary_news
+  成功写入: 0 条
+  跳过: 3 条
+  失败: 0 条
+------------------------------
+[跳过空内容] scored_news: 海南推进灵活就业人员参加住房公积金制度 聚焦“宽进宽出、灵活缴存”... (内容为空)
+[跳过空内容] scored_news: 浦发银行菏泽分行：政银企协同赋能，公积金服务“零距离”... (内容为空)
+[跳过空内容] scored_news: 成都保租房租金公积金直付服务正式接入住房保障服务平台... (内容为空)
+[跳过空内容] scored_news: 杭州发布2025年度住房公积金调整工作通知... (内容为空)
+[跳过空内容] scored_news: 浙商银行杭州分行省内首家 省直公积金业务授权代办点落地... (内容为空)
+[跳过空内容] scored_news: 黄仁勋将出席第三届链博会；李书福收回极氪｜南财早新闻... (内容为空)
+[2025-07-17 09:05:40] 导入数据库
+  关键词: 公积金
+  文件: output/2025-07-16/2025-07-16_公积金_scored.json
+  表: scored_news
+  成功写入: 0 条
+  跳过(已存在): 38 条
+  跳过(空内容): 6 条
+  失败: 0 条
+------------------------------
+[2025-07-17 09:05:41] 导入数据库
+  关键词: 公积金
+  文件: output/2025-07-16/2025-07-16_公积金_summary.json
+  表: summary_news
+  成功写入: 0 条
+  跳过: 3 条
+  失败: 0 条
+------------------------------
+[跳过空内容] scored_news: 基金、平台、生态三轮驱动 金芙蓉基金探索政府基金“湖南模式”... (内容为空)
+[跳过空内容] scored_news: 【投融资动态】荣烯新材A轮融资，融资额数千万人民币，投资方为紫金港资本、浙江高质量产业引导基金等... (内容为空)
+[跳过空内容] scored_news: 重庆：到2027年，全市智能网联新能源汽车领域新增上市企业5家以上... (内容为空)
+[跳过空内容] scored_news: 陕西省科技创新母基金落地西咸新区... (内容为空)
+[2025-07-17 09:05:42] 导入数据库
+  关键词: 政府基金
+  文件: output/2025-07-16/2025-07-16_政府基金_scored.json
+  表: scored_news
+  成功写入: 0 条
+  跳过(已存在): 23 条
+  跳过(空内容): 4 条
+  失败: 0 条
+------------------------------
+[2025-07-17 09:05:43] 导入数据库
+  关键词: 政府基金
+  文件: output/2025-07-16/2025-07-16_政府基金_summary.json
+  表: summary_news
+  成功写入: 0 条
+  跳过: 3 条
+  失败: 0 条
+------------------------------
+[跳过空内容] scored_news: 原创 增持承诺遇股价大涨，成都银行回应股东"窗口期内择机履行"... (内容为空)
+[跳过空内容] scored_news: 菏泽四大城区规划集中亮相... (内容为空)
+[跳过空内容] scored_news: 中国和阿塞拜疆，今起互免签证！... (内容为空)
+[跳过空内容] scored_news: 股市必读：吉华集团（603980）7月15日主力资金净流出2231.31万元，占总成交额9.71%... (内容为空)
+[跳过空内容] scored_news: 躲酷暑 韩国“酒店度假”需求激增... (内容为空)
+[跳过空内容] scored_news: 股市必读：吉华集团（603980）7月15日主力资金净流出2231.31万元，占总 ...... (内容为空)
+[跳过空内容] scored_news: 躲酷暑 韩国"酒店度假"需求激增... (内容为空)
+[跳过空内容] scored_news: 股市必读：中国中冶（601618）7月15日主力资金净流出619.5万元，占总成交额2.18%... (内容为空)
+[跳过空内容] scored_news: 通道升级 班列提效——中欧班列（西安）跑出丝路合作"加速度"... (内容为空)
+[跳过空内容] scored_news: 股市必读：中国中冶（601618）7月15日主力资金净流出619.5万元，占总 ...... (内容为空)
+[跳过空内容] scored_news: 玩转夏天 河南文旅市场热... (内容为空)
+[跳过空内容] scored_news: 邮储银行：拟出资100亿元设立中邮金融资产投资有限公司... (内容为空)
+[跳过空内容] scored_news: 6月化妆品零售额下降2.3%，亿级医美企业涉财务造假... (内容为空)
+[跳过空内容] scored_news: 玩转夏天 河南文旅市场热... (内容为空)
+[跳过空内容] scored_news: 五星级酒店摆摊不掉价... (内容为空)
+[跳过空内容] scored_news: 京东取消外卖超时20分钟免单服务 官方回应：准时率已大幅提升... (内容为空)
+[跳过空内容] scored_news: 南京再挂2幅低密宅地，8月开拍！... (内容为空)
+[跳过空内容] scored_news: 栖霞农特产品“圈粉”南京... (内容为空)
+[跳过空内容] scored_news: 江苏水源申请汽车侧围内板加工装置专利，提高侧围内板的加工效率... (内容为空)
+[跳过空内容] scored_news: 股市必读：ST岭南（002717）7月15日主力资金净流入968.45万元... (内容为空)
+[跳过空内容] scored_news: 蓝冠噪鹛现身江西德兴 生态之美引珍禽栖息... (内容为空)
+[跳过空内容] scored_news: 群鸟翔集绘就夏日多彩生态画卷 农文旅融合带动乡村振兴“一路繁花”... (内容为空)
+[跳过空内容] scored_news: 江苏水源申请汽车侧围内板加工装置专利，提高侧围内板的加工效率... (内容为空)
+[跳过空内容] scored_news: 股市必读：ST岭南（002717）7月15日主力资金净流入968.45万元... (内容为空)
+[跳过空内容] scored_news: 蓝冠噪鹛现身江西德兴 生态之美引珍禽栖息... (内容为空)
+[跳过空内容] scored_news: 群鸟翔集绘就夏日多彩生态画卷 农文旅融合带动乡村振兴"一路繁花"... (内容为空)
+[跳过空内容] scored_news: 绿茵鏖战背后的区域竞逐与一体化... (内容为空)
+[跳过空内容] scored_news: 球迷质疑南通主场多区域锁票，南通体育局：很重视，调查中... (内容为空)
+[跳过空内容] scored_news: 文旅市场“热”力全开成为带动消费重要引擎 “文旅+”释放强劲动能... (内容为空)
+[跳过空内容] scored_news: “苏超”第七轮扬州队本周日晚主场对阵南京队，扬州对相关道路实施临时交通管制... (内容为空)
+[跳过空内容] scored_news: 樊振东再战乒超！2025赛季乒超联赛第二阶段将在厦门打响... (内容为空)
+[跳过空内容] scored_news: 互联网大厂在苏超的二次“创业”... (内容为空)
+[跳过空内容] scored_news: 绿茵鏖战背后的区域竞逐与一体化... (内容为空)
+[跳过空内容] scored_news: 上半年利润近3亿元 增长50%... (内容为空)
+[跳过空内容] scored_news: 深蓝征途：中国漂浮式风电技术领航全球产业变革... (内容为空)
+[跳过空内容] scored_news: 百年慈善地标的文化重生... (内容为空)
+[2025-07-17 09:05:54] 导入数据库
+  关键词: 江苏省国资委
+  文件: output/2025-07-16/2025-07-16_江苏省国资委_scored.json
+  表: scored_news
+  成功写入: 0 条
+  跳过(已存在): 163 条
+  跳过(空内容): 36 条
+  失败: 0 条
+------------------------------
+[2025-07-17 09:05:55] 导入数据库
+  关键词: 江苏省国资委
+  文件: output/2025-07-16/2025-07-16_江苏省国资委_summary.json
+  表: summary_news
+  成功写入: 3 条
+  跳过: 0 条
+  失败: 0 条
+------------------------------
+
+[2025-07-17 09:05:55]
+[执行完成] 执行完成: write_to_mysql.py
+[说明] 说明: 数据库导入成功
+>>>>>>> f7e2e8eed0399f93e47ddc2cd6232757f8c0b629
 ==============================
