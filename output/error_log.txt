@@ -1035,3 +1035,44 @@ Stacktrace:
 }
 ==================================================
 
+[2025-07-18 08:16:02] baidu_news | 公积金 | HTTPSConnectionPool(host='serpapi.com', port=443): Max retries exceeded with url: /search.json?engine=baidu_news&q=%E5%85%AC%E7%A7%AF%E9%87%91&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&rtt=4&rn=50 (Caused by SSLError(SSLEOFError(8, 'EOF occurred in violation of protocol (_ssl.c:1129)')))
+[2025-07-18 08:24:14] ERROR
+脚本: fetch_content.py
+关键词: unknown
+错误类型: PROGRAM_CRASH
+错误信息: 用户中断程序执行
+上下文信息: {
+  "stage": "正文抓取处理"
+}
+==================================================
+
+[2025-07-18 09:38:52] ERROR
+脚本: fetch_content.py
+关键词: unknown
+错误类型: PROGRAM_CRASH
+错误信息: 用户中断程序执行
+上下文信息: {
+  "stage": "正文抓取处理"
+}
+==================================================
+
+[2025-07-18 11:15:16] ERROR
+脚本: news_summarizer.py
+关键词: unknown
+错误类型: PROGRAM_CRASH
+错误信息: 用户中断程序执行
+上下文信息: {
+  "stage": "main"
+}
+==================================================
+
+[2025-07-18 11:36:37] ERROR
+脚本: news_summarizer.py
+关键词: unknown
+错误类型: PROGRAM_CRASH
+错误信息: 用户中断程序执行
+上下文信息: {
+  "stage": "main"
+}
+==================================================
+

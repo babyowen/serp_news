@@ -1,5 +1,6 @@
 123.60.107.122
 36kr.com
+7its.com
 ah.anhuinews.com
 ah.people.com.cn
 ah.sina.com.cn
@@ -98,6 +99,7 @@ guoqing.china.com.cn
 guzhen.news.fang.com
 gx.people.com.cn
 gz.house.163.com
+gz.people.com.cn
 ha.people.com.cn
 hainan.ifeng.com
 hb.ifeng.com
@@ -198,6 +200,7 @@ money.udn.com
 montsame.mn
 mp.ofweek.com
 mpower.in-en.com
+n.yam.com
 nb.ifeng.com
 news.10jqka.com.cn
 news.2500sz.com
@@ -225,6 +228,7 @@ news.dayoo.com
 news.dichan.sina.com.cn
 news.e23.cn
 news.emoney.cn
+news.esnai.com
 news.fang.com
 news.fjsen.com
 news.fznews.com.cn
@@ -237,10 +241,12 @@ news.hexun.com
 news.hsw.cn
 news.ifeng.com
 news.iqilu.com
+news.jc001.cn
 news.jcrb.com
 news.jschina.com.cn
 news.ldnews.cn
 news.lmjx.net
+news.ltn.com.tw
 news.lyd.com.cn
 news.mydrivers.com
 news.online.sh.cn
@@ -343,6 +349,7 @@ wenews.caixin.com
 wenyi.gmw.cn
 world.gmw.cn
 world.people.com.cn
+wuxi.focus.cn
 www.12371.cn
 www.163.com
 www.21ic.com
@@ -444,6 +451,7 @@ www.farmer.com.cn
 www.fccs.com
 www.financialnews.com.cn
 www.findzd.com
+www.finet.hk
 www.foodjx.com
 www.fujian.gov.cn
 www.ganzhou.gov.cn
@@ -533,6 +541,7 @@ www.moneydj.com
 www.msn.com
 www.nantong.gov.cn
 www.nbd.com.cn
+www.ncnews.com.cn
 www.ne21.com
 www.news.cn
 www.news.gov.hk
@@ -542,6 +551,7 @@ www.nmwbk.com
 www.nxnews.net
 www.oilcn.com
 www.ordos.gov.cn
+www.orientaldaily.com.my
 www.pai.com.cn
 www.pjtime.com
 www.prnasia.com
@@ -585,6 +595,7 @@ www.sxcntv.com
 www.sxycrb.com
 www.sz.gov.cn
 www.sznews.com
+www.taian.gov.cn
 www.taiwan.cn
 www.taizhou.gov.cn
 www.takefoto.cn
