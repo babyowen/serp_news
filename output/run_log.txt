@@ -29878,3 +29878,1531 @@ AI评分：4成功/0失败
 [说明] 说明: 数据库导入成功
 >>>>>>> f7e2e8eed0399f93e47ddc2cd6232757f8c0b629
 ==============================
+
+[2025-07-18 08:22:31]
+[开始执行] 开始执行: fetch_content.py
+[参数] 执行参数: 公积金 2025-07-17
+==============================
+[2025-07-18 08:22:31] [INFO] [news-unknown] [公积金] 正在抓取: 永州市住房公积金管理中心征信数据质量工作获国家级“双优”表彰
+[2025-07-18 08:22:31] [DEBUG] [news-unknown] [公积金] URL: https://m.voc.com.cn/xhn/news/202507/29971132.html
+[2025-07-18 08:22:31] [SUCCESS] [news-unknown] [公积金] 抓取成功 (通用): 762 字
+[2025-07-18 08:22:31] [INFO] [news-unknown] [公积金] 正在抓取: 时刻帮丨在长沙购买第三套房可以提取公积金吗？
+[2025-07-18 08:22:31] [DEBUG] [news-unknown] [公积金] URL: https://fdc.rednet.cn/content/646941/51/15134180.html
+[2025-07-18 08:22:32] [SUCCESS] [news-unknown] [公积金] 抓取成功 (通用): 1409 字
+[2025-07-18 08:22:32] [INFO] [news-unknown] [公积金] 正在抓取: 泰安住房公积金半年报出炉 缴存额超45亿 贷款政策再升级
+[2025-07-18 08:22:32] [DEBUG] [news-unknown] [公积金] URL: http://www.taian.gov.cn/art/2025/7/17/art_46738_10359508.html
+[2025-07-18 08:22:32] [SUCCESS] [news-unknown] [公积金] 抓取成功 (通用): 1187 字
+[2025-07-18 08:22:32] [INFO] [news-unknown] [公积金] 正在抓取: 超30城推出爸妈公积金帮还房贷政策
+[2025-07-18 08:22:32] [DEBUG] [news-unknown] [公积金] URL: https://cj.sina.cn/articles/view/1961718870/74ed745604001fnl0?from=estate
+[2025-07-18 08:22:33] [SUCCESS] [news-unknown] [公积金] 抓取成功 (通用): 272 字
+[2025-07-18 08:22:33] [INFO] [news-unknown] [公积金] 正在抓取: 深耕“诚意服务站”品牌，持续推动公积金政策惠民生
+[2025-07-18 08:22:33] [DEBUG] [news-unknown] [公积金] URL: https://www.yangtse.com/news/jiangsu/suzhou/202507/t20250717_237715.html
+[2025-07-18 08:22:33] [SUCCESS] [news-unknown] [公积金] 抓取成功 (通用): 935 字
+[2025-07-18 08:22:33] [INFO] [news-unknown] [公积金] 正在抓取: 最新上下限发布！青岛市调整2025年度住房公积金缴存基数
+[2025-07-18 08:22:33] [DEBUG] [news-unknown] [公积金] URL: https://www.dailyqd.com/guanhai/397962_1.html
+[2025-07-18 08:22:34] [SUCCESS] [news-unknown] [公积金] 抓取成功 (通用): 616 字
+[2025-07-18 08:22:34] [INFO] [news-unknown] [公积金] 正在抓取: 北京公积金新政：直付房租业务优化，季付合同与存量租赁均可办理
+[2025-07-18 08:22:34] [DEBUG] [news-unknown] [公积金] URL: https://fdc.rednet.cn/content/646941/51/15133676.html
+[2025-07-18 08:22:34] [SUCCESS] [news-unknown] [公积金] 抓取成功 (通用): 1921 字
+[2025-07-18 08:22:34] [INFO] [news-unknown] [公积金] 正在抓取: 娄底市住房公积金管理中心乡村振兴走访慰问暖民心
+[2025-07-18 08:22:34] [DEBUG] [news-unknown] [公积金] URL: https://m.voc.com.cn/xhn/news/202507/29970052.html
+[2025-07-18 08:22:34] [SUCCESS] [news-unknown] [公积金] 抓取成功 (通用): 1062 字
+[2025-07-18 08:22:34] [INFO] [news-unknown] [公积金] 正在抓取: 北京扩大公积金直付房租试点范围，签约自如可用公积金直付房租_住房_租赁_市场
+[2025-07-18 08:22:34] [DEBUG] [news-unknown] [公积金] URL: https://m.sohu.com/a/914813646_116062?scm=10001.325_13-325_13.0.0.5_32
+[2025-07-18 08:22:35] [SUCCESS] [news-unknown] [公积金] 抓取成功 (通用): 1198 字
+[2025-07-18 08:22:37] [INFO] [news-unknown] [公积金] 正在抓取: 深耕“诚意服务站”品牌，持续推动公积金政策惠民生_中心_苏锦街道_企业
+[2025-07-18 08:22:37] [DEBUG] [news-unknown] [公积金] URL: https://m.sohu.com/a/914799775_121448078?scm=10001.325_13-325_13.0.0.5_32
+[2025-07-18 08:22:38] [SUCCESS] [news-unknown] [公积金] 抓取成功 (通用): 881 字
+[2025-07-18 08:22:39] [INFO] [news-unknown] [公积金] 正在抓取: 盈康生命拟用14.58亿元 公积金弥补亏损
+[2025-07-18 08:22:39] [DEBUG] [news-unknown] [公积金] URL: https://m.sohu.com/a/914822800_115362?scm=10001.325_13-325_13.0.0.5_32
+[2025-07-18 08:22:39] [SUCCESS] [news-unknown] [公积金] 抓取成功 (通用): 69 字
+[2025-07-18 08:22:41] [INFO] [news-unknown] [公积金] 正在抓取: 多地出手！发购房补贴、加大公积金支持力度_住房_生育_家庭
+[2025-07-18 08:22:41] [DEBUG] [news-unknown] [公积金] URL: https://m.sohu.com/a/914674846_362042?scm=10001.325_13-325_13.0.0.5_32
+[2025-07-18 08:22:41] [SUCCESS] [news-unknown] [公积金] 抓取成功 (通用): 1253 字
+[2025-07-18 08:22:41] [INFO] [news-unknown] [公积金] 正在抓取: 泰安人注意！住房公积金服务渠道有新变化，5种方式教你操作→
+[2025-07-18 08:22:41] [DEBUG] [news-unknown] [公积金] URL: https://m.163.com/dy/article/K4LQB5VC0514CFC7.html?clickfrom=subscribe
+[2025-07-18 08:22:41] [SUCCESS] [news-unknown] [公积金] 抓取成功 (通用): 704 字
+[2025-07-18 08:22:41] [INFO] [news-unknown] [公积金] 正在抓取: 青岛市调整2025年度住房公积金缴存基数
+[2025-07-18 08:22:41] [DEBUG] [news-unknown] [公积金] URL: https://qingdao.dzwww.com/qingdaonews/202507/t20250717_16224619.htm
+[2025-07-18 08:22:42] [SUCCESS] [news-unknown] [公积金] 抓取成功 (通用): 624 字
+[2025-07-18 08:22:42] [INFO] [news-unknown] [公积金] 正在抓取: 2025年度住房公积金缴存基数和缴存比例申报工作启动
+[2025-07-18 08:22:42] [DEBUG] [news-unknown] [公积金] URL: https://www.msn.cn/zh-cn/news/other/2025%E5%B9%B4%E5%BA%A6%E4%BD%8F%E6%88%BF%E5%85%AC%E7%A7%AF%E9%87%91%E7%BC%B4%E5%AD%98%E5%9F%BA%E6%95%B0%E5%92%8C%E7%BC%B4%E5%AD%98%E6%AF%94%E4%BE%8B%E7%94%B3%E6%8A%A5%E5%B7%A5%E4%BD%9C%E5%90%AF%E5%8A%A8/ar-AA1IKtad?ocid=BingNewsVerp
+[2025-07-18 08:22:42] [ERROR] [news-unknown] [公积金] 抓取失败: 未获取到正文
+[2025-07-18 08:22:42] [INFO] [news-unknown] [公积金] 正在抓取: 湖南公积金新政：爸妈
+[2025-07-18 08:22:42] [DEBUG] [news-unknown] [公积金] URL: https://guba.sina.com.cn/?s=thread&bid=275165&tid=6
+[2025-07-18 08:22:42] [SUCCESS] [news-unknown] [公积金] 抓取成功 (通用): 668 字
+[2025-07-18 08:22:42] [INFO] [news-unknown] [公积金] 正在抓取: 父母房屋加装电梯可提取子女的公积金支付工程款
+[2025-07-18 08:22:42] [DEBUG] [news-unknown] [公积金] URL: https://www.163.com/v/video/VT3NTAPSO.html
+[2025-07-18 08:22:44] [SUCCESS] [news-unknown] [公积金] 抓取成功 (通用): 1434 字
+[2025-07-18 08:22:44] [INFO] [news-unknown] [公积金] 正在抓取: “商转公”扩围为更多购房者“减负”
+[2025-07-18 08:22:44] [DEBUG] [news-unknown] [公积金] URL: https://www.ncnews.com.cn/xwzx/ncxw/ncsp/202507/t20250717_2166629.html
+[2025-07-18 08:22:45] [SUCCESS] [news-unknown] [公积金] 抓取成功 (通用): 1418 字
+[2025-07-18 08:22:45] [INFO] [news-unknown] [公积金] 正在抓取: 香港连续6个季度仅推一幅住宅地招标
+[2025-07-18 08:22:45] [DEBUG] [news-unknown] [公积金] URL: https://36kr.com/p/3380995168479241
+[2025-07-18 08:22:46] [SUCCESS] [news-unknown] [公积金] 抓取成功 (通用): 1549 字
+[2025-07-18 08:22:46] [INFO] [news-unknown] [公积金] 正在抓取: 统计局数据出炉！秦皇岛房价变动如何？
+[2025-07-18 08:22:46] [DEBUG] [news-unknown] [公积金] URL: https://wuxi.focus.cn/?search=q304
+[2025-07-18 08:22:46] [SUCCESS] [news-unknown] [公积金] 抓取成功 (通用): 2355 字
+[2025-07-18 08:22:46] [INFO] [news-unknown] [公积金] 正在抓取: 发现自贸港 | 快递员、外卖员、网约车司机等这类人群，海南喊你们 ...
+[2025-07-18 08:22:46] [DEBUG] [news-unknown] [公积金] URL: https://www.msn.cn/zh-cn/news/other/%E5%BF%AB%E9%80%92%E5%B0%8F%E5%93%A5%E5%A4%96%E5%8D%96%E9%AA%91%E6%89%8B%E7%AD%89%E5%9D%87%E5%8F%AF%E7%BC%B4%E5%AD%98%E5%85%AC%E7%A7%AF%E9%87%91/ar-AA1IK95A
+[2025-07-18 08:22:46] [ERROR] [news-unknown] [公积金] 抓取失败: 未获取到正文
+[2025-07-18 08:22:46] [INFO] [news-unknown] [公积金] 正在抓取: 原创 公积金新增四大用途，这几种支出也能报销，你知道吗
+[2025-07-18 08:22:46] [DEBUG] [news-unknown] [公积金] URL: https://www.sohu.com/a/914750563_121607767
+[2025-07-18 08:22:46] [SUCCESS] [news-unknown] [公积金] 抓取成功 (通用): 1526 字
+[2025-07-18 08:22:46] [INFO] [news-unknown] [公积金] 正在抓取: 北京公积金直付房租试点房源增至33万套间，自如房源占近6成
+[2025-07-18 08:22:46] [DEBUG] [news-unknown] [公积金] URL: https://finance.sina.com.cn/jjxw/2025-07-17/doc-inffuzvm7196671.shtml
+[2025-07-18 08:22:47] [SUCCESS] [news-unknown] [公积金] 抓取成功 (通用): 617 字
+[2025-07-18 08:22:47] [INFO] [news-unknown] [公积金] 正在抓取: 在济用公积金买保障性住房：首付比例降至15% 提取贷款可同步办理
+[2025-07-18 08:22:47] [DEBUG] [news-unknown] [公积金] URL: https://news.qq.com/rain/a/20250717A07SDU00
+[2025-07-18 08:22:47] [SUCCESS] [news-unknown] [公积金] 抓取成功 (通用): 727 字
+[2025-07-18 08:22:50] [INFO] [news-unknown] [公积金] 正在抓取: 在济南用公积金买保障性住房：首付比例降至15%，提取贷款可同步办理
+[2025-07-18 08:22:50] [DEBUG] [news-unknown] [公积金] URL: https://news.qq.com/rain/a/20250717A07ZRP00
+[2025-07-18 08:22:50] [SUCCESS] [news-unknown] [公积金] 抓取成功 (通用): 728 字
+[2025-07-18 08:22:50] [INFO] [news-unknown] [公积金] 正在抓取: 签约自如可用公积金直付房租
+[2025-07-18 08:22:50] [DEBUG] [news-unknown] [公积金] URL: https://finance.sina.com.cn/jjxw/2025-07-17/doc-inffurfq1835628.shtml
+[2025-07-18 08:22:51] [SUCCESS] [news-unknown] [公积金] 抓取成功 (通用): 1027 字
+[2025-07-18 08:22:51] [INFO] [news-unknown] [公积金] 正在抓取: 北京扩大公积金直付房租试点范围，签约自如可用公积金直付房租
+[2025-07-18 08:22:51] [DEBUG] [news-unknown] [公积金] URL: https://www.msn.cn/zh-cn/money/%E7%BB%8F%E6%B5%8E/%E5%8C%97%E4%BA%AC%E6%89%A9%E5%A4%A7%E5%85%AC%E7%A7%AF%E9%87%91%E7%9B%B4%E4%BB%98%E6%88%BF%E7%A7%9F%E8%AF%95%E7%82%B9%E8%8C%83%E5%9B%B4-%E7%AD%BE%E7%BA%A6%E8%87%AA%E5%A6%82%E5%8F%AF%E7%94%A8%E5%85%AC%E7%A7%AF%E9%87%91%E7%9B%B4%E4%BB%98%E6%88%BF%E7%A7%9F/ar-AA1ILDcC
+[2025-07-18 08:22:51] [ERROR] [news-unknown] [公积金] 抓取失败: 未获取到正文
+[2025-07-18 08:22:51] [INFO] [news-unknown] [公积金] 正在抓取: 多城探索公积金多场景应用 加大对多子女家庭购房支持力度
+[2025-07-18 08:22:51] [DEBUG] [news-unknown] [公积金] URL: https://house.ifeng.com/news/2025_07_17-57104614_0.shtml
+[2025-07-18 08:22:51] [SUCCESS] [news-unknown] [公积金] 抓取成功 (通用): 977 字
+[2025-07-18 08:22:53] [INFO] [news-unknown] [公积金] 正在抓取: 北京公积金直付房租能"按季划转"了
+[2025-07-18 08:22:53] [DEBUG] [news-unknown] [公积金] URL: https://house.ifeng.com/news/2025_07_17-57104622_0.shtml
+[2025-07-18 08:22:54] [SUCCESS] [news-unknown] [公积金] 抓取成功 (通用): 939 字
+[2025-07-18 08:22:54] [INFO] [news-unknown] [公积金] 正在抓取: 上半年170地密集发力楼市新政 热点城市成交回稳向好
+[2025-07-18 08:22:54] [DEBUG] [news-unknown] [公积金] URL: https://www.stcn.com/article/detail/2620858.html
+[2025-07-18 08:22:54] [SUCCESS] [news-unknown] [公积金] 抓取成功 (通用): 2405 字
+[2025-07-18 08:22:54] [INFO] [news-unknown] [公积金] 正在抓取: 2025年度住房公积金缴存基数和缴存比例申报工作启动
+[2025-07-18 08:22:54] [DEBUG] [news-unknown] [公积金] URL: https://www.msn.cn/zh-cn/news/other/2025%E5%B9%B4%E5%BA%A6%E4%BD%8F%E6%88%BF%E5%85%AC%E7%A7%AF%E9%87%91%E7%BC%B4%E5%AD%98%E5%9F%BA%E6%95%B0%E5%92%8C%E7%BC%B4%E5%AD%98%E6%AF%94%E4%BE%8B%E7%94%B3%E6%8A%A5%E5%B7%A5%E4%BD%9C%E5%90%AF%E5%8A%A8/ar-AA1IKtad
+[2025-07-18 08:22:54] [ERROR] [news-unknown] [公积金] 抓取失败: 未获取到正文
+[2025-07-18 08:22:54] [INFO] [news-unknown] [公积金] 正在抓取: "商转公"扩围为更多购房者"减负"
+[2025-07-18 08:22:54] [DEBUG] [news-unknown] [公积金] URL: https://www.ncnews.com.cn/xwzx/ncxw/ncsp/202507/t20250717_2166629.html
+[2025-07-18 08:22:54] [SUCCESS] [news-unknown] [公积金] 抓取成功 (通用): 1418 字
+[2025-07-18 08:22:54] [INFO] [news-unknown] [公积金] 正在抓取: 统计局数据出炉!秦皇岛房价变动如何？
+[2025-07-18 08:22:54] [DEBUG] [news-unknown] [公积金] URL: https://wuxi.focus.cn/?search=q304
+[2025-07-18 08:22:55] [SUCCESS] [news-unknown] [公积金] 抓取成功 (通用): 2355 字
+
+==============================
+[时间] 2025-07-18 08:22:55
+[关键词] 关键词: 公积金
+[模式] 模式: 正式
+[文件] 处理的json文件: output/2025-07-17/2025-07-17_公积金.json
+
+[统计] 抓取统计：
+  [成功] 成功抓取正文: 29 篇
+  [定制] 其中定制化抓取: 0 篇
+  [来源] 本次采集新闻源数量: 19
+  [失败] 抓取失败: 4 篇
+
+[警告] 未能抓取的新闻：
+  - 2025年度住房公积金缴存基数和缴存比例申报工作启动 | https://www.msn.cn/zh-cn/news/other/2025%E5%B9%B4%E5%BA%A6%E4%BD%8F%E6%88%BF%E5%85%AC%E7%A7%AF%E9%87%91%E7%BC%B4%E5%AD%98%E5%9F%BA%E6%95%B0%E5%92%8C%E7%BC%B4%E5%AD%98%E6%AF%94%E4%BE%8B%E7%94%B3%E6%8A%A5%E5%B7%A5%E4%BD%9C%E5%90%AF%E5%8A%A8/ar-AA1IKtad?ocid=BingNewsVerp 
+  - 发现自贸港 | 快递员、外卖员、网约车司机等这类人群，海南喊你们 ... | https://www.msn.cn/zh-cn/news/other/%E5%BF%AB%E9%80%92%E5%B0%8F%E5%93%A5%E5%A4%96%E5%8D%96%E9%AA%91%E6%89%8B%E7%AD%89%E5%9D%87%E5%8F%AF%E7%BC%B4%E5%AD%98%E5%85%AC%E7%A7%AF%E9%87%91/ar-AA1IK95A 
+  - 北京扩大公积金直付房租试点范围，签约自如可用公积金直付房租 | https://www.msn.cn/zh-cn/money/%E7%BB%8F%E6%B5%8E/%E5%8C%97%E4%BA%AC%E6%89%A9%E5%A4%A7%E5%85%AC%E7%A7%AF%E9%87%91%E7%9B%B4%E4%BB%98%E6%88%BF%E7%A7%9F%E8%AF%95%E7%82%B9%E8%8C%83%E5%9B%B4-%E7%AD%BE%E7%BA%A6%E8%87%AA%E5%A6%82%E5%8F%AF%E7%94%A8%E5%85%AC%E7%A7%AF%E9%87%91%E7%9B%B4%E4%BB%98%E6%88%BF%E7%A7%9F/ar-AA1ILDcC 
+  - 2025年度住房公积金缴存基数和缴存比例申报工作启动 | https://www.msn.cn/zh-cn/news/other/2025%E5%B9%B4%E5%BA%A6%E4%BD%8F%E6%88%BF%E5%85%AC%E7%A7%AF%E9%87%91%E7%BC%B4%E5%AD%98%E5%9F%BA%E6%95%B0%E5%92%8C%E7%BC%B4%E5%AD%98%E6%AF%94%E4%BE%8B%E7%94%B3%E6%8A%A5%E5%B7%A5%E4%BD%9C%E5%90%AF%E5%8A%A8/ar-AA1IKtad 
+==============================
+
+
+[2025-07-18 08:22:55]
+[执行完成] 执行完成: fetch_content.py
+[说明] 说明: 执行成功
+==============================
+
+[2025-07-18 08:23:32]
+[开始执行] 开始执行: fetch_content.py
+[参数] 执行参数: 政府基金 2025-07-17
+==============================
+[2025-07-18 08:23:32] [INFO] [news-unknown] [政府基金] 正在抓取: 海河产业基金荣膺省级政府引导基金榜首
+[2025-07-18 08:23:32] [DEBUG] [news-unknown] [政府基金] URL: https://www.tj.gov.cn/sy/tjxw/202507/t20250717_6981817.html
+[2025-07-18 08:23:35] [SUCCESS] [news-unknown] [政府基金] 抓取成功 (通用): 716 字
+[2025-07-18 08:23:35] [INFO] [news-unknown] [政府基金] 正在抓取: 陕西省政府投资引导基金总规模突破千亿元
+[2025-07-18 08:23:35] [DEBUG] [news-unknown] [政府基金] URL: https://baijiahao.baidu.com/s?id=1837848566187403646&wfr=spider&for=pc
+[2025-07-18 08:23:37] [SUCCESS] [news-unknown] [政府基金] 抓取成功 (通用): 741 字
+[2025-07-18 08:23:37] [INFO] [news-unknown] [政府基金] 正在抓取: 農業信用保證基金配合政府 天災貸款免息期間免收保證手續費
+[2025-07-18 08:23:37] [DEBUG] [news-unknown] [政府基金] URL: https://www.msn.com/zh-tw/news/other/%E8%BE%B2%E6%A5%AD%E4%BF%A1%E7%94%A8%E4%BF%9D%E8%AD%89%E5%9F%BA%E9%87%91%E9%85%8D%E5%90%88%E6%94%BF%E5%BA%9C-%E5%A4%A9%E7%81%BD%E8%B2%B8%E6%AC%BE%E5%85%8D%E6%81%AF%E6%9C%9F%E9%96%93%E5%85%8D%E6%94%B6%E4%BF%9D%E8%AD%89%E6%89%8B%E7%BA%8C%E8%B2%BB/ar-AA1IKjvX?ocid=BingNewsVerp
+
+[2025-07-18 08:24:14]
+[异常终止] 程序异常终止
+[程序名] 程序名: fetch_content.py
+[执行阶段] 执行阶段: 正文抓取处理
+[关键词] 关键词: unknown
+[错误信息] 错误信息: 用户中断程序执行
+==============================
+
+[2025-07-18 08:39:48]
+[开始执行] 开始执行: fetch_content.py
+[参数] 执行参数: 政府基金 2025-07-17
+==============================
+[2025-07-18 08:39:48] [INFO] [news-unknown] [政府基金] 正在抓取: 海河产业基金荣膺省级政府引导基金榜首
+[2025-07-18 08:39:48] [DEBUG] [news-unknown] [政府基金] URL: https://www.tj.gov.cn/sy/tjxw/202507/t20250717_6981817.html
+[2025-07-18 08:40:09] [SUCCESS] [news-unknown] [政府基金] 抓取成功 (通用): 716 字
+[2025-07-18 08:40:09] [INFO] [news-unknown] [政府基金] 正在抓取: 陕西省政府投资引导基金总规模突破千亿元
+[2025-07-18 08:40:09] [DEBUG] [news-unknown] [政府基金] URL: https://baijiahao.baidu.com/s?id=1837848566187403646&wfr=spider&for=pc
+[2025-07-18 08:40:11] [SUCCESS] [news-unknown] [政府基金] 抓取成功 (通用): 741 字
+[2025-07-18 08:40:11] [INFO] [news-unknown] [政府基金] 正在抓取: 農業信用保證基金配合政府 天災貸款免息期間免收保證手續費
+[2025-07-18 08:40:11] [DEBUG] [news-unknown] [政府基金] URL: https://www.msn.com/zh-tw/news/other/%E8%BE%B2%E6%A5%AD%E4%BF%A1%E7%94%A8%E4%BF%9D%E8%AD%89%E5%9F%BA%E9%87%91%E9%85%8D%E5%90%88%E6%94%BF%E5%BA%9C-%E5%A4%A9%E7%81%BD%E8%B2%B8%E6%AC%BE%E5%85%8D%E6%81%AF%E6%9C%9F%E9%96%93%E5%85%8D%E6%94%B6%E4%BF%9D%E8%AD%89%E6%89%8B%E7%BA%8C%E8%B2%BB/ar-AA1IKjvX?ocid=BingNewsVerp
+[2025-07-18 08:40:39] [SUCCESS] [news-unknown] [政府基金] 抓取成功 (通用): 275 字
+[2025-07-18 08:40:39] [INFO] [news-unknown] [政府基金] 正在抓取: 美韓關稅卡關可能原因曝光 川普索求天價投資基金
+[2025-07-18 08:40:39] [DEBUG] [news-unknown] [政府基金] URL: https://udn.com/news/story/124373/8878512
+[2025-07-18 08:40:42] [SUCCESS] [news-unknown] [政府基金] 抓取成功 (通用): 1041 字
+[2025-07-18 08:40:42] [INFO] [news-unknown] [政府基金] 正在抓取: 施政報告2025｜陳曼琪倡政府與內地信保合作護企業出海 設東江縱隊關愛基金
+[2025-07-18 08:40:42] [DEBUG] [news-unknown] [政府基金] URL: https://www.stheadline.com/politics/3474333/%E6%96%BD%E6%94%BF%E5%A0%B1%E5%91%8A2025%E9%99%B3%E6%9B%BC%E7%90%AA%E5%80%A1%E6%94%BF%E5%BA%9C%E8%88%87%E5%85%A7%E5%9C%B0%E4%BF%A1%E4%BF%9D%E5%90%88%E4%BD%9C%E8%AD%B7%E4%BC%81%E6%A5%AD%E5%87%BA%E6%B5%B7-%E8%A8%AD%E6%9D%B1%E6%B1%9F%E7%B8%B1%E9%9A%8A%E9%97%9C%E6%84%9B%E5%9F%BA%E9%87%91
+[2025-07-18 08:40:44] [SUCCESS] [news-unknown] [政府基金] 抓取成功 (通用): 755 字
+[2025-07-18 08:40:44] [INFO] [news-unknown] [政府基金] 正在抓取: 助台南災後復原 英國EBC金融集團跨海援1萬美元
+[2025-07-18 08:40:44] [DEBUG] [news-unknown] [政府基金] URL: https://news.ltn.com.tw/news/life/breakingnews/5111419
+[2025-07-18 08:40:47] [SUCCESS] [news-unknown] [政府基金] 抓取成功 (通用): 823 字
+[2025-07-18 08:40:47] [INFO] [news-unknown] [政府基金] 正在抓取: 七成公帑用於入住高質素院舍長者 李慧琼指「資源分配不公」促檢討分配機制
+[2025-07-18 08:40:47] [DEBUG] [news-unknown] [政府基金] URL: https://www.stheadline.com/politics/3474364/七成公帑用於入住高質素院舍長者-李慧琼指資源分配不公促檢討分配機制
+[2025-07-18 08:40:49] [SUCCESS] [news-unknown] [政府基金] 抓取成功 (通用): 1421 字
+[2025-07-18 08:40:49] [INFO] [news-unknown] [政府基金] 正在抓取: 陳浩濂：政府將加強控制經營開支 會盡量減低對市民影響
+[2025-07-18 08:40:49] [DEBUG] [news-unknown] [政府基金] URL: https://hk.finance.yahoo.com/news/%E9%99%B3%E6%B5%A9%E6%BF%82-%E6%94%BF%E5%BA%9C%E5%B0%87%E5%8A%A0%E5%BC%B7%E6%8E%A7%E5%88%B6%E7%B6%93%E7%87%9F%E9%96%8B%E6%94%AF-%E6%9C%83%E7%9B%A1%E9%87%8F%E6%B8%9B%E4%BD%8E%E5%B0%8D%E5%B8%82%E6%B0%91%E5%BD%B1%E9%9F%BF-035748725.html
+[2025-07-18 08:40:52] [SUCCESS] [news-unknown] [政府基金] 抓取成功 (通用): 468 字
+[2025-07-18 08:40:52] [INFO] [news-unknown] [政府基金] 正在抓取: 台師大「血論文」風暴延燒 國教院長請辭委員、侯漢廷曝女學生泳淤青雙臂
+[2025-07-18 08:40:52] [DEBUG] [news-unknown] [政府基金] URL: https://n.yam.com/Article/20250717337183
+[2025-07-18 08:40:54] [SUCCESS] [news-unknown] [政府基金] 抓取成功 (通用): 1151 字
+[2025-07-18 08:40:54] [INFO] [news-unknown] [政府基金] 正在抓取: 普發現金須舉債千億！卓榮泰自曝「內心非常交戰」 盼赴立院說明兩件事
+[2025-07-18 08:40:54] [DEBUG] [news-unknown] [政府基金] URL: https://www.msn.com/zh-tw/news/national/%E6%99%AE%E7%99%BC%E7%8F%BE%E9%87%91%E9%A0%88%E8%88%89%E5%82%B5%E5%8D%83%E5%84%84-%E5%8D%93%E6%A6%AE%E6%B3%B0%E8%87%AA%E6%9B%9D-%E5%85%A7%E5%BF%83%E9%9D%9E%E5%B8%B8%E4%BA%A4%E6%88%B0-%E7%9B%BC%E8%B5%B4%E7%AB%8B%E9%99%A2%E8%AA%AA%E6%98%8E%E5%85%A9%E4%BB%B6%E4%BA%8B/ar-AA1IKJpp?ocid=BingNewsVerp
+
+[2025-07-18 09:38:52]
+[异常终止] 程序异常终止
+[程序名] 程序名: fetch_content.py
+[执行阶段] 执行阶段: 正文抓取处理
+[关键词] 关键词: unknown
+[错误信息] 错误信息: 用户中断程序执行
+==============================
+
+[2025-07-18 09:38:57]
+[开始执行] 开始执行: fetch_content.py
+[参数] 执行参数: 政府基金 2025-07-17
+==============================
+[2025-07-18 09:38:57] [INFO] [news-unknown] [政府基金] 正在抓取: 海河产业基金荣膺省级政府引导基金榜首
+[2025-07-18 09:38:57] [DEBUG] [news-unknown] [政府基金] URL: https://www.tj.gov.cn/sy/tjxw/202507/t20250717_6981817.html
+[2025-07-18 09:38:58] [SUCCESS] [news-unknown] [政府基金] 抓取成功 (通用): 716 字
+[2025-07-18 09:38:58] [INFO] [news-unknown] [政府基金] 正在抓取: 陕西省政府投资引导基金总规模突破千亿元
+[2025-07-18 09:38:58] [DEBUG] [news-unknown] [政府基金] URL: https://baijiahao.baidu.com/s?id=1837848566187403646&wfr=spider&for=pc
+[2025-07-18 09:39:01] [SUCCESS] [news-unknown] [政府基金] 抓取成功 (通用): 741 字
+[2025-07-18 09:39:01] [INFO] [news-unknown] [政府基金] 正在抓取: 農業信用保證基金配合政府 天災貸款免息期間免收保證手續費
+[2025-07-18 09:39:01] [DEBUG] [news-unknown] [政府基金] URL: https://www.msn.com/zh-tw/news/other/%E8%BE%B2%E6%A5%AD%E4%BF%A1%E7%94%A8%E4%BF%9D%E8%AD%89%E5%9F%BA%E9%87%91%E9%85%8D%E5%90%88%E6%94%BF%E5%BA%9C-%E5%A4%A9%E7%81%BD%E8%B2%B8%E6%AC%BE%E5%85%8D%E6%81%AF%E6%9C%9F%E9%96%93%E5%85%8D%E6%94%B6%E4%BF%9D%E8%AD%89%E6%89%8B%E7%BA%8C%E8%B2%BB/ar-AA1IKjvX?ocid=BingNewsVerp
+[2025-07-18 09:39:26] [SUCCESS] [news-unknown] [政府基金] 抓取成功 (通用): 275 字
+[2025-07-18 09:39:26] [INFO] [news-unknown] [政府基金] 正在抓取: 美韓關稅卡關可能原因曝光 川普索求天價投資基金
+[2025-07-18 09:39:26] [DEBUG] [news-unknown] [政府基金] URL: https://udn.com/news/story/124373/8878512
+[2025-07-18 09:39:29] [SUCCESS] [news-unknown] [政府基金] 抓取成功 (通用): 1041 字
+[2025-07-18 09:39:29] [INFO] [news-unknown] [政府基金] 正在抓取: 施政報告2025｜陳曼琪倡政府與內地信保合作護企業出海 設東江縱隊關愛基金
+[2025-07-18 09:39:29] [DEBUG] [news-unknown] [政府基金] URL: https://www.stheadline.com/politics/3474333/%E6%96%BD%E6%94%BF%E5%A0%B1%E5%91%8A2025%E9%99%B3%E6%9B%BC%E7%90%AA%E5%80%A1%E6%94%BF%E5%BA%9C%E8%88%87%E5%85%A7%E5%9C%B0%E4%BF%A1%E4%BF%9D%E5%90%88%E4%BD%9C%E8%AD%B7%E4%BC%81%E6%A5%AD%E5%87%BA%E6%B5%B7-%E8%A8%AD%E6%9D%B1%E6%B1%9F%E7%B8%B1%E9%9A%8A%E9%97%9C%E6%84%9B%E5%9F%BA%E9%87%91
+[2025-07-18 09:39:31] [SUCCESS] [news-unknown] [政府基金] 抓取成功 (通用): 755 字
+[2025-07-18 09:39:31] [INFO] [news-unknown] [政府基金] 正在抓取: 助台南災後復原 英國EBC金融集團跨海援1萬美元
+[2025-07-18 09:39:31] [DEBUG] [news-unknown] [政府基金] URL: https://news.ltn.com.tw/news/life/breakingnews/5111419
+[2025-07-18 09:39:33] [SUCCESS] [news-unknown] [政府基金] 抓取成功 (通用): 823 字
+[2025-07-18 09:39:33] [INFO] [news-unknown] [政府基金] 正在抓取: 七成公帑用於入住高質素院舍長者 李慧琼指「資源分配不公」促檢討分配機制
+[2025-07-18 09:39:33] [DEBUG] [news-unknown] [政府基金] URL: https://www.stheadline.com/politics/3474364/七成公帑用於入住高質素院舍長者-李慧琼指資源分配不公促檢討分配機制
+[2025-07-18 09:39:36] [SUCCESS] [news-unknown] [政府基金] 抓取成功 (通用): 1421 字
+[2025-07-18 09:39:36] [INFO] [news-unknown] [政府基金] 正在抓取: 陳浩濂：政府將加強控制經營開支 會盡量減低對市民影響
+[2025-07-18 09:39:36] [DEBUG] [news-unknown] [政府基金] URL: https://hk.finance.yahoo.com/news/%E9%99%B3%E6%B5%A9%E6%BF%82-%E6%94%BF%E5%BA%9C%E5%B0%87%E5%8A%A0%E5%BC%B7%E6%8E%A7%E5%88%B6%E7%B6%93%E7%87%9F%E9%96%8B%E6%94%AF-%E6%9C%83%E7%9B%A1%E9%87%8F%E6%B8%9B%E4%BD%8E%E5%B0%8D%E5%B8%82%E6%B0%91%E5%BD%B1%E9%9F%BF-035748725.html
+[2025-07-18 09:39:38] [SUCCESS] [news-unknown] [政府基金] 抓取成功 (通用): 468 字
+[2025-07-18 09:39:38] [INFO] [news-unknown] [政府基金] 正在抓取: 台師大「血論文」風暴延燒 國教院長請辭委員、侯漢廷曝女學生泳淤青雙臂
+[2025-07-18 09:39:38] [DEBUG] [news-unknown] [政府基金] URL: https://n.yam.com/Article/20250717337183
+[2025-07-18 09:39:41] [SUCCESS] [news-unknown] [政府基金] 抓取成功 (通用): 1151 字
+[2025-07-18 09:39:41] [INFO] [news-unknown] [政府基金] 正在抓取: 普發現金須舉債千億！卓榮泰自曝「內心非常交戰」 盼赴立院說明兩件事
+[2025-07-18 09:39:41] [DEBUG] [news-unknown] [政府基金] URL: https://www.msn.com/zh-tw/news/national/%E6%99%AE%E7%99%BC%E7%8F%BE%E9%87%91%E9%A0%88%E8%88%89%E5%82%B5%E5%8D%83%E5%84%84-%E5%8D%93%E6%A6%AE%E6%B3%B0%E8%87%AA%E6%9B%9D-%E5%85%A7%E5%BF%83%E9%9D%9E%E5%B8%B8%E4%BA%A4%E6%88%B0-%E7%9B%BC%E8%B5%B4%E7%AB%8B%E9%99%A2%E8%AA%AA%E6%98%8E%E5%85%A9%E4%BB%B6%E4%BA%8B/ar-AA1IKJpp?ocid=BingNewsVerp
+[2025-07-18 09:40:05] [SUCCESS] [news-unknown] [政府基金] 抓取成功 (通用): 275 字
+[2025-07-18 09:40:05] [INFO] [news-unknown] [政府基金] 正在抓取: 普發現金1 萬要政府舉債1014億 卓揆：我內心非常交戰
+[2025-07-18 09:40:05] [DEBUG] [news-unknown] [政府基金] URL: https://tw.news.yahoo.com/%E6%99%AE%E7%99%BC%E7%8F%BE%E9%87%911-%E8%90%AC%E8%A6%81%E6%94%BF%E5%BA%9C%E8%88%89%E5%82%B51014%E5%84%84-%E5%8D%93%E6%8F%86-%E6%88%91%E5%85%A7%E5%BF%83%E9%9D%9E%E5%B8%B8%E4%BA%A4%E6%88%B0-051837431.html
+[2025-07-18 09:40:07] [SUCCESS] [news-unknown] [政府基金] 抓取成功 (通用): 10069 字
+[2025-07-18 09:40:11] [INFO] [news-unknown] [政府基金] 正在抓取: 國泰投信董座張錫退休 國泰世華銀總座李偉正接任
+[2025-07-18 09:40:11] [DEBUG] [news-unknown] [政府基金] URL: https://tw.news.yahoo.com/%E5%9C%8B%E6%B3%B0%E6%8A%95%E4%BF%A1%E8%91%A3%E5%BA%A7%E5%BC%B5%E9%8C%AB%E9%80%80%E4%BC%91-%E5%9C%8B%E6%B3%B0%E4%B8%96%E8%8F%AF%E9%8A%80%E7%B8%BD%E5%BA%A7%E6%9D%8E%E5%81%89%E6%AD%A3%E6%8E%A5%E4%BB%BB-114047397.html
+[2025-07-18 09:40:13] [SUCCESS] [news-unknown] [政府基金] 抓取成功 (通用): 4626 字
+[2025-07-18 09:40:13] [INFO] [news-unknown] [政府基金] 正在抓取: 海河产业基金荣膺省级政府引导基金榜首
+[2025-07-18 09:40:13] [DEBUG] [news-unknown] [政府基金] URL: http://tj.people.com.cn/n2/2025/0717/c375366-41293675.html
+[2025-07-18 09:40:13] [SUCCESS] [news-unknown] [政府基金] 抓取成功 (通用): 832 字
+[2025-07-18 09:40:13] [INFO] [news-unknown] [政府基金] 正在抓取: 陕西省政府投资引导基金总规模突破千亿元
+[2025-07-18 09:40:13] [DEBUG] [news-unknown] [政府基金] URL: http://news.cnwest.com/sxxw/a/2025/07/17/23157203.html
+[2025-07-18 09:40:14] [SUCCESS] [news-unknown] [政府基金] 抓取成功 (通用): 736 字
+[2025-07-18 09:40:14] [INFO] [news-unknown] [政府基金] 正在抓取: 4000亿美元!"美国狮子大开口，韩国犯愁"
+[2025-07-18 09:40:14] [DEBUG] [news-unknown] [政府基金] URL: https://www.163.com/news/article/K4MABNVV00019B3E.html
+[2025-07-18 09:40:14] [SUCCESS] [news-unknown] [政府基金] 抓取成功 (通用): 2965 字
+[2025-07-18 09:40:14] [INFO] [news-unknown] [政府基金] 正在抓取: 公募基金十年蝶变：机构化进程加速 被动型基金崛起
+[2025-07-18 09:40:14] [DEBUG] [news-unknown] [政府基金] URL: https://finance.china.com.cn/money/fund/20250717/6256104.shtml
+[2025-07-18 09:40:15] [SUCCESS] [news-unknown] [政府基金] 抓取成功 (通用): 4051 字
+[2025-07-18 09:40:15] [INFO] [news-unknown] [政府基金] 正在抓取: 出资额均为100亿元!青岛财通集团成立3只引导基金
+[2025-07-18 09:40:15] [DEBUG] [news-unknown] [政府基金] URL: https://baijiahao.baidu.com/s?id=1837883421742226723&wfr=spider&for=pc
+[2025-07-18 09:40:15] [SUCCESS] [news-unknown] [政府基金] 抓取成功 (通用): 761 字
+[2025-07-18 09:40:15] [INFO] [news-unknown] [政府基金] 正在抓取: 青岛财通集团新设3只引导基金
+[2025-07-18 09:40:15] [DEBUG] [news-unknown] [政府基金] URL: https://m.jrj.com.cn/madapter/24h/2025/07/17135351758483.shtml
+[2025-07-18 09:40:16] [SUCCESS] [news-unknown] [政府基金] 抓取成功 (通用): 310 字
+[2025-07-18 09:40:16] [INFO] [news-unknown] [政府基金] 正在抓取: 青岛财通集团成立3只引导基金,注册资本合计300亿元
+[2025-07-18 09:40:16] [DEBUG] [news-unknown] [政府基金] URL: https://www.donews.com/news/detail/8/5678929.html
+[2025-07-18 09:40:19] [SUCCESS] [news-unknown] [政府基金] 抓取成功 (通用): 383 字
+[2025-07-18 09:40:19] [INFO] [news-unknown] [政府基金] 正在抓取: 海河产业基金荣膺省级政府引导基金榜首
+[2025-07-18 09:40:19] [DEBUG] [news-unknown] [政府基金] URL: https://baijiahao.baidu.com/s?id=1837861748031664794&wfr=spider&for=pc
+[2025-07-18 09:40:19] [SUCCESS] [news-unknown] [政府基金] 抓取成功 (通用): 727 字
+[2025-07-18 09:40:19] [INFO] [news-unknown] [政府基金] 正在抓取: 潍坊把准"三点"推动政府引导基金规范
+[2025-07-18 09:40:19] [DEBUG] [news-unknown] [政府基金] URL: https://news.esnai.com/2025/0717/273443.shtml
+[2025-07-18 09:40:20] [SUCCESS] [news-unknown] [政府基金] 抓取成功 (通用): 620 字
+[2025-07-18 09:40:20] [INFO] [news-unknown] [政府基金] 正在抓取: 陕西省政府投资引导基金总规模突破千亿元
+[2025-07-18 09:40:20] [DEBUG] [news-unknown] [政府基金] URL: http://finance.sina.cn/2025-07-17/detail-inffttzw0365316.d.html?cre=tianyi&mod=wlocal&loc=13&r=0&rfunc=38&tj=cxvertical_wlocal&tr=1047&pos=337
+[2025-07-18 09:40:20] [SUCCESS] [news-unknown] [政府基金] 抓取成功 (通用): 756 字
+[2025-07-18 09:40:20] [INFO] [news-unknown] [政府基金] 正在抓取: 青岛财通集团成立3只引导基金注册资本共300亿_公司新闻
+[2025-07-18 09:40:20] [DEBUG] [news-unknown] [政府基金] URL: https://finance.stockstar.com/IG2025071700010172.shtml
+[2025-07-18 09:40:23] [SUCCESS] [news-unknown] [政府基金] 抓取成功 (通用): 224 字
+[2025-07-18 09:40:23] [INFO] [news-unknown] [政府基金] 正在抓取: 青岛财通集团成立3只引导基金，注册资本合计300亿元
+[2025-07-18 09:40:23] [DEBUG] [news-unknown] [政府基金] URL: https://www.donews.com/news/detail/8/5678929.html
+[2025-07-18 09:40:25] [SUCCESS] [news-unknown] [政府基金] 抓取成功 (通用): 383 字
+[2025-07-18 09:40:25] [INFO] [news-unknown] [政府基金] 正在抓取: 青岛财通集团成立3只引导基金，出资额均为100亿元
+[2025-07-18 09:40:25] [DEBUG] [news-unknown] [政府基金] URL: https://cj.sina.cn/articles/view/5182171545/134e1a999020025wt6?froms=ggmp&vt=4
+[2025-07-18 09:40:26] [SUCCESS] [news-unknown] [政府基金] 抓取成功 (通用): 312 字
+[2025-07-18 09:40:26] [INFO] [news-unknown] [政府基金] 正在抓取: 青岛财通集团新设3只引导基金
+[2025-07-18 09:40:26] [DEBUG] [news-unknown] [政府基金] URL: http://stock.stockstar.com/IG2025071700017482.shtml
+[2025-07-18 09:40:26] [SUCCESS] [news-unknown] [政府基金] 抓取成功 (通用): 203 字
+[2025-07-18 09:40:26] [INFO] [news-unknown] [政府基金] 正在抓取: 出资额均为100亿元！青岛财通集团成立3只引导基金
+[2025-07-18 09:40:26] [DEBUG] [news-unknown] [政府基金] URL: https://news.qq.com/rain/a/20250717A078D400
+[2025-07-18 09:40:26] [SUCCESS] [news-unknown] [政府基金] 抓取成功 (通用): 761 字
+[2025-07-18 09:40:26] [INFO] [news-unknown] [政府基金] 正在抓取: 青岛财通集团新设3只引导基金
+[2025-07-18 09:40:26] [DEBUG] [news-unknown] [政府基金] URL: https://finance.sina.com.cn/roll/2025-07-17/doc-inffueru1997687.shtml
+[2025-07-18 09:40:27] [SUCCESS] [news-unknown] [政府基金] 抓取成功 (通用): 289 字
+[2025-07-18 09:40:27] [INFO] [news-unknown] [政府基金] 正在抓取: 陕西省政府投资引导基金总规模突破千亿元
+[2025-07-18 09:40:27] [DEBUG] [news-unknown] [政府基金] URL: https://www.sohu.com/a/914658682_119659
+[2025-07-18 09:40:27] [SUCCESS] [news-unknown] [政府基金] 抓取成功 (通用): 764 字
+[2025-07-18 09:40:27] [INFO] [news-unknown] [政府基金] 正在抓取: 青岛财通集团成立3只引导基金，出资额均为100亿元
+[2025-07-18 09:40:27] [DEBUG] [news-unknown] [政府基金] URL: https://finance.sina.com.cn/jjxw/2025-07-17/doc-infftyiu5290113.shtml
+[2025-07-18 09:40:28] [SUCCESS] [news-unknown] [政府基金] 抓取成功 (通用): 300 字
+[2025-07-18 09:40:28] [INFO] [news-unknown] [政府基金] 正在抓取: 青岛财通集团成立3只引导基金，注册资本共300亿元
+[2025-07-18 09:40:28] [DEBUG] [news-unknown] [政府基金] URL: https://36kr.com/newsflashes/3382434174547972
+[2025-07-18 09:40:28] [SUCCESS] [news-unknown] [政府基金] 抓取成功 (通用): 456 字
+[2025-07-18 09:40:28] [INFO] [news-unknown] [政府基金] 正在抓取: 雄安新区，再设100亿科创基金
+[2025-07-18 09:40:28] [DEBUG] [news-unknown] [政府基金] URL: https://www.36kr.com/p/3343333456985094
+[2025-07-18 09:40:28] [SUCCESS] [news-unknown] [政府基金] 抓取成功 (通用): 2219 字
+[2025-07-18 09:40:28] [INFO] [news-unknown] [政府基金] 正在抓取: 出资额均为100亿元!青岛财通集团成立3只引导基金
+[2025-07-18 09:40:28] [DEBUG] [news-unknown] [政府基金] URL: https://news.qq.com/rain/a/20250717A078D400
+[2025-07-18 09:40:29] [SUCCESS] [news-unknown] [政府基金] 抓取成功 (通用): 761 字
+[2025-07-18 09:40:30] [INFO] [news-unknown] [政府基金] 正在抓取: 青岛财通集团成立3只引导基金 注册资本共300亿
+[2025-07-18 09:40:30] [DEBUG] [news-unknown] [政府基金] URL: https://news.qq.com/rain/a/20250717A04AKV00
+[2025-07-18 09:40:31] [SUCCESS] [news-unknown] [政府基金] 抓取成功 (通用): 399 字
+[2025-07-18 09:40:31] [INFO] [news-unknown] [政府基金] 正在抓取: A股十年变迁|公募基金十年蝶变：机构化进程加速 被动型基金崛起
+[2025-07-18 09:40:31] [DEBUG] [news-unknown] [政府基金] URL: https://finance.ifeng.com/c/8l3mO6XaubD
+[2025-07-18 09:40:31] [SUCCESS] [news-unknown] [政府基金] 抓取成功 (通用): 4838 字
+[2025-07-18 09:40:31] [INFO] [news-unknown] [政府基金] 正在抓取: 聚焦AI 中科创星先导创业投资基金完成26.17亿元首关
+[2025-07-18 09:40:31] [DEBUG] [news-unknown] [政府基金] URL: https://cn.chinadaily.com.cn/a/202507/17/WS68789692a310028a84abe54f.html
+[2025-07-18 09:40:31] [SUCCESS] [news-unknown] [政府基金] 抓取成功 (通用): 1529 字
+[2025-07-18 09:40:31] [INFO] [news-unknown] [政府基金] 正在抓取: 人民币与美元指数"同涨"，后续走势如何？
+[2025-07-18 09:40:31] [DEBUG] [news-unknown] [政府基金] URL: https://fund.eastmoney.com/a/202507173459889238.html
+[2025-07-18 09:40:32] [SUCCESS] [news-unknown] [政府基金] 抓取成功 (通用): 2262 字
+[2025-07-18 09:40:32] [INFO] [news-unknown] [政府基金] 正在抓取: 江苏,正批量诞生母基金
+[2025-07-18 09:40:32] [DEBUG] [news-unknown] [政府基金] URL: https://baijiahao.baidu.com/s?id=1837877290157986757&wfr=spider&for=pc
+[2025-07-18 09:40:32] [SUCCESS] [news-unknown] [政府基金] 抓取成功 (通用): 2117 字
+[2025-07-18 09:40:32] [INFO] [news-unknown] [政府基金] 正在抓取: 江苏，正批量诞生母基金
+[2025-07-18 09:40:32] [DEBUG] [news-unknown] [政府基金] URL: https://tech.sina.cn/2025-07-17/detail-inffukxt7446562.d.html?vt=4
+[2025-07-18 09:40:33] [SUCCESS] [news-unknown] [政府基金] 抓取成功 (通用): 2217 字
+[2025-07-18 09:40:33] [INFO] [news-unknown] [政府基金] 正在抓取: 重点企业集聚、百亿母基金支持……湖北人形机器人产业初具规模
+[2025-07-18 09:40:33] [DEBUG] [news-unknown] [政府基金] URL: https://www.bjnews.com.cn/detail/1752760958168667.html
+[2025-07-18 09:40:34] [SUCCESS] [news-unknown] [政府基金] 抓取成功 (通用): 1315 字
+[2025-07-18 09:40:34] [INFO] [news-unknown] [政府基金] 正在抓取: 外資看好香港！香港管理資產去年淨資金流入超7000億
+[2025-07-18 09:40:34] [DEBUG] [news-unknown] [政府基金] URL: https://www.finet.hk/newscenter/news_content/6878da6c5a77120b40812147
+[2025-07-18 09:40:36] [SUCCESS] [news-unknown] [政府基金] 抓取成功 (通用): 2010 字
+[2025-07-18 09:40:38] [INFO] [news-unknown] [政府基金] 正在抓取: 本港管理資產總值突破35萬億元 去年淨資金流入急升81%
+[2025-07-18 09:40:38] [DEBUG] [news-unknown] [政府基金] URL: https://www.finet.hk/newscenter/video_content/361062
+[2025-07-18 09:40:40] [SUCCESS] [news-unknown] [政府基金] 抓取成功 (通用): 544 字
+[2025-07-18 09:40:40] [INFO] [news-unknown] [政府基金] 正在抓取: 江苏，正批量诞生母基金
+[2025-07-18 09:40:40] [DEBUG] [news-unknown] [政府基金] URL: https://finance.sina.com.cn/tech/roll/2025-07-17/doc-inffukxt7446562.shtml
+[2025-07-18 09:40:40] [SUCCESS] [news-unknown] [政府基金] 抓取成功 (通用): 2239 字
+[2025-07-18 09:40:42] [INFO] [news-unknown] [政府基金] 正在抓取: 第三批来了，江苏再设新基金
+[2025-07-18 09:40:42] [DEBUG] [news-unknown] [政府基金] URL: https://finance.sina.com.cn/roll/2025-07-17/doc-inffurfr7395137.shtml
+[2025-07-18 09:40:43] [SUCCESS] [news-unknown] [政府基金] 抓取成功 (通用): 1688 字
+[2025-07-18 09:40:43] [INFO] [news-unknown] [政府基金] 正在抓取: 重点企业集聚、百亿母基金支持……湖北人形机器人产业初具规模
+[2025-07-18 09:40:43] [DEBUG] [news-unknown] [政府基金] URL: https://www.msn.cn/zh-cn/money/%E6%8A%80%E6%9C%AF/%E9%87%8D%E7%82%B9%E4%BC%81%E4%B8%9A%E9%9B%86%E8%81%9A-%E7%99%BE%E4%BA%BF%E6%AF%8D%E5%9F%BA%E9%87%91%E6%94%AF%E6%8C%81-%E6%B9%96%E5%8C%97%E4%BA%BA%E5%BD%A2%E6%9C%BA%E5%99%A8%E4%BA%BA%E4%BA%A7%E4%B8%9A%E5%88%9D%E5%85%B7%E8%A7%84%E6%A8%A1/ar-AA1IMTG8
+[2025-07-18 09:40:43] [ERROR] [news-unknown] [政府基金] 抓取失败: 未获取到正文
+[2025-07-18 09:40:45] [INFO] [news-unknown] [政府基金] 正在抓取: 【投融资动态】原速科技B轮融资，投资方为前海母基金、亚米新融等
+[2025-07-18 09:40:45] [DEBUG] [news-unknown] [政府基金] URL: https://www.msn.cn/zh-cn/%E6%8A%80%E6%9C%AF/%E6%8A%80%E6%9C%AF%E5%85%AC%E5%8F%B8/%E6%8A%95%E8%9E%8D%E8%B5%84%E5%8A%A8%E6%80%81-%E5%8E%9F%E9%80%9F%E7%A7%91%E6%8A%80b%E8%BD%AE%E8%9E%8D%E8%B5%84-%E6%8A%95%E8%B5%84%E6%96%B9%E4%B8%BA%E5%89%8D%E6%B5%B7%E6%AF%8D%E5%9F%BA%E9%87%91-%E4%BA%9A%E7%B1%B3%E6%96%B0%E8%9E%8D%E7%AD%89/ar-AA1IMnQ0
+[2025-07-18 09:40:45] [ERROR] [news-unknown] [政府基金] 抓取失败: 未获取到正文
+[2025-07-18 09:40:45] [INFO] [news-unknown] [政府基金] 正在抓取: 年内备案私募MOM数量创新高，头部量化私募成"抢手"管理人
+[2025-07-18 09:40:45] [DEBUG] [news-unknown] [政府基金] URL: https://www.stcn.com/article/detail/2626813.html
+[2025-07-18 09:40:46] [SUCCESS] [news-unknown] [政府基金] 抓取成功 (通用): 2378 字
+[2025-07-18 09:40:46] [INFO] [news-unknown] [政府基金] 正在抓取: 这个区域要构建1000亿科创基金丛林
+[2025-07-18 09:40:46] [DEBUG] [news-unknown] [政府基金] URL: https://www.sohu.com/a/914910473_532789
+[2025-07-18 09:40:46] [SUCCESS] [news-unknown] [政府基金] 抓取成功 (通用): 2550 字
+
+==============================
+[时间] 2025-07-18 09:40:46
+[关键词] 关键词: 政府基金
+[模式] 模式: 正式
+[文件] 处理的json文件: output/2025-07-17/2025-07-17_政府基金.json
+
+[统计] 抓取统计：
+  [成功] 成功抓取正文: 46 篇
+  [定制] 其中定制化抓取: 0 篇
+  [来源] 本次采集新闻源数量: 32
+  [失败] 抓取失败: 2 篇
+
+[警告] 未能抓取的新闻：
+  - 重点企业集聚、百亿母基金支持……湖北人形机器人产业初具规模 | https://www.msn.cn/zh-cn/money/%E6%8A%80%E6%9C%AF/%E9%87%8D%E7%82%B9%E4%BC%81%E4%B8%9A%E9%9B%86%E8%81%9A-%E7%99%BE%E4%BA%BF%E6%AF%8D%E5%9F%BA%E9%87%91%E6%94%AF%E6%8C%81-%E6%B9%96%E5%8C%97%E4%BA%BA%E5%BD%A2%E6%9C%BA%E5%99%A8%E4%BA%BA%E4%BA%A7%E4%B8%9A%E5%88%9D%E5%85%B7%E8%A7%84%E6%A8%A1/ar-AA1IMTG8 
+  - 【投融资动态】原速科技B轮融资，投资方为前海母基金、亚米新融等 | https://www.msn.cn/zh-cn/%E6%8A%80%E6%9C%AF/%E6%8A%80%E6%9C%AF%E5%85%AC%E5%8F%B8/%E6%8A%95%E8%9E%8D%E8%B5%84%E5%8A%A8%E6%80%81-%E5%8E%9F%E9%80%9F%E7%A7%91%E6%8A%80b%E8%BD%AE%E8%9E%8D%E8%B5%84-%E6%8A%95%E8%B5%84%E6%96%B9%E4%B8%BA%E5%89%8D%E6%B5%B7%E6%AF%8D%E5%9F%BA%E9%87%91-%E4%BA%9A%E7%B1%B3%E6%96%B0%E8%9E%8D%E7%AD%89/ar-AA1IMnQ0 
+==============================
+
+
+[2025-07-18 09:40:46]
+[执行完成] 执行完成: fetch_content.py
+[说明] 说明: 执行成功
+==============================
+
+[2025-07-18 09:41:17]
+[开始执行] 开始执行: fetch_content.py
+[参数] 执行参数: 养老 2025-07-17
+==============================
+[2025-07-18 09:41:17]
+[SKIP] 跳过关键词: 养老
+原因: output/2025-07-17/2025-07-17_养老.json 所有新闻已包含content字段，正文抓取已执行
+==============================
+
+[2025-07-18 09:41:17]
+[执行完成] 执行完成: fetch_content.py
+[说明] 说明: 执行成功
+==============================
+
+[2025-07-18 09:41:44]
+[开始执行] 开始执行: fetch_content.py
+[参数] 执行参数: 江苏省国资委 2025-07-17
+==============================
+[2025-07-18 09:41:44] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 上半年江苏800个重大工业项目超额完成投资任务
+[2025-07-18 09:41:44] [DEBUG] [news-unknown] [江苏省国资委] URL: https://finance.sina.cn/2025-07-17/detail-inffttzy2121051.d.html?vt=4&cid=76729&node_id=76729
+[2025-07-18 09:41:44] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 509 字
+[2025-07-18 09:41:44] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 上半年江苏800个重大工业项目超额完成投资任务
+[2025-07-18 09:41:44] [DEBUG] [news-unknown] [江苏省国资委] URL: http://www.sasac.gov.cn/n2588025/n2588129/c33993158/content.html
+[2025-07-18 09:41:44] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 551 字
+[2025-07-18 09:41:44] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 坐拥山水城林，玄武以“数字低碳”产业为他人“撑伞”
+[2025-07-18 09:41:44] [DEBUG] [news-unknown] [江苏省国资委] URL: https://js.ifeng.com/c/8l3sGDPrzNH
+[2025-07-18 09:41:45] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 2244 字
+[2025-07-18 09:41:45] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 市场观察 | 物业跨界养老、老年助餐点开进地铁站……多地养老有新招
+[2025-07-18 09:41:45] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.sohu.com/a/914870125_121124568
+[2025-07-18 09:41:45] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 932 字
+[2025-07-18 09:41:45] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 控制权变更宣告终止，*ST金比拟受让方因信披违规收监管函
+[2025-07-18 09:41:45] [DEBUG] [news-unknown] [江苏省国资委] URL: https://news.qq.com/rain/a/20250717A09PFD00
+[2025-07-18 09:41:45] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 2409 字
+[2025-07-18 09:41:45] [INFO] [news-unknown] [江苏省国资委] 正在抓取: “体制”狂热！上海海关学院录取分超复旦、交大、同济等985名校
+[2025-07-18 09:41:45] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.sohu.com/a/914642335_122441432
+[2025-07-18 09:41:46] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 1280 字
+[2025-07-18 09:41:46] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 股市必读：苏豪弘业（600128）7月16日主力资金净流入2682.65万元，占总成交额9.39%
+[2025-07-18 09:41:46] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/money/%E7%83%AD%E9%97%A8%E8%82%A1/%E8%82%A1%E5%B8%82%E5%BF%85%E8%AF%BB-%E8%8B%8F%E8%B1%AA%E5%BC%98%E4%B8%9A-600128-7%E6%9C%8816%E6%97%A5%E4%B8%BB%E5%8A%9B%E8%B5%84%E9%87%91%E5%87%80%E6%B5%81%E5%85%A52682-65%E4%B8%87%E5%85%83-%E5%8D%A0%E6%80%BB%E6%88%90%E4%BA%A4%E9%A2%9D9-39/ar-AA1ILxGN?ocid=BingNewsVerp
+[2025-07-18 09:41:46] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:41:46] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 市政府召开全市“465”现代产业集群建设推进会
+[2025-07-18 09:41:46] [DEBUG] [news-unknown] [江苏省国资委] URL: https://finance.sina.com.cn/roll/2025-07-17/doc-infftpua2227155.shtml
+[2025-07-18 09:41:46] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 1403 字
+[2025-07-18 09:41:50] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 南京不断推动产业强市全面起势︑积厚成势︐加快塑造发展新动能
+[2025-07-18 09:41:50] [DEBUG] [news-unknown] [江苏省国资委] URL: https://finance.sina.com.cn/jjxw/2025-07-17/doc-infftptt3890080.shtml
+[2025-07-18 09:41:50] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 2792 字
+[2025-07-18 09:41:50] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 近镜头·习近平的文化足迹丨 “增强文化自信、化风育人，助推经济社会发展”
+[2025-07-18 09:41:50] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.163.com/gov/article/K4LODADN00239B4O.html
+[2025-07-18 09:41:51] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 1247 字
+[2025-07-18 09:41:51] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 股价大涨致股东增持被“卡”，成都银行幸福的“烦恼”
+[2025-07-18 09:41:51] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/news/other/%E8%82%A1%E4%BB%B7%E5%A4%A7%E6%B6%A8%E8%87%B4%E8%82%A1%E4%B8%9C%E5%A2%9E%E6%8C%81%E8%A2%AB-%E5%8D%A1-%E6%88%90%E9%83%BD%E9%93%B6%E8%A1%8C%E5%B9%B8%E7%A6%8F%E7%9A%84-%E7%83%A6%E6%81%BC/ar-AA1IKBMJ?ocid=BingNewsVerp
+[2025-07-18 09:41:51] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:41:51] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 公用事业行业资金流出榜：C华新、韶能股份等净流出资金居前
+[2025-07-18 09:41:51] [DEBUG] [news-unknown] [江苏省国资委] URL: https://wap.stockstar.com/detail/IG2025071700034020
+[2025-07-18 09:41:51] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 2493 字
+[2025-07-18 09:41:51] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 龙虎榜|满坤科技涨停，机构席位净买入4243.65万元
+[2025-07-18 09:41:51] [DEBUG] [news-unknown] [江苏省国资委] URL: https://finance.sina.com.cn/stock/aiassist/lgbzz/2025-07-17/doc-inffukxq0161438.shtml
+[2025-07-18 09:41:52] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 1392 字
+[2025-07-18 09:41:52] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 江苏国信（002608）7月17日主力资金净买入897.02万元
+[2025-07-18 09:41:52] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/money/%E7%BB%8F%E6%B5%8E/%E6%B1%9F%E8%8B%8F%E5%9B%BD%E4%BF%A1-002608-7%E6%9C%8817%E6%97%A5%E4%B8%BB%E5%8A%9B%E8%B5%84%E9%87%91%E5%87%80%E4%B9%B0%E5%85%A5897-02%E4%B8%87%E5%85%83/ar-AA1ILwd0
+[2025-07-18 09:41:52] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:41:52] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 公用事业行业资金流出榜：C华新、韶能股份等净流出资金居前
+[2025-07-18 09:41:52] [DEBUG] [news-unknown] [江苏省国资委] URL: https://finance.ifeng.com/c/8l4JdCRT9LX
+[2025-07-18 09:41:52] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 2585 字
+[2025-07-18 09:41:52] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 杭州银行上半年净利同比增长17%
+[2025-07-18 09:41:52] [DEBUG] [news-unknown] [江苏省国资委] URL: https://finance.sina.com.cn/roll/2025-07-17/doc-inffuzvf9876125.shtml
+[2025-07-18 09:41:53] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 4331 字
+[2025-07-18 09:41:53] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 上市公司动态 | 杭州银行上半年净利同比增长17%，中微公司上半年 ...
+[2025-07-18 09:41:53] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/news/other/%E4%B8%8A%E5%B8%82%E5%85%AC%E5%8F%B8%E5%8A%A8%E6%80%81-%E6%9D%AD%E5%B7%9E%E9%93%B6%E8%A1%8C%E4%B8%8A%E5%8D%8A%E5%B9%B4%E5%87%80%E5%88%A9%E5%90%8C%E6%AF%94%E5%A2%9E%E9%95%BF17-%E4%B8%AD%E5%BE%AE%E5%85%AC%E5%8F%B8%E4%B8%8A%E5%8D%8A%E5%B9%B4%E5%87%80%E5%88%A9%E5%90%8C%E6%AF%94%E9%A2%84%E5%A2%9E3161-4128/ar-AA1INdXr
+[2025-07-18 09:41:53] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:41:53] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 江苏交控公司与贵州高速集团签署合作协议
+[2025-07-18 09:41:53] [DEBUG] [news-unknown] [江苏省国资委] URL: https://baijiahao.baidu.com/s?id=1837857628716134091&wfr=spider&for=pc
+[2025-07-18 09:41:56] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 1113 字
+[2025-07-18 09:41:56] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 江苏交控公司与贵州高速集团签署合作协议
+[2025-07-18 09:41:56] [DEBUG] [news-unknown] [江苏省国资委] URL: http://gz.people.com.cn/n2/2025/0717/c222152-41293722.html
+[2025-07-18 09:41:57] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 1152 字
+[2025-07-18 09:41:57] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 江苏交控公司与贵州高速集团签署合作协议
+[2025-07-18 09:41:57] [DEBUG] [news-unknown] [江苏省国资委] URL: https://news.qq.com/rain/a/20250717A0358L00
+[2025-07-18 09:41:57] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 1113 字
+[2025-07-18 09:41:59] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 京沪高速江苏淮安段发生交通事故 多车起火无伤亡
+[2025-07-18 09:41:59] [DEBUG] [news-unknown] [江苏省国资委] URL: https://news.qq.com/rain/a/20250717A04WIG00
+[2025-07-18 09:41:59] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 315 字
+[2025-07-18 09:41:59] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 贵州高速集团与江苏交控公司签署全面战略合作协议
+[2025-07-18 09:41:59] [DEBUG] [news-unknown] [江苏省国资委] URL: http://www.gz.xinhuanet.com/20250717/506e5993738d49f2b9c57521779584db/c.html
+[2025-07-18 09:41:59] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 668 字
+[2025-07-18 09:41:59] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 京沪高速淮安段发生交通事故，多车起火
+[2025-07-18 09:41:59] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.sohu.com/a/914794272_121426544
+[2025-07-18 09:42:00] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 393 字
+[2025-07-18 09:42:00] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 股市必读：长盈精密（300115）7月16日主力资金净流入2421.81万元
+[2025-07-18 09:42:00] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/news/other/%E8%82%A1%E5%B8%82%E5%BF%85%E8%AF%BB-%E9%95%BF%E7%9B%88%E7%B2%BE%E5%AF%86-300115-7%E6%9C%8816%E6%97%A5%E4%B8%BB%E5%8A%9B%E8%B5%84%E9%87%91%E5%87%80%E6%B5%81%E5%85%A5242181%E4%B8%87%E5%85%83/ar-AA1ILjXI?ocid=BingNewsVerp
+[2025-07-18 09:42:00] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:42:00] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 长安大学校长调整！
+[2025-07-18 09:42:00] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.chinahighway.com/article/65410111.html
+[2025-07-18 09:42:00] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 542 字
+[2025-07-18 09:42:00] [INFO] [news-unknown] [江苏省国资委] 正在抓取: “自来水散发浓烈臭味”，多方回应
+[2025-07-18 09:42:00] [DEBUG] [news-unknown] [江苏省国资委] URL: https://m.gmw.cn/2025-07/17/content_1304085517.htm
+[2025-07-18 09:42:01] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 897 字
+[2025-07-18 09:42:01] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 股市必读：领益智造（002600）7月16日主力资金净流入120.9万元
+[2025-07-18 09:42:01] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/money/%E7%83%AD%E9%97%A8%E8%82%A1/%E8%82%A1%E5%B8%82%E5%BF%85%E8%AF%BB-%E9%A2%86%E7%9B%8A%E6%99%BA%E9%80%A0-002600-7%E6%9C%8816%E6%97%A5%E4%B8%BB%E5%8A%9B%E8%B5%84%E9%87%91%E5%87%80%E6%B5%81%E5%85%A5120-9%E4%B8%87%E5%85%83/ar-AA1ILzV1?ocid=BingNewsVerp
+[2025-07-18 09:42:01] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:42:01] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 江苏功率半导体“小巨人”冲刺北交所，供货英飞凌，拟募资2.7亿
+[2025-07-18 09:42:01] [DEBUG] [news-unknown] [江苏省国资委] URL: https://36kr.com/p/3370927291863044
+[2025-07-18 09:42:01] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 2380 字
+[2025-07-18 09:42:01] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 原创 破解“退出难”：陕西有色“本土并购案”信号分析
+[2025-07-18 09:42:01] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.sohu.com/a/914844418_99919102
+[2025-07-18 09:42:01] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 3186 字
+[2025-07-18 09:42:01] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 外媒热议中国经济“半年报”：增长超出预期，外贸韧性凸显
+[2025-07-18 09:42:01] [DEBUG] [news-unknown] [江苏省国资委] URL: https://news.jschina.com.cn/yw/202507/t20250717_s68785966e4b0c83a06824adc.shtml
+[2025-07-18 09:42:03] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 1173 字
+[2025-07-18 09:42:03] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 股东户数降幅榜：20股最新股东户数降逾一成
+[2025-07-18 09:42:03] [DEBUG] [news-unknown] [江苏省国资委] URL: https://fund.eastmoney.com/a/202507173460129236.html
+[2025-07-18 09:42:04] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 14905 字
+[2025-07-18 09:42:04] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 年发电近800万度！实探零碳园区的“中国样本”！
+[2025-07-18 09:42:04] [DEBUG] [news-unknown] [江苏省国资委] URL: https://news.solarbe.com/202507/17/50004096.html
+[2025-07-18 09:42:04] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 2819 字
+[2025-07-18 09:42:06] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 张军涛：从政策到实践，零碳园区建设能源适配产业成关键
+[2025-07-18 09:42:06] [DEBUG] [news-unknown] [江苏省国资委] URL: https://news.solarbe.com/202507/17/50004086.html
+[2025-07-18 09:42:06] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 2819 字
+[2025-07-18 09:42:06] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 【2025融惠GO】 聚焦前沿，平台升级平安租赁助推智慧城市转型发展
+[2025-07-18 09:42:06] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.163.com/news/article/K4LQ0DVF00019UD6.html
+[2025-07-18 09:42:07] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 2020 字
+[2025-07-18 09:42:07] [INFO] [news-unknown] [江苏省国资委] 正在抓取: "自来水散发浓烈臭味"，多方回应
+[2025-07-18 09:42:07] [DEBUG] [news-unknown] [江苏省国资委] URL: https://m.gmw.cn/2025-07/17/content_1304085517.htm
+[2025-07-18 09:42:07] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 897 字
+[2025-07-18 09:42:07] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 股市必读：长盈精密（300115）7月16日主力资金净流入2421.81万元
+[2025-07-18 09:42:07] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/news/other/%E8%82%A1%E5%B8%82%E5%BF%85%E8%AF%BB-%E9%95%BF%E7%9B%88%E7%B2%BE%E5%AF%86-300115-7%E6%9C%8816%E6%97%A5%E4%B8%BB%E5%8A%9B%E8%B5%84%E9%87%91%E5%87%80%E6%B5%81%E5%85%A5242181%E4%B8%87%E5%85%83/ar-AA1ILjXI
+[2025-07-18 09:42:07] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:42:07] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 长安大学校长调整!
+[2025-07-18 09:42:07] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.chinahighway.com/article/65410111.html
+[2025-07-18 09:42:08] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 542 字
+[2025-07-18 09:42:08] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 股市必读：领益智造（002600）7月16日主力资金净流入120.9万元
+[2025-07-18 09:42:08] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/money/%E7%83%AD%E9%97%A8%E8%82%A1/%E8%82%A1%E5%B8%82%E5%BF%85%E8%AF%BB-%E9%A2%86%E7%9B%8A%E6%99%BA%E9%80%A0-002600-7%E6%9C%8816%E6%97%A5%E4%B8%BB%E5%8A%9B%E8%B5%84%E9%87%91%E5%87%80%E6%B5%81%E5%85%A5120-9%E4%B8%87%E5%85%83/ar-AA1ILzV1
+[2025-07-18 09:42:08] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:42:08] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 江苏功率半导体"小巨人"冲刺北交所，供货英飞凌，拟募资2.7亿
+[2025-07-18 09:42:08] [DEBUG] [news-unknown] [江苏省国资委] URL: https://36kr.com/p/3370927291863044
+[2025-07-18 09:42:08] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 2380 字
+[2025-07-18 09:42:08] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 原创 破解"退出难"：陕西有色"本土并购案"信号分析
+[2025-07-18 09:42:08] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.sohu.com/a/914844418_99919102
+[2025-07-18 09:42:08] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 3186 字
+[2025-07-18 09:42:08] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 公用事业行业资金流出榜：C华新、韶能股份等净流出资金居前
+[2025-07-18 09:42:08] [DEBUG] [news-unknown] [江苏省国资委] URL: https://stock.stockstar.com/IG2025071700034020.shtml
+[2025-07-18 09:42:09] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 2305 字
+[2025-07-18 09:42:09] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 外媒热议中国经济"半年报"：增长超出预期，外贸韧性凸显
+[2025-07-18 09:42:09] [DEBUG] [news-unknown] [江苏省国资委] URL: https://news.jschina.com.cn/yw/202507/t20250717_s68785966e4b0c83a06824adc.shtml
+[2025-07-18 09:42:09] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 1173 字
+[2025-07-18 09:42:09] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 年发电近800万度!实探零碳园区的"中国样本"!
+[2025-07-18 09:42:09] [DEBUG] [news-unknown] [江苏省国资委] URL: https://news.solarbe.com/202507/17/50004096.html
+[2025-07-18 09:42:09] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 2819 字
+[2025-07-18 09:42:09] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 财经早报：二季度多只绩优基金补充权益"弹药" 新股首日成交破百 ...
+[2025-07-18 09:42:09] [DEBUG] [news-unknown] [江苏省国资委] URL: https://city.sina.com.cn/city_finance/2025-07-17/detail-infftptt3897896.shtml
+[2025-07-18 09:42:10] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 6721 字
+[2025-07-18 09:42:10] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 陕西两座机场定档明年建成，这座有望纳入“十五五”！
+[2025-07-18 09:42:10] [DEBUG] [news-unknown] [江苏省国资委] URL: https://news.qq.com/rain/a/20250717A0A5RH00
+[2025-07-18 09:42:10] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 3092 字
+[2025-07-18 09:42:10] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 安徽舰变身台海战神！没有航母的东部战区，15架直升机塞满甲板
+[2025-07-18 09:42:10] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.sohu.com/a/914732556_121142392
+[2025-07-18 09:42:11] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 1333 字
+[2025-07-18 09:42:14] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 新白广城际，预计最快2026年中开通？！
+[2025-07-18 09:42:14] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.sohu.com/a/914674595_124706
+[2025-07-18 09:42:14] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 1628 字
+[2025-07-18 09:42:14] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 卢毅：湖南“一带一部”中心性与国际性综合交通枢纽可行性
+[2025-07-18 09:42:14] [DEBUG] [news-unknown] [江苏省国资委] URL: https://finance.sina.com.cn/jjxw/2025-07-17/doc-infftyiu5310144.shtml
+[2025-07-18 09:42:15] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 2178 字
+[2025-07-18 09:42:15] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 成都成鲜食榴莲集散地，奥秘何在？
+[2025-07-18 09:42:15] [DEBUG] [news-unknown] [江苏省国资委] URL: https://news.qq.com/rain/a/20250717A05X1900
+[2025-07-18 09:42:15] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 1648 字
+[2025-07-18 09:42:15] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 顶“榴”为何在成都加速集散？
+[2025-07-18 09:42:15] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/%E9%A3%9F%E5%93%81%E5%92%8C%E9%A5%AE%E6%96%99/%E9%80%9A%E7%94%A8/%E9%A1%B6-%E6%A6%B4-%E4%B8%BA%E4%BD%95%E5%9C%A8%E6%88%90%E9%83%BD%E5%8A%A0%E9%80%9F%E9%9B%86%E6%95%A3/ar-AA1IL9CH?ocid=BingNewsVerp
+[2025-07-18 09:42:15] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:42:15] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 美银证券维持对联合航空股票的买入评级
+[2025-07-18 09:42:15] [DEBUG] [news-unknown] [江苏省国资委] URL: https://cn.investing.com/news/analyst-ratings/article-93CH-2889941
+[2025-07-18 09:45:01] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:45:01] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 成都再发高温红色预警信号 气温将超40℃
+[2025-07-18 09:45:01] [DEBUG] [news-unknown] [江苏省国资委] URL: https://news.china.com/socialgd/10000169/20250717/48619875.html
+[2025-07-18 09:45:04] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 1205 字
+[2025-07-18 09:45:04] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 高盛重申联合航空"跑赢大盘"评级，目标价为100.00美元
+[2025-07-18 09:45:04] [DEBUG] [news-unknown] [江苏省国资委] URL: https://cn.investing.com/news/analyst-ratings/article-93CH-2890010
+[2025-07-18 09:48:00] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:48:00] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 品种上新！顶“榴”为何在成都加速集散？
+[2025-07-18 09:48:00] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/%E9%A3%9F%E5%93%81%E5%92%8C%E9%A5%AE%E6%96%99/%E9%80%9A%E7%94%A8/%E5%93%81%E7%A7%8D%E4%B8%8A%E6%96%B0-%E9%A1%B6-%E6%A6%B4-%E4%B8%BA%E4%BD%95%E5%9C%A8%E6%88%90%E9%83%BD%E5%8A%A0%E9%80%9F%E9%9B%86%E6%95%A3/ar-AA1IKZOf?ocid=BingNewsVerp
+[2025-07-18 09:48:00] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:48:00] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 篮球BGM奏响杭城 开启“夏日经济”无限可能
+[2025-07-18 09:48:00] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.hangzhou.gov.cn/art/2025/7/17/art_812262_59115270.html
+[2025-07-18 09:48:01] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 1378 字
+[2025-07-18 09:48:01] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 前沿科技产品引人驻足体验，旅客过境顺便被种草 深圳口岸化身企业“秀场”
+[2025-07-18 09:48:01] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.sznews.com/news/content/2025-07/17/content_31632169.htm
+[2025-07-18 09:48:01] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 1583 字
+[2025-07-18 09:48:01] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 篮球BGM奏响杭城开启“夏日经济”无限可能
+[2025-07-18 09:48:01] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/news/other/%E7%AF%AE%E7%90%83bgm%E5%A5%8F%E5%93%8D%E6%9D%AD%E5%9F%8E%E5%BC%80%E5%90%AF-%E5%A4%8F%E6%97%A5%E7%BB%8F%E6%B5%8E-%E6%97%A0%E9%99%90%E5%8F%AF%E8%83%BD/ar-AA1IL9XE?ocid=BingNewsVerp
+[2025-07-18 09:48:01] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:48:01] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 河南这些地方将迎暴雨/郑州交警公布4个违停严管路段/正部级吴英杰被判死缓
+[2025-07-18 09:48:01] [DEBUG] [news-unknown] [江苏省国资委] URL: https://view.inews.qq.com/a/20250717A01W5400
+[2025-07-18 09:48:02] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 733 字
+[2025-07-18 09:48:02] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 法国近期报告30例基孔肯雅热本土传播病例
+[2025-07-18 09:48:02] [DEBUG] [news-unknown] [江苏省国资委] URL: http://www.hxnews.com/news/gj/gjxw/202507/17/2209017.shtml
+[2025-07-18 09:48:02] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:48:02] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 美国媒体：印度空难客机燃油供应开关疑被机长关闭
+[2025-07-18 09:48:02] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/news/other/%E5%8D%B0%E5%BA%A6%E7%A9%BA%E9%9A%BE%E5%AE%A2%E6%9C%BA%E7%87%83%E6%B2%B9%E4%BE%9B%E5%BA%94%E5%BC%80%E5%85%B3%E7%96%91%E8%A2%AB%E6%9C%BA%E9%95%BF%E5%85%B3%E9%97%AD/ar-AA1ILp33?ocid=BingNewsVerp
+[2025-07-18 09:48:02] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:48:02] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 贝佐斯向马斯克租火箭 发射卫星抢商机
+[2025-07-18 09:48:02] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.orientaldaily.com.my/news/business/2025/07/17/747635
+[2025-07-18 09:48:05] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 1003 字
+[2025-07-18 09:48:05] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 成渝金融法院发布执行工作白皮书 借款合同纠纷案件数占近九成
+[2025-07-18 09:48:05] [DEBUG] [news-unknown] [江苏省国资委] URL: http://www.jjckb.cn/20250717/4a253e9b925e4c048ca6a7f4111edec1/c.html
+[2025-07-18 09:48:05] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 1395 字
+[2025-07-18 09:48:05] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 2025第24期中国留学生安全提醒：防范自然灾害
+[2025-07-18 09:48:05] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.eol.cn/news/gjjyyw/202507/t20250717_2681643.shtml
+[2025-07-18 09:48:06] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 6846 字
+[2025-07-18 09:48:06] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 四通八达路网织就城市新脉动
+[2025-07-18 09:48:06] [DEBUG] [news-unknown] [江苏省国资委] URL: https://finance.sina.com.cn/jjxw/2025-07-17/doc-infftpty0451806.shtml
+[2025-07-18 09:48:07] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 3894 字
+[2025-07-18 09:48:07] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 陕西两座机场定档明年建成，这座有望纳入"十五五"!
+[2025-07-18 09:48:07] [DEBUG] [news-unknown] [江苏省国资委] URL: https://news.qq.com/rain/a/20250717A0A5RH00
+[2025-07-18 09:48:07] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 3092 字
+[2025-07-18 09:48:07] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 安徽舰变身台海战神!没有航母的东部战区，15架直升机塞满甲板
+[2025-07-18 09:48:07] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.sohu.com/a/914732556_121142392
+[2025-07-18 09:48:07] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 1333 字
+[2025-07-18 09:48:09] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 原创 中国再不出手统一台湾，汹涌的民意恐怕就压不住了
+[2025-07-18 09:48:09] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.sohu.com/a/914723178_121141882
+[2025-07-18 09:48:10] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 1084 字
+[2025-07-18 09:48:10] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 顶"榴"为何在成都加速集散？
+[2025-07-18 09:48:10] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/%E9%A3%9F%E5%93%81%E5%92%8C%E9%A5%AE%E6%96%99/%E9%80%9A%E7%94%A8/%E9%A1%B6-%E6%A6%B4-%E4%B8%BA%E4%BD%95%E5%9C%A8%E6%88%90%E9%83%BD%E5%8A%A0%E9%80%9F%E9%9B%86%E6%95%A3/ar-AA1IL9CH
+[2025-07-18 09:48:10] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:48:10] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 卢毅：湖南"一带一部"中心性与国际性综合交通枢纽可行性
+[2025-07-18 09:48:10] [DEBUG] [news-unknown] [江苏省国资委] URL: https://finance.sina.com.cn/jjxw/2025-07-17/doc-infftyiu5310144.shtml
+[2025-07-18 09:48:10] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 2178 字
+[2025-07-18 09:48:10] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 2024年德国总和生育率下降2%
+[2025-07-18 09:48:10] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.chinanews.com.cn/gj/2025/07-17/10449749.shtml
+[2025-07-18 09:48:10] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 808 字
+[2025-07-18 09:48:10] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 四川重庆热成全国"尖子生" 高温后迎强降雨
+[2025-07-18 09:48:10] [DEBUG] [news-unknown] [江苏省国资委] URL: https://news.china.com/socialgd/10000169/20250717/48620466.html
+[2025-07-18 09:48:11] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 860 字
+[2025-07-18 09:48:11] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 品种上新!顶"榴"为何在成都加速集散？
+[2025-07-18 09:48:11] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/news/other/%E5%93%81%E7%A7%8D%E4%B8%8A%E6%96%B0-%E9%A1%B6-%E6%A6%B4-%E4%B8%BA%E4%BD%95%E5%9C%A8%E6%88%90%E9%83%BD%E5%8A%A0%E9%80%9F%E9%9B%86%E6%95%A3/ar-AA1IKZOf
+[2025-07-18 09:48:11] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:48:11] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 前沿科技产品引人驻足体验，旅客过境顺便被种草 深圳口岸化身企业 ...
+[2025-07-18 09:48:11] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.sznews.com/news/content/2025-07/17/content_31632169.htm
+[2025-07-18 09:48:11] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 1583 字
+[2025-07-18 09:48:11] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 篮球BGM奏响杭城 开启"夏日经济"无限可能
+[2025-07-18 09:48:11] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.hangzhou.gov.cn/art/2025/7/17/art_812262_59115270.html
+[2025-07-18 09:48:11] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 1378 字
+[2025-07-18 09:48:11] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 最强14级!或直冲广东!暴雨+大风即将发货…… | 早安，荔湾
+[2025-07-18 09:48:11] [DEBUG] [news-unknown] [江苏省国资委] URL: https://view.inews.qq.com/a/20250717A01ZBB00
+[2025-07-18 09:48:12] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 1757 字
+[2025-07-18 09:48:12] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 篮球跃动杭城 开启"夏日经济"无限可能
+[2025-07-18 09:48:12] [DEBUG] [news-unknown] [江苏省国资委] URL: https://hznews.hangzhou.com.cn/jingji/content/2025-07/17/content_9040475.htm
+[2025-07-18 09:48:13] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 1469 字
+[2025-07-18 09:48:13] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 印航客机黑匣子录音显示机长关闭燃油开关或直接导致坠机
+[2025-07-18 09:48:13] [DEBUG] [news-unknown] [江苏省国资委] URL: https://news.fjsen.com/2025-07/17/content_31945134.htm
+[2025-07-18 09:48:13] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 1701 字
+[2025-07-18 09:48:16] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 270余人遇难 印航客机黑匣子披露空难直接原因
+[2025-07-18 09:48:16] [DEBUG] [news-unknown] [江苏省国资委] URL: https://news.fjsen.com/2025-07/17/content_31945328.htm
+[2025-07-18 09:48:17] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 2909 字
+[2025-07-18 09:48:17] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 原创 苏梅集结130万大军，朝鲜豪送千万炮弹，中国态度让美国意外
+[2025-07-18 09:48:17] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.sohu.com/a/914786692_122132206
+[2025-07-18 09:48:17] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 2335 字
+[2025-07-18 09:48:17] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 贸易板块7月17日跌0.21%，苏豪弘业领跌，主力资金净流出9102.01万元
+[2025-07-18 09:48:17] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/money/%E7%BB%8F%E6%B5%8E/%E8%B4%B8%E6%98%93%E6%9D%BF%E5%9D%977%E6%9C%8817%E6%97%A5%E8%B7%8C0-21-%E8%8B%8F%E8%B1%AA%E5%BC%98%E4%B8%9A%E9%A2%86%E8%B7%8C-%E4%B8%BB%E5%8A%9B%E8%B5%84%E9%87%91%E5%87%80%E6%B5%81%E5%87%BA9102-01%E4%B8%87%E5%85%83/ar-AA1ILBwm?ocid=BingNewsVerp
+[2025-07-18 09:48:17] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:48:17] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 苏垦农发全资子公司新增一项125.50万元的招标项目
+[2025-07-18 09:48:17] [DEBUG] [news-unknown] [江苏省国资委] URL: https://finance.sina.com.cn/roll/2025-07-17/doc-infftyip3719179.shtml
+[2025-07-18 09:48:17] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 240 字
+[2025-07-18 09:48:17] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 股市必读：苏豪弘业（600128）7月16日主力资金净流入2682.65万元，占总 ...
+[2025-07-18 09:48:17] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/news/other/%E8%82%A1%E5%B8%82%E5%BF%85%E8%AF%BB-%E8%8B%8F%E8%B1%AA%E5%BC%98%E4%B8%9A-600128-7%E6%9C%8816%E6%97%A5%E4%B8%BB%E5%8A%9B%E8%B5%84%E9%87%91%E5%87%80%E6%B5%81%E5%85%A5268265%E4%B8%87%E5%85%83-%E5%8D%A0%E6%80%BB%E6%88%90%E4%BA%A4%E9%A2%9D939/ar-AA1ILxGN
+[2025-07-18 09:48:17] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:48:19] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 贸易板块7月17日跌0.21%，苏豪弘业领跌，主力资金净流出9102.01万元
+[2025-07-18 09:48:19] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/money/%E7%BB%8F%E6%B5%8E/%E8%B4%B8%E6%98%93%E6%9D%BF%E5%9D%977%E6%9C%8817%E6%97%A5%E8%B7%8C0-21-%E8%8B%8F%E8%B1%AA%E5%BC%98%E4%B8%9A%E9%A2%86%E8%B7%8C-%E4%B8%BB%E5%8A%9B%E8%B5%84%E9%87%91%E5%87%80%E6%B5%81%E5%87%BA9102-01%E4%B8%87%E5%85%83/ar-AA1ILBwm
+[2025-07-18 09:48:19] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:48:22] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 股市必读：苏豪弘业（600128）7月16日主力资金净流入2682.65万元，占总 ...
+[2025-07-18 09:48:22] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/money/%E7%83%AD%E9%97%A8%E8%82%A1/%E8%82%A1%E5%B8%82%E5%BF%85%E8%AF%BB-%E8%8B%8F%E8%B1%AA%E5%BC%98%E4%B8%9A-600128-7%E6%9C%8816%E6%97%A5%E4%B8%BB%E5%8A%9B%E8%B5%84%E9%87%91%E5%87%80%E6%B5%81%E5%85%A52682-65%E4%B8%87%E5%85%83-%E5%8D%A0%E6%80%BB%E6%88%90%E4%BA%A4%E9%A2%9D9-39/ar-AA1ILxGN
+[2025-07-18 09:48:22] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:48:22] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 粮库“吃得饱”，粮食住进“空调房”，四川不断完善粮食收储之路
+[2025-07-18 09:48:22] [DEBUG] [news-unknown] [江苏省国资委] URL: https://news.qq.com/rain/a/20250717A02D4H00
+[2025-07-18 09:48:22] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 2538 字
+[2025-07-18 09:48:22] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 《扫黑风暴》里的王政是什么职务 什么级别？
+[2025-07-18 09:48:22] [DEBUG] [news-unknown] [江苏省国资委] URL: https://ent.china.com/movie/newszh/11005281/20250717/48620786.html
+[2025-07-18 09:48:23] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 457 字
+[2025-07-18 09:48:23] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 市场监管总局督促东风商用车等10家生产企业实施召回
+[2025-07-18 09:48:23] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/autos/%E9%80%9A%E7%94%A8/%E5%B8%82%E5%9C%BA%E7%9B%91%E7%AE%A1%E6%80%BB%E5%B1%80%E7%9D%A3%E4%BF%83%E4%B8%9C%E9%A3%8E%E5%95%86%E7%94%A8%E8%BD%A6%E7%AD%8910%E5%AE%B6%E7%94%9F%E4%BA%A7%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%96%BD%E5%8F%AC%E5%9B%9E/ar-AA1IJUKe?ocid=BingNewsVerp
+[2025-07-18 09:48:23] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:48:23] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 《扫毒风暴》里王政是谁 王政是好人吗？
+[2025-07-18 09:48:23] [DEBUG] [news-unknown] [江苏省国资委] URL: https://ent.china.com/movie/newszh/11005281/20250717/48620562.html
+[2025-07-18 09:48:23] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 416 字
+[2025-07-18 09:48:23] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 华尔街银行高管忧心关税影响：美国经济可能恶化
+[2025-07-18 09:48:23] [DEBUG] [news-unknown] [江苏省国资委] URL: https://news.jschina.com.cn/yw/202507/t20250717_s687859cde4b0d00eb0f03a51.shtml
+[2025-07-18 09:48:24] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 237 字
+[2025-07-18 09:48:24] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 粮库"吃得饱"，粮食住进"空调房"，四川不断完善粮食收储之路
+[2025-07-18 09:48:24] [DEBUG] [news-unknown] [江苏省国资委] URL: https://news.qq.com/rain/a/20250717A02D4H00
+[2025-07-18 09:48:24] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 2538 字
+[2025-07-18 09:48:24] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 市场监管总局督促东风商用车等10家生产企业实施召回
+[2025-07-18 09:48:24] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/autos/%E9%80%9A%E7%94%A8/%E5%B8%82%E5%9C%BA%E7%9B%91%E7%AE%A1%E6%80%BB%E5%B1%80%E7%9D%A3%E4%BF%83%E4%B8%9C%E9%A3%8E%E5%95%86%E7%94%A8%E8%BD%A6%E7%AD%8910%E5%AE%B6%E7%94%9F%E4%BA%A7%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%96%BD%E5%8F%AC%E5%9B%9E/ar-AA1IJUKe
+[2025-07-18 09:48:24] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:48:24] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 江苏，正批量诞生母基金
+[2025-07-18 09:48:24] [DEBUG] [news-unknown] [江苏省国资委] URL: https://tech.sina.cn/2025-07-17/detail-inffukxt7446562.d.html?vt=4
+[2025-07-18 09:48:25] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 2217 字
+[2025-07-18 09:48:25] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 江苏，正批量诞生母基金
+[2025-07-18 09:48:25] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.sohu.com/a/914807699_439726
+[2025-07-18 09:48:25] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 2126 字
+[2025-07-18 09:48:25] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 第三批来了，江苏再设新基金
+[2025-07-18 09:48:25] [DEBUG] [news-unknown] [江苏省国资委] URL: https://finance.sina.com.cn/roll/2025-07-17/doc-inffurfr7395137.shtml
+[2025-07-18 09:48:26] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 1688 字
+[2025-07-18 09:48:26] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 2025年宝宝辅食产品推荐：深海营养与科学配方引领行业新标杆
+[2025-07-18 09:48:26] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.sohu.com/a/914737413_122465568
+[2025-07-18 09:48:26] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 4006 字
+[2025-07-18 09:48:26] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 精准农业，潜力几何（新知）
+[2025-07-18 09:48:26] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/news/other/%E7%B2%BE%E5%87%86%E5%86%9C%E4%B8%9A-%E6%BD%9C%E5%8A%9B%E5%87%A0%E4%BD%95-%E6%96%B0%E7%9F%A5/ar-AA1IJQGE
+[2025-07-18 09:48:26] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:48:26] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 刻刀刻下对大地的钟情和对生灵的酷爱
+[2025-07-18 09:48:26] [DEBUG] [news-unknown] [江苏省国资委] URL: https://news.qq.com/rain/a/20250717A01VY100
+[2025-07-18 09:48:27] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 2805 字
+[2025-07-18 09:48:27] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 苏垦农服："点单式"服务 "全链条"护航
+[2025-07-18 09:48:27] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.sohu.com/a/914639323_121455647
+[2025-07-18 09:48:27] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 1042 字
+[2025-07-18 09:48:27] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 徐矿集团派出总经理挂帅旗下企业,5个月内调整13位高管,能顺利止跌...
+[2025-07-18 09:48:27] [DEBUG] [news-unknown] [江苏省国资委] URL: http://news.cnfol.com/chanyejingji/20250717/31473102.shtml
+[2025-07-18 09:48:27] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 2010 字
+[2025-07-18 09:48:30] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 徐矿集团派出总经理挂帅旗下企业，5个月内调整13位高管，能顺利止跌并成功转型吗？_产业经济
+[2025-07-18 09:48:30] [DEBUG] [news-unknown] [江苏省国资委] URL: http://news.cnfol.com/chanyejingji/20250717/31473102.shtml
+[2025-07-18 09:48:30] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 2010 字
+[2025-07-18 09:48:30] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 独家：中国电信南方某地分公司去年营收30多亿 再次成为战略业务单元 总经理享受省公司副总待遇
+[2025-07-18 09:48:30] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.sohu.com/a/914890969_121124363
+[2025-07-18 09:48:31] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 466 字
+[2025-07-18 09:48:31] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 江苏盐城：向海争风，绿能破浪
+[2025-07-18 09:48:31] [DEBUG] [news-unknown] [江苏省国资委] URL: https://news.qq.com/rain/a/20250717A08RL600
+[2025-07-18 09:48:31] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 2380 字
+[2025-07-18 09:48:31] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 股市必读：吉华集团（603980）7月16日主力资金净流入5562.55万元，占总成交额7.84%
+[2025-07-18 09:48:31] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/news/other/%E8%82%A1%E5%B8%82%E5%BF%85%E8%AF%BB-%E5%90%89%E5%8D%8E%E9%9B%86%E5%9B%A2-603980-7%E6%9C%8816%E6%97%A5%E4%B8%BB%E5%8A%9B%E8%B5%84%E9%87%91%E5%87%80%E6%B5%81%E5%85%A5556255%E4%B8%87%E5%85%83-%E5%8D%A0%E6%80%BB%E6%88%90%E4%BA%A4%E9%A2%9D784/ar-AA1ILot6?ocid=BingNewsVerp
+[2025-07-18 09:48:31] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:48:31] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 终于有人从地理角度讲讲逆天的“苏超”了
+[2025-07-18 09:48:31] [DEBUG] [news-unknown] [江苏省国资委] URL: https://news.qq.com/rain/a/20250717A07IAB00
+[2025-07-18 09:48:32] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 5366 字
+[2025-07-18 09:48:32] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 朱亮亮任盐城射阳县代理县长
+[2025-07-18 09:48:32] [DEBUG] [news-unknown] [江苏省国资委] URL: http://www.js.xinhuanet.com/20250717/30ed68fc50fb4dd4b2db738289403419/c.html
+[2025-07-18 09:48:32] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 293 字
+[2025-07-18 09:48:32] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 今年第6号台风即将生成并趋向广东
+[2025-07-18 09:48:32] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/news/other/%E4%BB%8A%E5%B9%B4%E7%AC%AC6%E5%8F%B7%E5%8F%B0%E9%A3%8E%E5%8D%B3%E5%B0%86%E7%94%9F%E6%88%90%E5%B9%B6%E8%B6%8B%E5%90%91%E5%B9%BF%E4%B8%9C/ar-AA1IM69i?ocid=BingNewsVerp
+[2025-07-18 09:48:32] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:48:32] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 第6号台风即将生成，向广东西部到海南岛东部一带沿海靠近
+[2025-07-18 09:48:32] [DEBUG] [news-unknown] [江苏省国资委] URL: https://m.gmw.cn/2025-07/17/content_1304085288.htm
+[2025-07-18 09:48:32] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 420 字
+[2025-07-18 09:48:32] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 百年德企落子南通，靠卖药，年入超50亿
+[2025-07-18 09:48:32] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.sohu.com/a/914653800_121124407
+[2025-07-18 09:48:33] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 3087 字
+[2025-07-18 09:48:33] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 高温橙色预警继续！今年第6号台风即将生成
+[2025-07-18 09:48:33] [DEBUG] [news-unknown] [江苏省国资委] URL: https://finance.sina.com.cn/roll/2025-07-17/doc-infftyiu0270129.shtml
+[2025-07-18 09:48:33] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 974 字
+[2025-07-18 09:48:33] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 东北第一城！这地，坐实了
+[2025-07-18 09:48:33] [DEBUG] [news-unknown] [江苏省国资委] URL: https://finance.ifeng.com/c/8l3k2oUo2sN
+[2025-07-18 09:48:34] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 4819 字
+[2025-07-18 09:48:34] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 100+品牌已进驻，掘金成渝双城经济圈就来2025 CCBD中国重庆建博会
+[2025-07-18 09:48:34] [DEBUG] [news-unknown] [江苏省国资委] URL: https://news.jc001.cn/25/0717/977472.html
+[2025-07-18 09:48:34] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 2079 字
+[2025-07-18 09:48:34] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 奋楫扬帆 河南加速“向水而行”水运新河南的未来图景
+[2025-07-18 09:48:34] [DEBUG] [news-unknown] [江苏省国资委] URL: http://www.zmdnews.cn/2025/0717/826129.shtml
+[2025-07-18 09:48:34] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 2410 字
+[2025-07-18 09:48:34] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 中山今日天气
+[2025-07-18 09:48:34] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.163.com/news/article/K4LBPVUV00019TLK.html
+[2025-07-18 09:48:35] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 278 字
+[2025-07-18 09:48:35] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 独家：中国电信南方某地分公司去年营收30多亿 再次成为战略业务 ...
+[2025-07-18 09:48:35] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.sohu.com/a/914890969_121124363
+[2025-07-18 09:48:35] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 466 字
+[2025-07-18 09:48:35] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 江苏盐城：向海争风，绿能破浪
+[2025-07-18 09:48:35] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/news/other/%E6%B1%9F%E8%8B%8F%E7%9B%90%E5%9F%8E-%E5%90%91%E6%B5%B7%E4%BA%89%E9%A3%8E-%E7%BB%BF%E8%83%BD%E7%A0%B4%E6%B5%AA/ar-AA1IM8Ma
+[2025-07-18 09:48:35] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:48:38] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 股市必读：吉华集团（603980）7月16日主力资金净流入5562.55万元，占总 ...
+[2025-07-18 09:48:38] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/news/other/%E8%82%A1%E5%B8%82%E5%BF%85%E8%AF%BB-%E5%90%89%E5%8D%8E%E9%9B%86%E5%9B%A2-603980-7%E6%9C%8816%E6%97%A5%E4%B8%BB%E5%8A%9B%E8%B5%84%E9%87%91%E5%87%80%E6%B5%81%E5%85%A5556255%E4%B8%87%E5%85%83-%E5%8D%A0%E6%80%BB%E6%88%90%E4%BA%A4%E9%A2%9D784/ar-AA1ILot6
+[2025-07-18 09:48:38] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:48:38] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 终于有人从地理角度讲讲逆天的"苏超"了
+[2025-07-18 09:48:38] [DEBUG] [news-unknown] [江苏省国资委] URL: https://news.qq.com/rain/a/20250717A07IAB00
+[2025-07-18 09:48:39] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 5366 字
+[2025-07-18 09:48:43] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 朱亮亮任盐城市射阳县代理县长
+[2025-07-18 09:48:43] [DEBUG] [news-unknown] [江苏省国资委] URL: https://news.qq.com/rain/a/20250717A05PWA00
+[2025-07-18 09:48:43] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 310 字
+[2025-07-18 09:48:43] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 今年第6号台风即将生成并趋向广东
+[2025-07-18 09:48:43] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/news/other/%E4%BB%8A%E5%B9%B4%E7%AC%AC6%E5%8F%B7%E5%8F%B0%E9%A3%8E%E5%8D%B3%E5%B0%86%E7%94%9F%E6%88%90%E5%B9%B6%E8%B6%8B%E5%90%91%E5%B9%BF%E4%B8%9C/ar-AA1IM69i
+[2025-07-18 09:48:43] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:48:43] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 四川盆地江南中西部等地有高温天气 菲律宾以东热带低压将趋向我国 ...
+[2025-07-18 09:48:43] [DEBUG] [news-unknown] [江苏省国资委] URL: https://finance.sina.com.cn/jjxw/2025-07-17/doc-inffttzw5335548.shtml
+[2025-07-18 09:48:43] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 2656 字
+[2025-07-18 09:48:43] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 东北第一城!这地，坐实了
+[2025-07-18 09:48:43] [DEBUG] [news-unknown] [江苏省国资委] URL: https://finance.ifeng.com/c/8l3k2oUo2sN
+[2025-07-18 09:48:44] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 4819 字
+[2025-07-18 09:48:44] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 奋楫扬帆 河南加速"向水而行"水运新河南的未来图景
+[2025-07-18 09:48:44] [DEBUG] [news-unknown] [江苏省国资委] URL: http://www.zmdnews.cn/2025/0717/826129.shtml
+[2025-07-18 09:48:44] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 2410 字
+[2025-07-18 09:48:44] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 高温橙色预警继续!今年第6号台风即将生成
+[2025-07-18 09:48:44] [DEBUG] [news-unknown] [江苏省国资委] URL: https://finance.sina.com.cn/roll/2025-07-17/doc-infftyiu0270129.shtml
+[2025-07-18 09:48:44] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 974 字
+[2025-07-18 09:48:44] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 重庆文旅加入“苏超”后援团，“渝渝”和“苏苏”的情谊藏不住了
+[2025-07-18 09:48:44] [DEBUG] [news-unknown] [江苏省国资委] URL: https://news.qq.com/rain/a/20250717A03X5Y00
+[2025-07-18 09:48:45] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 3576 字
+[2025-07-18 09:48:49] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 负债率高企，新凤鸣对外投资不断，拟增资1亿元入股亏损企业
+[2025-07-18 09:48:49] [DEBUG] [news-unknown] [江苏省国资委] URL: https://news.qq.com/rain/a/20250717A0ACCV00
+[2025-07-18 09:48:49] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 1092 字
+[2025-07-18 09:48:49] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 【新闻】0717航运简报
+[2025-07-18 09:48:49] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.sohu.com/a/914779840_121124514
+[2025-07-18 09:48:50] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 3218 字
+[2025-07-18 09:48:50] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 下班快回家！兰州市发布预警：雷雨+冰雹+7级大风正在路上……
+[2025-07-18 09:48:50] [DEBUG] [news-unknown] [江苏省国资委] URL: https://m.gmw.cn/2025-07/17/content_1304085922.htm
+[2025-07-18 09:48:50] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 251 字
+[2025-07-18 09:48:50] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 帕萨特生产工厂将关闭，大众在华驶入转型深水区
+[2025-07-18 09:48:50] [DEBUG] [news-unknown] [江苏省国资委] URL: https://finance.sina.com.cn/roll/2025-07-17/doc-inffurfn0073893.shtml
+[2025-07-18 09:48:51] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 3402 字
+[2025-07-18 09:48:51] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 儿童减重不建议过度节食
+[2025-07-18 09:48:51] [DEBUG] [news-unknown] [江苏省国资委] URL: https://m.gmw.cn/2025-07/17/content_1304085944.htm
+[2025-07-18 09:48:51] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 234 字
+[2025-07-18 09:48:51] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 在周口港，感受大市场（主流媒体看周口）
+[2025-07-18 09:48:51] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/news/other/%E5%9C%A8%E5%91%A8%E5%8F%A3%E6%B8%AF-%E6%84%9F%E5%8F%97%E5%A4%A7%E5%B8%82%E5%9C%BA-%E4%B8%BB%E6%B5%81%E5%AA%92%E4%BD%93%E7%9C%8B%E5%91%A8%E5%8F%A3/ar-AA1IJuc3?ocid=BingNewsVerp
+[2025-07-18 09:48:51] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:48:53] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 浙江海港携手中国移动浙江，共绘智慧港口新蓝图
+[2025-07-18 09:48:53] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/news/other/%E6%B5%99%E6%B1%9F%E6%B5%B7%E6%B8%AF%E6%90%BA%E6%89%8B%E4%B8%AD%E5%9B%BD%E7%A7%BB%E5%8A%A8%E6%B5%99%E6%B1%9F-%E5%85%B1%E7%BB%98%E6%99%BA%E6%85%A7%E6%B8%AF%E5%8F%A3%E6%96%B0%E8%93%9D%E5%9B%BE/ar-AA1IM7Qy
+[2025-07-18 09:48:53] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:48:53] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 生于1986年，朱亮亮任江苏射阳县代理县长
+[2025-07-18 09:48:53] [DEBUG] [news-unknown] [江苏省国资委] URL: https://finance.sina.com.cn/jjxw/2025-07-17/doc-inffukxt7462110.shtml
+[2025-07-18 09:48:54] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 441 字
+[2025-07-18 09:48:55] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 天津港口变形记：从"黄金水道"到"经济走廊"
+[2025-07-18 09:48:55] [DEBUG] [news-unknown] [江苏省国资委] URL: https://finance.sina.com.cn/jjxw/2025-07-17/doc-infftpty0454128.shtml
+[2025-07-18 09:48:56] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 3041 字
+[2025-07-18 09:48:56] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 挺进"深蓝" 前5月海门船舶海工出口额同比增7倍
+[2025-07-18 09:48:56] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.nantong.gov.cn/ntsrmzf/sxcz/content/6b972394-f8ca-4f6b-b952-078291557112.html
+[2025-07-18 09:48:56] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 1112 字
+[2025-07-18 09:48:56] [INFO] [news-unknown] [江苏省国资委] 正在抓取: “坐着高铁游长三角”诗歌摄影大赛，第三期精选作品，展示！
+[2025-07-18 09:48:56] [DEBUG] [news-unknown] [江苏省国资委] URL: https://news.qq.com/rain/a/20250717A04YM000
+[2025-07-18 09:48:57] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 2003 字
+[2025-07-18 09:48:57] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 创历史新高！上半年全国铁路发送旅客22.4亿人次
+[2025-07-18 09:48:57] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/news/other/%E5%88%9B%E5%8E%86%E5%8F%B2%E6%96%B0%E9%AB%98-%E4%B8%8A%E5%8D%8A%E5%B9%B4%E5%85%A8%E5%9B%BD%E9%93%81%E8%B7%AF%E5%8F%91%E9%80%81%E6%97%85%E5%AE%A222-4%E4%BA%BF%E4%BA%BA%E6%AC%A1/ar-AA1IL51J?ocid=BingNewsVerp
+[2025-07-18 09:48:57] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:49:00] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 上半年全国铁路发送旅客22.4亿人次创新高
+[2025-07-18 09:49:00] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/news/other/%E4%B8%8A%E5%8D%8A%E5%B9%B4%E5%85%A8%E5%9B%BD%E9%93%81%E8%B7%AF%E5%8F%91%E9%80%81%E6%97%85%E5%AE%A2224%E4%BA%BF%E4%BA%BA%E6%AC%A1%E5%88%9B%E6%96%B0%E9%AB%98/ar-AA1IMav9?ocid=BingNewsVerp
+[2025-07-18 09:49:00] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:49:00] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 【中国那些事儿】中国高铁技术不断实现突破 为全球互联互通描绘新愿景
+[2025-07-18 09:49:00] [DEBUG] [news-unknown] [江苏省国资委] URL: https://news.qq.com/rain/a/20250717A07OD000
+[2025-07-18 09:49:00] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 1611 字
+[2025-07-18 09:49:00] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 光站名就1000多个，徒手复原全国铁路示意图，她怎么做到的
+[2025-07-18 09:49:00] [DEBUG] [news-unknown] [江苏省国资委] URL: https://zjnews.zjol.com.cn/zjnews/202507/t20250717_31118732.shtml
+[2025-07-18 09:49:00] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 1502 字
+[2025-07-18 09:49:00] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 公路医生：修路王治理病害（二）：坑槽修复
+[2025-07-18 09:49:00] [DEBUG] [news-unknown] [江苏省国资委] URL: https://news.lmjx.net/2025/202507/2025071709283740.shtml
+[2025-07-18 09:49:01] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 466 字
+[2025-07-18 09:49:01] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 铁路暑运旅客发送量突破两亿人次
+[2025-07-18 09:49:01] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.eeo.com.cn/2025/0717/739218.shtml
+[2025-07-18 09:49:01] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 284 字
+[2025-07-18 09:49:01] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 外媒：中越跨境铁路货物运输持续火热
+[2025-07-18 09:49:01] [DEBUG] [news-unknown] [江苏省国资委] URL: https://finance.sina.com.cn/jjxw/2025-07-17/doc-inffuerv7532649.shtml
+[2025-07-18 09:49:02] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 503 字
+[2025-07-18 09:49:02] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 新华日报社总编辑顾雷鸣等：抢抓传播先机引爆“苏超”大流量
+[2025-07-18 09:49:02] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.sohu.com/a/914642494_121118712
+[2025-07-18 09:49:02] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 5429 字
+[2025-07-18 09:49:02] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 中国经济持续稳定发展提振全球增长信心
+[2025-07-18 09:49:02] [DEBUG] [news-unknown] [江苏省国资委] URL: https://finance.sina.com.cn/jjxw/2025-07-17/doc-inffuvpi9977846.shtml
+[2025-07-18 09:49:03] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 2488 字
+[2025-07-18 09:49:03] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 焦点访谈｜“现代化人民城市”怎么建？看各地实践探索
+[2025-07-18 09:49:03] [DEBUG] [news-unknown] [江苏省国资委] URL: https://news.youth.cn/gn/202507/t20250717_16122725.htm
+[2025-07-18 09:49:03] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 3943 字
+[2025-07-18 09:49:03] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 俄罗斯留学生田希：在“指尖妙艺”中，解码中国非遗的泥韵匠心
+[2025-07-18 09:49:03] [DEBUG] [news-unknown] [江苏省国资委] URL: https://view.inews.qq.com/a/20250717A04NM700
+[2025-07-18 09:49:03] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 581 字
+[2025-07-18 09:49:03] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 00后民警谢雨丰被评为烈士 英勇救人不幸牺牲
+[2025-07-18 09:49:03] [DEBUG] [news-unknown] [江苏省国资委] URL: https://news.china.com/socialgd/10000169/20250717/48618746.html
+[2025-07-18 09:49:04] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 555 字
+[2025-07-18 09:49:08] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 00后民警救人牺牲被评为烈士 英勇事迹感动人心
+[2025-07-18 09:49:08] [DEBUG] [news-unknown] [江苏省国资委] URL: https://news.china.com/socialgd/10000169/20250717/48618745.html
+[2025-07-18 09:49:08] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 631 字
+[2025-07-18 09:49:08] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 抗战史上的今天：7月17日
+[2025-07-18 09:49:08] [DEBUG] [news-unknown] [江苏省国资委] URL: https://view.inews.qq.com/a/20250717A0AFS600
+[2025-07-18 09:49:09] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 8702 字
+[2025-07-18 09:49:09] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 战高温斗酷暑 能源类上市公司全力保供
+[2025-07-18 09:49:09] [DEBUG] [news-unknown] [江苏省国资委] URL: https://finance.china.com.cn/stock/ssgs/20250717/6256092.shtml
+[2025-07-18 09:49:09] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 2142 字
+[2025-07-18 09:49:09] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 604分读高职，高分考生为何逆向选择？
+[2025-07-18 09:49:09] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/%E6%95%99%E8%82%B2%E5%92%8C%E5%AD%A6%E4%B9%A0/%E4%B8%AD%E7%AD%89%E6%95%99%E8%82%B2/604%E5%88%86%E8%AF%BB%E9%AB%98%E8%81%8C-%E6%98%AF%E6%B5%AA%E8%B4%B9%E5%88%86%E6%95%B0%E5%90%97/ar-AA1IHFdT?ocid=BingNewsVerp
+[2025-07-18 09:49:09] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:49:11] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 在周口港，感受大市场（主流媒体看周口）
+[2025-07-18 09:49:11] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/%E5%9F%8E%E5%B8%82%E5%9F%BA%E7%A1%80%E8%AE%BE%E6%96%BD/%E4%BA%A4%E9%80%9A%E5%9F%BA%E7%A1%80%E8%AE%BE%E6%96%BD/%E5%9C%A8%E5%91%A8%E5%8F%A3%E6%B8%AF-%E6%84%9F%E5%8F%97%E5%A4%A7%E5%B8%82%E5%9C%BA-%E4%B8%BB%E6%B5%81%E5%AA%92%E4%BD%93%E7%9C%8B%E5%91%A8%E5%8F%A3/ar-AA1IJuc3?ocid=BingNewsVerp
+[2025-07-18 09:49:11] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:49:11] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 重庆今日天气
+[2025-07-18 09:49:11] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.163.com/news/article/K4LBP9FV00019TLK.html
+[2025-07-18 09:49:11] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 574 字
+[2025-07-18 09:49:11] [INFO] [news-unknown] [江苏省国资委] 正在抓取: "坐着高铁游长三角"诗歌摄影大赛，第三期精选作品，展示!
+[2025-07-18 09:49:11] [DEBUG] [news-unknown] [江苏省国资委] URL: https://news.qq.com/rain/a/20250717A04YM000
+[2025-07-18 09:49:12] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 2003 字
+[2025-07-18 09:49:12] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 创历史新高!上半年全国铁路发送旅客22.4亿人次
+[2025-07-18 09:49:12] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/news/other/%E5%88%9B%E5%8E%86%E5%8F%B2%E6%96%B0%E9%AB%98-%E4%B8%8A%E5%8D%8A%E5%B9%B4%E5%85%A8%E5%9B%BD%E9%93%81%E8%B7%AF%E5%8F%91%E9%80%81%E6%97%85%E5%AE%A222-4%E4%BA%BF%E4%BA%BA%E6%AC%A1/ar-AA1IL51J
+[2025-07-18 09:49:12] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:49:15] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 上半年全国铁路发送旅客22.4亿人次创新高
+[2025-07-18 09:49:15] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/news/other/%E4%B8%8A%E5%8D%8A%E5%B9%B4%E5%85%A8%E5%9B%BD%E9%93%81%E8%B7%AF%E5%8F%91%E9%80%81%E6%97%85%E5%AE%A2224%E4%BA%BF%E4%BA%BA%E6%AC%A1%E5%88%9B%E6%96%B0%E9%AB%98/ar-AA1IMav9
+[2025-07-18 09:49:15] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:49:15] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 【中国那些事儿】中国高铁技术不断实现突破 为全球互联互通描绘新 ...
+[2025-07-18 09:49:15] [DEBUG] [news-unknown] [江苏省国资委] URL: https://news.sina.com.cn/zx/gj/2025-07-17/doc-inffurfq1849043.shtml
+[2025-07-18 09:49:15] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 1488 字
+[2025-07-18 09:49:15] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 乘风破浪 春华秋实——中国经济持续稳定发展提振全球增长信心
+[2025-07-18 09:49:15] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.sohu.com/a/914936414_362042
+[2025-07-18 09:49:15] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 2753 字
+[2025-07-18 09:49:19] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 中国特高压输电技术如何逆袭成全球标杆揭秘电力珠峰背后的突围战
+[2025-07-18 09:49:19] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.sohu.com/a/914881190_122000022
+[2025-07-18 09:49:19] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 1430 字
+[2025-07-18 09:49:19] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 中国经济持续稳定发展提振全球增长信心
+[2025-07-18 09:49:19] [DEBUG] [news-unknown] [江苏省国资委] URL: https://finance.sina.com.cn/jjxw/2025-07-17/doc-inffuvpn1754404.shtml
+[2025-07-18 09:49:19] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 2488 字
+[2025-07-18 09:49:19] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 焦点访谈｜"现代化人民城市"怎么建？看各地实践探索
+[2025-07-18 09:49:19] [DEBUG] [news-unknown] [江苏省国资委] URL: https://news.youth.cn/gn/202507/t20250717_16122725.htm
+[2025-07-18 09:49:20] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 3943 字
+[2025-07-18 09:49:20] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 在周口港，感受大市场（主流媒体看周口）
+[2025-07-18 09:49:20] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/%E5%9F%8E%E5%B8%82%E5%9F%BA%E7%A1%80%E8%AE%BE%E6%96%BD/%E4%BA%A4%E9%80%9A%E5%9F%BA%E7%A1%80%E8%AE%BE%E6%96%BD/%E5%9C%A8%E5%91%A8%E5%8F%A3%E6%B8%AF-%E6%84%9F%E5%8F%97%E5%A4%A7%E5%B8%82%E5%9C%BA-%E4%B8%BB%E6%B5%81%E5%AA%92%E4%BD%93%E7%9C%8B%E5%91%A8%E5%8F%A3/ar-AA1IJuc3
+[2025-07-18 09:49:20] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:49:20] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 新华日报社总编辑顾雷鸣等：抢抓传播先机引爆"苏超"大流量
+[2025-07-18 09:49:20] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.sohu.com/a/914642494_121118712
+[2025-07-18 09:49:20] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 5429 字
+[2025-07-18 09:49:20] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 俄罗斯留学生田希：在"指尖妙艺"中，解码中国非遗的泥韵匠心
+[2025-07-18 09:49:20] [DEBUG] [news-unknown] [江苏省国资委] URL: https://view.inews.qq.com/a/20250717A04NM700
+[2025-07-18 09:49:21] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 581 字
+[2025-07-18 09:49:21] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 604分读高职，高分考生为何逆向选择？
+[2025-07-18 09:49:21] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/%E6%95%99%E8%82%B2%E5%92%8C%E5%AD%A6%E4%B9%A0/%E4%B8%AD%E7%AD%89%E6%95%99%E8%82%B2/604%E5%88%86%E8%AF%BB%E9%AB%98%E8%81%8C-%E6%98%AF%E6%B5%AA%E8%B4%B9%E5%88%86%E6%95%B0%E5%90%97/ar-AA1IHFdT
+[2025-07-18 09:49:21] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:49:21] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 桥下空间 别有洞天（探访·城市更新）
+[2025-07-18 09:49:21] [DEBUG] [news-unknown] [江苏省国资委] URL: https://news.yunnan.cn/system/2025/07/17/033548945.shtml
+[2025-07-18 09:49:22] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 2810 字
+[2025-07-18 09:49:22] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 坐拥山水城林，玄武以“数字低碳”产业为他人“撑伞”
+[2025-07-18 09:49:22] [DEBUG] [news-unknown] [江苏省国资委] URL: https://jsnews.jschina.com.cn/nj/a/202507/t20250717_s6878647fe4b0722a0fa3f139.shtml
+[2025-07-18 09:49:22] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 2213 字
+[2025-07-18 09:49:22] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 江苏，正批量诞生母基金
+[2025-07-18 09:49:22] [DEBUG] [news-unknown] [江苏省国资委] URL: https://news.qq.com/rain/a/20250717A06EKW00
+[2025-07-18 09:49:23] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 2127 字
+[2025-07-18 09:49:23] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 原创 江苏4所一本大学，学霸看不上，中等生考不上，学校也很委屈
+[2025-07-18 09:49:23] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.sohu.com/a/914398777_121859001
+[2025-07-18 09:49:23] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 1410 字
+[2025-07-18 09:49:23] [INFO] [news-unknown] [江苏省国资委] 正在抓取: “大V看玄武”来到南京铁北红山新城
+[2025-07-18 09:49:23] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/%E5%9F%8E%E5%B8%82%E5%9F%BA%E7%A1%80%E8%AE%BE%E6%96%BD/%E9%80%9A%E7%94%A8/%E5%A4%A7v%E7%9C%8B%E7%8E%84%E6%AD%A6-%E6%9D%A5%E5%88%B0%E5%8D%97%E4%BA%AC%E9%93%81%E5%8C%97%E7%BA%A2%E5%B1%B1%E6%96%B0%E5%9F%8E/ar-AA1IN3jv?ocid=BingNewsVerp
+[2025-07-18 09:49:23] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:49:26] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 罕见！秦岭再现棕色大熊猫
+[2025-07-18 09:49:26] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/news/other/%E7%BD%95%E8%A7%81-%E7%A7%A6%E5%B2%AD%E5%86%8D%E7%8E%B0%E6%A3%95%E8%89%B2%E5%A4%A7%E7%86%8A%E7%8C%AB/ar-AA1IMdCb?ocid=BingNewsVerp
+[2025-07-18 09:49:26] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:49:26] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 南京企业“链”世界，全球客商“购”南京
+[2025-07-18 09:49:26] [DEBUG] [news-unknown] [江苏省国资委] URL: https://news.jschina.com.cn/yw/202507/t20250717_s6878c2e8e4b0c83a06824bc3.shtml
+[2025-07-18 09:49:27] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 2414 字
+[2025-07-18 09:49:27] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 女童患重病想退年卡 景区仅退款：年卡给小朋友留着
+[2025-07-18 09:49:27] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/travel/%E5%85%AC%E5%9B%AD/%E5%A5%B3%E7%AB%A5%E6%82%A3%E9%87%8D%E7%97%85%E6%83%B3%E9%80%80%E5%B9%B4%E5%8D%A1-%E6%99%AF%E5%8C%BA%E4%BB%85%E9%80%80%E6%AC%BE-%E5%B9%B4%E5%8D%A1%E7%BB%99%E5%B0%8F%E6%9C%8B%E5%8F%8B%E7%95%99%E7%9D%80/ar-AA1ILhJs?ocid=BingNewsVerp
+[2025-07-18 09:49:27] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:49:27] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 天越来越热！波司登的万元羽绒服走向了命运十字路口！
+[2025-07-18 09:49:27] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.sohu.com/a/914933510_100165685
+[2025-07-18 09:49:27] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 2573 字
+[2025-07-18 09:49:27] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 乘风破浪 春华秋实——中国经济持续稳定发展提振全球增长信心
+[2025-07-18 09:49:27] [DEBUG] [news-unknown] [江苏省国资委] URL: https://news.cctv.com/2025/07/17/ARTIxLKA3YUtHZvgpSIw3tFA250717.shtml
+[2025-07-18 09:49:28] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 2744 字
+[2025-07-18 09:49:28] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 【HSC华盛锂电】华盛锂电与安瓦新能源携手合作，共探电池材料新未来
+[2025-07-18 09:49:28] [DEBUG] [news-unknown] [江苏省国资委] URL: https://stock.10jqka.com.cn/20250717/c669705873.shtml
+[2025-07-18 09:49:47] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 1739 字
+[2025-07-18 09:49:47] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 螯游洞庭 虾行四海——数字科技赋能绿色产业创新交流会长沙启幕
+[2025-07-18 09:49:47] [DEBUG] [news-unknown] [江苏省国资委] URL: https://hunan.ifeng.com/c/8gGNASZobdb
+[2025-07-18 09:49:48] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 1858 字
+[2025-07-18 09:49:48] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 毅行廿五载 强国少年志——卫岗乳业携手推动国家“学生饮用奶计划”向新而行
+[2025-07-18 09:49:48] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.yangtse.com/news/juc/202507/t20250717_237656.html
+[2025-07-18 09:49:48] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 1477 字
+[2025-07-18 09:49:48] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 美媒：美关税政策恐引发经济滞胀 对美国消费者冲击最大
+[2025-07-18 09:49:48] [DEBUG] [news-unknown] [江苏省国资委] URL: https://news.jschina.com.cn/yw/202507/t20250717_s6878bf21e4b04486b3eb2a46.shtml
+[2025-07-18 09:49:48] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 889 字
+[2025-07-18 09:49:48] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 芯聚科技集团·芯对话丨高义设备蔡国文：不冒进、不激进，产品 ...
+[2025-07-18 09:49:48] [DEBUG] [news-unknown] [江苏省国资委] URL: https://news.qq.com/rain/a/20250717A07UI700
+[2025-07-18 09:49:49] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 3565 字
+[2025-07-18 09:49:49] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 菲达环保全资子公司新增一项170.00万元的招标项目
+[2025-07-18 09:49:49] [DEBUG] [news-unknown] [江苏省国资委] URL: https://finance.sina.com.cn/roll/2025-07-17/doc-inffuzvk1636618.shtml
+[2025-07-18 09:49:49] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 242 字
+[2025-07-18 09:49:49] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 坐拥山水城林，玄武以"数字低碳"产业为他人"撑伞"
+[2025-07-18 09:49:49] [DEBUG] [news-unknown] [江苏省国资委] URL: https://js.ifeng.com/c/8l3sGDPrzNH
+[2025-07-18 09:49:50] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 2244 字
+[2025-07-18 09:49:50] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 碧水源股东文剑平3745万股将司法拍卖
+[2025-07-18 09:49:50] [DEBUG] [news-unknown] [江苏省国资委] URL: https://huanbao.bjx.com.cn/news/20250717/1451485.shtml
+[2025-07-18 09:49:50] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 4688 字
+[2025-07-18 09:49:52] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 特许经营遭提前终止，环保上市公司状告政府索赔2.7亿
+[2025-07-18 09:49:52] [DEBUG] [news-unknown] [江苏省国资委] URL: https://huanbao.bjx.com.cn/news/20250717/1451649.shtml
+[2025-07-18 09:49:52] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 5653 字
+[2025-07-18 09:49:52] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 通州湾示范区翔鹏染整：智能印染新标杆的崛起之路
+[2025-07-18 09:49:52] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/%E6%8A%80%E6%9C%AF/%E6%8A%80%E6%9C%AF%E5%85%AC%E5%8F%B8/%E9%80%9A%E5%B7%9E%E6%B9%BE%E7%A4%BA%E8%8C%83%E5%8C%BA%E7%BF%94%E9%B9%8F%E6%9F%93%E6%95%B4-%E6%99%BA%E8%83%BD%E5%8D%B0%E6%9F%93%E6%96%B0%E6%A0%87%E6%9D%86%E7%9A%84%E5%B4%9B%E8%B5%B7%E4%B9%8B%E8%B7%AF/ar-AA1ILqQO
+[2025-07-18 09:49:52] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:49:52] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 固废处理概念下跌0.03%，主力资金净流出94股
+[2025-07-18 09:49:52] [DEBUG] [news-unknown] [江苏省国资委] URL: https://stock.stockstar.com/IG2025071700033724.shtml
+[2025-07-18 09:49:53] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 6925 字
+[2025-07-18 09:49:53] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 世界青年发展论坛聚焦绿色消费
+[2025-07-18 09:49:53] [DEBUG] [news-unknown] [江苏省国资委] URL: http://www.js.xinhuanet.com/20250717/0d925934334040989c286199eca77d59/c.html
+[2025-07-18 09:49:53] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 860 字
+[2025-07-18 09:49:53] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 欺诈发行、连续6年财务造假，金通灵收检察机关起诉书
+[2025-07-18 09:49:53] [DEBUG] [news-unknown] [江苏省国资委] URL: https://stock.10jqka.com.cn/20250717/c669713877.shtml
+[2025-07-18 09:50:06] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 739 字
+[2025-07-18 09:50:06] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 毅行廿五载 强国少年志——卫岗乳业携手推动国家"学生饮用奶计划 ...
+[2025-07-18 09:50:06] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.yangtse.com/news/juc/202507/t20250717_237656.html
+[2025-07-18 09:50:06] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 1477 字
+[2025-07-18 09:50:06] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 主力资金丨2只龙头股尾盘获主力资金大幅抢筹
+[2025-07-18 09:50:06] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.stcn.com/article/detail/2633250.html
+[2025-07-18 09:50:07] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 1579 字
+[2025-07-18 09:50:07] [INFO] [news-unknown] [江苏省国资委] 正在抓取: "中国强化木地板之都"何以破圈？
+[2025-07-18 09:50:07] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/money/%E9%80%9A%E7%94%A8/%E4%B8%AD%E5%9B%BD%E5%BC%BA%E5%8C%96%E6%9C%A8%E5%9C%B0%E6%9D%BF%E4%B9%8B%E9%83%BD-%E4%BD%95%E4%BB%A5%E7%A0%B4%E5%9C%88/ar-AA1IKUxm
+[2025-07-18 09:50:07] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:50:07] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 量身定制发展"良方"
+[2025-07-18 09:50:07] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.nantong.gov.cn/ntsrmzf/sxcz/content/d5b1539d-0f92-4eac-8a10-b5826df086bb.html
+[2025-07-18 09:50:07] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 2253 字
+[2025-07-18 09:50:07] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 这项指标提前实现!我国每万人口高价值发明专利拥有量已达15.3件
+[2025-07-18 09:50:07] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/%E6%8A%80%E6%9C%AF/%E7%A1%AC%E4%BB%B6%E5%92%8C%E8%AE%BE%E5%A4%87/%E8%BF%99%E9%A1%B9%E6%8C%87%E6%A0%87%E6%8F%90%E5%89%8D%E5%AE%9E%E7%8E%B0-%E6%88%91%E5%9B%BD%E6%AF%8F%E4%B8%87%E4%BA%BA%E5%8F%A3%E9%AB%98%E4%BB%B7%E5%80%BC%E5%8F%91%E6%98%8E%E4%B8%93%E5%88%A9%E6%8B%A5%E6%9C%89%E9%87%8F%E5%B7%B2%E8%BE%BE15-3%E4%BB%B6/ar-AA1IL9YE
+[2025-07-18 09:50:07] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:50:11] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 全球车企为何按下全面电动化的"刹车键"？
+[2025-07-18 09:50:11] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/autos/%E7%94%B5%E5%8A%A8%E6%B1%BD%E8%BD%A6/%E5%85%A8%E7%90%83%E8%BD%A6%E4%BC%81%E4%B8%BA%E4%BD%95%E8%BD%AC%E5%85%A5%E7%94%B5%E5%8A%A8%E5%8C%96%E6%88%98%E7%95%A5-%E5%9B%9E%E8%B0%83%E6%9C%9F/ar-AA1IKDr1
+[2025-07-18 09:50:11] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:50:11] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 7月17日 6股盘前利好公告速递
+[2025-07-18 09:50:11] [DEBUG] [news-unknown] [江苏省国资委] URL: https://stock.cfi.cn/p20250717000265.html
+[2025-07-18 09:50:12] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 1160 字
+[2025-07-18 09:50:12] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 远古鱼龙带来跨越亿年的降噪智慧
+[2025-07-18 09:50:12] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/%E7%A7%91%E5%AD%A6/%E5%8A%A8%E7%89%A9%E5%AD%A6/%E8%BF%9C%E5%8F%A4%E9%B1%BC%E9%BE%99%E5%B8%A6%E6%9D%A5%E8%B7%A8%E8%B6%8A%E4%BA%BF%E5%B9%B4%E7%9A%84%E9%99%8D%E5%99%AA%E6%99%BA%E6%85%A7/ar-AA1IL2y0
+[2025-07-18 09:50:12] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:50:12] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 今日公告透露利好：6股有潜力
+[2025-07-18 09:50:12] [DEBUG] [news-unknown] [江苏省国资委] URL: https://stock.cfi.cn/p20250717000059.html
+[2025-07-18 09:50:13] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 1158 字
+[2025-07-18 09:50:13] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 险资调研图谱：高股息与科技成长成关注重点
+[2025-07-18 09:50:13] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/news/other/%E9%99%A9%E8%B5%84%E8%B0%83%E7%A0%94%E5%9B%BE%E8%B0%B1-%E9%AB%98%E8%82%A1%E6%81%AF%E4%B8%8E%E7%A7%91%E6%8A%80%E6%88%90%E9%95%BF%E6%88%90%E5%85%B3%E6%B3%A8%E9%87%8D%E7%82%B9/ar-AA1IKdjZ
+[2025-07-18 09:50:13] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:50:17] [INFO] [news-unknown] [江苏省国资委] 正在抓取: "中国强化木地板之都"何以破圈？
+[2025-07-18 09:50:17] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/news/other/%E4%B8%AD%E5%9B%BD%E5%BC%BA%E5%8C%96%E6%9C%A8%E5%9C%B0%E6%9D%BF%E4%B9%8B%E9%83%BD-%E4%BD%95%E4%BB%A5%E7%A0%B4%E5%9C%88/ar-AA1IKUxm
+[2025-07-18 09:50:17] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:50:17] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 海外机构调研股名单 汇川技术最受关注
+[2025-07-18 09:50:17] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.stcn.com/article/detail/2627117.html
+[2025-07-18 09:50:17] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 2692 字
+[2025-07-18 09:50:17] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 抗战史上的今天：7月17日
+[2025-07-18 09:50:17] [DEBUG] [news-unknown] [江苏省国资委] URL: https://news.qq.com/rain/a/20250717A0AFS600
+[2025-07-18 09:50:18] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 8702 字
+[2025-07-18 09:50:18] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 江苏组团参加第七届中国粮食交易大会 展示粮食产业强省风采
+[2025-07-18 09:50:18] [DEBUG] [news-unknown] [江苏省国资委] URL: https://cnews.chinadaily.com.cn/a/202507/17/WS6878bd52a310028a84abe699.html
+[2025-07-18 09:50:18] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 557 字
+[2025-07-18 09:50:19] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 江苏在中国粮食交易大会上举办"水韵苏米"公用品牌推介会
+[2025-07-18 09:50:19] [DEBUG] [news-unknown] [江苏省国资委] URL: https://cnews.chinadaily.com.cn/a/202507/17/WS6878bd3aa310028a84abe695.html
+[2025-07-18 09:50:20] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 761 字
+[2025-07-18 09:50:20] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 亮眼数据显示新质生产力释放澎湃活力
+[2025-07-18 09:50:20] [DEBUG] [news-unknown] [江苏省国资委] URL: https://finance.sina.com.cn/jjxw/2025-07-17/doc-infftyip3723568.shtml
+[2025-07-18 09:50:20] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 1229 字
+[2025-07-18 09:50:20] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 江苏在中国粮食交易大会上举办“水韵苏米”公用品牌推介会
+[2025-07-18 09:50:20] [DEBUG] [news-unknown] [江苏省国资委] URL: https://cnews.chinadaily.com.cn/a/202507/17/WS6878bd3aa310028a84abe695.html
+[2025-07-18 09:50:20] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 761 字
+[2025-07-18 09:50:20] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 守好“天下粮仓” 书写绿色储粮新篇
+[2025-07-18 09:50:20] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/news/other/%E5%AE%88%E5%A5%BD-%E5%A4%A9%E4%B8%8B%E7%B2%AE%E4%BB%93-%E4%B9%A6%E5%86%99%E7%BB%BF%E8%89%B2%E5%82%A8%E7%B2%AE%E6%96%B0%E7%AF%87/ar-AA1IJKpW?ocid=BingNewsVerp
+[2025-07-18 09:50:20] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:50:21] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 2025全国夏粮产量2994.8亿斤
+[2025-07-18 09:50:21] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/news/other/2025%E5%85%A8%E5%9B%BD%E5%A4%8F%E7%B2%AE%E4%BA%A7%E9%87%8F29948%E4%BA%BF%E6%96%A4/ar-AA1IMATP?ocid=BingNewsVerp
+[2025-07-18 09:50:21] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:50:24] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 三维股份（831834）使用3600万元的募集资金购买银行理财产品 提高募集资金使用效率
+[2025-07-18 09:50:24] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/money/%E7%BB%8F%E6%B5%8E/%E4%B8%89%E7%BB%B4%E8%82%A1%E4%BB%BD-831834-%E4%BD%BF%E7%94%A83600%E4%B8%87%E5%85%83%E7%9A%84%E5%8B%9F%E9%9B%86%E8%B5%84%E9%87%91%E8%B4%AD%E4%B9%B0%E9%93%B6%E8%A1%8C%E7%90%86%E8%B4%A2%E4%BA%A7%E5%93%81-%E6%8F%90%E9%AB%98%E5%8B%9F%E9%9B%86%E8%B5%84%E9%87%91%E4%BD%BF%E7%94%A8%E6%95%88%E7%8E%87/ar-AA1INbmo?ocid=BingNewsVerp
+[2025-07-18 09:50:24] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:50:24] [INFO] [news-unknown] [江苏省国资委] 正在抓取: “稳”中向好！透过数据看农业农村经济“半年报”
+[2025-07-18 09:50:24] [DEBUG] [news-unknown] [江苏省国资委] URL: https://m.gmw.cn/2025-07/17/content_1304085912.htm
+[2025-07-18 09:50:25] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 464 字
+[2025-07-18 09:50:25] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 2025年世界青年发展论坛绿色消费与可持续发展主题论坛举办
+[2025-07-18 09:50:25] [DEBUG] [news-unknown] [江苏省国资委] URL: https://news.qq.com/rain/a/20250717A0219T00
+[2025-07-18 09:50:25] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 1109 字
+[2025-07-18 09:50:28] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 内陆大省河南，如何实现“港口梦”丨金水路观察
+[2025-07-18 09:50:28] [DEBUG] [news-unknown] [江苏省国资委] URL: https://news.qq.com/rain/a/20250717A065PR00
+[2025-07-18 09:50:28] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 2229 字
+[2025-07-18 09:50:28] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 精准农业，潜力几何（新知）
+[2025-07-18 09:50:28] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/news/other/%E7%B2%BE%E5%87%86%E5%86%9C%E4%B8%9A-%E6%BD%9C%E5%8A%9B%E5%87%A0%E4%BD%95-%E6%96%B0%E7%9F%A5/ar-AA1IJQGE?ocid=BingNewsVerp
+[2025-07-18 09:50:28] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:50:28] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 转攻“穷人超市”，盒马放下“中产梦”？
+[2025-07-18 09:50:28] [DEBUG] [news-unknown] [江苏省国资委] URL: https://tech.ifeng.com/c/8l4JzB214sN
+[2025-07-18 09:50:29] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 5267 字
+[2025-07-18 09:50:29] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 外卖平台大战餐饮商家“受伤” 多协会呼吁停止低价“内卷”
+[2025-07-18 09:50:29] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/news/other/%E5%A4%96%E5%8D%96%E5%B9%B3%E5%8F%B0%E5%A4%A7%E6%88%98%E9%A4%90%E9%A5%AE%E5%95%86%E5%AE%B6-%E5%8F%97%E4%BC%A4-%E5%A4%9A%E5%8D%8F%E4%BC%9A%E5%91%BC%E5%90%81%E5%81%9C%E6%AD%A2%E4%BD%8E%E4%BB%B7-%E5%86%85%E5%8D%B7/ar-AA1ILmO2?ocid=BingNewsVerp
+[2025-07-18 09:50:29] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:50:32] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 86岁老作家新作回望门西文化
+[2025-07-18 09:50:32] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/%E7%A4%BE%E4%BC%9A%E6%96%87%E5%8C%96%E5%92%8C%E5%8E%86%E5%8F%B2/%E4%B9%A6%E7%B1%8D%E5%92%8C%E6%96%87%E5%AD%A6/86%E5%B2%81%E8%80%81%E4%BD%9C%E5%AE%B6%E6%96%B0%E4%BD%9C%E5%9B%9E%E6%9C%9B%E9%97%A8%E8%A5%BF%E6%96%87%E5%8C%96/ar-AA1IJab7?ocid=BingNewsVerp
+[2025-07-18 09:50:32] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:50:32] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 吉林金融大事件！拟组建省级农商行，新增260亿专项债注资
+[2025-07-18 09:50:32] [DEBUG] [news-unknown] [江苏省国资委] URL: https://finance.ifeng.com/c/8l3RSgiis0A
+[2025-07-18 09:50:33] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 2935 字
+[2025-07-18 09:50:33] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 共促全球产业链供应链安全稳定（走进链博会）
+[2025-07-18 09:50:33] [DEBUG] [news-unknown] [江苏省国资委] URL: https://news.jschina.com.cn/yw/202507/t20250717_s68785c29e4b0baa54d4cb38d.shtml
+[2025-07-18 09:50:34] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 2839 字
+[2025-07-18 09:50:34] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 焦作今日天气
+[2025-07-18 09:50:34] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.163.com/news/article/K4LBPJ2200019TLK.html
+[2025-07-18 09:50:35] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 535 字
+[2025-07-18 09:50:35] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 多国航企紧急检测波音飞机燃油开关锁
+[2025-07-18 09:50:35] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/%E5%85%AC%E5%85%B1%E5%AE%89%E5%85%A8%E5%92%8C%E7%B4%A7%E6%80%A5%E6%83%85%E5%86%B5/%E5%81%A5%E5%BA%B7%E4%B8%8E%E5%AE%89%E5%85%A8%E8%AD%A6%E6%8A%A5/%E5%8D%B0%E8%88%AA%E7%A9%BA%E9%9A%BE%E6%8A%A5%E5%91%8A%E6%8F%90%E5%8F%8A%E6%B3%A2%E9%9F%B3%E7%87%83%E6%B2%B9%E5%BC%80%E5%85%B3-%E5%85%A8%E7%90%83%E5%A4%9A%E5%AE%B6%E8%88%AA%E5%8F%B8%E7%B4%A7%E6%80%A5%E6%A3%80%E6%B5%8B/ar-AA1II3gB?ocid=BingNewsVerp
+[2025-07-18 09:50:35] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:50:38] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 守好"天下粮仓" 书写绿色储粮新篇
+[2025-07-18 09:50:38] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/news/other/%E5%AE%88%E5%A5%BD-%E5%A4%A9%E4%B8%8B%E7%B2%AE%E4%BB%93-%E4%B9%A6%E5%86%99%E7%BB%BF%E8%89%B2%E5%82%A8%E7%B2%AE%E6%96%B0%E7%AF%87/ar-AA1IJKpW
+[2025-07-18 09:50:38] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:50:38] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 太粮集团 X 京东超市合作基地正式揭牌!产地直供，新鲜"稻"家
+[2025-07-18 09:50:38] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.sohu.com/a/914772820_121619889
+[2025-07-18 09:50:38] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 921 字
+[2025-07-18 09:50:38] [INFO] [news-unknown] [江苏省国资委] 正在抓取: "水韵苏米"核心产品亮相第七届全国粮交会
+[2025-07-18 09:50:38] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.163.com/news/article/K4LQH26N00019UD6.html
+[2025-07-18 09:50:38] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 621 字
+[2025-07-18 09:50:38] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 2025全国夏粮产量2994.8亿斤
+[2025-07-18 09:50:38] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/news/other/2025%E5%85%A8%E5%9B%BD%E5%A4%8F%E7%B2%AE%E4%BA%A7%E9%87%8F29948%E4%BA%BF%E6%96%A4/ar-AA1IMATP
+[2025-07-18 09:50:38] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:50:42] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 三维股份（831834）使用3600万元的募集资金购买银行理财产品 提高 ...
+[2025-07-18 09:50:42] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/news/other/%E4%B8%89%E7%BB%B4%E8%82%A1%E4%BB%BD-831834-%E4%BD%BF%E7%94%A83600%E4%B8%87%E5%85%83%E7%9A%84%E5%8B%9F%E9%9B%86%E8%B5%84%E9%87%91%E8%B4%AD%E4%B9%B0%E9%93%B6%E8%A1%8C%E7%90%86%E8%B4%A2%E4%BA%A7%E5%93%81-%E6%8F%90%E9%AB%98%E5%8B%9F%E9%9B%86%E8%B5%84%E9%87%91%E4%BD%BF%E7%94%A8%E6%95%88%E7%8E%87/ar-AA1INbmo
+[2025-07-18 09:50:42] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:50:42] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 历史第二高产年 今年全国夏粮产量2994.8亿斤
+[2025-07-18 09:50:42] [DEBUG] [news-unknown] [江苏省国资委] URL: https://m.gmw.cn/2025-07/17/content_1304085668.htm
+[2025-07-18 09:50:43] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 272 字
+[2025-07-18 09:50:43] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 内陆大省河南，如何实现"港口梦"丨金水路观察
+[2025-07-18 09:50:43] [DEBUG] [news-unknown] [江苏省国资委] URL: https://news.qq.com/rain/a/20250717A065PR00
+[2025-07-18 09:50:43] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 2229 字
+[2025-07-18 09:50:43] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 吉林金融大事件!拟组建省级农商行，新增260亿专项债注资
+[2025-07-18 09:50:43] [DEBUG] [news-unknown] [江苏省国资委] URL: https://finance.ifeng.com/c/8l3RSgiis0A
+[2025-07-18 09:50:43] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 2935 字
+[2025-07-18 09:50:43] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 在周口港，感受大市场（主流媒体看周口）
+[2025-07-18 09:50:43] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/news/other/%E5%9C%A8%E5%91%A8%E5%8F%A3%E6%B8%AF-%E6%84%9F%E5%8F%97%E5%A4%A7%E5%B8%82%E5%9C%BA-%E4%B8%BB%E6%B5%81%E5%AA%92%E4%BD%93%E7%9C%8B%E5%91%A8%E5%8F%A3/ar-AA1IJuc3
+[2025-07-18 09:50:43] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:50:43] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 云逛七城寻味!"跟着美食去旅行"大型直播即将开启
+[2025-07-18 09:50:43] [DEBUG] [news-unknown] [江苏省国资委] URL: https://news.qq.com/rain/a/20250717A0AGQR00
+[2025-07-18 09:50:44] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 1539 字
+[2025-07-18 09:50:44] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 上半年江苏800个重大工业项目超额完成投资任务
+[2025-07-18 09:50:44] [DEBUG] [news-unknown] [江苏省国资委] URL: https://finance.sina.com.cn/jjxw/2025-07-17/doc-inffttzy2121051.shtml
+[2025-07-18 09:50:44] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 590 字
+[2025-07-18 09:50:44] [INFO] [news-unknown] [江苏省国资委] 正在抓取: "双高协同"的江苏探索，这样"落子"!
+[2025-07-18 09:50:44] [DEBUG] [news-unknown] [江苏省国资委] URL: https://jsnews.jschina.com.cn/jsyw/202507/t20250717_s6878f553e4b0fca324a3ab15.shtml
+[2025-07-18 09:50:45] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 3295 字
+[2025-07-18 09:50:45] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 工行苏州科技支行精准赋能专精特新"小巨人"攻克技术壁垒
+[2025-07-18 09:50:45] [DEBUG] [news-unknown] [江苏省国资委] URL: https://economy.jschina.com.cn/rddt/202507/t20250717_s68786138e4b0fa9831627af7.shtml
+[2025-07-18 09:50:45] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 669 字
+[2025-07-18 09:50:45] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 股票行情快报：金陵饭店（601007）7月17日主力资金净卖出274.61万元_主力研究
+[2025-07-18 09:50:45] [DEBUG] [news-unknown] [江苏省国资委] URL: https://stock.stockstar.com/RB2025071700032157.shtml
+[2025-07-18 09:50:46] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 720 字
+[2025-07-18 09:50:46] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 酒店餐饮板块7月17日涨0.2%，金陵饭店领涨，主力资金净流出4821.12万元
+[2025-07-18 09:50:46] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/news/other/%E9%85%92%E5%BA%97%E9%A4%90%E9%A5%AE%E6%9D%BF%E5%9D%977%E6%9C%8817%E6%97%A5%E6%B6%A802-%E9%87%91%E9%99%B5%E9%A5%AD%E5%BA%97%E9%A2%86%E6%B6%A8-%E4%B8%BB%E5%8A%9B%E8%B5%84%E9%87%91%E5%87%80%E6%B5%81%E5%87%BA482112%E4%B8%87%E5%85%83/ar-AA1ILDIA?ocid=BingNewsVerp
+[2025-07-18 09:50:46] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:50:46] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 别墅盘没开盘就被拆？南京昔日巨头又一项目彻底凉凉！
+[2025-07-18 09:50:46] [DEBUG] [news-unknown] [江苏省国资委] URL: https://news.qq.com/rain/a/20250717A08W6A00
+[2025-07-18 09:50:46] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 1606 字
+[2025-07-18 09:50:50] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 【天气】阵风遇温差，大家别贪凉
+[2025-07-18 09:50:50] [DEBUG] [news-unknown] [江苏省国资委] URL: https://news.qq.com/rain/a/20250717A08I5A00
+[2025-07-18 09:50:51] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 485 字
+[2025-07-18 09:50:51] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 让“苏超流量”变“消费能量” 江苏银行促经济暖民生新举措
+[2025-07-18 09:50:51] [DEBUG] [news-unknown] [江苏省国资委] URL: https://finance.sina.com.cn/jjxw/2025-07-17/doc-inffurfr7372855.shtml
+[2025-07-18 09:50:51] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 1370 字
+[2025-07-18 09:50:51] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 别被热搜带跑偏！降低感染风险这样做
+[2025-07-18 09:50:51] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/news/other/%E5%88%AB%E8%A2%AB%E7%83%AD%E6%90%9C%E5%B8%A6%E8%B7%91%E5%81%8F-%E9%99%8D%E4%BD%8E%E6%84%9F%E6%9F%93%E9%A3%8E%E9%99%A9%E8%BF%99%E6%A0%B7%E5%81%9A/ar-AA1IJcsO?ocid=BingNewsVerp
+[2025-07-18 09:50:51] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:50:51] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 南京溧水：激活乡村振兴动能 开创城乡融合发展新局面
+[2025-07-18 09:50:51] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.sohu.com/a/914690261_121620820
+[2025-07-18 09:50:51] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 2653 字
+[2025-07-18 09:50:51] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 酒店餐饮板块7月17日涨0.2%，金陵饭店领涨，主力资金净流出4821.12万元
+[2025-07-18 09:50:51] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/money/%E9%80%9A%E7%94%A8/%E9%85%92%E5%BA%97%E9%A4%90%E9%A5%AE%E6%9D%BF%E5%9D%977%E6%9C%8817%E6%97%A5%E6%B6%A80-2-%E9%87%91%E9%99%B5%E9%A5%AD%E5%BA%97%E9%A2%86%E6%B6%A8-%E4%B8%BB%E5%8A%9B%E8%B5%84%E9%87%91%E5%87%80%E6%B5%81%E5%87%BA4821-12%E4%B8%87%E5%85%83/ar-AA1ILDIA
+[2025-07-18 09:50:51] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:50:51] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 别墅盘没开盘就被拆？南京昔日巨头又一项目彻底凉凉!
+[2025-07-18 09:50:51] [DEBUG] [news-unknown] [江苏省国资委] URL: https://news.qq.com/rain/a/20250717A08W6A00
+[2025-07-18 09:50:52] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 1606 字
+[2025-07-18 09:50:52] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 因无3C标识安检被拒，男子机场怒砸充电宝起火，被行拘5日
+[2025-07-18 09:50:52] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/news/other/%E5%9B%A0%E6%97%A03c%E6%A0%87%E8%AF%86%E5%AE%89%E6%A3%80%E8%A2%AB%E6%8B%92-%E7%94%B7%E5%AD%90%E6%9C%BA%E5%9C%BA%E6%80%92%E7%A0%B8%E5%85%85%E7%94%B5%E5%AE%9D%E8%B5%B7%E7%81%AB-%E8%A2%AB%E8%A1%8C%E6%8B%985%E6%97%A5/ar-AA1IMLfx?ocid=BingNewsVerp
+[2025-07-18 09:50:52] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:50:56] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 武汉天河机场一男子砸充电宝致起火，警方：沈某（男），被行拘
+[2025-07-18 09:50:56] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/news/other/%E6%AD%A6%E6%B1%89%E5%A4%A9%E6%B2%B3%E6%9C%BA%E5%9C%BA%E4%B8%80%E7%94%B7%E5%AD%90%E7%A0%B8%E5%85%85%E7%94%B5%E5%AE%9D%E8%87%B4%E8%B5%B7%E7%81%AB-%E8%AD%A6%E6%96%B9-%E6%B2%88%E6%9F%90-%E7%94%B7-%E8%A2%AB%E8%A1%8C%E6%8B%98/ar-AA1IMrOP?ocid=BingNewsVerp
+[2025-07-18 09:50:56] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:50:56] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 怕热的年轻人，捧出一个大热单品
+[2025-07-18 09:50:56] [DEBUG] [news-unknown] [江苏省国资委] URL: https://finance.sina.com.cn/jjxw/2025-07-17/doc-inffukxs1893985.shtml
+[2025-07-18 09:50:56] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 3065 字
+[2025-07-18 09:50:56] [INFO] [news-unknown] [江苏省国资委] 正在抓取: “以虾养荷、以荷助虾”：荒滩蝶变“绿色银行”赋能乡村振兴
+[2025-07-18 09:50:56] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.com/zh-cn/news/other/%E4%BB%A5%E8%99%BE%E5%85%BB%E8%8D%B7-%E4%BB%A5%E8%8D%B7%E5%8A%A9%E8%99%BE-%E8%8D%92%E6%BB%A9%E8%9D%B6%E5%8F%98-%E7%BB%BF%E8%89%B2%E9%93%B6%E8%A1%8C-%E8%B5%8B%E8%83%BD%E4%B9%A1%E6%9D%91%E6%8C%AF%E5%85%B4/ar-AA1IKI4w?ocid=BingNewsVerp
+[2025-07-18 09:51:18] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 275 字
+[2025-07-18 09:51:18] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 我国主要粮食作物种植区域介绍
+[2025-07-18 09:51:18] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/news/other/%E6%88%91%E5%9B%BD%E4%B8%BB%E8%A6%81%E7%B2%AE%E9%A3%9F%E4%BD%9C%E7%89%A9%E7%A7%8D%E6%A4%8D%E5%8C%BA%E5%9F%9F%E4%BB%8B%E7%BB%8D/ar-AA1ILU8B?ocid=BingNewsVerp
+[2025-07-18 09:51:18] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:51:18] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 第一观察｜新征程上建设现代化人民城市的战略指引
+[2025-07-18 09:51:18] [DEBUG] [news-unknown] [江苏省国资委] URL: https://news.jschina.com.cn/head/202507/t20250717_s68784edce4b0baa54d4cb350.shtml
+[2025-07-18 09:51:18] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 1736 字
+[2025-07-18 09:51:18] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 司法利剑斩“放生乱象” 筑牢生物安全防线
+[2025-07-18 09:51:18] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.farmer.com.cn/2025/07/17/99992594.html
+[2025-07-18 09:51:18] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 1109 字
+[2025-07-18 09:51:18] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 链博会视角下的全球产业协作：美国大豆出口协会解码中美农业的合作共赢
+[2025-07-18 09:51:18] [DEBUG] [news-unknown] [江苏省国资委] URL: https://news.qq.com/rain/a/20250717A061CL00
+[2025-07-18 09:51:19] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 2732 字
+[2025-07-18 09:51:19] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 中央城市工作会议精神在全省干部群众中引发热烈反响——奋力绘就 ...
+[2025-07-18 09:51:19] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.sohu.com/a/914673874_121106832
+[2025-07-18 09:51:19] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 3136 字
+[2025-07-18 09:51:19] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 江苏宜兴市西渚镇白塔村与企共建结硕果
+[2025-07-18 09:51:19] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/%E5%9F%8E%E5%B8%82%E5%9F%BA%E7%A1%80%E8%AE%BE%E6%96%BD/%E9%80%9A%E7%94%A8/%E6%B1%9F%E8%8B%8F%E5%AE%9C%E5%85%B4%E5%B8%82%E8%A5%BF%E6%B8%9A%E9%95%87%E7%99%BD%E5%A1%94%E6%9D%91%E4%B8%8E%E4%BC%81%E5%85%B1%E5%BB%BA%E7%BB%93%E7%A1%95%E6%9E%9C/ar-AA1ILfiM
+[2025-07-18 09:51:19] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:51:19] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 中央城市工作会议精神在江苏全省干部群众中引发热烈反响
+[2025-07-18 09:51:19] [DEBUG] [news-unknown] [江苏省国资委] URL: http://www.js.xinhuanet.com/20250717/ce0832e66e8a46de808f579c7584fcdb/c.html
+[2025-07-18 09:51:19] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 3183 字
+[2025-07-18 09:51:19] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 股市必读：ST岭南（002717）7月16日主力资金净流出539.5万元
+[2025-07-18 09:51:19] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/news/other/%E8%82%A1%E5%B8%82%E5%BF%85%E8%AF%BB-st%E5%B2%AD%E5%8D%97-002717-7%E6%9C%8816%E6%97%A5%E4%B8%BB%E5%8A%9B%E8%B5%84%E9%87%91%E5%87%80%E6%B5%81%E5%87%BA5395%E4%B8%87%E5%85%83/ar-AA1ILqPt
+[2025-07-18 09:51:19] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:51:19] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 男子撞伤路人后杀人抛尸粪池被执行死刑
+[2025-07-18 09:51:19] [DEBUG] [news-unknown] [江苏省国资委] URL: https://news.china.com/socialgd/10000169/20250717/48621884.html
+[2025-07-18 09:51:20] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 871 字
+[2025-07-18 09:51:20] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 杭州余杭部分街道自来水气味异常 官方通报
+[2025-07-18 09:51:20] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/news/other/%E6%9D%AD%E5%B7%9E%E4%BD%99%E6%9D%AD%E9%83%A8%E5%88%86%E8%A1%97%E9%81%93%E8%87%AA%E6%9D%A5%E6%B0%B4%E6%B0%94%E5%91%B3%E5%BC%82%E5%B8%B8-%E5%AE%98%E6%96%B9%E9%80%9A%E6%8A%A5/ar-AA1IKgWu
+[2025-07-18 09:51:20] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:51:20] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 江苏镇江丹阳一塑件企业发生火灾 消防部门紧急处置中
+[2025-07-18 09:51:20] [DEBUG] [news-unknown] [江苏省国资委] URL: https://news.china.com/socialgd/10000169/20250717/48621871.html
+[2025-07-18 09:51:20] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 321 字
+[2025-07-18 09:51:20] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 因无3C标识安检被拒，男子机场怒砸充电宝起火，被行拘5日
+[2025-07-18 09:51:20] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/news/other/%E5%9B%A0%E6%97%A03c%E6%A0%87%E8%AF%86%E5%AE%89%E6%A3%80%E8%A2%AB%E6%8B%92-%E7%94%B7%E5%AD%90%E6%9C%BA%E5%9C%BA%E6%80%92%E7%A0%B8%E5%85%85%E7%94%B5%E5%AE%9D%E8%B5%B7%E7%81%AB-%E8%A2%AB%E8%A1%8C%E6%8B%985%E6%97%A5/ar-AA1IMLfx
+[2025-07-18 09:51:20] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:51:22] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 武汉天河机场一男子砸充电宝致起火，警方：沈某（男），被行拘
+[2025-07-18 09:51:22] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/news/other/%E6%AD%A6%E6%B1%89%E5%A4%A9%E6%B2%B3%E6%9C%BA%E5%9C%BA%E4%B8%80%E7%94%B7%E5%AD%90%E7%A0%B8%E5%85%85%E7%94%B5%E5%AE%9D%E8%87%B4%E8%B5%B7%E7%81%AB-%E8%AD%A6%E6%96%B9-%E6%B2%88%E6%9F%90-%E7%94%B7-%E8%A2%AB%E8%A1%8C%E6%8B%98/ar-AA1IMrOP
+[2025-07-18 09:51:22] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:51:25] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 紫牛热点｜杭州一地自来水出现怪味？当地水务：已恢复正常，正 ...
+[2025-07-18 09:51:25] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/news/other/%E7%B4%AB%E7%89%9B%E7%83%AD%E7%82%B9-%E6%9D%AD%E5%B7%9E%E4%B8%80%E5%9C%B0%E8%87%AA%E6%9D%A5%E6%B0%B4%E5%87%BA%E7%8E%B0%E6%80%AA%E5%91%B3-%E5%BD%93%E5%9C%B0%E6%B0%B4%E5%8A%A1-%E5%B7%B2%E6%81%A2%E5%A4%8D%E6%AD%A3%E5%B8%B8-%E6%AD%A3%E8%B0%83%E6%9F%A5%E5%85%B7%E4%BD%93%E5%8E%9F%E5%9B%A0/ar-AA1IMgZf
+[2025-07-18 09:51:25] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:51:25] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 焦点访谈丨建设现代化人民城市
+[2025-07-18 09:51:25] [DEBUG] [news-unknown] [江苏省国资委] URL: https://news.cnr.cn/native/gd/sz/20250717/t20250717_527268564.shtml
+[2025-07-18 09:51:26] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 4037 字
+[2025-07-18 09:51:26] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 潍坊峡山：荒滩蝶变"绿色银行"赋能乡村振兴
+[2025-07-18 09:51:26] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/%E7%A4%BE%E4%BC%9A%E6%96%87%E5%8C%96%E5%92%8C%E5%8E%86%E5%8F%B2/%E9%80%9A%E7%94%A8/%E4%BB%A5%E8%99%BE%E5%85%BB%E8%8D%B7-%E4%BB%A5%E8%8D%B7%E5%8A%A9%E8%99%BE-%E8%8D%92%E6%BB%A9%E8%9D%B6%E5%8F%98-%E7%BB%BF%E8%89%B2%E9%93%B6%E8%A1%8C-%E8%B5%8B%E8%83%BD%E4%B9%A1%E6%9D%91%E6%8C%AF%E5%85%B4/ar-AA1IKMCF
+[2025-07-18 09:51:26] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:51:27] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 我国主要粮食作物种植区域介绍
+[2025-07-18 09:51:27] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/news/other/%E6%88%91%E5%9B%BD%E4%B8%BB%E8%A6%81%E7%B2%AE%E9%A3%9F%E4%BD%9C%E7%89%A9%E7%A7%8D%E6%A4%8D%E5%8C%BA%E5%9F%9F%E4%BB%8B%E7%BB%8D/ar-AA1ILU8B
+[2025-07-18 09:51:27] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:51:27] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 司法利剑斩"放生乱象" 筑牢生物安全防线
+[2025-07-18 09:51:27] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.farmer.com.cn/2025/07/17/99992594.html
+[2025-07-18 09:51:28] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 1109 字
+[2025-07-18 09:51:28] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 链博会视角下的全球产业协作：美国大豆出口协会解码中美农业的 ...
+[2025-07-18 09:51:28] [DEBUG] [news-unknown] [江苏省国资委] URL: https://news.qq.com/rain/a/20250717A061CL00
+[2025-07-18 09:51:28] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 2732 字
+[2025-07-18 09:51:32] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 焦点访谈丨建设现代化人民城市
+[2025-07-18 09:51:32] [DEBUG] [news-unknown] [江苏省国资委] URL: https://news.qq.com/rain/a/20250717A0A3ZU00
+[2025-07-18 09:51:32] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 4001 字
+[2025-07-18 09:51:32] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 江苏省体育产业集团有限公司招聘公告
+[2025-07-18 09:51:32] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.xhby.net/content/s6878934ae4b05c8d159cc4c3.html
+[2025-07-18 09:51:33] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 152 字
+[2025-07-18 09:51:33] [INFO] [news-unknown] [江苏省国资委] 正在抓取: “苏超”承办方之一、江苏省体育产业集团有限公司公开招聘
+[2025-07-18 09:51:33] [DEBUG] [news-unknown] [江苏省国资委] URL: https://news.qq.com/rain/a/20250717A062YE00
+[2025-07-18 09:51:33] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 255 字
+[2025-07-18 09:51:33] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 注意！7月19日北京地铁工人体育场站G口、F口只进不出
+[2025-07-18 09:51:33] [DEBUG] [news-unknown] [江苏省国资委] URL: https://m.gmw.cn/2025-07/17/content_1304085284.htm
+[2025-07-18 09:51:33] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 217 字
+[2025-07-18 09:51:33] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 10岁少年帆船赛夺银后留言王楚钦：你夺冠那一刻，我也突破了自我
+[2025-07-18 09:51:33] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.xdkb.net/p1/js/ja02s/529808.html
+[2025-07-18 09:51:37] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 1047 字
+[2025-07-18 09:51:37] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 俄奥委会主席：俄罗斯已准备好第三次举办奥运会
+[2025-07-18 09:51:37] [DEBUG] [news-unknown] [江苏省国资委] URL: https://m.gmw.cn/2025-07/17/content_1304085765.htm
+[2025-07-18 09:51:37] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 417 字
+[2025-07-18 09:51:37] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 5位幸运儿万米高空抽中“苏超”门票
+[2025-07-18 09:51:37] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.wxrb.com/doc/2025/07/17/410414.shtml
+[2025-07-18 09:51:38] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 1020 字
+[2025-07-18 09:51:38] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 苏州这家景区更名！
+[2025-07-18 09:51:38] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.yangtse.com/news/jiangsu/suzhou/202507/t20250717_237943.html
+[2025-07-18 09:51:38] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 223 字
+[2025-07-18 09:51:38] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 南京企业“链”世界，全球客商“购”南京
+[2025-07-18 09:51:38] [DEBUG] [news-unknown] [江苏省国资委] URL: https://news.ifeng.com/c/8l475X94avP
+[2025-07-18 09:51:39] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 2431 字
+[2025-07-18 09:51:39] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 2025全球数字经济大会拉萨高层论坛开幕
+[2025-07-18 09:51:39] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.tibet.cn/cn/in/yc/202507/t20250717_7828146.html
+[2025-07-18 09:51:40] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 1170 字
+[2025-07-18 09:51:40] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 桥下空间 别有洞天（探访·城市更新）
+[2025-07-18 09:51:40] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.xhby.net/content/s6878a299e4b0b966ca079de2.html
+[2025-07-18 09:51:40] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 2711 字
+[2025-07-18 09:51:40] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 竞逐千湖之省！徐工挖机机手争霸赛湖北站擂响战鼓
+[2025-07-18 09:51:40] [DEBUG] [news-unknown] [江苏省国资委] URL: https://news.lmjx.net/2025/202507/2025071719470277.shtml
+[2025-07-18 09:51:41] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 1098 字
+[2025-07-18 09:51:41] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 桥下空间 别有洞天
+[2025-07-18 09:51:41] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.chinanews.com/sh/2025/07-17/10449445.shtml
+[2025-07-18 09:51:41] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 3004 字
+[2025-07-18 09:51:41] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 多地“炙烤模式”再升级 大“烤”之下如何清凉应对
+[2025-07-18 09:51:41] [DEBUG] [news-unknown] [江苏省国资委] URL: http://www.xzrbw.com/info/2117/417560.htm
+[2025-07-18 09:51:42] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 6802 字
+[2025-07-18 09:51:42] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 大“烤”之下如何清凉应对
+[2025-07-18 09:51:42] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/news/other/%E5%A4%A7-%E7%83%A4-%E4%B9%8B%E4%B8%8B%E5%A6%82%E4%BD%95%E6%B8%85%E5%87%89%E5%BA%94%E5%AF%B9/ar-AA1IK5pL?ocid=BingNewsVerp
+[2025-07-18 09:51:42] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:51:42] [INFO] [news-unknown] [江苏省国资委] 正在抓取: "苏超"承办方之一、江苏省体育产业集团有限公司公开招聘
+[2025-07-18 09:51:42] [DEBUG] [news-unknown] [江苏省国资委] URL: https://news.qq.com/rain/a/20250717A062YE00
+[2025-07-18 09:51:42] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 255 字
+[2025-07-18 09:51:42] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 深读｜赛场激情→长期动能，江苏足球青训向新而行
+[2025-07-18 09:51:42] [DEBUG] [news-unknown] [江苏省国资委] URL: https://jsnews.jschina.com.cn/jsyw/202507/t20250717_s6878354ee4b0c83a06824a9f.shtml
+[2025-07-18 09:51:43] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 5172 字
+[2025-07-18 09:51:43] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 一家国有大行100亿元设立新公司
+[2025-07-18 09:51:43] [DEBUG] [news-unknown] [江苏省国资委] URL: https://finance.sina.com.cn/roll/2025-07-17/doc-inffurfr7385561.shtml
+[2025-07-18 09:51:43] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 1778 字
+[2025-07-18 09:51:43] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 6家上市交通设计院薪酬大比拼
+[2025-07-18 09:51:43] [DEBUG] [news-unknown] [江苏省国资委] URL: https://7its.com/index.php?m=home&c=View&a=index&aid=16482
+[2025-07-18 09:51:44] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 3726 字
+[2025-07-18 09:51:44] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 江苏盐城：向海争风，绿能破浪
+[2025-07-18 09:51:44] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/news/other/%E6%B1%9F%E8%8B%8F%E7%9B%90%E5%9F%8E-%E5%90%91%E6%B5%B7%E4%BA%89%E9%A3%8E-%E7%BB%BF%E8%83%BD%E7%A0%B4%E6%B5%AA/ar-AA1IM8Ma?ocid=BingNewsVerp
+[2025-07-18 09:51:44] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:51:44] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 芯聚科技集团·芯对话丨高义设备蔡国文：不冒进、不激进，产品一定要做得问心无愧
+[2025-07-18 09:51:44] [DEBUG] [news-unknown] [江苏省国资委] URL: https://news.qq.com/rain/a/20250717A07UI700
+[2025-07-18 09:51:45] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 3565 字
+[2025-07-18 09:51:48] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 容积率低至1.1！鼓楼小桃园、仙林湖北挂出优质地块
+[2025-07-18 09:51:48] [DEBUG] [news-unknown] [江苏省国资委] URL: https://news.qq.com/rain/a/20250717A09OQE00
+[2025-07-18 09:51:48] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 1549 字
+[2025-07-18 09:51:48] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 焦点访谈丨建设现代化人民城市
+[2025-07-18 09:51:48] [DEBUG] [news-unknown] [江苏省国资委] URL: https://view.inews.qq.com/a/20250717A0A3ZU00
+[2025-07-18 09:51:49] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 4001 字
+[2025-07-18 09:51:49] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 维克空调为常熟贺利氏金属陶瓷基板净化车间筑牢环境控制防线
+[2025-07-18 09:51:49] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.sohu.com/a/914774426_556142
+[2025-07-18 09:51:49] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 1379 字
+[2025-07-18 09:51:49] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 小竖屏撬动大流量 给微短剧加点“地方风味”
+[2025-07-18 09:51:49] [DEBUG] [news-unknown] [江苏省国资委] URL: https://finance.sina.com.cn/roll/2025-07-17/doc-inffuvpk4972807.shtml
+[2025-07-18 09:51:50] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 1329 字
+[2025-07-18 09:51:50] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 国家知识产权局：全球前5000个品牌中我国品牌价值达1.76万亿美元 位居全球第二
+[2025-07-18 09:51:50] [DEBUG] [news-unknown] [江苏省国资委] URL: https://view.inews.qq.com/a/20250717A04XVU00
+[2025-07-18 09:51:50] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 1647 字
+[2025-07-18 09:51:50] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 推动城市高质量发展 建设现代化人民城市——从中央城市工作会议看城市发展新目标新路径
+[2025-07-18 09:51:50] [DEBUG] [news-unknown] [江苏省国资委] URL: https://finance.sina.com.cn/money/future/indu/2025-07-17/doc-inffttzw0335061.shtml
+[2025-07-18 09:51:51] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 2289 字
+[2025-07-18 09:51:51] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 无锡观察丨从“苏南模式”到“AI范式” 无锡打造“人工智能+”标杆城市
+[2025-07-18 09:51:51] [DEBUG] [news-unknown] [江苏省国资委] URL: http://www.js.xinhuanet.com/20250717/88e8491648c54e81ba2fd568ff560fe2/c.html
+[2025-07-18 09:51:51] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 3872 字
+[2025-07-18 09:51:51] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 11亿元！上汽大众再成立新公司！
+[2025-07-18 09:51:51] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.eet-china.com/mp/a421802.html
+[2025-07-18 09:52:28] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 284 字
+[2025-07-18 09:52:28] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 团结才能共赢 携手方可共进——中国以高水平对外开放为世界经济注入暖流
+[2025-07-18 09:52:28] [DEBUG] [news-unknown] [江苏省国资委] URL: https://news.jschina.com.cn/yw/202507/t20250717_s6878f628e4b0722a0fa3f256.shtml
+[2025-07-18 09:52:28] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 3641 字
+[2025-07-18 09:52:28] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 2026年俄罗斯莫斯科新能源电动车及充电桩展RENWEX 2026
+[2025-07-18 09:52:28] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.sohu.com/a/914786253_416504
+[2025-07-18 09:52:29] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 8889 字
+[2025-07-18 09:52:29] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 国家知识产权局介绍“十四五”时期知识产权强国建设新进展
+[2025-07-18 09:52:29] [DEBUG] [news-unknown] [江苏省国资委] URL: https://m.gmw.cn/2025-07/17/content_1304085418.htm
+[2025-07-18 09:52:29] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 1676 字
+[2025-07-18 09:52:29] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 从平安人寿的“享平安”，看“服务进化”与“价值进阶”！
+[2025-07-18 09:52:29] [DEBUG] [news-unknown] [江苏省国资委] URL: https://jiangsu.sina.com.cn/city/2025-07-17/city-inffurfq1828600.shtml
+[2025-07-18 09:52:30] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 3019 字
+[2025-07-18 09:52:30] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 【视频】连续16年北川爱心援助，苏州博慧支教共育两地教育“生态林”
+[2025-07-18 09:52:30] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.yangtse.com/news/jiangsu/suzhou/202507/t20250717_237655.html
+[2025-07-18 09:52:30] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 4238 字
+[2025-07-18 09:52:30] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 奥莱“学霸”卷调改：百联、杉杉、比斯特争抢首店
+[2025-07-18 09:52:30] [DEBUG] [news-unknown] [江苏省国资委] URL: https://36kr.com/p/3382419512408328
+[2025-07-18 09:52:31] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 5588 字
+[2025-07-18 09:52:31] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 进入中国十五年，JINS睛姿9成眼镜产自本地，目标在华开1000家店
+[2025-07-18 09:52:31] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/shopping/%E9%80%9A%E7%94%A8/%E8%BF%9B%E5%85%A5%E4%B8%AD%E5%9B%BD%E5%8D%81%E4%BA%94%E5%B9%B4-jins%E7%9D%9B%E5%A7%BF9%E6%88%90%E7%9C%BC%E9%95%9C%E4%BA%A7%E8%87%AA%E6%9C%AC%E5%9C%B0-%E7%9B%AE%E6%A0%87%E5%9C%A8%E5%8D%8E%E5%BC%801000%E5%AE%B6%E5%BA%97/ar-AA1IJZWv?ocid=BingNewsVerp
+[2025-07-18 09:52:31] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+[2025-07-18 09:52:31] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 生于1986年，朱亮亮任江苏射阳县代理县长
+[2025-07-18 09:52:31] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.thepaper.cn/newsDetail_forward_31202197
+[2025-07-18 09:52:31] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 560 字
+[2025-07-18 09:52:31] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 江苏泗洪："沉睡"数据变资产 民生建设引活水
+[2025-07-18 09:52:31] [DEBUG] [news-unknown] [江苏省国资委] URL: https://js.ifeng.com/c/8l3TKWmEkgt
+[2025-07-18 09:52:31] [SUCCESS] [news-unknown] [江苏省国资委] 抓取成功 (通用): 1038 字
+[2025-07-18 09:52:31] [INFO] [news-unknown] [江苏省国资委] 正在抓取: 我省首个数据知识产权证券化产品获批
+[2025-07-18 09:52:31] [DEBUG] [news-unknown] [江苏省国资委] URL: https://www.msn.cn/zh-cn/news/other/%E6%B1%9F%E8%8B%8F%E9%A6%96%E4%B8%AA%E6%95%B0%E6%8D%AE%E7%9F%A5%E8%AF%86%E4%BA%A7%E6%9D%83%E8%AF%81%E5%88%B8%E5%8C%96%E4%BA%A7%E5%93%81%E8%8E%B7%E6%89%B9/ar-AA1IFQMf
+[2025-07-18 09:52:31] [ERROR] [news-unknown] [江苏省国资委] 抓取失败: 未获取到正文
+
+==============================
+[时间] 2025-07-18 09:52:31
+[关键词] 关键词: 江苏省国资委
+[模式] 模式: 正式
+[文件] 处理的json文件: output/2025-07-17/2025-07-17_江苏省国资委.json
+
+[统计] 抓取统计：
+  [成功] 成功抓取正文: 225 篇
+  [定制] 其中定制化抓取: 0 篇
+  [来源] 本次采集新闻源数量: 69
+  [失败] 抓取失败: 78 篇
+
+[警告] 未能抓取的新闻：
+  - 股市必读：苏豪弘业（600128）7月16日主力资金净流入2682.65万元，占总成交额9.39% | https://www.msn.cn/zh-cn/money/%E7%83%AD%E9%97%A8%E8%82%A1/%E8%82%A1%E5%B8%82%E5%BF%85%E8%AF%BB-%E8%8B%8F%E8%B1%AA%E5%BC%98%E4%B8%9A-600128-7%E6%9C%8816%E6%97%A5%E4%B8%BB%E5%8A%9B%E8%B5%84%E9%87%91%E5%87%80%E6%B5%81%E5%85%A52682-65%E4%B8%87%E5%85%83-%E5%8D%A0%E6%80%BB%E6%88%90%E4%BA%A4%E9%A2%9D9-39/ar-AA1ILxGN?ocid=BingNewsVerp 
+  - 股价大涨致股东增持被“卡”，成都银行幸福的“烦恼” | https://www.msn.cn/zh-cn/news/other/%E8%82%A1%E4%BB%B7%E5%A4%A7%E6%B6%A8%E8%87%B4%E8%82%A1%E4%B8%9C%E5%A2%9E%E6%8C%81%E8%A2%AB-%E5%8D%A1-%E6%88%90%E9%83%BD%E9%93%B6%E8%A1%8C%E5%B9%B8%E7%A6%8F%E7%9A%84-%E7%83%A6%E6%81%BC/ar-AA1IKBMJ?ocid=BingNewsVerp 
+  - 江苏国信（002608）7月17日主力资金净买入897.02万元 | https://www.msn.cn/zh-cn/money/%E7%BB%8F%E6%B5%8E/%E6%B1%9F%E8%8B%8F%E5%9B%BD%E4%BF%A1-002608-7%E6%9C%8817%E6%97%A5%E4%B8%BB%E5%8A%9B%E8%B5%84%E9%87%91%E5%87%80%E4%B9%B0%E5%85%A5897-02%E4%B8%87%E5%85%83/ar-AA1ILwd0 
+  - 上市公司动态 | 杭州银行上半年净利同比增长17%，中微公司上半年 ... | https://www.msn.cn/zh-cn/news/other/%E4%B8%8A%E5%B8%82%E5%85%AC%E5%8F%B8%E5%8A%A8%E6%80%81-%E6%9D%AD%E5%B7%9E%E9%93%B6%E8%A1%8C%E4%B8%8A%E5%8D%8A%E5%B9%B4%E5%87%80%E5%88%A9%E5%90%8C%E6%AF%94%E5%A2%9E%E9%95%BF17-%E4%B8%AD%E5%BE%AE%E5%85%AC%E5%8F%B8%E4%B8%8A%E5%8D%8A%E5%B9%B4%E5%87%80%E5%88%A9%E5%90%8C%E6%AF%94%E9%A2%84%E5%A2%9E3161-4128/ar-AA1INdXr 
+  - 股市必读：长盈精密（300115）7月16日主力资金净流入2421.81万元 | https://www.msn.cn/zh-cn/news/other/%E8%82%A1%E5%B8%82%E5%BF%85%E8%AF%BB-%E9%95%BF%E7%9B%88%E7%B2%BE%E5%AF%86-300115-7%E6%9C%8816%E6%97%A5%E4%B8%BB%E5%8A%9B%E8%B5%84%E9%87%91%E5%87%80%E6%B5%81%E5%85%A5242181%E4%B8%87%E5%85%83/ar-AA1ILjXI?ocid=BingNewsVerp 
+  - 股市必读：领益智造（002600）7月16日主力资金净流入120.9万元 | https://www.msn.cn/zh-cn/money/%E7%83%AD%E9%97%A8%E8%82%A1/%E8%82%A1%E5%B8%82%E5%BF%85%E8%AF%BB-%E9%A2%86%E7%9B%8A%E6%99%BA%E9%80%A0-002600-7%E6%9C%8816%E6%97%A5%E4%B8%BB%E5%8A%9B%E8%B5%84%E9%87%91%E5%87%80%E6%B5%81%E5%85%A5120-9%E4%B8%87%E5%85%83/ar-AA1ILzV1?ocid=BingNewsVerp 
+  - 股市必读：长盈精密（300115）7月16日主力资金净流入2421.81万元 | https://www.msn.cn/zh-cn/news/other/%E8%82%A1%E5%B8%82%E5%BF%85%E8%AF%BB-%E9%95%BF%E7%9B%88%E7%B2%BE%E5%AF%86-300115-7%E6%9C%8816%E6%97%A5%E4%B8%BB%E5%8A%9B%E8%B5%84%E9%87%91%E5%87%80%E6%B5%81%E5%85%A5242181%E4%B8%87%E5%85%83/ar-AA1ILjXI 
+  - 股市必读：领益智造（002600）7月16日主力资金净流入120.9万元 | https://www.msn.cn/zh-cn/money/%E7%83%AD%E9%97%A8%E8%82%A1/%E8%82%A1%E5%B8%82%E5%BF%85%E8%AF%BB-%E9%A2%86%E7%9B%8A%E6%99%BA%E9%80%A0-002600-7%E6%9C%8816%E6%97%A5%E4%B8%BB%E5%8A%9B%E8%B5%84%E9%87%91%E5%87%80%E6%B5%81%E5%85%A5120-9%E4%B8%87%E5%85%83/ar-AA1ILzV1 
+  - 顶“榴”为何在成都加速集散？ | https://www.msn.cn/zh-cn/%E9%A3%9F%E5%93%81%E5%92%8C%E9%A5%AE%E6%96%99/%E9%80%9A%E7%94%A8/%E9%A1%B6-%E6%A6%B4-%E4%B8%BA%E4%BD%95%E5%9C%A8%E6%88%90%E9%83%BD%E5%8A%A0%E9%80%9F%E9%9B%86%E6%95%A3/ar-AA1IL9CH?ocid=BingNewsVerp 
+  - 美银证券维持对联合航空股票的买入评级 | https://cn.investing.com/news/analyst-ratings/article-93CH-2889941 
+  - 高盛重申联合航空"跑赢大盘"评级，目标价为100.00美元 | https://cn.investing.com/news/analyst-ratings/article-93CH-2890010 
+  - 品种上新！顶“榴”为何在成都加速集散？ | https://www.msn.cn/zh-cn/%E9%A3%9F%E5%93%81%E5%92%8C%E9%A5%AE%E6%96%99/%E9%80%9A%E7%94%A8/%E5%93%81%E7%A7%8D%E4%B8%8A%E6%96%B0-%E9%A1%B6-%E6%A6%B4-%E4%B8%BA%E4%BD%95%E5%9C%A8%E6%88%90%E9%83%BD%E5%8A%A0%E9%80%9F%E9%9B%86%E6%95%A3/ar-AA1IKZOf?ocid=BingNewsVerp 
+  - 篮球BGM奏响杭城开启“夏日经济”无限可能 | https://www.msn.cn/zh-cn/news/other/%E7%AF%AE%E7%90%83bgm%E5%A5%8F%E5%93%8D%E6%9D%AD%E5%9F%8E%E5%BC%80%E5%90%AF-%E5%A4%8F%E6%97%A5%E7%BB%8F%E6%B5%8E-%E6%97%A0%E9%99%90%E5%8F%AF%E8%83%BD/ar-AA1IL9XE?ocid=BingNewsVerp 
+  - 法国近期报告30例基孔肯雅热本土传播病例 | http://www.hxnews.com/news/gj/gjxw/202507/17/2209017.shtml 
+  - 美国媒体：印度空难客机燃油供应开关疑被机长关闭 | https://www.msn.cn/zh-cn/news/other/%E5%8D%B0%E5%BA%A6%E7%A9%BA%E9%9A%BE%E5%AE%A2%E6%9C%BA%E7%87%83%E6%B2%B9%E4%BE%9B%E5%BA%94%E5%BC%80%E5%85%B3%E7%96%91%E8%A2%AB%E6%9C%BA%E9%95%BF%E5%85%B3%E9%97%AD/ar-AA1ILp33?ocid=BingNewsVerp 
+  - 顶"榴"为何在成都加速集散？ | https://www.msn.cn/zh-cn/%E9%A3%9F%E5%93%81%E5%92%8C%E9%A5%AE%E6%96%99/%E9%80%9A%E7%94%A8/%E9%A1%B6-%E6%A6%B4-%E4%B8%BA%E4%BD%95%E5%9C%A8%E6%88%90%E9%83%BD%E5%8A%A0%E9%80%9F%E9%9B%86%E6%95%A3/ar-AA1IL9CH 
+  - 品种上新!顶"榴"为何在成都加速集散？ | https://www.msn.cn/zh-cn/news/other/%E5%93%81%E7%A7%8D%E4%B8%8A%E6%96%B0-%E9%A1%B6-%E6%A6%B4-%E4%B8%BA%E4%BD%95%E5%9C%A8%E6%88%90%E9%83%BD%E5%8A%A0%E9%80%9F%E9%9B%86%E6%95%A3/ar-AA1IKZOf 
+  - 贸易板块7月17日跌0.21%，苏豪弘业领跌，主力资金净流出9102.01万元 | https://www.msn.cn/zh-cn/money/%E7%BB%8F%E6%B5%8E/%E8%B4%B8%E6%98%93%E6%9D%BF%E5%9D%977%E6%9C%8817%E6%97%A5%E8%B7%8C0-21-%E8%8B%8F%E8%B1%AA%E5%BC%98%E4%B8%9A%E9%A2%86%E8%B7%8C-%E4%B8%BB%E5%8A%9B%E8%B5%84%E9%87%91%E5%87%80%E6%B5%81%E5%87%BA9102-01%E4%B8%87%E5%85%83/ar-AA1ILBwm?ocid=BingNewsVerp 
+  - 股市必读：苏豪弘业（600128）7月16日主力资金净流入2682.65万元，占总 ... | https://www.msn.cn/zh-cn/news/other/%E8%82%A1%E5%B8%82%E5%BF%85%E8%AF%BB-%E8%8B%8F%E8%B1%AA%E5%BC%98%E4%B8%9A-600128-7%E6%9C%8816%E6%97%A5%E4%B8%BB%E5%8A%9B%E8%B5%84%E9%87%91%E5%87%80%E6%B5%81%E5%85%A5268265%E4%B8%87%E5%85%83-%E5%8D%A0%E6%80%BB%E6%88%90%E4%BA%A4%E9%A2%9D939/ar-AA1ILxGN 
+  - 贸易板块7月17日跌0.21%，苏豪弘业领跌，主力资金净流出9102.01万元 | https://www.msn.cn/zh-cn/money/%E7%BB%8F%E6%B5%8E/%E8%B4%B8%E6%98%93%E6%9D%BF%E5%9D%977%E6%9C%8817%E6%97%A5%E8%B7%8C0-21-%E8%8B%8F%E8%B1%AA%E5%BC%98%E4%B8%9A%E9%A2%86%E8%B7%8C-%E4%B8%BB%E5%8A%9B%E8%B5%84%E9%87%91%E5%87%80%E6%B5%81%E5%87%BA9102-01%E4%B8%87%E5%85%83/ar-AA1ILBwm 
+  - 股市必读：苏豪弘业（600128）7月16日主力资金净流入2682.65万元，占总 ... | https://www.msn.cn/zh-cn/money/%E7%83%AD%E9%97%A8%E8%82%A1/%E8%82%A1%E5%B8%82%E5%BF%85%E8%AF%BB-%E8%8B%8F%E8%B1%AA%E5%BC%98%E4%B8%9A-600128-7%E6%9C%8816%E6%97%A5%E4%B8%BB%E5%8A%9B%E8%B5%84%E9%87%91%E5%87%80%E6%B5%81%E5%85%A52682-65%E4%B8%87%E5%85%83-%E5%8D%A0%E6%80%BB%E6%88%90%E4%BA%A4%E9%A2%9D9-39/ar-AA1ILxGN 
+  - 市场监管总局督促东风商用车等10家生产企业实施召回 | https://www.msn.cn/zh-cn/autos/%E9%80%9A%E7%94%A8/%E5%B8%82%E5%9C%BA%E7%9B%91%E7%AE%A1%E6%80%BB%E5%B1%80%E7%9D%A3%E4%BF%83%E4%B8%9C%E9%A3%8E%E5%95%86%E7%94%A8%E8%BD%A6%E7%AD%8910%E5%AE%B6%E7%94%9F%E4%BA%A7%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%96%BD%E5%8F%AC%E5%9B%9E/ar-AA1IJUKe?ocid=BingNewsVerp 
+  - 市场监管总局督促东风商用车等10家生产企业实施召回 | https://www.msn.cn/zh-cn/autos/%E9%80%9A%E7%94%A8/%E5%B8%82%E5%9C%BA%E7%9B%91%E7%AE%A1%E6%80%BB%E5%B1%80%E7%9D%A3%E4%BF%83%E4%B8%9C%E9%A3%8E%E5%95%86%E7%94%A8%E8%BD%A6%E7%AD%8910%E5%AE%B6%E7%94%9F%E4%BA%A7%E4%BC%81%E4%B8%9A%E5%AE%9E%E6%96%BD%E5%8F%AC%E5%9B%9E/ar-AA1IJUKe 
+  - 精准农业，潜力几何（新知） | https://www.msn.cn/zh-cn/news/other/%E7%B2%BE%E5%87%86%E5%86%9C%E4%B8%9A-%E6%BD%9C%E5%8A%9B%E5%87%A0%E4%BD%95-%E6%96%B0%E7%9F%A5/ar-AA1IJQGE 
+  - 股市必读：吉华集团（603980）7月16日主力资金净流入5562.55万元，占总成交额7.84% | https://www.msn.cn/zh-cn/news/other/%E8%82%A1%E5%B8%82%E5%BF%85%E8%AF%BB-%E5%90%89%E5%8D%8E%E9%9B%86%E5%9B%A2-603980-7%E6%9C%8816%E6%97%A5%E4%B8%BB%E5%8A%9B%E8%B5%84%E9%87%91%E5%87%80%E6%B5%81%E5%85%A5556255%E4%B8%87%E5%85%83-%E5%8D%A0%E6%80%BB%E6%88%90%E4%BA%A4%E9%A2%9D784/ar-AA1ILot6?ocid=BingNewsVerp 
+  - 今年第6号台风即将生成并趋向广东 | https://www.msn.cn/zh-cn/news/other/%E4%BB%8A%E5%B9%B4%E7%AC%AC6%E5%8F%B7%E5%8F%B0%E9%A3%8E%E5%8D%B3%E5%B0%86%E7%94%9F%E6%88%90%E5%B9%B6%E8%B6%8B%E5%90%91%E5%B9%BF%E4%B8%9C/ar-AA1IM69i?ocid=BingNewsVerp 
+  - 江苏盐城：向海争风，绿能破浪 | https://www.msn.cn/zh-cn/news/other/%E6%B1%9F%E8%8B%8F%E7%9B%90%E5%9F%8E-%E5%90%91%E6%B5%B7%E4%BA%89%E9%A3%8E-%E7%BB%BF%E8%83%BD%E7%A0%B4%E6%B5%AA/ar-AA1IM8Ma 
+  - 股市必读：吉华集团（603980）7月16日主力资金净流入5562.55万元，占总 ... | https://www.msn.cn/zh-cn/news/other/%E8%82%A1%E5%B8%82%E5%BF%85%E8%AF%BB-%E5%90%89%E5%8D%8E%E9%9B%86%E5%9B%A2-603980-7%E6%9C%8816%E6%97%A5%E4%B8%BB%E5%8A%9B%E8%B5%84%E9%87%91%E5%87%80%E6%B5%81%E5%85%A5556255%E4%B8%87%E5%85%83-%E5%8D%A0%E6%80%BB%E6%88%90%E4%BA%A4%E9%A2%9D784/ar-AA1ILot6 
+  - 今年第6号台风即将生成并趋向广东 | https://www.msn.cn/zh-cn/news/other/%E4%BB%8A%E5%B9%B4%E7%AC%AC6%E5%8F%B7%E5%8F%B0%E9%A3%8E%E5%8D%B3%E5%B0%86%E7%94%9F%E6%88%90%E5%B9%B6%E8%B6%8B%E5%90%91%E5%B9%BF%E4%B8%9C/ar-AA1IM69i 
+  - 在周口港，感受大市场（主流媒体看周口） | https://www.msn.cn/zh-cn/news/other/%E5%9C%A8%E5%91%A8%E5%8F%A3%E6%B8%AF-%E6%84%9F%E5%8F%97%E5%A4%A7%E5%B8%82%E5%9C%BA-%E4%B8%BB%E6%B5%81%E5%AA%92%E4%BD%93%E7%9C%8B%E5%91%A8%E5%8F%A3/ar-AA1IJuc3?ocid=BingNewsVerp 
+  - 浙江海港携手中国移动浙江，共绘智慧港口新蓝图 | https://www.msn.cn/zh-cn/news/other/%E6%B5%99%E6%B1%9F%E6%B5%B7%E6%B8%AF%E6%90%BA%E6%89%8B%E4%B8%AD%E5%9B%BD%E7%A7%BB%E5%8A%A8%E6%B5%99%E6%B1%9F-%E5%85%B1%E7%BB%98%E6%99%BA%E6%85%A7%E6%B8%AF%E5%8F%A3%E6%96%B0%E8%93%9D%E5%9B%BE/ar-AA1IM7Qy 
+  - 创历史新高！上半年全国铁路发送旅客22.4亿人次 | https://www.msn.cn/zh-cn/news/other/%E5%88%9B%E5%8E%86%E5%8F%B2%E6%96%B0%E9%AB%98-%E4%B8%8A%E5%8D%8A%E5%B9%B4%E5%85%A8%E5%9B%BD%E9%93%81%E8%B7%AF%E5%8F%91%E9%80%81%E6%97%85%E5%AE%A222-4%E4%BA%BF%E4%BA%BA%E6%AC%A1/ar-AA1IL51J?ocid=BingNewsVerp 
+  - 上半年全国铁路发送旅客22.4亿人次创新高 | https://www.msn.cn/zh-cn/news/other/%E4%B8%8A%E5%8D%8A%E5%B9%B4%E5%85%A8%E5%9B%BD%E9%93%81%E8%B7%AF%E5%8F%91%E9%80%81%E6%97%85%E5%AE%A2224%E4%BA%BF%E4%BA%BA%E6%AC%A1%E5%88%9B%E6%96%B0%E9%AB%98/ar-AA1IMav9?ocid=BingNewsVerp 
+  - 604分读高职，高分考生为何逆向选择？ | https://www.msn.cn/zh-cn/%E6%95%99%E8%82%B2%E5%92%8C%E5%AD%A6%E4%B9%A0/%E4%B8%AD%E7%AD%89%E6%95%99%E8%82%B2/604%E5%88%86%E8%AF%BB%E9%AB%98%E8%81%8C-%E6%98%AF%E6%B5%AA%E8%B4%B9%E5%88%86%E6%95%B0%E5%90%97/ar-AA1IHFdT?ocid=BingNewsVerp 
+  - 在周口港，感受大市场（主流媒体看周口） | https://www.msn.cn/zh-cn/%E5%9F%8E%E5%B8%82%E5%9F%BA%E7%A1%80%E8%AE%BE%E6%96%BD/%E4%BA%A4%E9%80%9A%E5%9F%BA%E7%A1%80%E8%AE%BE%E6%96%BD/%E5%9C%A8%E5%91%A8%E5%8F%A3%E6%B8%AF-%E6%84%9F%E5%8F%97%E5%A4%A7%E5%B8%82%E5%9C%BA-%E4%B8%BB%E6%B5%81%E5%AA%92%E4%BD%93%E7%9C%8B%E5%91%A8%E5%8F%A3/ar-AA1IJuc3?ocid=BingNewsVerp 
+  - 创历史新高!上半年全国铁路发送旅客22.4亿人次 | https://www.msn.cn/zh-cn/news/other/%E5%88%9B%E5%8E%86%E5%8F%B2%E6%96%B0%E9%AB%98-%E4%B8%8A%E5%8D%8A%E5%B9%B4%E5%85%A8%E5%9B%BD%E9%93%81%E8%B7%AF%E5%8F%91%E9%80%81%E6%97%85%E5%AE%A222-4%E4%BA%BF%E4%BA%BA%E6%AC%A1/ar-AA1IL51J 
+  - 上半年全国铁路发送旅客22.4亿人次创新高 | https://www.msn.cn/zh-cn/news/other/%E4%B8%8A%E5%8D%8A%E5%B9%B4%E5%85%A8%E5%9B%BD%E9%93%81%E8%B7%AF%E5%8F%91%E9%80%81%E6%97%85%E5%AE%A2224%E4%BA%BF%E4%BA%BA%E6%AC%A1%E5%88%9B%E6%96%B0%E9%AB%98/ar-AA1IMav9 
+  - 在周口港，感受大市场（主流媒体看周口） | https://www.msn.cn/zh-cn/%E5%9F%8E%E5%B8%82%E5%9F%BA%E7%A1%80%E8%AE%BE%E6%96%BD/%E4%BA%A4%E9%80%9A%E5%9F%BA%E7%A1%80%E8%AE%BE%E6%96%BD/%E5%9C%A8%E5%91%A8%E5%8F%A3%E6%B8%AF-%E6%84%9F%E5%8F%97%E5%A4%A7%E5%B8%82%E5%9C%BA-%E4%B8%BB%E6%B5%81%E5%AA%92%E4%BD%93%E7%9C%8B%E5%91%A8%E5%8F%A3/ar-AA1IJuc3 
+  - 604分读高职，高分考生为何逆向选择？ | https://www.msn.cn/zh-cn/%E6%95%99%E8%82%B2%E5%92%8C%E5%AD%A6%E4%B9%A0/%E4%B8%AD%E7%AD%89%E6%95%99%E8%82%B2/604%E5%88%86%E8%AF%BB%E9%AB%98%E8%81%8C-%E6%98%AF%E6%B5%AA%E8%B4%B9%E5%88%86%E6%95%B0%E5%90%97/ar-AA1IHFdT 
+  - “大V看玄武”来到南京铁北红山新城 | https://www.msn.cn/zh-cn/%E5%9F%8E%E5%B8%82%E5%9F%BA%E7%A1%80%E8%AE%BE%E6%96%BD/%E9%80%9A%E7%94%A8/%E5%A4%A7v%E7%9C%8B%E7%8E%84%E6%AD%A6-%E6%9D%A5%E5%88%B0%E5%8D%97%E4%BA%AC%E9%93%81%E5%8C%97%E7%BA%A2%E5%B1%B1%E6%96%B0%E5%9F%8E/ar-AA1IN3jv?ocid=BingNewsVerp 
+  - 罕见！秦岭再现棕色大熊猫 | https://www.msn.cn/zh-cn/news/other/%E7%BD%95%E8%A7%81-%E7%A7%A6%E5%B2%AD%E5%86%8D%E7%8E%B0%E6%A3%95%E8%89%B2%E5%A4%A7%E7%86%8A%E7%8C%AB/ar-AA1IMdCb?ocid=BingNewsVerp 
+  - 女童患重病想退年卡 景区仅退款：年卡给小朋友留着 | https://www.msn.cn/zh-cn/travel/%E5%85%AC%E5%9B%AD/%E5%A5%B3%E7%AB%A5%E6%82%A3%E9%87%8D%E7%97%85%E6%83%B3%E9%80%80%E5%B9%B4%E5%8D%A1-%E6%99%AF%E5%8C%BA%E4%BB%85%E9%80%80%E6%AC%BE-%E5%B9%B4%E5%8D%A1%E7%BB%99%E5%B0%8F%E6%9C%8B%E5%8F%8B%E7%95%99%E7%9D%80/ar-AA1ILhJs?ocid=BingNewsVerp 
+  - 通州湾示范区翔鹏染整：智能印染新标杆的崛起之路 | https://www.msn.cn/zh-cn/%E6%8A%80%E6%9C%AF/%E6%8A%80%E6%9C%AF%E5%85%AC%E5%8F%B8/%E9%80%9A%E5%B7%9E%E6%B9%BE%E7%A4%BA%E8%8C%83%E5%8C%BA%E7%BF%94%E9%B9%8F%E6%9F%93%E6%95%B4-%E6%99%BA%E8%83%BD%E5%8D%B0%E6%9F%93%E6%96%B0%E6%A0%87%E6%9D%86%E7%9A%84%E5%B4%9B%E8%B5%B7%E4%B9%8B%E8%B7%AF/ar-AA1ILqQO 
+  - "中国强化木地板之都"何以破圈？ | https://www.msn.cn/zh-cn/money/%E9%80%9A%E7%94%A8/%E4%B8%AD%E5%9B%BD%E5%BC%BA%E5%8C%96%E6%9C%A8%E5%9C%B0%E6%9D%BF%E4%B9%8B%E9%83%BD-%E4%BD%95%E4%BB%A5%E7%A0%B4%E5%9C%88/ar-AA1IKUxm 
+  - 这项指标提前实现!我国每万人口高价值发明专利拥有量已达15.3件 | https://www.msn.cn/zh-cn/%E6%8A%80%E6%9C%AF/%E7%A1%AC%E4%BB%B6%E5%92%8C%E8%AE%BE%E5%A4%87/%E8%BF%99%E9%A1%B9%E6%8C%87%E6%A0%87%E6%8F%90%E5%89%8D%E5%AE%9E%E7%8E%B0-%E6%88%91%E5%9B%BD%E6%AF%8F%E4%B8%87%E4%BA%BA%E5%8F%A3%E9%AB%98%E4%BB%B7%E5%80%BC%E5%8F%91%E6%98%8E%E4%B8%93%E5%88%A9%E6%8B%A5%E6%9C%89%E9%87%8F%E5%B7%B2%E8%BE%BE15-3%E4%BB%B6/ar-AA1IL9YE 
+  - 全球车企为何按下全面电动化的"刹车键"？ | https://www.msn.cn/zh-cn/autos/%E7%94%B5%E5%8A%A8%E6%B1%BD%E8%BD%A6/%E5%85%A8%E7%90%83%E8%BD%A6%E4%BC%81%E4%B8%BA%E4%BD%95%E8%BD%AC%E5%85%A5%E7%94%B5%E5%8A%A8%E5%8C%96%E6%88%98%E7%95%A5-%E5%9B%9E%E8%B0%83%E6%9C%9F/ar-AA1IKDr1 
+  - 远古鱼龙带来跨越亿年的降噪智慧 | https://www.msn.cn/zh-cn/%E7%A7%91%E5%AD%A6/%E5%8A%A8%E7%89%A9%E5%AD%A6/%E8%BF%9C%E5%8F%A4%E9%B1%BC%E9%BE%99%E5%B8%A6%E6%9D%A5%E8%B7%A8%E8%B6%8A%E4%BA%BF%E5%B9%B4%E7%9A%84%E9%99%8D%E5%99%AA%E6%99%BA%E6%85%A7/ar-AA1IL2y0 
+  - 险资调研图谱：高股息与科技成长成关注重点 | https://www.msn.cn/zh-cn/news/other/%E9%99%A9%E8%B5%84%E8%B0%83%E7%A0%94%E5%9B%BE%E8%B0%B1-%E9%AB%98%E8%82%A1%E6%81%AF%E4%B8%8E%E7%A7%91%E6%8A%80%E6%88%90%E9%95%BF%E6%88%90%E5%85%B3%E6%B3%A8%E9%87%8D%E7%82%B9/ar-AA1IKdjZ 
+  - "中国强化木地板之都"何以破圈？ | https://www.msn.cn/zh-cn/news/other/%E4%B8%AD%E5%9B%BD%E5%BC%BA%E5%8C%96%E6%9C%A8%E5%9C%B0%E6%9D%BF%E4%B9%8B%E9%83%BD-%E4%BD%95%E4%BB%A5%E7%A0%B4%E5%9C%88/ar-AA1IKUxm 
+  - 守好“天下粮仓” 书写绿色储粮新篇 | https://www.msn.cn/zh-cn/news/other/%E5%AE%88%E5%A5%BD-%E5%A4%A9%E4%B8%8B%E7%B2%AE%E4%BB%93-%E4%B9%A6%E5%86%99%E7%BB%BF%E8%89%B2%E5%82%A8%E7%B2%AE%E6%96%B0%E7%AF%87/ar-AA1IJKpW?ocid=BingNewsVerp 
+  - 2025全国夏粮产量2994.8亿斤 | https://www.msn.cn/zh-cn/news/other/2025%E5%85%A8%E5%9B%BD%E5%A4%8F%E7%B2%AE%E4%BA%A7%E9%87%8F29948%E4%BA%BF%E6%96%A4/ar-AA1IMATP?ocid=BingNewsVerp 
+  - 三维股份（831834）使用3600万元的募集资金购买银行理财产品 提高募集资金使用效率 | https://www.msn.cn/zh-cn/money/%E7%BB%8F%E6%B5%8E/%E4%B8%89%E7%BB%B4%E8%82%A1%E4%BB%BD-831834-%E4%BD%BF%E7%94%A83600%E4%B8%87%E5%85%83%E7%9A%84%E5%8B%9F%E9%9B%86%E8%B5%84%E9%87%91%E8%B4%AD%E4%B9%B0%E9%93%B6%E8%A1%8C%E7%90%86%E8%B4%A2%E4%BA%A7%E5%93%81-%E6%8F%90%E9%AB%98%E5%8B%9F%E9%9B%86%E8%B5%84%E9%87%91%E4%BD%BF%E7%94%A8%E6%95%88%E7%8E%87/ar-AA1INbmo?ocid=BingNewsVerp 
+  - 精准农业，潜力几何（新知） | https://www.msn.cn/zh-cn/news/other/%E7%B2%BE%E5%87%86%E5%86%9C%E4%B8%9A-%E6%BD%9C%E5%8A%9B%E5%87%A0%E4%BD%95-%E6%96%B0%E7%9F%A5/ar-AA1IJQGE?ocid=BingNewsVerp 
+  - 外卖平台大战餐饮商家“受伤” 多协会呼吁停止低价“内卷” | https://www.msn.cn/zh-cn/news/other/%E5%A4%96%E5%8D%96%E5%B9%B3%E5%8F%B0%E5%A4%A7%E6%88%98%E9%A4%90%E9%A5%AE%E5%95%86%E5%AE%B6-%E5%8F%97%E4%BC%A4-%E5%A4%9A%E5%8D%8F%E4%BC%9A%E5%91%BC%E5%90%81%E5%81%9C%E6%AD%A2%E4%BD%8E%E4%BB%B7-%E5%86%85%E5%8D%B7/ar-AA1ILmO2?ocid=BingNewsVerp 
+  - 86岁老作家新作回望门西文化 | https://www.msn.cn/zh-cn/%E7%A4%BE%E4%BC%9A%E6%96%87%E5%8C%96%E5%92%8C%E5%8E%86%E5%8F%B2/%E4%B9%A6%E7%B1%8D%E5%92%8C%E6%96%87%E5%AD%A6/86%E5%B2%81%E8%80%81%E4%BD%9C%E5%AE%B6%E6%96%B0%E4%BD%9C%E5%9B%9E%E6%9C%9B%E9%97%A8%E8%A5%BF%E6%96%87%E5%8C%96/ar-AA1IJab7?ocid=BingNewsVerp 
+  - 多国航企紧急检测波音飞机燃油开关锁 | https://www.msn.cn/zh-cn/%E5%85%AC%E5%85%B1%E5%AE%89%E5%85%A8%E5%92%8C%E7%B4%A7%E6%80%A5%E6%83%85%E5%86%B5/%E5%81%A5%E5%BA%B7%E4%B8%8E%E5%AE%89%E5%85%A8%E8%AD%A6%E6%8A%A5/%E5%8D%B0%E8%88%AA%E7%A9%BA%E9%9A%BE%E6%8A%A5%E5%91%8A%E6%8F%90%E5%8F%8A%E6%B3%A2%E9%9F%B3%E7%87%83%E6%B2%B9%E5%BC%80%E5%85%B3-%E5%85%A8%E7%90%83%E5%A4%9A%E5%AE%B6%E8%88%AA%E5%8F%B8%E7%B4%A7%E6%80%A5%E6%A3%80%E6%B5%8B/ar-AA1II3gB?ocid=BingNewsVerp 
+  - 守好"天下粮仓" 书写绿色储粮新篇 | https://www.msn.cn/zh-cn/news/other/%E5%AE%88%E5%A5%BD-%E5%A4%A9%E4%B8%8B%E7%B2%AE%E4%BB%93-%E4%B9%A6%E5%86%99%E7%BB%BF%E8%89%B2%E5%82%A8%E7%B2%AE%E6%96%B0%E7%AF%87/ar-AA1IJKpW 
+  - 2025全国夏粮产量2994.8亿斤 | https://www.msn.cn/zh-cn/news/other/2025%E5%85%A8%E5%9B%BD%E5%A4%8F%E7%B2%AE%E4%BA%A7%E9%87%8F29948%E4%BA%BF%E6%96%A4/ar-AA1IMATP 
+  - 三维股份（831834）使用3600万元的募集资金购买银行理财产品 提高 ... | https://www.msn.cn/zh-cn/news/other/%E4%B8%89%E7%BB%B4%E8%82%A1%E4%BB%BD-831834-%E4%BD%BF%E7%94%A83600%E4%B8%87%E5%85%83%E7%9A%84%E5%8B%9F%E9%9B%86%E8%B5%84%E9%87%91%E8%B4%AD%E4%B9%B0%E9%93%B6%E8%A1%8C%E7%90%86%E8%B4%A2%E4%BA%A7%E5%93%81-%E6%8F%90%E9%AB%98%E5%8B%9F%E9%9B%86%E8%B5%84%E9%87%91%E4%BD%BF%E7%94%A8%E6%95%88%E7%8E%87/ar-AA1INbmo 
+  - 在周口港，感受大市场（主流媒体看周口） | https://www.msn.cn/zh-cn/news/other/%E5%9C%A8%E5%91%A8%E5%8F%A3%E6%B8%AF-%E6%84%9F%E5%8F%97%E5%A4%A7%E5%B8%82%E5%9C%BA-%E4%B8%BB%E6%B5%81%E5%AA%92%E4%BD%93%E7%9C%8B%E5%91%A8%E5%8F%A3/ar-AA1IJuc3 
+  - 酒店餐饮板块7月17日涨0.2%，金陵饭店领涨，主力资金净流出4821.12万元 | https://www.msn.cn/zh-cn/news/other/%E9%85%92%E5%BA%97%E9%A4%90%E9%A5%AE%E6%9D%BF%E5%9D%977%E6%9C%8817%E6%97%A5%E6%B6%A802-%E9%87%91%E9%99%B5%E9%A5%AD%E5%BA%97%E9%A2%86%E6%B6%A8-%E4%B8%BB%E5%8A%9B%E8%B5%84%E9%87%91%E5%87%80%E6%B5%81%E5%87%BA482112%E4%B8%87%E5%85%83/ar-AA1ILDIA?ocid=BingNewsVerp 
+  - 别被热搜带跑偏！降低感染风险这样做 | https://www.msn.cn/zh-cn/news/other/%E5%88%AB%E8%A2%AB%E7%83%AD%E6%90%9C%E5%B8%A6%E8%B7%91%E5%81%8F-%E9%99%8D%E4%BD%8E%E6%84%9F%E6%9F%93%E9%A3%8E%E9%99%A9%E8%BF%99%E6%A0%B7%E5%81%9A/ar-AA1IJcsO?ocid=BingNewsVerp 
+  - 酒店餐饮板块7月17日涨0.2%，金陵饭店领涨，主力资金净流出4821.12万元 | https://www.msn.cn/zh-cn/money/%E9%80%9A%E7%94%A8/%E9%85%92%E5%BA%97%E9%A4%90%E9%A5%AE%E6%9D%BF%E5%9D%977%E6%9C%8817%E6%97%A5%E6%B6%A80-2-%E9%87%91%E9%99%B5%E9%A5%AD%E5%BA%97%E9%A2%86%E6%B6%A8-%E4%B8%BB%E5%8A%9B%E8%B5%84%E9%87%91%E5%87%80%E6%B5%81%E5%87%BA4821-12%E4%B8%87%E5%85%83/ar-AA1ILDIA 
+  - 因无3C标识安检被拒，男子机场怒砸充电宝起火，被行拘5日 | https://www.msn.cn/zh-cn/news/other/%E5%9B%A0%E6%97%A03c%E6%A0%87%E8%AF%86%E5%AE%89%E6%A3%80%E8%A2%AB%E6%8B%92-%E7%94%B7%E5%AD%90%E6%9C%BA%E5%9C%BA%E6%80%92%E7%A0%B8%E5%85%85%E7%94%B5%E5%AE%9D%E8%B5%B7%E7%81%AB-%E8%A2%AB%E8%A1%8C%E6%8B%985%E6%97%A5/ar-AA1IMLfx?ocid=BingNewsVerp 
+  - 武汉天河机场一男子砸充电宝致起火，警方：沈某（男），被行拘 | https://www.msn.cn/zh-cn/news/other/%E6%AD%A6%E6%B1%89%E5%A4%A9%E6%B2%B3%E6%9C%BA%E5%9C%BA%E4%B8%80%E7%94%B7%E5%AD%90%E7%A0%B8%E5%85%85%E7%94%B5%E5%AE%9D%E8%87%B4%E8%B5%B7%E7%81%AB-%E8%AD%A6%E6%96%B9-%E6%B2%88%E6%9F%90-%E7%94%B7-%E8%A2%AB%E8%A1%8C%E6%8B%98/ar-AA1IMrOP?ocid=BingNewsVerp 
+  - 我国主要粮食作物种植区域介绍 | https://www.msn.cn/zh-cn/news/other/%E6%88%91%E5%9B%BD%E4%B8%BB%E8%A6%81%E7%B2%AE%E9%A3%9F%E4%BD%9C%E7%89%A9%E7%A7%8D%E6%A4%8D%E5%8C%BA%E5%9F%9F%E4%BB%8B%E7%BB%8D/ar-AA1ILU8B?ocid=BingNewsVerp 
+  - 江苏宜兴市西渚镇白塔村与企共建结硕果 | https://www.msn.cn/zh-cn/%E5%9F%8E%E5%B8%82%E5%9F%BA%E7%A1%80%E8%AE%BE%E6%96%BD/%E9%80%9A%E7%94%A8/%E6%B1%9F%E8%8B%8F%E5%AE%9C%E5%85%B4%E5%B8%82%E8%A5%BF%E6%B8%9A%E9%95%87%E7%99%BD%E5%A1%94%E6%9D%91%E4%B8%8E%E4%BC%81%E5%85%B1%E5%BB%BA%E7%BB%93%E7%A1%95%E6%9E%9C/ar-AA1ILfiM 
+  - 股市必读：ST岭南（002717）7月16日主力资金净流出539.5万元 | https://www.msn.cn/zh-cn/news/other/%E8%82%A1%E5%B8%82%E5%BF%85%E8%AF%BB-st%E5%B2%AD%E5%8D%97-002717-7%E6%9C%8816%E6%97%A5%E4%B8%BB%E5%8A%9B%E8%B5%84%E9%87%91%E5%87%80%E6%B5%81%E5%87%BA5395%E4%B8%87%E5%85%83/ar-AA1ILqPt 
+  - 杭州余杭部分街道自来水气味异常 官方通报 | https://www.msn.cn/zh-cn/news/other/%E6%9D%AD%E5%B7%9E%E4%BD%99%E6%9D%AD%E9%83%A8%E5%88%86%E8%A1%97%E9%81%93%E8%87%AA%E6%9D%A5%E6%B0%B4%E6%B0%94%E5%91%B3%E5%BC%82%E5%B8%B8-%E5%AE%98%E6%96%B9%E9%80%9A%E6%8A%A5/ar-AA1IKgWu 
+  - 因无3C标识安检被拒，男子机场怒砸充电宝起火，被行拘5日 | https://www.msn.cn/zh-cn/news/other/%E5%9B%A0%E6%97%A03c%E6%A0%87%E8%AF%86%E5%AE%89%E6%A3%80%E8%A2%AB%E6%8B%92-%E7%94%B7%E5%AD%90%E6%9C%BA%E5%9C%BA%E6%80%92%E7%A0%B8%E5%85%85%E7%94%B5%E5%AE%9D%E8%B5%B7%E7%81%AB-%E8%A2%AB%E8%A1%8C%E6%8B%985%E6%97%A5/ar-AA1IMLfx 
+  - 武汉天河机场一男子砸充电宝致起火，警方：沈某（男），被行拘 | https://www.msn.cn/zh-cn/news/other/%E6%AD%A6%E6%B1%89%E5%A4%A9%E6%B2%B3%E6%9C%BA%E5%9C%BA%E4%B8%80%E7%94%B7%E5%AD%90%E7%A0%B8%E5%85%85%E7%94%B5%E5%AE%9D%E8%87%B4%E8%B5%B7%E7%81%AB-%E8%AD%A6%E6%96%B9-%E6%B2%88%E6%9F%90-%E7%94%B7-%E8%A2%AB%E8%A1%8C%E6%8B%98/ar-AA1IMrOP 
+  - 紫牛热点｜杭州一地自来水出现怪味？当地水务：已恢复正常，正 ... | https://www.msn.cn/zh-cn/news/other/%E7%B4%AB%E7%89%9B%E7%83%AD%E7%82%B9-%E6%9D%AD%E5%B7%9E%E4%B8%80%E5%9C%B0%E8%87%AA%E6%9D%A5%E6%B0%B4%E5%87%BA%E7%8E%B0%E6%80%AA%E5%91%B3-%E5%BD%93%E5%9C%B0%E6%B0%B4%E5%8A%A1-%E5%B7%B2%E6%81%A2%E5%A4%8D%E6%AD%A3%E5%B8%B8-%E6%AD%A3%E8%B0%83%E6%9F%A5%E5%85%B7%E4%BD%93%E5%8E%9F%E5%9B%A0/ar-AA1IMgZf 
+  - 潍坊峡山：荒滩蝶变"绿色银行"赋能乡村振兴 | https://www.msn.cn/zh-cn/%E7%A4%BE%E4%BC%9A%E6%96%87%E5%8C%96%E5%92%8C%E5%8E%86%E5%8F%B2/%E9%80%9A%E7%94%A8/%E4%BB%A5%E8%99%BE%E5%85%BB%E8%8D%B7-%E4%BB%A5%E8%8D%B7%E5%8A%A9%E8%99%BE-%E8%8D%92%E6%BB%A9%E8%9D%B6%E5%8F%98-%E7%BB%BF%E8%89%B2%E9%93%B6%E8%A1%8C-%E8%B5%8B%E8%83%BD%E4%B9%A1%E6%9D%91%E6%8C%AF%E5%85%B4/ar-AA1IKMCF 
+  - 我国主要粮食作物种植区域介绍 | https://www.msn.cn/zh-cn/news/other/%E6%88%91%E5%9B%BD%E4%B8%BB%E8%A6%81%E7%B2%AE%E9%A3%9F%E4%BD%9C%E7%89%A9%E7%A7%8D%E6%A4%8D%E5%8C%BA%E5%9F%9F%E4%BB%8B%E7%BB%8D/ar-AA1ILU8B 
+  - 大“烤”之下如何清凉应对 | https://www.msn.cn/zh-cn/news/other/%E5%A4%A7-%E7%83%A4-%E4%B9%8B%E4%B8%8B%E5%A6%82%E4%BD%95%E6%B8%85%E5%87%89%E5%BA%94%E5%AF%B9/ar-AA1IK5pL?ocid=BingNewsVerp 
+  - 江苏盐城：向海争风，绿能破浪 | https://www.msn.cn/zh-cn/news/other/%E6%B1%9F%E8%8B%8F%E7%9B%90%E5%9F%8E-%E5%90%91%E6%B5%B7%E4%BA%89%E9%A3%8E-%E7%BB%BF%E8%83%BD%E7%A0%B4%E6%B5%AA/ar-AA1IM8Ma?ocid=BingNewsVerp 
+  - 进入中国十五年，JINS睛姿9成眼镜产自本地，目标在华开1000家店 | https://www.msn.cn/zh-cn/shopping/%E9%80%9A%E7%94%A8/%E8%BF%9B%E5%85%A5%E4%B8%AD%E5%9B%BD%E5%8D%81%E4%BA%94%E5%B9%B4-jins%E7%9D%9B%E5%A7%BF9%E6%88%90%E7%9C%BC%E9%95%9C%E4%BA%A7%E8%87%AA%E6%9C%AC%E5%9C%B0-%E7%9B%AE%E6%A0%87%E5%9C%A8%E5%8D%8E%E5%BC%801000%E5%AE%B6%E5%BA%97/ar-AA1IJZWv?ocid=BingNewsVerp 
+  - 我省首个数据知识产权证券化产品获批 | https://www.msn.cn/zh-cn/news/other/%E6%B1%9F%E8%8B%8F%E9%A6%96%E4%B8%AA%E6%95%B0%E6%8D%AE%E7%9F%A5%E8%AF%86%E4%BA%A7%E6%9D%83%E8%AF%81%E5%88%B8%E5%8C%96%E4%BA%A7%E5%93%81%E8%8E%B7%E6%89%B9/ar-AA1IFQMf 
+==============================
+
+
+[2025-07-18 09:52:31]
+[执行完成] 执行完成: fetch_content.py
+[说明] 说明: 执行成功
+==============================
+
+[2025-07-18 09:53:48]
+[开始执行] 开始执行: news_summarizer.py
+[参数] 执行参数: --keyword 养老 --date 2025-07-17
+==============================
+
+[2025-07-18 09:53:48]
+执行程序: news_summarizer
+[关键词] 主关键词: 养老
+[日期] 日期: 2025-07-17
+[平台] 平台: unknown
+[模型] 模型: None
+[新闻数量] 3分及以上新闻数量: 0
+[Prompt] 送给大模型的prompt前300字: 
+[总结结果文件] 总结结果文件: 无
+[Token统计] 平台: unknown，模型: None，system: None, user: None, result: None
+[运行结果] 运行结果: 成功
+==============================
+
+[2025-07-18 09:53:48]
+[执行完成] 执行完成: news_summarizer.py
+[说明] 说明: 关键词 养老 摘要完成
+==============================
+
+[2025-07-18 09:54:37]
+[开始执行] 开始执行: news_scorer.py
+[参数] 执行参数: 养老 2025-07-17
+==============================
+
+[2025-07-18 10:02:21]
+执行程序: ai评分（统一使用DeepSeek V3模型）
+[关键词] 主关键词: 养老
+[文件] 原json文件: output/2025-07-17/2025-07-17_养老.json
+[结果] 评分结果文件: output/2025-07-17/2025-07-17_养老_scored.json
+[统计] 新闻总数: 99
+[完成] 完成评分: 99
+0分:14 1分:6 2分:10 3分:35 4分:20 5分:14
+[字数] 3分及以上新闻正文总字数: 69770
+[规则打分] 规则打分新闻数: 0
+==============================
+
+[2025-07-18 10:02:21]
+[执行完成] 执行完成: news_scorer.py
+[说明] 说明: 关键词 养老 评分完成
+==============================
+
+[2025-07-18 10:05:00]
+[开始执行] 开始执行: news_scorer.py
+[参数] 执行参数: 公积金 2025-07-17
+==============================
+
+[2025-07-18 10:06:49]
+执行程序: ai评分（统一使用DeepSeek V3模型）
+[关键词] 主关键词: 公积金
+[文件] 原json文件: output/2025-07-17/2025-07-17_公积金.json
+[结果] 评分结果文件: output/2025-07-17/2025-07-17_公积金_scored.json
+[统计] 新闻总数: 31
+[完成] 完成评分: 31
+0分:5 1分:2 2分:1 3分:6 4分:13 5分:4
+[字数] 3分及以上新闻正文总字数: 24228
+[规则打分] 规则打分新闻数: 0
+==============================
+
+[2025-07-18 10:06:49]
+[执行完成] 执行完成: news_scorer.py
+[说明] 说明: 关键词 公积金 评分完成
+==============================
+
+[2025-07-18 10:07:01]
+[开始执行] 开始执行: news_scorer.py
+[参数] 执行参数: 政府基金 2025-07-17
+==============================
+
+[2025-07-18 10:09:56]
+执行程序: ai评分（统一使用DeepSeek V3模型）
+[关键词] 主关键词: 政府基金
+[文件] 原json文件: output/2025-07-17/2025-07-17_政府基金.json
+[结果] 评分结果文件: output/2025-07-17/2025-07-17_政府基金_scored.json
+[统计] 新闻总数: 46
+[完成] 完成评分: 46
+0分:4 1分:12 2分:3 3分:2 4分:24 5分:1
+[字数] 3分及以上新闻正文总字数: 26164
+[规则打分] 规则打分新闻数: 0
+==============================
+
+[2025-07-18 10:09:56]
+[执行完成] 执行完成: news_scorer.py
+[说明] 说明: 关键词 政府基金 评分完成
+==============================
+
+[2025-07-18 10:11:10]
+[开始执行] 开始执行: news_scorer.py
+[参数] 执行参数: 江苏省国资委 2025-07-17
+==============================
+
+[2025-07-18 10:24:20]
+执行程序: ai评分（统一使用DeepSeek V3模型）
+[关键词] 主关键词: 江苏省国资委
+[文件] 原json文件: output/2025-07-17/2025-07-17_江苏省国资委.json
+[结果] 评分结果文件: output/2025-07-17/2025-07-17_江苏省国资委_scored.json
+[统计] 新闻总数: 271
+[完成] 完成评分: 271
+0分:223 1分:14 2分:13 3分:7 4分:12 5分:2
+[字数] 3分及以上新闻正文总字数: 25097
+[规则打分] 规则打分新闻数: 0
+==============================
+
+[2025-07-18 10:24:20]
+[执行完成] 执行完成: news_scorer.py
+[说明] 说明: 关键词 江苏省国资委 评分完成
+==============================
+
+[2025-07-18 10:29:53]
+[开始执行] 开始执行: news_summarizer.py
+[参数] 执行参数: --keyword 养老 --date 2025-07-17
+==============================
+
+[2025-07-18 11:15:16]
+[异常终止] 程序异常终止
+[程序名] 程序名: news_summarizer.py
+[执行阶段] 执行阶段: main
+[关键词] 关键词: unknown
+[错误信息] 错误信息: 用户中断程序执行
+==============================
+
+[2025-07-18 11:17:12]
+[开始执行] 开始执行: news_summarizer.py
+[参数] 执行参数: --keyword 养老 --date 2025-07-17
+==============================
+
+[2025-07-18 11:36:37]
+[异常终止] 程序异常终止
+[程序名] 程序名: news_summarizer.py
+[执行阶段] 执行阶段: main
+[关键词] 关键词: unknown
+[错误信息] 错误信息: 用户中断程序执行
+==============================
