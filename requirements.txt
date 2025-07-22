@@ -12,8 +12,7 @@ tiktoken
 transformers
 openai
 pymysql
-
-
+flask
 
 # HTTP请求，抓取API和网页
 # Flask模板渲染 
