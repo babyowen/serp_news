@@ -34081,3 +34081,90 @@ AI评分：4成功/0失败
 [执行完成] 执行完成: fetch_content.py
 [说明] 说明: 执行成功
 ==============================
+
+[2025-07-27 16:01:26]
+[开始执行] 开始执行: fetch_content.py
+[参数] 执行参数: 公积金 2025-07-26
+==============================
+[2025-07-27 16:01:26] [INFO] [news-unknown] [公积金] 正在抓取: 大连市7月起调整住房公积金缴存基数 最高上限30669元_工资_年度_单位
+[2025-07-27 16:01:26] [DEBUG] [news-unknown] [公积金] URL: https://www.sohu.com/a/917725466_349247?scm=10001.8085_13-8085_13.0.0.0
+[2025-07-27 16:01:27] [SUCCESS] [news-unknown] [公积金] 抓取成功 (通用): 580 字
+[2025-07-27 16:01:27] [INFO] [news-unknown] [公积金] 正在抓取: 徐州市调整住房公积金缴存基数！
+[2025-07-27 16:01:27] [DEBUG] [news-unknown] [公积金] URL: https://www.yzwb.net/news/jiangsu/202507/t20250726_241871.html
+[2025-07-27 16:06:33] [SUCCESS] [news-unknown] [公积金] 抓取成功 (通用): 1476 字
+[2025-07-27 16:06:33] [INFO] [news-unknown] [公积金] 正在抓取: 线上渠道办理住房公积金业务操作指南
+[2025-07-27 16:06:33] [DEBUG] [news-unknown] [公积金] URL: https://www.qlwb.com.cn/detail/26410715.html
+[2025-07-27 16:06:36] [SUCCESS] [news-unknown] [公积金] 抓取成功 (通用): 1011 字
+[2025-07-27 16:06:36] [INFO] [news-unknown] [公积金] 正在抓取: 长江能科社保和公积金未缴人数突增，客户销售额与年报披露不一致
+[2025-07-27 16:06:36] [DEBUG] [news-unknown] [公积金] URL: https://cj.sina.cn/articles/view/3561749561/d44bfc3900101ck8q
+[2025-07-27 16:06:36] [SUCCESS] [news-unknown] [公积金] 抓取成功 (通用): 2041 字
+[2025-07-27 16:06:36] [INFO] [news-unknown] [公积金] 正在抓取: 菏泽住房公积金召开2025年高质量发展培训会，促事业新发展_调研_工作_陈东明
+[2025-07-27 16:06:36] [DEBUG] [news-unknown] [公积金] URL: https://m.sohu.com/a/917730220_121218495?scm=10001.325_13-325_13.0.0.5_32&spm=smwp.channel_247.block2_307_epwR4p_1_fd.6.1753491600010DA5oXoZ_324
+[2025-07-27 16:06:37] [SUCCESS] [news-unknown] [公积金] 抓取成功 (通用): 375 字
+[2025-07-27 16:06:41] [INFO] [news-unknown] [公积金] 正在抓取: 江苏夏粮总产量位列全国第五位上海徐汇一地块刷新全国单价地王纪录_住房_公积金_上市公司
+[2025-07-27 16:06:41] [DEBUG] [news-unknown] [公积金] URL: https://m.sohu.com/a/917714843_121426544?scm=10001.325_13-325_13.0.0.5_32
+[2025-07-27 16:06:41] [SUCCESS] [news-unknown] [公积金] 抓取成功 (通用): 2765 字
+[2025-07-27 16:06:41] [INFO] [news-unknown] [公积金] 正在抓取: 洛阳公积金提取最新管理办法！10月1日起施行！
+[2025-07-27 16:06:41] [DEBUG] [news-unknown] [公积金] URL: https://news.qq.com/rain/a/20250726A07L7A00
+[2025-07-27 16:06:41] [SUCCESS] [news-unknown] [公积金] 抓取成功 (通用): 2347 字
+[2025-07-27 16:06:45] [INFO] [news-unknown] [公积金] 正在抓取: 公积金“商转公” ，重庆16家合作银行均可直转！
+[2025-07-27 16:06:45] [DEBUG] [news-unknown] [公积金] URL: https://news.qq.com/rain/a/20250726A07L2900
+[2025-07-27 16:06:45] [SUCCESS] [news-unknown] [公积金] 抓取成功 (通用): 663 字
+[2025-07-27 16:06:45] [INFO] [news-unknown] [公积金] 正在抓取: 长沙发布“公积金惠企”品牌 提供最高3000万授信额度
+[2025-07-27 16:06:45] [DEBUG] [news-unknown] [公积金] URL: https://hunan.ifeng.com/c/8lHaa3cp1Ju
+[2025-07-27 16:06:46] [SUCCESS] [news-unknown] [公积金] 抓取成功 (通用): 664 字
+[2025-07-27 16:06:46] [INFO] [news-unknown] [公积金] 正在抓取: 天津购房新招!7月25日起公积金余额可直接付首付
+[2025-07-27 16:06:46] [DEBUG] [news-unknown] [公积金] URL: https://tj.loupan.com/html/news/202507/5507574.html
+[2025-07-27 16:06:49] [SUCCESS] [news-unknown] [公积金] 抓取成功 (通用): 1374 字
+[2025-07-27 16:06:49] [INFO] [news-unknown] [公积金] 正在抓取: 住房公积金贷款可“带押过户”温州首单业务在龙港办结
+[2025-07-27 16:06:49] [DEBUG] [news-unknown] [公积金] URL: https://www.msn.cn/zh-cn/money/%E6%88%BF%E5%9C%B0%E4%BA%A7/%E4%BD%8F%E6%88%BF%E5%85%AC%E7%A7%AF%E9%87%91%E8%B4%B7%E6%AC%BE%E5%8F%AF-%E5%B8%A6%E6%8A%BC%E8%BF%87%E6%88%B7-%E6%B8%A9%E5%B7%9E%E9%A6%96%E5%8D%95%E4%B8%9A%E5%8A%A1%E5%9C%A8%E9%BE%99%E6%B8%AF%E5%8A%9E%E7%BB%93/ar-AA1JjKIk?ocid=BingNewsVerp
+[2025-07-27 16:07:09] [ERROR] [news-unknown] [公积金] 抓取失败: 未获取到正文
+[2025-07-27 16:07:10] [INFO] [news-unknown] [公积金] 正在抓取: 大连住房公积金缴存基数有变化
+[2025-07-27 16:07:10] [DEBUG] [news-unknown] [公积金] URL: https://www.msn.cn/zh-cn/money/%E6%94%BF%E5%BA%9C%E6%94%AF%E5%8A%A9%E5%92%8C%E7%A6%8F%E5%88%A9/%E5%A4%A7%E8%BF%9E%E4%BD%8F%E6%88%BF%E5%85%AC%E7%A7%AF%E9%87%91%E7%BC%B4%E5%AD%98%E5%9F%BA%E6%95%B0%E6%9C%89%E5%8F%98%E5%8C%96/ar-AA1JiRfG?ocid=BingNewsVerp
+[2025-07-27 16:07:30] [ERROR] [news-unknown] [公积金] 抓取失败: 未获取到正文
+[2025-07-27 16:07:30] [INFO] [news-unknown] [公积金] 正在抓取: 重庆首套房房贷利率最新消息2025
+[2025-07-27 16:07:30] [DEBUG] [news-unknown] [公积金] URL: https://cq.loupan.com/html/news/202507/5507621.html
+[2025-07-27 16:07:37] [SUCCESS] [news-unknown] [公积金] 抓取成功 (通用): 1922 字
+[2025-07-27 16:07:37] [INFO] [news-unknown] [公积金] 正在抓取: 洛阳公积金提取最新管理办法!10月1日起施行!
+[2025-07-27 16:07:37] [DEBUG] [news-unknown] [公积金] URL: https://news.qq.com/rain/a/20250726A07L7A00
+[2025-07-27 16:07:37] [SUCCESS] [news-unknown] [公积金] 抓取成功 (通用): 2347 字
+[2025-07-27 16:07:39] [INFO] [news-unknown] [公积金] 正在抓取: 公积金"商转公" ，重庆16家合作银行均可直转!
+[2025-07-27 16:07:39] [DEBUG] [news-unknown] [公积金] URL: https://news.qq.com/rain/a/20250726A07L2900
+[2025-07-27 16:07:39] [SUCCESS] [news-unknown] [公积金] 抓取成功 (通用): 663 字
+[2025-07-27 16:07:39] [INFO] [news-unknown] [公积金] 正在抓取: 长沙发布"公积金惠企"品牌 提供最高3000万授信额度
+[2025-07-27 16:07:39] [DEBUG] [news-unknown] [公积金] URL: https://hunan.ifeng.com/c/8lHaa3cp1Ju
+[2025-07-27 16:07:39] [SUCCESS] [news-unknown] [公积金] 抓取成功 (通用): 664 字
+[2025-07-27 16:07:39] [INFO] [news-unknown] [公积金] 正在抓取: 江苏夏粮总产量位列全国第五位 上海徐汇一地块刷新全国单价地王纪录
+[2025-07-27 16:07:39] [DEBUG] [news-unknown] [公积金] URL: https://www.sohu.com/a/917714843_121426544
+[2025-07-27 16:07:40] [SUCCESS] [news-unknown] [公积金] 抓取成功 (通用): 1551 字
+[2025-07-27 16:07:40] [INFO] [news-unknown] [公积金] 正在抓取: 住房公积金贷款可"带押过户"温州首单业务在龙港办结
+[2025-07-27 16:07:40] [DEBUG] [news-unknown] [公积金] URL: https://www.msn.cn/zh-cn/money/%E6%88%BF%E5%9C%B0%E4%BA%A7/%E4%BD%8F%E6%88%BF%E5%85%AC%E7%A7%AF%E9%87%91%E8%B4%B7%E6%AC%BE%E5%8F%AF-%E5%B8%A6%E6%8A%BC%E8%BF%87%E6%88%B7-%E6%B8%A9%E5%B7%9E%E9%A6%96%E5%8D%95%E4%B8%9A%E5%8A%A1%E5%9C%A8%E9%BE%99%E6%B8%AF%E5%8A%9E%E7%BB%93/ar-AA1JjKIk
+[2025-07-27 16:08:00] [ERROR] [news-unknown] [公积金] 抓取失败: 未获取到正文
+[2025-07-27 16:08:01] [INFO] [news-unknown] [公积金] 正在抓取: 住房公积金贷款可"带押过户"
+[2025-07-27 16:08:01] [DEBUG] [news-unknown] [公积金] URL: https://www.msn.cn/zh-cn/news/other/%E4%BD%8F%E6%88%BF%E5%85%AC%E7%A7%AF%E9%87%91%E8%B4%B7%E6%AC%BE%E5%8F%AF-%E5%B8%A6%E6%8A%BC%E8%BF%87%E6%88%B7/ar-AA1JjpZJ
+[2025-07-27 16:08:21] [ERROR] [news-unknown] [公积金] 抓取失败: 未获取到正文
+
+==============================
+[时间] 2025-07-27 16:08:21
+[关键词] 关键词: 公积金
+[模式] 模式: 正式
+[文件] 处理的json文件: output/2025-07-26/2025-07-26_公积金.json
+
+[统计] 抓取统计：
+  [成功] 成功抓取正文: 15 篇
+  [定制] 其中定制化抓取: 0 篇
+  [来源] 本次采集新闻源数量: 9
+  [失败] 抓取失败: 4 篇
+
+[警告] 未能抓取的新闻：
+  - 住房公积金贷款可“带押过户”温州首单业务在龙港办结 | https://www.msn.cn/zh-cn/money/%E6%88%BF%E5%9C%B0%E4%BA%A7/%E4%BD%8F%E6%88%BF%E5%85%AC%E7%A7%AF%E9%87%91%E8%B4%B7%E6%AC%BE%E5%8F%AF-%E5%B8%A6%E6%8A%BC%E8%BF%87%E6%88%B7-%E6%B8%A9%E5%B7%9E%E9%A6%96%E5%8D%95%E4%B8%9A%E5%8A%A1%E5%9C%A8%E9%BE%99%E6%B8%AF%E5%8A%9E%E7%BB%93/ar-AA1JjKIk?ocid=BingNewsVerp 
+  - 大连住房公积金缴存基数有变化 | https://www.msn.cn/zh-cn/money/%E6%94%BF%E5%BA%9C%E6%94%AF%E5%8A%A9%E5%92%8C%E7%A6%8F%E5%88%A9/%E5%A4%A7%E8%BF%9E%E4%BD%8F%E6%88%BF%E5%85%AC%E7%A7%AF%E9%87%91%E7%BC%B4%E5%AD%98%E5%9F%BA%E6%95%B0%E6%9C%89%E5%8F%98%E5%8C%96/ar-AA1JiRfG?ocid=BingNewsVerp 
+  - 住房公积金贷款可"带押过户"温州首单业务在龙港办结 | https://www.msn.cn/zh-cn/money/%E6%88%BF%E5%9C%B0%E4%BA%A7/%E4%BD%8F%E6%88%BF%E5%85%AC%E7%A7%AF%E9%87%91%E8%B4%B7%E6%AC%BE%E5%8F%AF-%E5%B8%A6%E6%8A%BC%E8%BF%87%E6%88%B7-%E6%B8%A9%E5%B7%9E%E9%A6%96%E5%8D%95%E4%B8%9A%E5%8A%A1%E5%9C%A8%E9%BE%99%E6%B8%AF%E5%8A%9E%E7%BB%93/ar-AA1JjKIk 
+  - 住房公积金贷款可"带押过户" | https://www.msn.cn/zh-cn/news/other/%E4%BD%8F%E6%88%BF%E5%85%AC%E7%A7%AF%E9%87%91%E8%B4%B7%E6%AC%BE%E5%8F%AF-%E5%B8%A6%E6%8A%BC%E8%BF%87%E6%88%B7/ar-AA1JjpZJ 
+==============================
+
+
+[2025-07-27 16:08:21]
+[执行完成] 执行完成: fetch_content.py
+[说明] 说明: 执行成功
+==============================
