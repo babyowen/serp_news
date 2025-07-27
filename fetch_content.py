@@ -311,9 +311,9 @@ def fetch_article_content_with_playwright(url):
         print(f"[调试] fetch_article_content_with_playwright 异常: {e}")
         return '', 0, False
 
-# 综合抓取正文，优先定制化规则，其次trafilatura/newspaper3k/Playwright/Selenium等
-def fetch_article_content(url, max_retries=3):
-    print(f"[调试] fetch_article_content 启动, url={url}")
+# 综合抓取正文的核心实现（不包含重试逻辑）
+def _fetch_article_content_core(url):
+    print(f"[调试] _fetch_article_content_core 启动, url={url}")
     # 1. msn.cn 直接跳过抓取
     if 'msn.cn' in url:
         print("[调试] msn.cn 暂不支持正文抓取，已跳过")
@@ -322,12 +322,17 @@ def fetch_article_content(url, max_retries=3):
     for match_func, grab_func in CUSTOM_GRAB_RULES:
         if match_func(url.lower()):
             print(f"[调试] 优先命中定制化规则: {grab_func.__name__}, url={url}")
-            text, grab_type = grab_func(fetch_article_content_with_selenium_driver(url))
-            # 乱码检测
-            if is_garbled(text):
-                print(f"[WARN] 定制化规则抓取到疑似乱码或异常正文，已丢弃。url={url}")
-                return '', 0, False
-            return text, len(text), True
+            try:
+                text, grab_type = grab_func(fetch_article_content_with_selenium_driver(url))
+                # 乱码检测
+                if is_garbled(text):
+                    print(f"[WARN] 定制化规则抓取到疑似乱码或异常正文，已丢弃。url={url}")
+                    return '', 0, False
+                if text and len(text) > 0:  # 只要有内容就返回
+                    return text, len(text), True
+            except Exception as e:
+                print(f"[调试] 定制化规则异常: {e}")
+                raise  # 抛出异常以便重试机制捕获
     # 针对GBK/GB2312等特殊站点优先用requests自动编码识别
     if any(domain in url for domain in ['jxnews.com.cn']):
         print("[调试] 命中特殊编码站点，优先 requests 抓取")
@@ -339,25 +344,23 @@ def fetch_article_content(url, max_retries=3):
             print("[调试] requests 抓取成功，提前 return")
             return text, wc, used_custom
     # 2. trafilatura
-    for attempt in range(max_retries):
-        try:
-            print(f"[调试] trafilatura 抓取 attempt {attempt+1}")
-            downloaded = trafilatura.fetch_url(url)
-            if downloaded:
-                result = trafilatura.extract(downloaded, output_format='json')
-                if result:
-                    data = json.loads(result)
-                    text = data.get('text', '')
-                    if is_garbled(text):
-                        print(f"[WARN] trafilatura抓取到疑似乱码或异常正文，已丢弃。url={url}")
-                        return '', 0, False
-                    if text and len(text) > 50:
-                        print("[调试] trafilatura 抓取成功，提前 return")
-                        return text, len(text), False
-        except Exception as e:
-            print(f"[调试] trafilatura 异常: {e}")
-        if attempt < max_retries - 1:
-            time.sleep(random.uniform(1, 3))
+    try:
+        print(f"[调试] trafilatura 抓取")
+        downloaded = trafilatura.fetch_url(url)
+        if downloaded:
+            result = trafilatura.extract(downloaded, output_format='json')
+            if result:
+                data = json.loads(result)
+                text = data.get('text', '')
+                if is_garbled(text):
+                    print(f"[WARN] trafilatura抓取到疑似乱码或异常正文，已丢弃。url={url}")
+                    return '', 0, False
+                if text and len(text) > 50:
+                    print("[调试] trafilatura 抓取成功，提前 return")
+                    return text, len(text), False
+    except Exception as e:
+        print(f"[调试] trafilatura 异常: {e}")
+        raise  # 抛出异常以便重试机制捕获
     # 3. newspaper3k
     try:
         print("[调试] newspaper3k 抓取")
@@ -373,6 +376,7 @@ def fetch_article_content(url, max_retries=3):
             return text, len(text), False
     except Exception as e:
         print(f"[调试] newspaper3k 异常: {e}")
+        raise  # 抛出异常以便重试机制捕获
     # 4. Playwright渲染+正文提取
     try:
         print("[调试] Playwright 渲染+正文提取")
@@ -413,6 +417,7 @@ def fetch_article_content(url, max_retries=3):
             print(f"[调试] Playwright+Readability 异常: {e}")
     except Exception as e:
         print(f"[调试] Playwright 渲染异常: {e}")
+        raise  # 抛出异常以便重试机制捕获
     # 5. Selenium定制化兜底（如未命中定制化规则时的通用抓取）
     try:
         print("[调试] selenium 定制化抓取")
@@ -425,7 +430,59 @@ def fetch_article_content(url, max_retries=3):
             return text, wc, custom_grab
     except Exception as e:
         print(f"[调试] selenium 定制化异常: {e}")
+        raise  # 抛出异常以便重试机制捕获
     print("[调试] 全部抓取失败，返回空")
+    return '', 0, False
+
+# 带重试机制的正文抓取包装函数
+def fetch_article_content(url, max_retries=3, retry_interval=10):
+    """
+    带重试机制的正文抓取函数
+    
+    Args:
+        url: 要抓取的网页URL
+        max_retries: 最大重试次数，默认3次
+        retry_interval: 重试间隔秒数，默认10秒
+    
+    Returns:
+        tuple: (content, wordcount, custom_grab)
+    """
+    print(f"[调试] fetch_article_content 启动，最大重试次数: {max_retries}, url={url}")
+    
+    last_exception = None
+    
+    for attempt in range(max_retries):
+        try:
+            print(f"[调试] 第 {attempt + 1} 次尝试抓取正文")
+            content, wordcount, custom_grab = _fetch_article_content_core(url)
+            
+            # 如果抓取成功（有内容），直接返回
+            if wordcount > 0:
+                print(f"[调试] 第 {attempt + 1} 次尝试成功，字数: {wordcount}")
+                return content, wordcount, custom_grab
+            
+            # 如果没有内容但没有异常，也算一次尝试
+            print(f"[调试] 第 {attempt + 1} 次尝试未获取到内容")
+            if attempt < max_retries - 1:
+                print(f"[调试] 等待 {retry_interval} 秒后重试...")
+                time.sleep(retry_interval)
+            
+        except Exception as e:
+            last_exception = e
+            print(f"[调试] 第 {attempt + 1} 次尝试异常: {e}")
+            
+            if attempt < max_retries - 1:
+                print(f"[调试] 等待 {retry_interval} 秒后重试...")
+                time.sleep(retry_interval)
+            else:
+                print(f"[调试] 已达到最大重试次数 {max_retries}，放弃抓取")
+    
+    # 所有重试都失败了
+    if last_exception:
+        print(f"[ERROR] 抓取失败，最后一次异常: {last_exception}")
+    else:
+        print(f"[ERROR] 抓取失败，{max_retries} 次尝试均未获取到内容")
+    
     return '', 0, False
 
 # 用Selenium驱动返回driver对象，供定制化规则使用
