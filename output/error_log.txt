@@ -1052,3 +1052,10 @@ Stacktrace:
 [2025-07-20 07:48:15] google_news | 养老 | HTTPSConnectionPool(host='serpapi.com', port=443): Max retries exceeded with url: /search.json?engine=google_news&q=%E5%85%BB%E8%80%81&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&gl=cn&hl=zh-CN&tbs=qdr%3Ad&num=100 (Caused by ProxyError('Unable to connect to proxy', NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x1065cb040>: Failed to establish a new connection: [Errno 60] Operation timed out')))
 [2025-07-20 07:48:44] baidu_news | 养老 | HTTPSConnectionPool(host='serpapi.com', port=443): Max retries exceeded with url: /search.json?engine=baidu_news&q=%E5%85%BB%E8%80%81&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&rtt=4&rn=50 (Caused by ProxyError('Unable to connect to proxy', NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x106453df0>: Failed to establish a new connection: [Errno 60] Operation timed out')))
 [2025-07-20 07:49:14] bing_news | 养老 | HTTPSConnectionPool(host='serpapi.com', port=443): Max retries exceeded with url: /search.json?engine=bing_news&q=%E5%85%BB%E8%80%81&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&mkt=zh-hk&qft=interval%3D%227%22&count=50 (Caused by ProxyError('Unable to connect to proxy', NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x1064354f0>: Failed to establish a new connection: [Errno 60] Operation timed out')))
+[2025-07-27 15:36:35] ERROR
+脚本: fetch_content.py
+关键词: unknown
+错误类型: MAIN_FUNCTION_ERROR
+错误信息: fetch_content.py 执行过程中发生异常: Could not reach host. Are you offline?
+==================================================
+

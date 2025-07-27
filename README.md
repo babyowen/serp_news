@@ -165,9 +165,55 @@ python app.py
 | :--- | :--- |
 | **新闻采集** | `python fetch_and_filter.py "养老" 2025-06-10` |
 | **正文抓取** | `python fetch_content.py "养老" 2025-06-10` |
+| **单网页测试** | `python fetch_content.py "关键词" 2025-06-10 --url="https://example.com/news"` |
 | **AI评分** | `python news_scorer.py "养老" 2025-06-10` |
 | **智能摘要** | `python news_summarizer.py --keyword "养老" --date 2025-06-10` |
 | **数据入库** | `python write_to_mysql.py --date 2025-06-10` |
+
+### 📝 单网页抓取测试说明
+
+当你想要测试系统对某个具体网页的正文抓取效果时，可以使用单网页测试功能：
+
+```bash
+# 基础用法：测试抓取指定URL的正文
+python fetch_content.py "测试关键词" 2025-06-10 --url="https://www.example.com/news/article.html"
+
+# 实际示例：测试抓取人民网新闻
+python fetch_content.py "养老" 2025-06-10 --url="http://finance.people.com.cn/n1/2025/0610/c1004-40265431.html"
+
+# 测试新浪财经新闻
+python fetch_content.py "公积金" 2025-06-10 --url="https://finance.sina.com.cn/china/gncj/2025-06-10/doc-inafcusu1234567.shtml"
+```
+
+**参数说明：**
+- `"测试关键词"`：**必需参数**，用于日志记录的关键词标识，可以是任意文本
+- `2025-06-10`：**必需参数**，日期格式为 YYYY-MM-DD（在测试模式下主要用于日志记录）
+- `--url="目标网址"`：要测试抓取的具体网页URL
+
+**测试结果显示：**
+- **字数**：成功抓取的正文字符数
+- **定制化**：是否使用了针对该网站的定制化抓取规则
+- **正文预览**：显示前500字符的正文内容预览
+
+这个功能特别适用于：
+- 🔍 **调试新网站**：测试系统对新发现网站的抓取效果
+- 🛠️ **验证规则**：检验定制化抓取规则是否正常工作
+- 📊 **效果评估**：比较不同抓取策略的效果差异
+
+**常见问题排查：**
+
+如果遇到 "Could not reach host. Are you offline?" 错误：
+1. **检查网络连接**：确认能正常访问互联网
+2. **重试访问**：网站可能有临时访问限制，稍后重试
+3. **检查代理设置**：如果使用代理，确认代理配置正确
+4. **测试其他网站**：尝试抓取其他网站确认是否为特定网站问题
+
+示例排查命令：
+```bash
+# 测试不同网站
+python fetch_content.py "测试" 2025-06-10 --url="http://www.people.com.cn/finance/"
+python fetch_content.py "测试" 2025-06-10 --url="https://www.sina.com.cn/"
+```
 
 ## 🛡️ 容错与日志
 
