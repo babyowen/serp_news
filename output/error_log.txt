@@ -1059,3 +1059,5 @@ Stacktrace:
 错误信息: fetch_content.py 执行过程中发生异常: Could not reach host. Are you offline?
 ==================================================
 
+[2025-08-14 22:05:40] bing_news | 公积金 | 400 Client Error: Bad Request for url: https://serpapi.com/search.json?engine=bing_news&q=%E5%85%AC%E7%A7%AF%E9%87%91&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&cc=CN&qft=interval%3D%227%22&count=50&first=1
+[2025-08-14 22:09:36] bing_news | 公积金 | No module named 'serpapi'
