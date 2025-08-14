@@ -125,40 +125,41 @@ def fetch_baidu_news_web(keyword="养老", max_pages=3):
             })
     return results
 
-def fetch_serpapi_bing_news(keyword, max_pages=2):
-    url = "https://serpapi.com/search.json"
+def fetch_serpapi_bing_news(keyword, max_pages=1):
+    """使用SerpApi获取Bing新闻"""
+    results = []
+    
     params = {
         "engine": "bing_news",
         "q": keyword,
         "api_key": SERPAPI_KEY,
-        "mkt": "zh-hk",
-        "qft": 'interval="7"',  # 修改：从8(一周)改为7(一天)
-        "count": "50"           # 新增：每页返回50条结果
+        "device": "desktop",
+        "qft": 'interval="7"'
     }
-    all_results = []
-    for page in range(max_pages):
-        if page > 0:
-            params["first"] = page * 10
-        for attempt in range(3):
-            try:
-                resp = requests.get(url, params=params, timeout=15)
-                resp.raise_for_status()
-                data = resp.json()
-                results = data.get("organic_results", [])
-                if not results:
-                    break
-                all_results.extend(results)
-                break
-            except Exception as e:
-                if attempt == 2:
-                    log_error(f"bing_news", keyword, str(e))
-                else:
-                    time.sleep(3)
-        else:
-            return {"organic_results": []}
-    return {"organic_results": all_results}
+    
+    try:
+        from serpapi import GoogleSearch
+        search = GoogleSearch(params)
+        search_results = search.get_dict()
+        
+        if "organic_results" in search_results:
+            for result in search_results["organic_results"]:
+                news_item = {
+                    "title": result.get("title", ""),
+                    "link": result.get("link", ""),
+                    "date": result.get("date", ""),
+                    "snippet": result.get("snippet", ""),
+                    "source": "Bing News"
+                }
+                results.append(news_item)
+                
+    except Exception as e:
+        print(f"获取Bing新闻时出错: {e}")
+        log_error(f"bing_news", keyword, str(e))
+    
+    return {"organic_results": results}
 
-def fetch_serpapi_duckduckgo_news(keyword, max_pages=2):
+def fetch_serpapi_duckduckgo_news(keyword, max_pages=1):
     """
     通过SerpApi DuckDuckGo News API获取新闻，拉取一天内新闻，分页，自动重试，错误日志。
     返回结构：{'news_results': [...]}，内容为原始news_results
@@ -239,4 +240,4 @@ if __name__ == "__main__":
     else:
         # 批量模式
         for kw in DEFAULT_KEYWORDS:
-            run_for_keyword(kw) 
+            run_for_keyword(kw)
