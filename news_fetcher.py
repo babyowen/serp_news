@@ -137,25 +137,30 @@ def fetch_serpapi_bing_news(keyword, max_pages=1):
         "qft": 'interval="7"'
     }
     
-    try:
-        from serpapi import GoogleSearch
-        search = GoogleSearch(params)
-        search_results = search.get_dict()
-        
-        if "organic_results" in search_results:
-            for result in search_results["organic_results"]:
-                news_item = {
-                    "title": result.get("title", ""),
-                    "link": result.get("link", ""),
-                    "date": result.get("date", ""),
-                    "snippet": result.get("snippet", ""),
-                    "source": "Bing News"
-                }
-                results.append(news_item)
-                
-    except Exception as e:
-        print(f"获取Bing新闻时出错: {e}")
-        log_error(f"bing_news", keyword, str(e))
+    for attempt in range(3):
+        try:
+            from serpapi import GoogleSearch
+            search = GoogleSearch(params)
+            search_results = search.get_dict()
+            
+            if "organic_results" in search_results:
+                for result in search_results["organic_results"]:
+                    news_item = {
+                        "title": result.get("title", ""),
+                        "link": result.get("link", ""),
+                        "date": result.get("date", ""),
+                        "snippet": result.get("snippet", ""),
+                        "source": "Bing News"
+                    }
+                    results.append(news_item)
+            break  # 成功则跳出重试
+                    
+        except Exception as e:
+            if attempt == 2:
+                print(f"获取Bing新闻时出错: {e}")
+                log_error(f"bing_news", keyword, str(e))
+            else:
+                time.sleep(3)
     
     return {"organic_results": results}
 
