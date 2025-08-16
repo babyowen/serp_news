@@ -1061,3 +1061,16 @@ Stacktrace:
 
 [2025-08-14 22:05:40] bing_news | 公积金 | 400 Client Error: Bad Request for url: https://serpapi.com/search.json?engine=bing_news&q=%E5%85%AC%E7%A7%AF%E9%87%91&api_key=58b64c1579e705e959c09826bc621bbf941345d4617bdae14a0734492c4aa435&cc=CN&qft=interval%3D%227%22&count=50&first=1
 [2025-08-14 22:09:36] bing_news | 公积金 | No module named 'serpapi'
+[2025-08-16 17:33:30] ERROR
+脚本: test_fetcher.py
+关键词: unknown
+错误类型: UNCAUGHT_EXCEPTION
+错误信息: ImportError: cannot import name 'is_baidu_news_yesterday' from 'main' (/Users/liuliang/python/serp_news/main.py)
+详细堆栈:
+Traceback (most recent call last):
+  File "/Users/liuliang/python/serp_news/test_fetcher.py", line 6, in <module>
+    from main import is_baidu_news_yesterday, parse_baidu_news_date, is_google_news_yesterday, parse_google_news_date, is_duckduckgo_news_yesterday, parse_duckduckgo_news_date
+ImportError: cannot import name 'is_baidu_news_yesterday' from 'main' (/Users/liuliang/python/serp_news/main.py)
+
+==================================================
+

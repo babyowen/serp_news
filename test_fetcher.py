@@ -3,7 +3,7 @@ import json
 import os
 from datetime import datetime, timedelta
 from news_fetcher import fetch_serpapi_baidu_news, fetch_serpapi_google_news, fetch_baidu_news_web, fetch_serpapi_bing_news, fetch_serpapi_duckduckgo_news
-from main import is_baidu_news_yesterday, parse_baidu_news_date, is_google_news_yesterday, parse_google_news_date, is_duckduckgo_news_yesterday, parse_duckduckgo_news_date
+from fetch_and_filter import is_baidu_news_yesterday, parse_baidu_news_date, is_google_news_yesterday, parse_google_news_date, is_duckduckgo_news_yesterday, parse_duckduckgo_news_date
 import re
 
 # 用法: python test_fetcher.py serp_baidunews|serp_googlenews|baidu_news_web|serp_bingnews|serp_duckduckgo_news 关键词
@@ -130,6 +130,30 @@ def is_bing_news_yesterday(date_str):
         return False
     now = datetime.now()
     yesterday = (now - timedelta(days=1)).date()
+    
+    # 处理英文格式 "Xh" (小时)
+    match = re.match(r"(\d+)h$", date_str)
+    if match:
+        hours_ago = int(match.group(1))
+        news_time = now - timedelta(hours=hours_ago)
+        # 24小时内的都认为是有效的
+        return hours_ago <= 24
+    
+    # 处理英文格式 "Xm" (分钟)
+    match = re.match(r"(\d+)m$", date_str)
+    if match:
+        minutes_ago = int(match.group(1))
+        news_time = now - timedelta(minutes=minutes_ago)
+        # 24小时内的都认为是有效的
+        return minutes_ago <= 1440  # 24*60分钟
+    
+    # 处理英文格式 "Xd" (天)
+    match = re.match(r"(\d+)d$", date_str)
+    if match:
+        days_ago = int(match.group(1))
+        # 只要1天内的都认为是有效的
+        return days_ago <= 1
+    
     # 处理"X 小時"
     match = re.match(r"(\d+)\s*小時", date_str)
     if match:
@@ -241,4 +265,4 @@ if __name__ == "__main__":
         test_serp_duckduckgo_news(keyword)
     else:
         print("暂不支持该新闻源。支持: serp_baidunews, serp_googlenews, baidu_news_web, serp_bingnews, serp_duckduckgo_news")
-        sys.exit(1) 
+        sys.exit(1)
