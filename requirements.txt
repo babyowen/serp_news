@@ -13,6 +13,8 @@ transformers
 openai
 pymysql
 flask
+google-search-results
 
 # HTTP请求，抓取API和网页
-# Flask模板渲染 
+# Flask模板渲染
+# SerpApi官方Python库
