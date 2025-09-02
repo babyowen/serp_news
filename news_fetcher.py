@@ -129,6 +129,7 @@ def fetch_serpapi_bing_news(keyword, max_pages=1):
     """使用SerpApi获取Bing新闻"""
     results = []
     
+    url = "https://serpapi.com/search.json"
     params = {
         "engine": "bing_news",
         "q": keyword,
@@ -139,9 +140,9 @@ def fetch_serpapi_bing_news(keyword, max_pages=1):
     
     for attempt in range(3):
         try:
-            from serpapi import GoogleSearch
-            search = GoogleSearch(params)
-            search_results = search.get_dict()
+            resp = requests.get(url, params=params, timeout=15)
+            resp.raise_for_status()
+            search_results = resp.json()
             
             if "organic_results" in search_results:
                 for result in search_results["organic_results"]:
