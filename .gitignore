@@ -35,3 +35,4 @@ local_settings.py
 *.sqlite3 
 output/error_log.txt
 output/run_log.txt
+.DS_Store
