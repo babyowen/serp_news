@@ -33,3 +33,5 @@ local_settings.py
 # Database
 *.db
 *.sqlite3 
+output/error_log.txt
+output/run_log.txt
