@@ -41,6 +41,15 @@ python news_summarizer.py --keyword "养老" --date 2025-09-01
 python write_to_mysql.py --date 2025-09-01
 ```
 
+### 500字短摘要生成
+```bash
+# 为评分≥3且尚未生成短摘要的新闻生成约500字短摘要
+python news_item_summarizer.py 2025-09-01
+
+# 不传日期默认处理昨天的数据
+python news_item_summarizer.py
+```
+
 ### 环境设置
 ```bash
 # 安装依赖
