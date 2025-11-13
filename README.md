@@ -174,6 +174,7 @@ python app.py
 | **AI评分** | `python news_scorer.py "养老" 2025-06-10` |
 | **智能摘要** | `python news_summarizer.py --keyword "养老" --date 2025-06-10` |
 | **数据入库** | `python write_to_mysql.py --date 2025-06-10` |
+| **500字短摘要** | `python news_item_summarizer.py 2025-06-10` |
 
 ### 📝 单网页抓取测试说明
 
