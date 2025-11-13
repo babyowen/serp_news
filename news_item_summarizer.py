@@ -84,7 +84,8 @@ def get_conn():
         user=MYSQL_USER,
         password=MYSQL_PASSWORD,
         database=MYSQL_DB,
-        charset='utf8mb4'
+        charset='utf8mb4',
+        autocommit=True
     )
 
 def log_run(date, total, success, fail, skip):
@@ -116,56 +117,95 @@ def main():
             "SELECT id, title, content FROM scored_news WHERE fetchdate=%s AND score>=3 AND (short_summary IS NULL OR short_summary='')",
             (date,)
         )
-        rows = cur.fetchall()
-        total = len(rows)
+        initial_rows = cur.fetchall()
+        total = len(initial_rows)
         success = 0
         fail = 0
         skip = 0
-        for rid, title, content in rows:
-            if not content or not str(content).strip():
-                skip += 1
-                continue
-            text = str(content).strip()
-            if len(text) <= 500:
-                try:
-                    cur.execute(
-                        "UPDATE scored_news SET short_summary=%s WHERE id=%s",
-                        (text, rid)
-                    )
-                    conn.commit()
-                    success += 1
-                    safe_print(f"[直接写原文] id={rid} 字数={len(text)}")
-                except Exception as e:
+        cycles = 0
+        while True:
+            conn.ping(reconnect=True)
+            cur.execute(
+                "SELECT id, title, content FROM scored_news WHERE fetchdate=%s AND score>=3 AND (short_summary IS NULL OR short_summary='')",
+                (date,)
+            )
+            rows = cur.fetchall()
+            if not rows:
+                break
+            for rid, title, content in rows:
+                if not content or not str(content).strip():
+                    skip += 1
+                    continue
+                text = str(content).strip()
+                if len(text) <= 500:
+                    backoffs = [1, 2, 4]
+                    done = False
+                    for i in range(len(backoffs) + 1):
+                        try:
+                            conn.ping(reconnect=True)
+                            cur.execute(
+                                "UPDATE scored_news SET short_summary=%s WHERE id=%s",
+                                (text, rid)
+                            )
+                            success += 1
+                            safe_print(f"[直接写原文] id={rid} 字数={len(text)}")
+                            done = True
+                            break
+                        except Exception as e:
+                            msg = f"id={rid} 错误={type(e).__name__}: {str(e)}"
+                            safe_print(f"[更新失败] {msg}")
+                            err.log_step_failure(step_name="DB_UPDATE", error_msg=msg)
+                            err.log_error(
+                                error_type="DB_UPDATE_ERROR",
+                                error_msg=str(e),
+                                script_name="news_item_summarizer.py",
+                                context={"id": rid}
+                            )
+                            if i < len(backoffs):
+                                time.sleep(backoffs[i])
+                                conn = get_conn()
+                                cur = conn.cursor()
+                    if not done:
+                        fail += 1
+                    continue
+                summary = call_llm(title or '', content or '')
+                if summary:
+                    backoffs = [1, 2, 4]
+                    done = False
+                    for i in range(len(backoffs) + 1):
+                        try:
+                            conn.ping(reconnect=True)
+                            cur.execute(
+                                "UPDATE scored_news SET short_summary=%s WHERE id=%s",
+                                (summary, rid)
+                            )
+                            success += 1
+                            safe_print(f"[更新成功] id={rid}")
+                            done = True
+                            break
+                        except Exception as e:
+                            msg = f"id={rid} 错误={type(e).__name__}: {str(e)}"
+                            safe_print(f"[更新失败] {msg}")
+                            err.log_step_failure(step_name="DB_UPDATE", error_msg=msg)
+                            err.log_error(
+                                error_type="DB_UPDATE_ERROR",
+                                error_msg=str(e),
+                                script_name="news_item_summarizer.py",
+                                context={"id": rid}
+                            )
+                            if i < len(backoffs):
+                                time.sleep(backoffs[i])
+                                conn = get_conn()
+                                cur = conn.cursor()
+                    if not done:
+                        fail += 1
+                else:
                     fail += 1
-                    err.log_error(
-                        error_type="DB_UPDATE_ERROR",
-                        error_msg=str(e),
-                        script_name="news_item_summarizer.py",
-                        context={"id": rid}
-                    )
-                continue
-            summary = call_llm(title or '', content or '')
-            if summary:
-                try:
-                    cur.execute(
-                        "UPDATE scored_news SET short_summary=%s WHERE id=%s",
-                        (summary, rid)
-                    )
-                    conn.commit()
-                    success += 1
-                    safe_print(f"[更新成功] id={rid}")
-                except Exception as e:
-                    fail += 1
-                    err.log_error(
-                        error_type="DB_UPDATE_ERROR",
-                        error_msg=str(e),
-                        script_name="news_item_summarizer.py",
-                        context={"id": rid}
-                    )
-            else:
-                fail += 1
-                safe_print(f"[生成失败] id={rid}")
-            time.sleep(0.2)
+                    safe_print(f"[生成失败] id={rid}")
+                time.sleep(0.2)
+            cycles += 1
+            if cycles >= 3:
+                break
         log_run(date, total, success, fail, skip)
         log_script_complete("news_item_summarizer.py", success=True, message=f"抓取日期 {date} 完成: 成功{success} 失败{fail} 跳过{skip}")
         return True

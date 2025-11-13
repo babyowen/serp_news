@@ -2126,3 +2126,13 @@ ImportError: cannot import name 'is_baidu_news_yesterday' from 'main' (/Users/li
 }
 ==================================================
 
+[2025-11-13 10:20:44] ERROR
+脚本: news_item_summarizer.py
+关键词: unknown
+错误类型: PROGRAM_CRASH
+错误信息: 用户中断程序执行
+上下文信息: {
+  "stage": "main"
+}
+==================================================
+
