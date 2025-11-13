@@ -135,6 +135,13 @@ def main():
             for rid, title, content in rows:
                 if not content or not str(content).strip():
                     skip += 1
+                    safe_print(f"[跳过空内容] id={rid}")
+                    try:
+                        _lp = os.path.join('output','run_log.txt')
+                        with open(_lp, 'a', encoding='utf-8') as _f:
+                            _f.write(f"[SKIP] 空内容记录 id={rid}\n")
+                    except Exception:
+                        pass
                     continue
                 text = str(content).strip()
                 if len(text) <= 500:
