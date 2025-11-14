@@ -1,398 +1,409 @@
-from news_fetcher import fetch_serpapi_baidu_news, fetch_serpapi_google_news, fetch_serpapi_bing_news, fetch_serpapi_duckduckgo_news
-from config import DEFAULT_KEYWORDS, blacklist_keywords
-import json
-from datetime import datetime, timedelta
-import re
-from dateutil import parser
-import os
+import subprocess
 import sys
+import datetime
+import os
+import json
+import concurrent.futures
+from config import DEFAULT_KEYWORDS, SEARCH_KEYWORDS
+from error_handler import (
+    setup_global_exception_handler, 
+    safe_subprocess_run, 
+    with_error_handling,
+    log_script_start,
+    log_script_complete,
+    ErrorHandler
+)
 
-def is_baidu_news_yesterday(date_str):
-    """
-    判断Baidu News返回的date字段是否为昨天。
-    支持：
-    - 包含"昨天"
-    - 具体日期等于昨天
-    - "几小时前"/"几分钟前"，根据当前时间推算是否属于昨天
-    """
-    if not date_str:
+# 设置全局异常处理器
+setup_global_exception_handler()
+
+def run_step(cmd, step_name, script_name=None, desc=None, keyword=None):
+    """安全运行步骤，使用新的错误处理机制"""
+    if script_name or desc:
+        print(f"\n------ 即将执行: {script_name or ''} ------")
+        if desc:
+            print(f"功能说明: {desc}")
+        print(f"-----------------------------------\n")
+    
+    # 使用safe_subprocess_run替代原来的subprocess.run
+    return safe_subprocess_run(cmd, step_name, keyword=keyword, check=True)
+
+def all_news_has_content(json_path):
+    """判断json文件中所有新闻条目都已存在非空content字段"""
+    if not os.path.exists(json_path):
         return False
-    now = datetime.now()
-    yesterday = (now - timedelta(days=1)).date()
-    if "昨天" in date_str:
-        return True
-    if "前天" in date_str:
+    try:
+        with open(json_path, 'r', encoding='utf-8') as f:
+            news_list = json.load(f)
+        if not isinstance(news_list, list) or not news_list:
+            return False
+        return all(item.get('content') and len(str(item.get('content')).strip()) > 0 for item in news_list)
+    except Exception as e:
+        error_handler = ErrorHandler()
+        error_handler.log_error(
+            error_type="FILE_READ_ERROR",
+            error_msg=f"检查content时读取失败: {json_path}, 错误: {e}",
+            script_name="main.py",
+            context={"file_path": json_path, "function": "all_news_has_content"}
+        )
+        print(f"[WARN] 检查content时读取失败: {json_path}, 错误: {e}")
         return False
-    # 处理"几小时前"
-    match = re.match(r"(\d+)小时前", date_str)
-    if match:
-        hours_ago = int(match.group(1))
-        news_time = now - timedelta(hours=hours_ago)
-        return news_time.date() == yesterday
-    # 处理"几分钟前"
-    match = re.match(r"(\d+)分钟前", date_str)
-    if match:
-        minutes_ago = int(match.group(1))
-        news_time = now - timedelta(minutes=minutes_ago)
-        return news_time.date() == yesterday
-    # 处理具体日期（如"2024-07-23 11:45"或"2024-07-23"）
-    try:
-        # 只保留数字和-，防止有"昨天18:47"这种混合格式
-        date_part = ''.join([c for c in date_str if c.isdigit() or c == '-'])
-        if len(date_part) == 8:  # 20240723
-            date_part = f"{date_part[:4]}-{date_part[4:6]}-{date_part[6:]}"
-        if len(date_part) == 10:
-            date_part = f"{date_part[:4]}-{date_part[4:6]}-{date_part[6:]}"
-            news_date = datetime.strptime(date_part, "%Y-%m-%d").date()
-            return news_date == yesterday
-    except Exception:
-        pass
-    # 其它情况（如"几天前"等）不算昨天
-    return False
 
-def parse_baidu_news_date(date_str):
-    """
-    将Baidu News的date字段解析为具体日期（YYYY-MM-DD），解析失败返回None。
-    """
-    if not date_str:
-        return None
-    now = datetime.now()
-    if "昨天" in date_str:
-        return (now - timedelta(days=1)).strftime("%Y-%m-%d")
-    if "前天" in date_str:
-        return (now - timedelta(days=2)).strftime("%Y-%m-%d")
-    match = re.match(r"(\d+)小时前", date_str)
-    if match:
-        hours_ago = int(match.group(1))
-        news_time = now - timedelta(hours=hours_ago)
-        return news_time.strftime("%Y-%m-%d")
-    match = re.match(r"(\d+)分钟前", date_str)
-    if match:
-        minutes_ago = int(match.group(1))
-        news_time = now - timedelta(minutes=minutes_ago)
-        return news_time.strftime("%Y-%m-%d")
-    # 处理具体日期
-    try:
-        date_part = ''.join([c for c in date_str if c.isdigit() or c == '-'])
-        if len(date_part) == 8:
-            date_part = f"{date_part[:4]}-{date_part[4:6]}-{date_part[6:]}"
-        if len(date_part) == 10:
-            return date_part
-    except Exception:
-        pass
-    return None
-
-def parse_google_news_date(date_str):
-    """
-    尝试将Google News的date字段解析为具体日期（YYYY-MM-DD），解析失败返回None。
-    支持"昨天"、"几小时前"、"几分钟前"、中文日期、标准日期、国际化日期（如05/24/2025, 11:21 PM, +0000 UTC）等。
-    """
-    if not date_str:
-        return None
-    now = datetime.now()
-    # 处理"昨天"
-    if "昨天" in date_str:
-        return (now - timedelta(days=1)).strftime("%Y-%m-%d")
-    # 处理"小时前"
-    match = re.match(r"(\d+)小时前", date_str)
-    if match:
-        hours_ago = int(match.group(1))
-        news_time = now - timedelta(hours=hours_ago)
-        return news_time.strftime("%Y-%m-%d")
-    # 处理"分钟前"
-    match = re.match(r"(\d+)分钟前", date_str)
-    if match:
-        minutes_ago = int(match.group(1))
-        news_time = now - timedelta(minutes=minutes_ago)
-        return news_time.strftime("%Y-%m-%d")
-    # 优先用dateutil解析
-    try:
-        dt = parser.parse(date_str, fuzzy=True)
-        return dt.strftime("%Y-%m-%d")
-    except Exception:
-        pass
-    # 兜底：尝试处理中文日期
-    try:
-        date_part = re.sub(r"[年月日]", "-", date_str)
-        date_part = re.sub(r"-+", "-", date_part).strip("-")
-        if len(date_part) >= 10:
-            date_part = date_part[:10]
-            return date_part
-    except Exception:
-        pass
-    return None
-
-def is_google_news_yesterday(date_str):
-    """
-    判断Google News返回的date字段是否为昨天。
-    """
-    parsed = parse_google_news_date(date_str)
-    if not parsed:
-        return False
-    yesterday = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
-    return parsed == yesterday
-
-def is_bing_news_yesterday(date_str):
-    if not date_str:
-        return False
-    now = datetime.now()
-    yesterday = (now - timedelta(days=1)).date()
-    # 处理"X 小時"
-    match = re.match(r"(\d+)\s*小時", date_str)
-    if match:
-        hours_ago = int(match.group(1))
-        news_time = now - timedelta(hours=hours_ago)
-        return news_time.date() == yesterday
-    # 处理"X 分鐘"
-    match = re.match(r"(\d+)\s*分鐘", date_str)
-    if match:
-        minutes_ago = int(match.group(1))
-        news_time = now - timedelta(minutes=minutes_ago)
-        return news_time.date() == yesterday
-    # 处理"X 天"
-    match = re.match(r"(\d+)\s*天", date_str)
-    if match:
-        days_ago = int(match.group(1))
-        news_time = now - timedelta(days=days_ago)
-        return news_time.date() == yesterday
-    # 兼容其它格式
-    return False
-
-def get_output_path(fetch_date, basename):
-    return os.path.join("output", fetch_date, basename)
-
-def is_duckduckgo_news_yesterday(date_str):
-    """
-    判断DuckDuckGo News返回的date字段是否为昨天。
-    支持：
-    - '1 day ago'（昨天）
-    - 'X days ago'（X=1为昨天）
-    - 'X hours ago'（需判断当前时间是否属于昨天）
-    - 'X minutes ago'（同上）
-    """
-    if not date_str:
-        return False
-    now = datetime.now()
-    yesterday = (now - timedelta(days=1)).date()
-    # 1 day ago
-    if date_str.strip() == '1 day ago':
-        return True
-    # X days ago
-    m = re.match(r"(\d+) days ago", date_str)
-    if m:
-        days = int(m.group(1))
-        return days == 1
-    # X hours ago
-    m = re.match(r"(\d+) hours ago", date_str)
-    if m:
-        hours = int(m.group(1))
-        news_time = now - timedelta(hours=hours)
-        return news_time.date() == yesterday
-    # X minutes ago
-    m = re.match(r"(\d+) minutes ago", date_str)
-    if m:
-        minutes = int(m.group(1))
-        news_time = now - timedelta(minutes=minutes)
-        return news_time.date() == yesterday
-    return False
-
-def parse_duckduckgo_news_date(date_str):
-    """
-    将DuckDuckGo News的date字段解析为具体日期（YYYY-MM-DD），解析失败返回None。
-    """
-    if not date_str:
-        return None
-    now = datetime.now()
-    if date_str.strip() == '1 day ago':
-        return (now - timedelta(days=1)).strftime("%Y-%m-%d")
-    m = re.match(r"(\d+) days ago", date_str)
-    if m:
-        days = int(m.group(1))
-        return (now - timedelta(days=days)).strftime("%Y-%m-%d")
-    m = re.match(r"(\d+) hours ago", date_str)
-    if m:
-        hours = int(m.group(1))
-        news_time = now - timedelta(hours=hours)
-        return news_time.strftime("%Y-%m-%d")
-    m = re.match(r"(\d+) minutes ago", date_str)
-    if m:
-        minutes = int(m.group(1))
-        news_time = now - timedelta(minutes=minutes)
-        return news_time.strftime("%Y-%m-%d")
-    return None
-
-def main():
-    try:
-        keywords = list(DEFAULT_KEYWORDS)
-    except Exception:
-        keywords = [DEFAULT_KEYWORDS]
-    # 支持命令行参数指定日期
-    if len(sys.argv) > 1:
-        fetch_date = sys.argv[1]
-    else:
-        fetch_date = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
-    os.makedirs(os.path.join("output", fetch_date), exist_ok=True)
-    log_lines = []
-    run_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    log_lines.append(f"=====🕒 本次运行时间: {run_time}=====")
-    for keyword in keywords:
-        log_lines.append(f"\n==============================")
-        log_lines.append(f"🔑 关键词: {keyword}")
-        all_yesterday_news = []
-        count_baidu = 0
-        count_google = 0
-        count_bing = 0
-        count_duck = 0
-
-        # --- SerpApi Baidu News ---
-        print("\n【SerpApi Baidu News API】")
-        news_data_baidu = fetch_serpapi_baidu_news(keyword)
-        raw_filename_baidu = get_output_path(fetch_date, f"raw_serp_baidunews_{keyword}_{fetch_date}.json")
-        with open(raw_filename_baidu, "w", encoding="utf-8") as f:
-            json.dump(news_data_baidu, f, ensure_ascii=False, indent=2)
-        print(f"完整API返回内容已保存到 {raw_filename_baidu}")
-        for item in news_data_baidu.get("organic_results", []):
-            date_str = item.get('date', '')
-            if is_baidu_news_yesterday(date_str):
-                news_date = parse_baidu_news_date(date_str)
-                filtered_item = {
-                    'title': item.get('title', ''),
-                    'link': item.get('link', ''),
-                    'fetchdate': news_date,
-                    'date': date_str,
-                    'source': item.get('source', ''),
-                    'sourceapi': 'serp_baidunews',
-                    'keyword': keyword,
-                    'thumbnail': item.get('thumbnail', None)
-                }
-                all_yesterday_news.append(filtered_item)
-                count_baidu += 1
-        log_lines.append(f"🌐 Baidu News: {count_baidu} 条")
-
-        # --- SerpApi Google News ---
-        print("\n【SerpApi Google News API】")
-        news_data_google = fetch_serpapi_google_news(keyword)
-        raw_filename_google = get_output_path(fetch_date, f"raw_serp_googlenews_{keyword}_{fetch_date}.json")
-        with open(raw_filename_google, "w", encoding="utf-8") as f:
-            json.dump(news_data_google, f, ensure_ascii=False, indent=2)
-        print(f"完整API返回内容已保存到 {raw_filename_google}")
-        for item in news_data_google.get("news_results", []):
-            date_str = item.get('date', '')
-            if is_google_news_yesterday(date_str):
-                news_date = parse_google_news_date(date_str)
-                filtered_item = {
-                    'title': item.get('title', ''),
-                    'link': item.get('link', ''),
-                    'source': item.get('source', {}).get('name', '') if isinstance(item.get('source', {}), dict) else '',
-                    'date': item.get('date', ''),
-                    'fetchdate': news_date,
-                    'sourceapi': 'serp_googlenews',
-                    'thumbnail': item.get('thumbnail', None),
-                    'keyword': keyword
-                }
-                all_yesterday_news.append(filtered_item)
-                count_google += 1
-        log_lines.append(f"🌐 Google News: {count_google} 条")
-
-        # --- SerpApi Bing News ---
-        print("\n【SerpApi Bing News API】")
-        news_data_bing = fetch_serpapi_bing_news(keyword)
-        raw_filename_bing = get_output_path(fetch_date, f"raw_serp_bingnews_{keyword}_{fetch_date}.json")
-        with open(raw_filename_bing, "w", encoding="utf-8") as f:
-            json.dump(news_data_bing, f, ensure_ascii=False, indent=2)
-        print(f"完整API返回内容已保存到 {raw_filename_bing}")
-        for item in news_data_bing.get("organic_results", []):
-            date_str = item.get('date', '')
-            if is_bing_news_yesterday(date_str):
-                news_date = (datetime.strptime(fetch_date, "%Y-%m-%d") - timedelta(days=1)).strftime("%Y-%m-%d")
-                filtered_item = {
-                    'title': item.get('title', ''),
-                    'link': item.get('link', ''),
-                    'source': item.get('source', ''),
-                    'date': item.get('date', ''),
-                    'fetchdate': news_date,
-                    'sourceapi': 'serp_bingnews',
-                    'thumbnail': item.get('thumbnail', None),
-                    'keyword': keyword
-                }
-                all_yesterday_news.append(filtered_item)
-                count_bing += 1
-        log_lines.append(f"🌐 Bing News: {count_bing} 条")
-
-        # --- SerpApi DuckDuckGo News ---
-        print("\n【SerpApi DuckDuckGo News API】")
-        news_data_duck = fetch_serpapi_duckduckgo_news(keyword)
-        raw_filename_duck = get_output_path(fetch_date, f"raw_serp_duckduckgo_news_{keyword}_{fetch_date}.json")
-        with open(raw_filename_duck, "w", encoding="utf-8") as f:
-            json.dump(news_data_duck, f, ensure_ascii=False, indent=2)
-        print(f"完整API返回内容已保存到 {raw_filename_duck}")
-        for item in news_data_duck.get("news_results", []):
-            date_str = item.get('date', '')
-            if is_duckduckgo_news_yesterday(date_str):
-                news_date = parse_duckduckgo_news_date(date_str)
-                filtered_item = {
-                    'title': item.get('title', ''),
-                    'link': item.get('link', ''),
-                    'source': item.get('source', ''),
-                    'date': item.get('date', ''),
-                    'fetchdate': news_date,
-                    'sourceapi': 'serp_duckduckgo_news',
-                    'thumbnail': item.get('thumbnail', None),
-                    'keyword': keyword
-                }
-                all_yesterday_news.append(filtered_item)
-                count_duck += 1
-        log_lines.append(f"🌐 DuckDuckGo News: {count_duck} 条")
-
-        # 合并去重：标题+链接唯一
-        unique = {}
-        for item in all_yesterday_news:
-            # 黑名单过滤
-            text_to_check = f"{item.get('source','')} {item.get('title','')} {item.get('link','')}"
-            matched_kw = next((kw for kw in blacklist_keywords if kw.lower() in text_to_check.lower()), None)
-            if matched_kw:
-                log_lines.append(f"🚫 黑名单过滤: [{matched_kw}] | 标题: {item.get('title','')} | 来源: {item.get('source','')} | 链接: {item.get('link','')}")
-                continue
-            key = (item.get('title', '').strip(), item.get('link', '').strip())
-            if key not in unique:
-                unique[key] = item
-        deduped_news = list(unique.values())
-
-        # 剔除tv.cctv.com视频新闻，并记录日志
-        filtered_news = []
-        skipped_video_items = []
-        for item in deduped_news:
-            url = item.get('link')
-            if url and 'tv.cctv.com' in url:
-                skipped_video_items.append({'title': item.get('title', ''), 'link': url})
-                continue
-            filtered_news.append(item)
-        if skipped_video_items:
-            log_lines.append("📺 跳过仅含视频的新闻（tv.cctv.com）：")
-            for item in skipped_video_items:
-                log_lines.append(f"  - {item['title']} | {item['link']}")
-
-        # 统计去重后每个API的数量
-        api_counts = {}
-        for item in filtered_news:
-            api = item.get('sourceapi', 'unknown')
-            api_counts[api] = api_counts.get(api, 0) + 1
-        for api, count in api_counts.items():
-            log_lines.append(f"✅ 去重后 {api}: {count} 条")
-        log_lines.append(f"⭐️ 去重后总保存: {len(filtered_news)} 条")
-        log_lines.append("")
-
-        deduped_filename = get_output_path(fetch_date, f"{fetch_date}_{keyword}.json")
-        with open(deduped_filename, "w", encoding="utf-8") as f:
-            json.dump(filtered_news, f, ensure_ascii=False, indent=2)
-        print(f"合并去重后昨天新闻已保存到 {deduped_filename}，数量：{len(filtered_news)}")
-
-    # 写入全局统一日志
+def write_skip_log(keyword, reason, file_path):
+    """记录跳过信息到日志"""
+    now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     log_path = os.path.join("output", "run_log.txt")
-    with open(log_path, "a", encoding="utf-8") as logf:
-        for line in log_lines:
-            logf.write(line + "\n")
-    print(f"日志已写入 {log_path}")
+    skip_log = (
+        f"[{now}]\n[SKIP] 跳过关键词: {keyword}\n原因: {reason} {file_path}\n==============================\n"
+    )
+    try:
+        with open(log_path, "a", encoding="utf-8") as f:
+            f.write(skip_log)
+    except Exception as e:
+        print(f"[WARN] 无法写入跳过日志: {e}")
+
+@with_error_handling("main.py", "新闻采集阶段")
+def execute_news_fetching(date, main_kw):
+    """执行新闻采集阶段"""
+    merged_file = f"output/{date}/{date}_{main_kw}.json"
+    if os.path.exists(merged_file):
+        print(f"[INFO] {merged_file} 已存在，跳过 {main_kw}")
+        write_skip_log(main_kw, "已存在，新闻列表已抓取", merged_file)
+        return True
+    
+    print(f"[INFO] [步骤1] 抓取API: {main_kw}")
+    all_news = []
+    
+    for search_kw in SEARCH_KEYWORDS[main_kw]:
+        # 调用采集脚本，采集结果临时存储
+        tmp_file = f"output/{date}/tmp_{date}_{main_kw}_{search_kw}.json"
+        cmd = f'python fetch_and_filter.py "{search_kw}" {date} --output "{tmp_file}"'
+        
+        # 使用安全的subprocess调用
+        success = safe_subprocess_run(
+            cmd, 
+            f"采集新闻-{search_kw}", 
+            keyword=search_kw,
+            check=False  # 不直接抛异常，让程序继续
+        )
+        
+        if not success:
+            print(f"[WARN] 采集 {search_kw} 失败，跳过此搜索关键词")
+            continue
+        
+        # 读取采集结果，添加 search_keyword 字段
+        if os.path.exists(tmp_file):
+            try:
+                with open(tmp_file, 'r', encoding='utf-8') as f:
+                    news_list = json.load(f)
+                for item in news_list:
+                    item['search_keyword'] = search_kw
+                    item['main_keyword'] = main_kw
+                    item['keyword'] = main_kw  # 确保keyword字段为主关键词
+                all_news.extend(news_list)
+            except Exception as e:
+                error_handler = ErrorHandler()
+                error_handler.log_error(
+                    error_type="JSON_READ_ERROR",
+                    error_msg=f"读取临时采集文件失败: {tmp_file}, 错误: {e}",
+                    script_name="main.py",
+                    keyword=main_kw,
+                    context={"file_path": tmp_file, "search_keyword": search_kw}
+                )
+                print(f"[WARN] 读取临时采集文件失败: {tmp_file}, 错误: {e}")
+            finally:
+                # 清理临时文件
+                try:
+                    if os.path.exists(tmp_file):
+                        os.remove(tmp_file)
+                except Exception as e:
+                    print(f"[WARN] 删除临时文件失败: {tmp_file}, 错误: {e}")
+    
+    # 合并去重（按 title+link）
+    unique = {}
+    for item in all_news:
+        key = (item.get('title', '').strip(), item.get('link', '').strip())
+        if key not in unique:
+            unique[key] = item
+    deduped_news = list(unique.values())
+    
+    # 保存合并结果
+    try:
+        os.makedirs(f"output/{date}", exist_ok=True)
+        with open(merged_file, 'w', encoding='utf-8') as f:
+            json.dump(deduped_news, f, ensure_ascii=False, indent=2)
+        print(f"[INFO] 合并去重后已保存: {merged_file}，数量：{len(deduped_news)}")
+        return True
+    except Exception as e:
+        error_handler = ErrorHandler()
+        error_handler.log_error(
+            error_type="FILE_WRITE_ERROR",
+            error_msg=f"保存合并文件失败: {merged_file}, 错误: {e}",
+            script_name="main.py",
+            keyword=main_kw,
+            context={"file_path": merged_file, "news_count": len(deduped_news)}
+        )
+        print(f"[ERROR] 保存合并文件失败: {merged_file}, 错误: {e}")
+        return False
+
+@with_error_handling("main.py", "正文抓取阶段")
+def execute_content_fetching(date, kw):
+    """执行正文抓取阶段"""
+    kw = kw.strip()
+    merged_file = f"output/{date}/{date}_{kw}.json"
+    
+    if not os.path.exists(merged_file):
+        print(f"[WARN] {merged_file} 不存在，无法抓正文，跳过 {kw}")
+        write_skip_log(kw, "新闻列表文件不存在，无法抓正文", merged_file)
+        return False
+    
+    if all_news_has_content(merged_file):
+        print(f"[INFO] {merged_file} 所有新闻正文已抓取，跳过 {kw}")
+        write_skip_log(kw, "所有新闻正文已抓取", merged_file)
+        return True
+    
+    print(f"[INFO] [步骤2] 抓正文: {kw}")
+    cmd = f'python fetch_content.py {kw} {date}'
+    
+    return safe_subprocess_run(cmd, f"抓取正文-{kw}", keyword=kw, check=False)
+
+@with_error_handling("main.py", "AI评分阶段")
+def execute_scoring(date, kw):
+    """执行AI评分阶段"""
+    kw = kw.strip()
+    merged_file = f"output/{date}/{date}_{kw}.json"
+    scored_file = f"output/{date}/{date}_{kw}_scored.json"
+    
+    if not os.path.exists(merged_file):
+        print(f"[WARN] {merged_file} 不存在，无法评分，跳过 {kw}")
+        write_skip_log(kw, "新闻列表文件不存在，无法评分", merged_file)
+        return False
+    
+    if os.path.exists(scored_file):
+        print(f"[INFO] {scored_file} 已存在，跳过 {kw}")
+        write_skip_log(kw, "已存在，已完成打分", scored_file)
+        return True
+    
+    print(f"[INFO] [步骤3] 评分: {kw}")
+    cmd = f'python news_scorer.py {kw} {date}'
+    
+    return safe_subprocess_run(cmd, f"AI评分-{kw}", keyword=kw, check=False)
+
+@with_error_handling("main.py", "AI评分并发处理")
+def execute_scoring_concurrent(date, keywords, max_workers=3):
+    """并发执行AI评分阶段"""
+    print(f"[INFO] 开始并发AI评分，最大并发数: {max_workers}")
+    
+    # 记录开始时间
+    start_time = datetime.datetime.now()
+    
+    # 使用ThreadPoolExecutor进行并发处理
+    results = {}
+    with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+        # 提交所有任务
+        future_to_keyword = {
+            executor.submit(execute_scoring, date, kw): kw 
+            for kw in keywords
+        }
+        
+        # 收集结果
+        for future in concurrent.futures.as_completed(future_to_keyword):
+            kw = future_to_keyword[future]
+            try:
+                result = future.result()
+                results[kw] = result
+                status = "成功" if result else "失败"
+                print(f"[INFO] [{kw}] 评分完成: {status}")
+            except Exception as e:
+                print(f"[ERROR] [{kw}] 评分异常: {str(e)}")
+                results[kw] = False
+                
+                # 记录错误
+                error_handler = ErrorHandler()
+                error_handler.log_error(
+                    error_type="CONCURRENT_SCORING_ERROR",
+                    error_msg=f"并发评分时发生异常: {str(e)}",
+                    script_name="main.py",
+                    keyword=kw,
+                    context={"date": date, "stage": "concurrent_scoring"}
+                )
+    
+    # 计算统计信息
+    end_time = datetime.datetime.now()
+    duration = end_time - start_time
+    
+    success_count = sum(1 for result in results.values() if result)
+    fail_count = len(results) - success_count
+    
+    print(f"[INFO] 并发AI评分完成，耗时: {duration.total_seconds():.1f}秒")
+    print(f"[INFO] 成功: {success_count}，失败: {fail_count}")
+    
+    # 记录详细结果到日志
+    now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    log_path = os.path.join("output", "run_log.txt")
+    
+    concurrent_log = f"\n[{now}]\n"
+    concurrent_log += f"执行程序: main.py (并发AI评分)\n"
+    concurrent_log += f"并发处理关键词: {', '.join(keywords)}\n"
+    concurrent_log += f"最大并发数: {max_workers}\n"
+    concurrent_log += f"总耗时: {duration.total_seconds():.1f}秒\n"
+    concurrent_log += f"成功: {success_count}，失败: {fail_count}\n"
+    concurrent_log += f"详细结果:\n"
+    
+    for kw, result in results.items():
+        status = "成功" if result else "失败"
+        concurrent_log += f"  - {kw}: {status}\n"
+    
+    concurrent_log += f"==============================\n"
+    
+    # 清理Unicode字符
+    def clean_unicode_for_log(text):
+        if not text:
+            return text
+        try:
+            text.encode('gbk')
+        except UnicodeEncodeError:
+            safe_chars = []
+            for char in text:
+                try:
+                    char.encode('gbk')
+                    safe_chars.append(char)
+                except UnicodeEncodeError:
+                    safe_chars.append('?')
+            text = ''.join(safe_chars)
+        return text
+    
+    cleaned_log = clean_unicode_for_log(concurrent_log)
+    with open(log_path, "a", encoding="utf-8") as f:
+        f.write(cleaned_log)
+    
+    return success_count, fail_count
+
+@with_error_handling("main.py", "main")
+def main(date=None):
+    """主函数，控制整个新闻处理流程"""
+    # 记录脚本开始执行
+    script_args = [date] if date else []
+    log_script_start("main.py", script_args)
+    
+    try:
+        # 如果未指定日期，自动赋值为昨天日期
+        if not date:
+            date = (datetime.datetime.now() - datetime.timedelta(days=1)).strftime("%Y-%m-%d")
+        
+        print(f"[INFO] 本次批量处理主关键词: {DEFAULT_KEYWORDS}")
+        
+        # 输出所有搜索关键词
+        all_search_keywords = set()
+        for main_kw in DEFAULT_KEYWORDS:
+            all_search_keywords.update(SEARCH_KEYWORDS[main_kw])
+        print(f"[INFO] 本次所有搜索关键词: {sorted(all_search_keywords)}")
+        
+        # 统计成功失败情况
+        fetch_success = 0
+        fetch_failed = 0
+        content_success = 0
+        content_failed = 0
+        score_success = 0
+        score_failed = 0
+        
+        # 步骤1：抓取API
+        print(f"\n[步骤1] 开始执行步骤1：新闻采集阶段")
+        for main_kw in DEFAULT_KEYWORDS:
+            if execute_news_fetching(date, main_kw):
+                fetch_success += 1
+            else:
+                fetch_failed += 1
+        
+        print(f"\n[统计] 步骤1完成统计：成功 {fetch_success}，失败 {fetch_failed}")
+        
+        # 步骤2：抓正文
+        print(f"\n[步骤2] 开始执行步骤2：正文抓取阶段")
+        for kw in DEFAULT_KEYWORDS:
+            if execute_content_fetching(date, kw):
+                content_success += 1
+            else:
+                content_failed += 1
+        
+        print(f"\n[统计] 步骤2完成统计：成功 {content_success}，失败 {content_failed}")
+        
+        # 步骤3：评分（并发处理）
+        print(f"\n[步骤3] 开始执行步骤3：AI评分阶段（并发处理）")
+        score_success, score_failed = execute_scoring_concurrent(date, DEFAULT_KEYWORDS, max_workers=3)
+        
+        print(f"\n[统计] 步骤3完成统计：成功 {score_success}，失败 {score_failed}")
+        
+        print("[INFO] 全部关键词处理完成。开始自动总结主关键词...")
+        
+        # 步骤4：自动总结主关键词
+        date_arg = f'--date {date}' if date else ''
+        print("\n[步骤4] 开始执行步骤4：智能摘要阶段")
+        summarize_success = run_step(
+            f'python news_summarizer.py {date_arg}', 
+            '自动总结主关键词', 
+            'news_summarizer.py', 
+            '对所有主关键词进行总结，自动合并搜索关键词新闻'
+        )
+        
+        # 步骤5：自动写入数据库
+        print("\n[步骤5] 开始执行步骤5：数据库写入阶段")
+        database_success = run_step(
+            f'python write_to_mysql.py {date_arg}', 
+            '自动写入数据库', 
+            'write_to_mysql.py', 
+            '将scored和summary结果写入数据库'
+        )
+        
+        # 统计整体执行情况
+        total_steps = 5
+        successful_steps = sum([
+            1 if fetch_failed == 0 else 0,
+            1 if content_failed == 0 else 0, 
+            1 if score_failed == 0 else 0,
+            1 if summarize_success else 0,
+            1 if database_success else 0
+        ])
+        
+        success_rate = successful_steps / total_steps * 100
+        
+        completion_message = (
+            f"总体完成情况：{successful_steps}/{total_steps} 步骤成功 ({success_rate:.1f}%)\n"
+            f"新闻采集：{fetch_success}成功/{fetch_failed}失败\n"
+            f"正文抓取：{content_success}成功/{content_failed}失败\n"
+            f"AI评分：{score_success}成功/{score_failed}失败\n"
+            f"智能摘要：{'成功' if summarize_success else '失败'}\n"
+            f"数据库写入：{'成功' if database_success else '失败'}"
+        )
+        
+        print(f"\n[完成] 全部流程执行完成！")
+        print(f"[统计] {completion_message}")
+        
+        # 记录脚本完成
+        log_script_complete("main.py", success=True, message=completion_message)
+        
+        return True
+        
+    except KeyboardInterrupt:
+        print(f"\n[INFO] 用户中断程序执行")
+        log_script_complete("main.py", success=False, message="用户中断执行")
+        sys.exit(130)
+    except Exception as e:
+        error_msg = f"main函数执行过程中发生异常: {str(e)}"
+        print(f"[ERROR] {error_msg}")
+        log_script_complete("main.py", success=False, message=error_msg)
+        return False
 
 if __name__ == "__main__":
-    main() 
+    import sys
+    date = None
+    if len(sys.argv) > 1:
+        date = sys.argv[1]
+    
+    # 执行主函数
+    success = main(date)
+    
+    # 根据执行结果设置退出码
+    if success:
+        sys.exit(0)
+    else:
+        sys.exit(1) 

@@ -1,244 +1,237 @@
-# 新闻采集与正文抓取自动化系统
+# 🤖 新闻采集与分析自动化系统
 
-## 项目简介
-本项目实现了多新闻源自动采集、正文抓取与统一格式化存储，具备高可用性、自动化、易维护等特点。支持关键词批量处理、自动适配反爬机制、详细日志追踪，并对依赖环境和驱动做了项目级隔离。
+## 📖 项目简介
 
----
+欢迎来到我们的**全自动、智能化新闻处理流水线**！
 
-## 主要功能
+你可以把它想象成一个不知疲倦的机器人团队，7x24小时为你工作。它们的目标是：
+1.  **自动“阅读”**：从各大新闻网站上，把跟你关心的关键词（如“养老”、“公积金”）相关的新闻都找回来。
+2.  **智能“理解”**：用AI大脑深度阅读每篇新闻，判断它的重要性，并写出高质量的摘要。
+3.  **整齐“归档”**：把所有处理好的信息，分门别类地存入我们的专属数据库和文件柜，方便随时查看和分析。
 
-### 1. 多新闻源采集与统一格式化
-- 支持 Google News、Baidu News、Bing News、DuckDuckGo News 等多源采集。
-- 采集结果统一格式化为 JSON 文件，按日期和关键词分类存储。
-- 自动去重、黑名单过滤。
+本项目从繁琐的人工浏览和复制粘贴中解放出来，真正实现“一次设定，长期受益”。
 
-### 2. 自动正文抓取（多重兜底+定制化）
-- 对每条新闻链接，自动抓取正文并统计字数。
-- **抓取顺序**：
-  1. **trafilatura**（高效静态正文提取）
-  2. **newspaper3k**（新闻站点适配性强，静态提取）
-  3. **Playwright 渲染页面**，先用 **Newspaper3k** 提取正文，失败再用 **Readability（python-readability）** 提取正文
-  4. **Selenium定制化抓取兜底**（针对特定站点专属选择器）
-- Playwright 负责动态渲染页面，Newspaper3k/Readability 专注于正文内容提取，极大提升抓取成功率和兼容性。
-- 针对特定新闻站点定制化选择器，极大提升抓取成功率：
-  - 针对特定新闻站点可灵活扩展定制化选择器，极大提升抓取成功率。
-  - 定制化抓取规则集中在 config_grab_rules.py 文件，采用注册表机制，未来可随时扩展，无需修改主流程。
-- 所有通用方法和定制化抓取均失败时，正文为空，字数为0。
+### ✨ 核心特性
 
-### 3. 反爬虫与稳定性机制
-- Playwright/Selenium 抓取时自动使用自定义 User-Agent，模拟真实浏览器，提升兼容性。
-- 同一网站连续抓取时自动随机延时（1~4秒），降低被封风险。
-- 支持忽略 SSL 证书错误，兼容部分证书异常站点。
+- 🌐 **多源采集**：像侦察兵一样，同时从Google News、百度新闻、Bing News、DuckDuckGo News四个平台搜集信息。
+- 🔑 **智能抓取**：配备“万能钥匙”，通过多级兜底策略（定制规则 > 工具库 > 模拟浏览器）确保高成功率地获取新闻全文。
+- 🤖 **AI智能分析**：集成DeepSeek等大模型，实现高精度的AI评分（0-5分）和"写作-评审-优化-热点追踪"四轮智能摘要。支持关键词特定的评分提示、并发处理和DeepSeek/百炼双平台自动切换。
+- ⚡ **并发处理**：支持多线程并发AI评分（默认最大并发数3），大幅提升处理效率。
+- 🔄 **全自动化**：从采集到入库，一键运行，并支持断点续传。
+- 📊 **数据可视化**：提供简洁的Web界面，让数据结果和统计分析一目了然。
+- 🛡️ **超强容错**：拥有完善的错误处理和日志系统，确保系统稳定运行，过程可追溯。
 
-### 4. 日志记录与失败追踪
-- 每次运行自动记录到 `output/run_log.txt`：
-  - 处理的关键词、对应 JSON 文件
-  - 成功抓取正文的数量
-  - 抓取失败的新闻（标题+链接）
-  - 是否使用定制化抓取（custom_grab 字段，日志中有详细统计）
-- 便于后续人工补录或问题排查。
+## 🎯 系统核心模块
 
-### 5. 关键词批量处理与可配置
-- 支持通过 `config.py` 配置关键词列表。
-- `main.py` 可自动批量处理所有关键词。
-- `fetch_content.py` 支持命令行单关键词处理，便于测试和调试。
-- 支持命令行参数指定日期（如 `python main.py 2025-05-28`），便于补抓历史数据。
-- 支持 `--test` 参数区分测试/正式模式，日志中有标记。
+我们的"新闻工厂"由五个核心步骤组成，就像一条精密的流水线：
 
----
+1.  **新闻采集系统 (信息侦察兵)**: 负责从四个新闻源API自动采集新闻数据。
+2.  **正文抓取系统 (万能钥匙)**: 负责打开新闻链接，把完整的正文内容给拿回来。
+3.  **AI智能评分系统 (首席评审官)**: 阅读每一篇新闻，并根据其重要性给出一个0-5分的评分（支持并发处理）。
+4.  **智能摘要系统 (内容创作团队)**: 将高分新闻精炼成一份高质量的决策参考。
+5.  **数据库存储系统 (数字图书馆)**: 将处理好的数据，结构化存储到MySQL数据库。
 
-## 运行方法
+此外还有两个支撑系统：
+- **Web可视化界面 (中央控制台)**: 提供数据查看和管理的Web界面。
+- **错误处理与日志系统 (安全与监控中心)**: 提供完善的错误处理和日志记录机制。
 
-### 依赖安装
-```bash
-pip install -r requirements.txt
-```
+> 想了解每个模块更详细的工作原理和设计思路吗？请查阅我们更详尽的蓝图：[**`xuqiu.md` (功能需求文档)**](./xuqiu.md)。
 
-### 单关键词正文抓取
-```bash
-python fetch_content.py 关键词 [日期, 格式:YYYY-MM-DD] [--test]
-# 例：python fetch_content.py 公积金 2025-05-28 --test
-```
+## 🚀 快速开始
 
-### 批量采集与处理
-```bash
-python main.py [日期, 格式:YYYY-MM-DD]
-# 例：python main.py 2025-05-28
-```
+### 1. 环境要求
 
----
+- **Python 3.8+**
+- **MySQL 5.7+**
+- **Chrome浏览器**
 
-## 目录结构示例
-```
-serp_news/
-├── config.py
-├── main.py
-├── news_fetcher.py
-├── fetch_content.py
-├── requirements.txt
-├── drivers/                # chromedriver自动下载目录
-├── output/
-│   ├── 2025-05-28/
-│   │   ├── 2025-05-28_公积金.json
-│   │   └── ...
-│   └── run_log.txt
-└── README.md
-```
+### 2. 安装与配置
 
----
-
-## 依赖说明
-- trafilatura
-- newspaper3k
-- selenium
-- webdriver-manager
-- requests
-- beautifulsoup4
-- python-dateutil
-- playwright
-- readability-lxml
-- 其它见 requirements.txt
-
----
-
-## 特色与优势
-- 自动适配反爬虫与动态渲染，极大提升正文抓取成功率
-- Playwright 渲染+Newspaper3k/Readability 提取，兼容性强，适配现代新闻站点
-- 针对主流新闻站点定制化抓取，灵活可扩展
-- 驱动与依赖项目隔离，升级无忧
-- 日志详尽，便于追踪与维护
-- 支持灵活扩展与定制
-
----
-
-如有问题或需定制化扩展，欢迎联系开发者。
-
-# 常用命令格式与功能说明
-
-## 批量采集与处理
-
-- **抓取"昨天"新闻（默认）**
-  ```bash
-  python main.py
-  ```
-  自动按 config.py 配置的关键词，抓取昨天的新闻并保存。
-
-- **抓取指定日期新闻**
-  ```bash
-  python main.py YYYY-MM-DD
-  # 例：python main.py 2025-05-28
-  ```
-  抓取指定日期的新闻，便于补抓历史数据。
-
-## 单关键词正文抓取与补录
-
-- **抓取指定关键词的新闻正文（默认昨天）**
-  ```bash
-  python fetch_content.py 关键词
-  # 例：python fetch_content.py 公积金 yyyy-mm-dd
-  ```
-
-- **抓取指定关键词和日期的新闻正文**
-  ```bash
-  python fetch_content.py 关键词 YYYY-MM-DD
-  # 例：python fetch_content.py 公积金 2025-05-28
-  ```
-
-- **测试模式运行（日志中标记"测试"）**
-  ```bash
-  python fetch_content.py 关键词 [YYYY-MM-DD] --test
-  # 例：python fetch_content.py 公积金 2025-05-28 --test
-  ```
-
-## 单新闻链接抓取调试（开发/测试专用）
-
-- **直接抓取并打印单个新闻链接正文（不写入文件，适合定制化规则调试）**
-  ```bash
-  python fetch_content.py test --url="https://www.cnstock.com/commonDetail/448150"
-  # 或
-  python fetch_content.py test --url https://www.cnstock.com/commonDetail/448150
-  ```
-  - 只需将 test 换成任意关键词（此模式下不会用到）。
-  - 结果会直接在终端输出，包括字数、是否定制化、正文预览。
-  - 适合遇到抓取不正确的网站时，快速调试定制化规则。
-
-## 其它说明
-- 所有运行日志统一写入 `output/run_log.txt`，便于追踪和问题排查。
-- 采集结果按日期和关键词存储于 `output/日期/` 子目录。
-- 依赖安装：
-  ```bash
-  pip install -r requirements.txt
-  ```
-
-如需更多用法或定制化扩展，欢迎查阅源码或联系开发者。
-
-## 正文抓取定制化机制（规则注册表+动态调度）
-
-本项目正文抓取采用多重兜底机制（trafilatura、newspaper3k、Playwright渲染+正文提取、Selenium定制化），并实现了**定制化抓取规则注册表+动态调度机制**，高效支持多站点定制化抓取。
-
-#### 机制说明
-- 定制化抓取规则集中维护在 [config_grab_rules.py](config_grab_rules.py) 文件中，每条规则包含：
-  - 匹配函数（如 `lambda url: 'cnstock.com' in url`）
-  - 抓取函数（如 `def grab_cnstock(driver): ...` 或 `def grab_cnstock_playwright(page): ...`）
-- 主流程遍历规则表，**第一个命中的规则即执行其抓取函数**，返回正文。
-- **定制化抓取支持 Playwright 和 Selenium 两种方式**，主流程会优先尝试 Playwright 定制化，失败后再用 Selenium 定制化。
-- 只要命中定制化规则（无论是否抓取到正文），立即 return，不再进入通用抓取分支。
-- 未命中定制化规则时，自动走通用抓取逻辑（常见正文容器、正文提取库等）。
-- 每条新闻正文结果会在 JSON 中增加 `custom_grab` 字段，布尔值，准确反映是否为定制化抓取。
-
-#### custom_grab 字段说明
-- `custom_grab: true`：命中定制化规则，无论是否抓取到正文，均视为定制化抓取。
-- `custom_grab: false`：未命中定制化规则，走通用抓取。
-- 这样可以准确统计、分析定制化抓取的命中情况，避免混入通用抓取内容。
-
-#### 日志与调试
-- 日志会详细记录每次抓取是否命中定制化规则、抓取是否成功、失败原因等。
-- 只要命中定制化规则，即使正文为空，也会在日志和 json 中体现为定制化抓取。
-- 推荐在定制化抓取函数中输出详细调试信息，便于排查和维护。
-
-#### 扩展与维护
-- 新增定制化站点时，只需在 `config_grab_rules.py` 增加一条规则和一个抓取函数（Playwright 或 Selenium 版本），无需修改主流程。
-- 规则表支持任意复杂的匹配逻辑（如正则、域名、路径等）。
-- 每条规则可加调试输出，便于排查。
-- 详见 [config_grab_rules.py](config_grab_rules.py) 示例。
-
----
-
-如有问题或需定制化扩展，欢迎联系开发者。
-
----
-
-## 2024-06-09 抓取链路与调试记录
-
-- 升级正文抓取链路为：trafilatura → newspaper3k（静态）→ Playwright 渲染+Newspaper3k/Readability 正文提取 → Selenium 定制化兜底。
-- requirements.txt 增加 playwright 和 readability-lxml，修正依赖。
-- Playwright 首次运行需执行 `playwright install` 安装浏览器内核。
-- 实测 Playwright+Newspaper3k 能抓取大部分新闻，但部分站点（如 MSN）会返回隐私说明或个性化内容，正文提取可能误判。
-- 发现自动化抓取与人工访问页面内容有差异，主要因 Cookie/同意记录、User-Agent、反爬策略等不同。
-- 结论：部分站点需定制化规则或人工补录，自动化抓取难以 100% 覆盖所有新闻。
-
-## 新闻源统计与可视化支持
-
-- **自动统计所有采集过的新闻源**
-  - 程序每次运行后会自动将所有采集到的新闻源域名（如 www.jfdaily.com）累积写入 `output/news_sources.txt`，每个域名一行，无重复。
-  - 该文件会自动累积历史所有采集过的新闻源，便于后续做域名-中文名映射、前端展示、统计分析等。
-  - 推荐在前端或数据分析阶段，结合 `news_sources.txt` 和你自定义的"域名-中文名"映射表，实现友好的新闻源展示。
-
-- **统计每天每个关键词下各新闻源采集条数**
-  - 程序会自动将每天每个关键词下各新闻源采集到的新闻条数，追加写入 `output/news_source_stats.json`。
-  - 文件结构为：
-    ```json
-    [
-      {"date": "2025-05-31", "keyword": "公积金", "domain": "www.qlwb.com.cn", "count": 3},
-      {"date": "2025-05-31", "keyword": "养老", "domain": "www.jfdaily.com", "count": 5}
-    ]
+1.  **克隆项目**
+    ```bash
+    git clone <repository-url>
+    cd serp_news
     ```
-  - 便于后续做可视化分析（如：每日各关键词新闻源分布、趋势统计等）。
 
-- **新闻源中文名映射建议**
-  - 由于新闻源域名是动态累积的，建议你在前端或分析阶段维护一份"域名-中文名"映射表，结合 `news_sources.txt` 自动补全。
-  - 这样可以灵活应对新新闻源的出现，无需在采集时提前维护所有域名。
+2.  **安装依赖**
+    ```bash
+    pip install -r requirements.txt
+    ```
 
-- **其它说明**
-  - 所有统计文件均在 `output/` 目录下，便于统一管理和后续数据分析。
-  - 如需其它统计维度或格式，可随时扩展。
+3.  **安装Playwright浏览器驱动**
+    ```bash
+    playwright install
+    ```
+
+4.  **配置环境变量**
+    
+    在项目根目录创建 `.env` 文件，并填入你的配置信息：
+    ```ini
+    # API配置
+    SERPAPI_KEY=your_serpapi_key
+    DEEPSEEK_API_KEY=your_deepseek_api_key
+    BAILIAN_API_KEY=your_bailian_api_key  # 可选，当token超限时使用
+    
+    # 数据库配置
+    MYSQL_HOST=localhost
+    MYSQL_PORT=3306
+    MYSQL_USER=your_username
+    MYSQL_PASSWORD=your_password
+    MYSQL_DB=serp_news
+    ```
+
+5.  **创建数据库表**
+    
+    连接到你的MySQL数据库，执行以下SQL语句创建所需的表：
+    ```sql
+    -- 新闻评分表
+    CREATE TABLE IF NOT EXISTS `scored_news` (
+      `id` int(11) NOT NULL AUTO_INCREMENT,
+      `date` varchar(64) DEFAULT NULL,
+      `title` varchar(255) DEFAULT NULL,
+      `link` text,
+      `source` varchar(255) DEFAULT NULL,
+      `fetchdate` date DEFAULT NULL,
+      `sourceapi` varchar(255) DEFAULT NULL,
+      `thumbnail` text,
+      `keyword` varchar(255) DEFAULT NULL,
+      `content` longtext,
+      `wordcount` int(11) DEFAULT NULL,
+      `custom_grab` tinyint(1) DEFAULT NULL,
+      `score` int(11) DEFAULT NULL,
+      `search_keyword` varchar(255) DEFAULT NULL,
+      PRIMARY KEY (`id`),
+      UNIQUE KEY `title_link` (`title`,`link`(255))
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    
+    -- 新闻摘要表
+    CREATE TABLE IF NOT EXISTS `summary_news` (
+      `id` int(11) NOT NULL AUTO_INCREMENT,
+      `date` date DEFAULT NULL,
+      `keyword` varchar(255) DEFAULT NULL,
+      `summary` longtext,
+      `platform` varchar(255) DEFAULT NULL,
+      `model` varchar(255) DEFAULT NULL,
+      `round` int(11) DEFAULT '1',
+      `judge_suggestion` longtext,
+      PRIMARY KEY (`id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    
+    -- 新闻源统计表
+    CREATE TABLE IF NOT EXISTS `news_source_stats` (
+      `id` int(11) NOT NULL AUTO_INCREMENT,
+      `date` date NOT NULL,
+      `keyword` varchar(50) NOT NULL,
+      `domain` varchar(100) NOT NULL,
+      `count` int(11) NOT NULL,
+      PRIMARY KEY (`id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    
+    -- 新闻网站表
+    CREATE TABLE IF NOT EXISTS `news_websites` (
+      `id` int(11) NOT NULL AUTO_INCREMENT,
+      `website` varchar(255) DEFAULT NULL,
+      `name` varchar(255) DEFAULT NULL,
+      PRIMARY KEY (`id`),
+      UNIQUE KEY `website` (`website`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    ```
+
+6.  **配置关键词**
+    
+    打开 `config.py` 文件，根据你的需求修改 `SEARCH_KEYWORDS` 字典：
+    ```python
+    SEARCH_KEYWORDS = {
+        # "主关键词": ["搜索关键词1", "搜索关键词2", ...],
+        "养老": ["养老"],
+        "公积金": ["公积金"],
+        "政府基金": ["政府基金", "引导基金", "母基金"],
+        "江苏省国资委": ["江苏省国资委", "江苏国信集团", "江苏交通控股", "东部机场", "苏豪", "中江集团", "江苏农垦", "徐矿集团", "江苏沿海集团", "江苏港口集团", "江苏铁路集团", "江苏环保集团", "江苏盐业集团", "江苏粮食集团", "江苏省高投", "金陵饭店", "钟山宾馆", "江苏水源", "江苏体育集团", "江苏国金集团", "江苏省国投集团", "江苏规划设计集团", "江苏省数据集团", "江苏凤凰集团", "江苏文投", "江苏文化投资集团"],
+        "中国烟草": ["中国烟草", "江苏烟草"]
+    }
+    ```
+
+### 3. 一键运行
+
+```bash
+# 1. 运行完整自动化流程 (默认处理昨天的数据)
+python main.py
+
+# 2. 启动Web界面查看结果
+python app.py
+```
+默认情况下，系统会自动处理**昨天**的新闻。你也可以在运行 `main.py` 时传入指定日期，例如 `python main.py 2025-06-10`。
+
+## 🛠️ 高级用法：手动执行单个模块
+
+除了全自动运行，你也可以单独运行流水线中的某一个步骤，这对于调试和特定任务处理非常有用。
+
+| 模块 | 命令示例 |
+| :--- | :--- |
+| **新闻采集** | `python fetch_and_filter.py "养老" 2025-06-10` |
+| **正文抓取** | `python fetch_content.py "养老" 2025-06-10` |
+| **单网页测试** | `python fetch_content.py "关键词" 2025-06-10 --url="https://example.com/news"` |
+| **AI评分** | `python news_scorer.py "养老" 2025-06-10` |
+| **智能摘要** | `python news_summarizer.py --keyword "养老" --date 2025-06-10` |
+| **数据入库** | `python write_to_mysql.py --date 2025-06-10` |
+| **500字短摘要** | `python news_item_summarizer.py 2025-06-10` |
+
+### 📝 单网页抓取测试说明
+
+当你想要测试系统对某个具体网页的正文抓取效果时，可以使用单网页测试功能：
+
+```bash
+# 基础用法：测试抓取指定URL的正文
+python fetch_content.py "测试关键词" 2025-06-10 --url="https://www.example.com/news/article.html"
+
+# 实际示例：测试抓取人民网新闻
+python fetch_content.py "养老" 2025-06-10 --url="http://finance.people.com.cn/n1/2025/0610/c1004-40265431.html"
+
+# 测试新浪财经新闻
+python fetch_content.py "公积金" 2025-06-10 --url="https://finance.sina.com.cn/china/gncj/2025-06-10/doc-inafcusu1234567.shtml"
+```
+
+**参数说明：**
+- `"测试关键词"`：**必需参数**，用于日志记录的关键词标识，可以是任意文本
+- `2025-06-10`：**必需参数**，日期格式为 YYYY-MM-DD（在测试模式下主要用于日志记录）
+- `--url="目标网址"`：要测试抓取的具体网页URL
+
+**测试结果显示：**
+- **字数**：成功抓取的正文字符数
+- **定制化**：是否使用了针对该网站的定制化抓取规则
+- **正文预览**：显示前500字符的正文内容预览
+
+这个功能特别适用于：
+- 🔍 **调试新网站**：测试系统对新发现网站的抓取效果
+- 🛠️ **验证规则**：检验定制化抓取规则是否正常工作
+- 📊 **效果评估**：比较不同抓取策略的效果差异
+
+**常见问题排查：**
+
+如果遇到 "Could not reach host. Are you offline?" 错误：
+1. **检查网络连接**：确认能正常访问互联网
+2. **重试访问**：网站可能有临时访问限制，稍后重试
+3. **检查代理设置**：如果使用代理，确认代理配置正确
+4. **测试其他网站**：尝试抓取其他网站确认是否为特定网站问题
+
+示例排查命令：
+```bash
+# 测试不同网站
+python fetch_content.py "测试" 2025-06-10 --url="http://www.people.com.cn/finance/"
+python fetch_content.py "测试" 2025-06-10 --url="https://www.sina.com.cn/"
+```
+
+## 🛡️ 容错与日志
+
+### 强大的容错机制
+- **单步失败不影响整体**：某个关键词处理失败不会中断其他关键词。
+- **智能断点续传**：自动跳过已完成的数据，程序中断后可直接重新运行。
+- **多级兜底策略**：正文抓取和API调用都具备重试和后备方案。
+
+### 详细的日志系统
+所有运行日志和错误信息都可以在 `output/` 目录下找到：
+- **`run_log.txt`**：程序运行状态日志，记录了每个步骤的执行情况、统计数据和跳过原因。
+- **`error_log.txt`**：结构化的错误日志，当出现问题时，这里会提供详细的错误时间、脚本、关键词和错误信息，便于快速排查。
+
+---
+*该文档最后更新于：2025-09-02*
