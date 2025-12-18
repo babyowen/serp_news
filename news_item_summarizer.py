@@ -109,14 +109,20 @@ def main():
     try:
         parser = argparse.ArgumentParser()
         parser.add_argument('date', nargs='?', default=None)
+        parser.add_argument('--keyword', type=str, default=None, help='Filter by keyword')
         args = parser.parse_args()
         date = parse_date(args.date)
         conn = get_conn()
         cur = conn.cursor()
-        cur.execute(
-            "SELECT id, title, content FROM scored_news WHERE fetchdate=%s AND score>=3 AND (short_summary IS NULL OR short_summary='')",
-            (date,)
-        )
+        
+        sql = "SELECT id, title, content FROM scored_news WHERE fetchdate=%s AND score>=3 AND (short_summary IS NULL OR short_summary='')"
+        params = [date]
+        
+        if args.keyword:
+            sql += " AND keyword=%s"
+            params.append(args.keyword)
+            
+        cur.execute(sql, tuple(params))
         initial_rows = cur.fetchall()
         total = len(initial_rows)
         success = 0
@@ -125,10 +131,7 @@ def main():
         cycles = 0
         while True:
             conn.ping(reconnect=True)
-            cur.execute(
-                "SELECT id, title, content FROM scored_news WHERE fetchdate=%s AND score>=3 AND (short_summary IS NULL OR short_summary='')",
-                (date,)
-            )
+            cur.execute(sql, tuple(params))
             rows = cur.fetchall()
             if not rows:
                 break
