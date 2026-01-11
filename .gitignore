@@ -32,18 +32,10 @@ local_settings.py
 
 # Database
 *.db
-*.sqlite3 
-output/error_log.txt
-output/run_log.txt
+*.sqlite3
+
+# Output directory (所有输出文件和日志)
+output/
+
+# macOS
 .DS_Store
-.DS_Store
-.DS_Store
-.DS_Store
-output/.DS_Store
-.DS_Store
-output/.DS_Store
-.DS_Store
-output/.DS_Store
-.DS_Store
-.DS_Store
-output/.DS_Store
