@@ -162,6 +162,7 @@ js.cnr.cn
 js.ifeng.com
 js.news.cn
 jsnews.jschina.com.cn
+jsszfhcxjst.jiangsu.gov.cn
 jx.sina.com.cn
 jxgz.jxnews.com.cn
 jxsr.jxnews.com.cn
