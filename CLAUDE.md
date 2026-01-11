@@ -64,6 +64,10 @@ playwright install
 # 测试新闻采集功能
 python test_fetcher.py serp_googlenews "测试关键词"
 python test_fetcher.py serp_baidunews "测试关键词"
+
+# 测试新关键词的新闻覆盖情况（推荐）
+python test_keywords.py "测试关键词"
+python test_keywords.py "测试关键词" "2025-01-10"
 ```
 
 ## 架构概览
@@ -236,17 +240,79 @@ main.py 在执行每个阶段前会检查输出文件是否存在：
 ## 测试
 
 可用的测试脚本：
-- `test_fetcher.py` - 测试各个新闻源API的采集功能
-- `test_news_fetcher.py` - 采集器额外测试
-- `test_prompt_building.py` - 测试AI提示构建
 
-测试示例：
+### 1. **test_keywords.py** - 关键词新闻覆盖测试（推荐）
+
+用于快速评估新关键词是否能采集到足够的新闻数据。
+
+**功能特点**：
+- 完全独立运行，不修改任何文件
+- 从4个搜索引擎采集并筛选"昨天"的新闻
+- 显示每个搜索引擎的采集统计
+- 列出所有新闻标题
+
+**使用方法**：
+```bash
+# 测试昨天的新闻（默认）
+python test_keywords.py "江苏省国资委"
+
+# 测试特定日期的新闻
+python test_keywords.py "潜在招标客户" "2025-01-10"
+```
+
+**输出示例**：
+```
+============================================================
+新闻采集测试报告
+============================================================
+测试关键词: 江苏省国资委
+测试日期: 2025-01-10
+
+采集统计:
+- Google News: 15 条
+- 百度新闻: 23 条
+- Bing News: 8 条
+- DuckDuckGo News: 12 条
+- 去重后总计: 55 条
+
+============================================================
+新闻标题列表
+============================================================
+1. 江苏省国资委发布最新政策...
+2. 江苏国资委召开年度工作会议...
+...
+```
+
+### 2. **test_fetcher.py** - 新闻源API测试
+
+测试各个新闻源API的采集功能，输出会保存到 `output/test/` 目录。
+
 ```bash
 # 测试Google News采集
 python test_fetcher.py serp_googlenews "养老"
 
 # 测试百度新闻采集
 python test_fetcher.py serp_baidunews "公积金"
+
+# 测试Bing新闻采集
+python test_fetcher.py serp_bingnews "政府基金"
+
+# 测试DuckDuckGo新闻采集
+python test_fetcher.py serp_duckduckgo_news "国资委"
 ```
 
-测试输出会保存到 `output/test/` 目录。
+### 3. **test_news_fetcher.py** - 采集器额外测试
+
+提供更详细的采集器测试功能。
+
+```bash
+python test_news_fetcher.py
+```
+
+### 4. **test_prompt_building.py** - AI提示构建测试
+
+测试AI提示的构建逻辑。
+
+```bash
+python test_prompt_building.py
+```
