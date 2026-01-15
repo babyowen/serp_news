@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-本文件为 Claude Code (claude.ai/code) 在此代码库中工作时提供指导。
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## 项目概述
 
@@ -52,6 +52,9 @@ python news_item_summarizer.py
 
 ### 环境设置
 ```bash
+# 激活虚拟环境（如果已创建）
+source .venv/bin/activate  # macOS/Linux
+
 # 安装依赖
 pip install -r requirements.txt
 
@@ -116,3 +119,64 @@ playwright install
 - AI评分包含关键词特定提示（例如，"江苏省国资委"的专门提示）
 - Web界面提供基于关键词的过滤和源统计
 - 系统支持从中断恢复（处理前检查现有文件）
+
+## 核心架构:关键词数据流转
+
+### 关键词两层结构
+系统使用**两层关键词映射**架构（定义在 `config.py:SEARCH_KEYWORDS`）:
+
+```python
+SEARCH_KEYWORDS = {
+    "主关键词": ["搜索关键词1", "搜索关键词2", ...],
+    "养老": ["养老"],
+    "江苏地区银行": ["工商银行", "农业银行", "中国银行", ...],
+    "江苏省国资委": ["江苏省国资委", "江苏国信集团", "江苏交通控股", ...]
+}
+```
+
+- **主关键词 (Main Keyword)**: 用于业务分类和评分提示选择,例如 "江苏地区银行"、"养老"
+- **搜索关键词 (Search Keyword)**: 实际用于新闻API搜索的具体关键词,例如 "工商银行"、"农业银行"
+
+### 数据流转过程
+
+#### 1. 新闻采集阶段 (`fetch_and_filter.py`, `main.py:65-147`)
+```
+主关键词 → 遍历搜索关键词 → 调用新闻API
+         ↓
+    临时文件: tmp_{date}_{main_kw}_{search_kw}.json
+         ↓
+    合并去重: {date}_{main_kw}.json
+```
+每条新闻在数据库 `scored_news` 表中存储:
+- `keyword` 字段 = 主关键词 (如 "江苏地区银行")
+- `search_keyword` 字段 = 搜索关键词 (如 "工商银行")
+
+#### 2. AI评分阶段 (`news_scorer.py`)
+- 从数据库读取 `keyword` (主关键词)
+- 在 `config.py:KEYWORD_SPECIFIC_SYSTEM_PROMPTS` 中查找对应的专门评分提示
+- 如果找到专门提示,使用专门提示;否则使用通用提示 `NEWS_SCORE_SYSTEM_MSG`
+- 示例: "江苏地区银行" → 使用 `NEWS_SCORE_SYSTEM_MSG_JIANGSU_BANKS`
+
+#### 3. 500字短摘要生成 (`news_item_summarizer.py`)
+- **不读取** config 的关键词配置
+- 从数据库读取已评分新闻 (score≥3)
+- 可选通过 `--keyword` 参数过滤 (该参数匹配数据库中的 `keyword` 字段)
+- 示例: `python news_item_summarizer.py 2025-01-14 --keyword "工商银行"`
+
+#### 4. 摘要生成阶段 (`news_summarizer.py`)
+- 使用主关键词进行摘要
+- 从 `scored_news` 表读取高分新闻
+- 生成结构化摘要 (今日综述、新闻总结、观点总结)
+
+### 关键配置文件
+- **`config.py`**: 中央配置文件
+  - `SEARCH_KEYWORDS`: 主关键词→搜索关键词映射
+  - `DEFAULT_KEYWORDS`: 要处理的主关键词列表
+  - `KEYWORD_SPECIFIC_SYSTEM_PROMPTS`: 主关键词→专门评分提示映射
+  - AI模型配置、API密钥配置、评分提示词
+
+### 添加新关键词组流程
+1. 在 `config.py:SEARCH_KEYWORDS` 添加映射
+2. (可选) 在 `config.py` 创建专门的评分提示词 (如 `NEWS_SCORE_SYSTEM_MSG_XXX`)
+3. 在 `config.py:KEYWORD_SPECIFIC_SYSTEM_PROMPTS` 注册提示词映射
+4. 在 `config.py:DEFAULT_KEYWORDS` 设置要处理的主关键词列表
