@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 这是一个自动化新闻采集与AI分析系统，从多个新闻源（Google News、百度新闻、Bing News、DuckDuckGo News）获取新闻，提取内容，使用AI（DeepSeek模型）进行重要性评分，并生成摘要。系统支持中文关键词监控，将结果存储在MySQL中，并提供Flask Web界面进行可视化。
 
-## 主要命令
+## 常用命令
 
 ### 主要操作
 ```bash
@@ -63,6 +63,17 @@ pip install -r requirements.txt
 
 # 安装Playwright浏览器
 playwright install
+```
+
+### 测试命令
+```bash
+# 测试新闻采集功能
+python test_fetcher.py serp_googlenews "测试关键词"
+python test_fetcher.py serp_baidunews "测试关键词"
+
+# 测试新关键词的新闻覆盖情况（推荐）
+python test_keywords.py "测试关键词"
+python test_keywords.py "测试关键词" "2025-01-10"
 ```
 
 ## 架构概览
