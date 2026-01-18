@@ -1,4 +1,4 @@
-# CLAUDE.md
+1 # CLAUDE.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
@@ -48,6 +48,9 @@ python news_item_summarizer.py 2025-09-01
 
 # 不传日期默认处理昨天的数据
 python news_item_summarizer.py
+
+# 只处理某一天、某个主关键词的短摘要（按scored_news.keyword过滤）
+python news_item_summarizer.py 2025-09-01 --keyword "江苏地区银行"
 ```
 
 ### 环境设置
@@ -69,7 +72,7 @@ playwright install
 2. **fetch_and_filter.py** - 多源新闻采集与过滤
 3. **fetch_content.py** - 具有5级兜底策略的内容提取
 4. **news_scorer.py** - AI驱动的新闻评分（0-5分制）
-5. **news_summarizer.py** - 三轮AI摘要生成
+5. **news_summarizer.py** - AI摘要生成（默认单轮，可配置多轮优化）
 6. **write_to_mysql.py** - 数据库持久化
 7. **app.py** - Flask Web界面
 8. **error_handler.py** - 统一错误处理系统
@@ -85,7 +88,7 @@ playwright install
 
 ### AI集成
 - **评分**：使用DeepSeek-reasoner模型和详细提示进行0-5分重要性评分
-- **摘要**：三轮流程（草稿→评判审查→优化→热点追踪）
+- **摘要**：默认执行单轮摘要；如需启用“三轮流程（草稿→评判审查→优化→热点追踪）”，可在 `news_summarizer.py` 中将 `ENABLE_MULTI_ROUND_SUMMARY` 设为 `True`
 - **并发处理**：支持多线程AI评分和连接池
 
 ### 配置结构
