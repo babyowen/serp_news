@@ -34,7 +34,7 @@ local_settings.py
 *.db
 *.sqlite3
 
-# Output directory (所有输出文件和日志)
+# Output directory (运行时生成的数据)
 output/
 
 # macOS

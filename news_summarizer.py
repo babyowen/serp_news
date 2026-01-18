@@ -12,20 +12,20 @@ os.environ["TRANSFORMERS_VERBOSITY"] = "error"
 import json
 from datetime import datetime, timedelta
 from config import (
-    NEWS_SUMMARY_MODELS,  # 支持的模型配置
-    NEWS_SUMMARY_SYSTEM_PROMPT,  # 系统提示词
-    NEWS_SUMMARY_USER_PROMPT,    # 用户提示词模板
-    NEWS_SUMMARY_RESULT_FILENAME, # 结果文件名模板
-    NEWS_SUMMARY_PLATFORM,       # 默认平台
-    NEWS_SUMMARY_MODEL,          # 默认模型
-    DEFAULT_KEYWORDS,            # 默认关键词列表
-    NEWS_SUMMARY_JUDGE_SYSTEM_PROMPT, # 新增：评判官system prompt
-    NEWS_SUMMARY_JUDGE_USER_PROMPT,   # 新增：评判官user prompt
-    NEWS_SUMMARY_OPTIMIZE_SYSTEM_PROMPT, # 新增：优化轮system prompt
-    NEWS_SUMMARY_OPTIMIZE_USER_PROMPT,    # 新增：优化轮user prompt
-    NEWS_SUMMARY_HOTSPOT_SYSTEM_PROMPT, # 新增：热点追踪system prompt
-    NEWS_SUMMARY_HOTSPOT_USER_PROMPT,   # 新增：热点追踪user prompt
-    NEWS_SUMMARY_FILTER_SOURCEAPI,      # 新增：摘要源过滤配置
+    NEWS_SUMMARY_MODELS,
+    NEWS_SUMMARY_SYSTEM_PROMPT,
+    NEWS_SUMMARY_USER_PROMPT,
+    NEWS_SUMMARY_RESULT_FILENAME,
+    NEWS_SUMMARY_PLATFORM,
+    NEWS_SUMMARY_MODEL,
+    DEFAULT_KEYWORDS,
+    NEWS_SUMMARY_JUDGE_SYSTEM_PROMPT,
+    NEWS_SUMMARY_JUDGE_USER_PROMPT,
+    NEWS_SUMMARY_OPTIMIZE_SYSTEM_PROMPT,
+    NEWS_SUMMARY_OPTIMIZE_USER_PROMPT,
+    NEWS_SUMMARY_HOTSPOT_SYSTEM_PROMPT,
+    NEWS_SUMMARY_HOTSPOT_USER_PROMPT,
+    NEWS_SUMMARY_FILTER_SOURCEAPI,
 )
 
 # ========== 新增：SSL连接池管理 ==========
@@ -156,6 +156,8 @@ setup_global_exception_handler()
 
 # 创建新闻日志记录器
 summary_logger = NewsLogger()
+
+ENABLE_MULTI_ROUND_SUMMARY = False
 
 # ========== deepseek官方tokenizer加载（仅deepseek平台用） ==========
 deepseek_tokenizer = None
@@ -590,14 +592,41 @@ def main(date=None, keyword=None, model_name=None, output_dir=None):
         "model": used_model,
         "round": 1
     }
-    # ========== 第一轮优化：评判官建议 ==========
+    if not ENABLE_MULTI_ROUND_SUMMARY:
+        all_rounds = [round1_entry]
+        summary_path = save_summary_multi_round(date, keyword, all_rounds, output_dir)
+        merge_info = {
+            'search_keywords': list(search_keywords_set)
+        }
+        append_log(
+            date,
+            keyword,
+            used_model,
+            prompt,
+            summary_path,
+            len(news_list),
+            success=True,
+            system_tokens=system_tokens,
+            user_tokens=user_tokens,
+            result_tokens=result_tokens,
+            platform=used_platform,
+            model_str=used_model,
+            extra_info=merge_info
+        )
+        if token_limit_info:
+            log_path = os.path.join("output", "run_log.txt")
+            with open(log_path, "a", encoding="utf-8") as f:
+                f.write(f"[WARN] API返回token超限，prompt token数: {token_limit_info['token_count']}\n")
+                f.write(f"[WARN] prompt开头200字: {token_limit_info['prompt_head']}\n")
+                f.write(f"[WARN] prompt结尾200字: {token_limit_info['prompt_tail']}\n")
+        return True
+
     judge_user_prompt = NEWS_SUMMARY_JUDGE_USER_PROMPT.format(
         system_prompt=NEWS_SUMMARY_SYSTEM_PROMPT.strip(),
         user_prompt=prompt.strip(),
         summary=summary.strip()
     )
     judge_system_prompt = NEWS_SUMMARY_JUDGE_SYSTEM_PROMPT.strip()
-    # token计数与模型切换
     judge_user_tokens = count_tokens(judge_user_prompt, platform=used_platform, model_name=used_model)
     judge_system_tokens = count_tokens(judge_system_prompt, platform=used_platform, model_name=used_model)
     judge_platform, judge_model = used_platform, used_model
@@ -625,7 +654,6 @@ def main(date=None, keyword=None, model_name=None, output_dir=None):
         return False
     safe_print(f"[INFO] 评判官建议生成成功，长度: {len(judge_suggestion)} 字符")
     safe_print(f"[评判建议] {clean_unicode_for_console(judge_suggestion.strip()[:200])}{'...' if len(judge_suggestion) > 200 else ''}")
-    # ========== 第二轮优化摘要 ==========
     optimize_user_prompt = NEWS_SUMMARY_OPTIMIZE_USER_PROMPT.format(
         system_prompt=NEWS_SUMMARY_SYSTEM_PROMPT.strip(),
         user_prompt=prompt.strip(),
@@ -667,19 +695,12 @@ def main(date=None, keyword=None, model_name=None, output_dir=None):
         "round": 2,
         "judge_suggestion": judge_suggestion
     }
-    # ========== 第3轮热点追踪 ==========
-    # 动态import write_to_mysql，避免循环依赖
     write_to_mysql = importlib.import_module('write_to_mysql')
     prev_date = (datetime.strptime(date, '%Y-%m-%d') - timedelta(days=1)).strftime('%Y-%m-%d')
-
-    # 新增：详细的调试信息
     safe_print(f"\n[热点追踪调试] 当前日期: {date}")
     safe_print(f"[热点追踪调试] 昨天日期: {prev_date}")
     safe_print(f"[热点追踪调试] 查询关键词: {keyword}")
-
     prev_summary, prev_round = write_to_mysql.fetch_latest_summary(prev_date, keyword)
-
-    # 新增：显示查询结果
     if prev_summary:
         safe_print(f"[成功] [热点追踪调试] 成功找到昨天的摘要，轮次: {prev_round}")
         safe_print(f"[热点追踪调试] 昨天摘要前200字: {prev_summary[:200]}...")
@@ -689,7 +710,6 @@ def main(date=None, keyword=None, model_name=None, output_dir=None):
         safe_print(f"   1. 昨天({prev_date})的摘要还未写入数据库")
         safe_print(f"   2. 数据库连接问题")
         safe_print(f"   3. 关键词({keyword})在昨天没有摘要记录")
-
     round3_entry = None
     if prev_summary:
         hotspot_system_prompt = NEWS_SUMMARY_HOTSPOT_SYSTEM_PROMPT.strip()
@@ -721,16 +741,13 @@ def main(date=None, keyword=None, model_name=None, output_dir=None):
         }
     else:
         safe_print(f"\n[警告] [跳过热点追踪] 无昨天({prev_date})的摘要数据，跳过第3轮热点追踪")
-    # ========== 保存所有轮次摘要 ==========
     all_rounds = [round1_entry, round2_entry]
     if round3_entry:
         all_rounds.append(round3_entry)
     summary_path = save_summary_multi_round(date, keyword, all_rounds, output_dir)
-    # ========== 新增：保存所有轮次相关prompt到txt ==========
     optimization_prompt_path = os.path.join(output_dir, f"{date}_{keyword}_optimization_prompts.txt")
     with open(optimization_prompt_path, "w", encoding="utf-8") as f:
         import json as _json
-        # 第1轮初稿
         round1_messages = [
             {"role": "system", "content": NEWS_SUMMARY_SYSTEM_PROMPT.strip()},
             {"role": "user", "content": prompt.strip()}
@@ -739,7 +756,6 @@ def main(date=None, keyword=None, model_name=None, output_dir=None):
         f.write(_json.dumps(round1_messages, ensure_ascii=False, indent=2) + "\n\n")
         f.write("【1-1 初稿输出（摘要）】\n")
         f.write(summary.strip() + "\n\n")
-        # 第2-1轮 评判官
         judge_messages = [
             {"role": "system", "content": judge_system_prompt.strip()},
             {"role": "user", "content": judge_user_prompt.strip()}
@@ -748,7 +764,6 @@ def main(date=None, keyword=None, model_name=None, output_dir=None):
         f.write(_json.dumps(judge_messages, ensure_ascii=False, indent=2) + "\n\n")
         f.write("【2-1 评判官输出（建议）】\n")
         f.write(judge_suggestion.strip() + "\n\n")
-        # 第2-2轮 优化
         optimize_messages = [
             {"role": "system", "content": optimize_system_prompt.strip()},
             {"role": "user", "content": optimize_user_prompt.strip()}
@@ -757,7 +772,6 @@ def main(date=None, keyword=None, model_name=None, output_dir=None):
         f.write(_json.dumps(optimize_messages, ensure_ascii=False, indent=2) + "\n\n")
         f.write("【2-2 优化输出（最终摘要）】\n")
         f.write(improved_summary.strip() + "\n\n")
-        # 第3轮热点追踪
         if round3_entry:
             hotspot_messages = [
                 {"role": "system", "content": hotspot_system_prompt},
@@ -768,20 +782,30 @@ def main(date=None, keyword=None, model_name=None, output_dir=None):
             f.write("【3-1 热点追踪输出】\n")
             f.write(hotspot_summary.strip() + "\n")
     safe_print(f"[INFO] 优化流程所有prompt及messages已保存: {optimization_prompt_path}")
-    # 记录合并二级关键词情况
     merge_info = {
         'search_keywords': list(search_keywords_set)
     }
-    append_log(date, keyword, used_model, prompt, summary_path, len(news_list), success=True, system_tokens=system_tokens, user_tokens=user_tokens, result_tokens=result_tokens, platform=used_platform, model_str=used_model, extra_info=merge_info)
-    # 新增：主日志写完后再写token超限WARN日志
+    append_log(
+        date,
+        keyword,
+        used_model,
+        prompt,
+        summary_path,
+        len(news_list),
+        success=True,
+        system_tokens=system_tokens,
+        user_tokens=user_tokens,
+        result_tokens=result_tokens,
+        platform=used_platform,
+        model_str=used_model,
+        extra_info=merge_info
+    )
     if token_limit_info:
         log_path = os.path.join("output", "run_log.txt")
         with open(log_path, "a", encoding="utf-8") as f:
             f.write(f"[WARN] API返回token超限，prompt token数: {token_limit_info['token_count']}\n")
             f.write(f"[WARN] prompt开头200字: {token_limit_info['prompt_head']}\n")
             f.write(f"[WARN] prompt结尾200字: {token_limit_info['prompt_tail']}\n")
-    
-    # 明确返回True表示成功完成
     return True
 
 # 新增：多轮摘要保存，保留所有轮次和相关信息
