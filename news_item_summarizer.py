@@ -20,6 +20,12 @@ from config import (
     NEWS_ITEM_SUMMARY_SYSTEM_PROMPT_500,
     NEWS_ITEM_SUMMARY_USER_PROMPT_500
 )
+from news_region_utils import (
+    call_region_llm,
+    call_summary_and_region_llm,
+    table_has_region_column,
+    validate_region_table_name,
+)
 
 setup_global_exception_handler()
 load_dotenv()
@@ -88,18 +94,40 @@ def get_conn():
         autocommit=True
     )
 
-def log_run(date, total, success, fail, skip):
+def log_run(date, table_name, total, success, fail, skip):
     now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     log_path = os.path.join('output', 'run_log.txt')
     msg = (
         f"\n[{now}]\n"
         f"执行程序: news_item_summarizer\n"
         f"[抓取日期] {date}\n"
+        f"[数据表] {table_name}\n"
         f"[统计] 待处理: {total} 成功: {success} 失败: {fail} 跳过: {skip}\n"
         f"==============================\n"
     )
     with open(log_path, 'a', encoding='utf-8') as f:
         f.write(msg)
+
+
+def update_summary_fields(cur, table_name, rid, summary, region):
+    cur.execute(
+        f"UPDATE {table_name} SET short_summary=%s, region=%s WHERE id=%s",
+        (summary, region, rid),
+    )
+
+
+def update_summary_only(cur, table_name, rid, summary):
+    cur.execute(
+        f"UPDATE {table_name} SET short_summary=%s WHERE id=%s",
+        (summary, rid),
+    )
+
+
+def update_region_only(cur, table_name, rid, region):
+    cur.execute(
+        f"UPDATE {table_name} SET region=%s WHERE id=%s",
+        (region, rid),
+    )
 
 @with_error_handling("news_item_summarizer.py", "main")
 def main():
@@ -110,12 +138,18 @@ def main():
         parser = argparse.ArgumentParser()
         parser.add_argument('date', nargs='?', default=None)
         parser.add_argument('--keyword', type=str, default=None, help='Filter by keyword')
+        parser.add_argument('--table', type=str, default='scored_news', help='Target table')
         args = parser.parse_args()
         date = parse_date(args.date)
+        table_name = validate_region_table_name(args.table)
         conn = get_conn()
         cur = conn.cursor()
-        
-        sql = "SELECT id, title, content FROM scored_news WHERE fetchdate=%s AND score>=3 AND (short_summary IS NULL OR short_summary='')"
+
+        has_region_column = table_has_region_column(cur, table_name)
+        if args.keyword in (None, "公积金") and not has_region_column:
+            raise ValueError(f"Table {table_name} is missing region column")
+
+        sql = f"SELECT id, title, content, keyword FROM {table_name} WHERE fetchdate=%s AND score>=3 AND (short_summary IS NULL OR short_summary='')"
         params = [date]
         
         if args.keyword:
@@ -135,7 +169,7 @@ def main():
             rows = cur.fetchall()
             if not rows:
                 break
-            for rid, title, content in rows:
+            for rid, title, content, keyword in rows:
                 if not content or not str(content).strip():
                     skip += 1
                     safe_print(f"[跳过空内容] id={rid}")
@@ -147,16 +181,20 @@ def main():
                         pass
                     continue
                 text = str(content).strip()
+                is_gjj = keyword == "公积金"
                 if len(text) <= 500:
                     backoffs = [1, 2, 4]
                     done = False
+                    region = None
+                    if is_gjj:
+                        region = call_region_llm(title or '', text)
                     for i in range(len(backoffs) + 1):
                         try:
                             conn.ping(reconnect=True)
-                            cur.execute(
-                                "UPDATE scored_news SET short_summary=%s WHERE id=%s",
-                                (text, rid)
-                            )
+                            if is_gjj:
+                                update_summary_fields(cur, table_name, rid, text, region)
+                            else:
+                                update_summary_only(cur, table_name, rid, text)
                             success += 1
                             safe_print(f"[直接写原文] id={rid} 字数={len(text)}")
                             done = True
@@ -178,17 +216,23 @@ def main():
                     if not done:
                         fail += 1
                     continue
-                summary = call_llm(title or '', content or '')
+                if is_gjj:
+                    result = call_summary_and_region_llm(title or '', content or '')
+                    summary = result.get("short_summary") if result else None
+                    region = result.get("region") if result else None
+                else:
+                    summary = call_llm(title or '', content or '')
+                    region = None
                 if summary:
                     backoffs = [1, 2, 4]
                     done = False
                     for i in range(len(backoffs) + 1):
                         try:
                             conn.ping(reconnect=True)
-                            cur.execute(
-                                "UPDATE scored_news SET short_summary=%s WHERE id=%s",
-                                (summary, rid)
-                            )
+                            if is_gjj:
+                                update_summary_fields(cur, table_name, rid, summary, region)
+                            else:
+                                update_summary_only(cur, table_name, rid, summary)
                             success += 1
                             safe_print(f"[更新成功] id={rid}")
                             done = True
@@ -216,7 +260,7 @@ def main():
             cycles += 1
             if cycles >= 3:
                 break
-        log_run(date, total, success, fail, skip)
+        log_run(date, table_name, total, success, fail, skip)
         log_script_complete("news_item_summarizer.py", success=True, message=f"抓取日期 {date} 完成: 成功{success} 失败{fail} 跳过{skip}")
         return True
     except Exception as e:
