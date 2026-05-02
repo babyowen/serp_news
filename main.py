@@ -333,17 +333,22 @@ def main(date=None):
         
         print(f"\n[统计] 步骤3完成统计：成功 {score_success}，失败 {score_failed}")
         
-        print("[INFO] 全部关键词处理完成。开始自动总结主关键词...")
-        
-        # 步骤4：自动总结主关键词
+        print("[INFO] 全部关键词处理完成。")
+
+        # 步骤4：自动总结主关键词（可通过环境变量 ENABLE_SUMMARIZER=0 关闭）
         date_arg = f'--date {date}' if date else ''
-        print("\n[步骤4] 开始执行步骤4：智能摘要阶段")
-        summarize_success = run_step(
-            f'python news_summarizer.py {date_arg}', 
-            '自动总结主关键词', 
-            'news_summarizer.py', 
-            '对所有主关键词进行总结，自动合并搜索关键词新闻'
-        )
+        enable_summarizer = os.getenv("ENABLE_SUMMARIZER", "1") == "1"
+        if enable_summarizer:
+            print("\n[步骤4] 开始执行步骤4：智能摘要阶段")
+            summarize_success = run_step(
+                f'python news_summarizer.py {date_arg}',
+                '自动总结主关键词',
+                'news_summarizer.py',
+                '对所有主关键词进行总结，自动合并搜索关键词新闻'
+            )
+        else:
+            print("\n[步骤4] 已通过 ENABLE_SUMMARIZER=0 关闭，跳过智能摘要阶段")
+            summarize_success = True  # 跳过即视为"无失败"，防止统计/日志栏报错
         
         # 步骤5：自动写入数据库
         print("\n[步骤5] 开始执行步骤5：数据库写入阶段")
