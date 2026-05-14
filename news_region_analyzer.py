@@ -19,7 +19,7 @@ from news_region_utils import (
     table_has_region_column,
     validate_region_table_name,
 )
-from db_utils import get_connection
+from db_utils import get_connection, get_table_name
 
 
 setup_global_exception_handler()
@@ -88,7 +88,7 @@ def main():
     err = ErrorHandler()
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--table", default="scored_news", help="Target table name")
+    parser.add_argument("--table", default=None, help="Target table name (default: MYSQL_TABLE env var)")
     parser.add_argument("--keyword", default="公积金", help="Only 公积金 is supported")
     parser.add_argument("--date", default=None, help="Single fetch date")
     parser.add_argument("--date-from", dest="date_from", default=None, help="Start fetch date")
@@ -99,7 +99,7 @@ def main():
     if args.keyword != "公积金":
         raise ValueError("news_region_analyzer.py only supports keyword=公积金")
 
-    table_name = validate_region_table_name(args.table)
+    table_name = validate_region_table_name(args.table or get_table_name())
     target_date = parse_date(args.date)
     date_from = parse_date(args.date_from)
     date_to = parse_date(args.date_to)

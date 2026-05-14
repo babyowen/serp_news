@@ -19,8 +19,7 @@ def get_connection(autocommit=True, dict_cursor=False):
         dict_cursor: 是否使用字典游标（默认False）
     """
     import pymysql
-    cursorclass = pymysql.cursors.DictCursor if dict_cursor else None
-    return pymysql.connect(
+    kwargs = dict(
         host=MYSQL_HOST,
         port=MYSQL_PORT,
         user=MYSQL_USER,
@@ -28,8 +27,10 @@ def get_connection(autocommit=True, dict_cursor=False):
         database=MYSQL_DB,
         charset="utf8mb4",
         autocommit=autocommit,
-        cursorclass=cursorclass,
     )
+    if dict_cursor:
+        kwargs["cursorclass"] = pymysql.cursors.DictCursor
+    return pymysql.connect(**kwargs)
 
 
 def get_table_name(default="scored_news"):

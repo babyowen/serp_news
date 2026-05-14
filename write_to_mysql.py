@@ -25,9 +25,10 @@ setup_global_exception_handler()
 # 加载.env文件
 load_dotenv()
 
-from db_utils import get_connection
+from db_utils import get_connection, get_table_name
 
 LOG_PATH = os.path.join('output', 'run_log.txt')
+TABLE_NAME = get_table_name()
 
 def write_log(msg):
     with open(LOG_PATH, 'a', encoding='utf-8') as f:
@@ -57,15 +58,15 @@ def insert_scored_news(json_path, keyword):
             
         # 查重：title+link
         cursor.execute(
-            "SELECT id FROM scored_news WHERE title=%s AND link=%s",
+            f"SELECT id FROM {TABLE_NAME} WHERE title=%s AND link=%s",
             (item.get('title'), item.get('link'))
         )
         if cursor.fetchone():
             skip += 1
             continue
             
-        sql = '''
-        INSERT INTO scored_news (
+        sql = f'''
+        INSERT INTO {TABLE_NAME} (
             date, title, link, source, fetchdate, sourceapi, thumbnail, keyword, content, wordcount, custom_grab, score, search_keyword
         ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         '''
@@ -97,7 +98,7 @@ def insert_scored_news(json_path, keyword):
     conn.commit()
     now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     # 修改日志信息，添加空内容跳过统计
-    log_msg = f"[{now}] 导入数据库\n  关键词: {keyword}\n  文件: {json_path}\n  表: scored_news\n  成功写入: {success} 条\n  跳过(已存在): {skip} 条\n  跳过(空内容): {empty_content_skip} 条\n  失败: {fail} 条\n------------------------------"
+    log_msg = f"[{now}] 导入数据库\n  关键词: {keyword}\n  文件: {json_path}\n  表: {TABLE_NAME}\n  成功写入: {success} 条\n  跳过(已存在): {skip} 条\n  跳过(空内容): {empty_content_skip} 条\n  失败: {fail} 条\n------------------------------"
     write_log(log_msg)
 
 # 写入 summary_news 表（新闻摘要）
@@ -242,14 +243,7 @@ def fetch_latest_summary(date, keyword):
     """
     # 创建独立的数据库连接
     try:
-        temp_conn = pymysql.connect(
-            host=MYSQL_HOST,
-            port=MYSQL_PORT,
-            user=MYSQL_USER,
-            password=MYSQL_PASSWORD,
-            database=MYSQL_DB,
-            charset='utf8mb4'
-        )
+        temp_conn = get_connection(autocommit=False)
         temp_cursor = temp_conn.cursor()
         
         sql = "SELECT summary, round FROM summary_news WHERE date=%s AND keyword=%s ORDER BY round DESC LIMIT 1"
@@ -311,7 +305,7 @@ def main():
                 insert_scored_news(filepath, keyword)
             except Exception as e:
                     now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                    log_msg = f"[{now}] 导入数据库\n  关键词: {keyword}\n  文件: {filepath}\n  表: {suffix}_news\n  错误: {e}\n------------------------------"
+                    log_msg = f"[{now}] 导入数据库\n  关键词: {keyword}\n  文件: {filepath}\n  表: {TABLE_NAME}\n  错误: {e}\n------------------------------"
                     write_log(log_msg)
                     print(f"导入 {filepath} 时出错: {e}")
                     error_handler.log_error(
@@ -319,7 +313,7 @@ def main():
                         error_msg=f"导入数据库失败: {filepath}, 错误: {e}",
                         script_name="write_to_mysql.py",
                         keyword=keyword,
-                        context={"file_path": filepath, "table": f"{suffix}_news"}
+                        context={"file_path": filepath, "table": TABLE_NAME}
                     )
                     success = False
 
