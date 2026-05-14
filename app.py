@@ -1,22 +1,11 @@
 from flask import Flask, render_template, send_from_directory, request
 import os
 import json
-import pymysql
-from dotenv import load_dotenv
+from db_utils import get_connection
 
 app = Flask(__name__)
 
 OUTPUT_DIR = 'output'
-
-# 加载.env文件
-load_dotenv()
-import os as _os
-
-MYSQL_HOST = _os.getenv('MYSQL_HOST')
-MYSQL_PORT = int(_os.getenv('MYSQL_PORT', 3306))
-MYSQL_USER = _os.getenv('MYSQL_USER')
-MYSQL_PASSWORD = _os.getenv('MYSQL_PASSWORD')
-MYSQL_DB = _os.getenv('MYSQL_DB')
 
 @app.route('/')
 def index():
@@ -85,14 +74,7 @@ def download_file(filename):
 @app.route('/database')
 def show_database():
     # 连接数据库
-    conn = pymysql.connect(
-        host=MYSQL_HOST,
-        port=MYSQL_PORT,
-        user=MYSQL_USER,
-        password=MYSQL_PASSWORD,
-        database=MYSQL_DB,
-        charset='utf8mb4'
-    )
+    conn = get_connection(dict_cursor=True)
     cursor = conn.cursor(pymysql.cursors.DictCursor)
     # 查询scored_news
     cursor.execute("SELECT * FROM scored_news ORDER BY id DESC LIMIT 50")

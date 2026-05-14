@@ -22,34 +22,19 @@ from error_handler import (
 # 设置全局异常处理器
 setup_global_exception_handler()
 
-# 加载.env文件，获取数据库连接信息
+# 加载.env文件
 load_dotenv()
 
-MYSQL_HOST = os.getenv('MYSQL_HOST')
-MYSQL_PORT = int(os.getenv('MYSQL_PORT', 3306))
-MYSQL_USER = os.getenv('MYSQL_USER')
-MYSQL_PASSWORD = os.getenv('MYSQL_PASSWORD')
-MYSQL_DB = os.getenv('MYSQL_DB')
+from db_utils import get_connection
 
 LOG_PATH = os.path.join('output', 'run_log.txt')
 
-# 写入日志到run_log.txt
-# 数据获取：传入日志字符串
-# 执行：将日志内容追加写入到指定日志文件
-# 结果：日志文件被追加一行内容
 def write_log(msg):
     with open(LOG_PATH, 'a', encoding='utf-8') as f:
         f.write(msg + '\n')
 
 # 建立数据库连接
-conn = pymysql.connect(
-    host=MYSQL_HOST,
-    port=MYSQL_PORT,
-    user=MYSQL_USER,
-    password=MYSQL_PASSWORD,
-    database=MYSQL_DB,
-    charset='utf8mb4'
-)
+conn = get_connection(autocommit=False)
 cursor = conn.cursor()
 
 # 写入 scored_news 表（新闻正文及评分）

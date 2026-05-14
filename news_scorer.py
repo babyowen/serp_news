@@ -13,7 +13,7 @@ from datetime import datetime, timedelta
 from collections import Counter
 from openai import OpenAI
 from config import (
-    DEEPSEEK_API_KEY, DEEPSEEK_BASE_URL, DEEPSEEK_MODEL, 
+    DEEPSEEK_API_KEY, DEEPSEEK_BASE_URL, DEEPSEEK_MODEL,
     NEWS_SCORE_PROMPT, NEWS_RULE_BASED_SCORING, NEWS_SCORE_SYSTEM_MSG, DEFAULT_KEYWORD, DEFAULT_KEYWORDS, KEYWORD_SPECIFIC_SYSTEM_PROMPTS
 )
 import argparse
@@ -25,68 +25,12 @@ from error_handler import (
     ErrorHandler
 )
 
-# 导入图标管理系统
 from icon_manager import safe_print, get_icon
 from logger_utils import NewsLogger, get_news_logger
-
-# ========== 新增：评分专用连接池管理 ==========
-class ScoringClientPool:
-    """评分专用OpenAI客户端连接池管理器"""
-    
-    def __init__(self):
-        self._client = None
-        self._usage_count = 0
-        self._max_usage_per_client = 100  # 评分客户端可以使用更多次
-    
-    def get_client(self):
-        """获取或创建评分客户端"""
-        # 检查是否需要创建新客户端
-        if (self._client is None or 
-            self._usage_count >= self._max_usage_per_client):
-            
-            # 关闭旧客户端（如果存在）
-            if self._client is not None:
-                self._close_client()
-            
-            # 创建新客户端
-            self._client = OpenAI(
-                api_key=DEEPSEEK_API_KEY, 
-                base_url=DEEPSEEK_BASE_URL
-            )
-            self._usage_count = 0
-        
-        # 增加使用计数
-        self._usage_count += 1
-        return self._client
-    
-    def _close_client(self):
-        """安全关闭客户端"""
-        if self._client is not None:
-            try:
-                if hasattr(self._client, 'close'):
-                    self._client.close()
-                elif hasattr(self._client, '_client') and hasattr(self._client._client, 'close'):
-                    self._client._client.close()
-            except Exception as e:
-                pass  # 静默处理关闭异常
-            finally:
-                self._client = None
-                self._usage_count = 0
-    
-    def close_all(self):
-        """关闭所有连接"""
-        self._close_client()
-    
-    def get_stats(self):
-        """获取连接池状态统计"""
-        return {
-            'has_client': self._client is not None,
-            'usage_count': self._usage_count,
-            'max_usage': self._max_usage_per_client
-        }
+from llm_client_pool import get_pool
 
 # 全局评分连接池实例
-_scoring_client_pool = ScoringClientPool()
+_scoring_client_pool = get_pool()
 
 # 创建新闻日志记录器
 scoring_logger = NewsLogger()
@@ -135,7 +79,7 @@ def score_news(title: str, content: str, keyword: str, main_keyword: str = None,
     # 智能重试机制
     for attempt in range(1, max_retries + 1):
         # 从连接池获取客户端
-        client = _scoring_client_pool.get_client()
+        client = _scoring_client_pool.get_client(DEEPSEEK_API_KEY, DEEPSEEK_BASE_URL, max_uses=100)
         
         try:
             safe_print(f"[评分尝试] [尝试 {attempt}/{max_retries}] 正在调用评分模型...")

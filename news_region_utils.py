@@ -13,6 +13,7 @@ from config import (
     NEWS_REGION_USER_PROMPT_GJJ,
 )
 from icon_manager import safe_print
+from llm_client_pool import get_pool
 
 
 ALLOWED_REGION_TABLES = {"scored_news", "scored_news_test"}
@@ -48,21 +49,7 @@ ETHNIC_GROUP_PATTERN = (
 )
 
 
-class DeepSeekClientPool:
-    def __init__(self):
-        self._client = None
-        self._usage = 0
-        self._max_usage = 200
-
-    def get(self):
-        if self._client is None or self._usage >= self._max_usage:
-            self._client = OpenAI(api_key=DEEPSEEK_API_KEY, base_url=DEEPSEEK_BASE_URL)
-            self._usage = 0
-        self._usage += 1
-        return self._client
-
-
-_pool = DeepSeekClientPool()
+_pool = get_pool()
 
 
 def validate_region_table_name(table_name):
@@ -93,7 +80,7 @@ def _call_llm(system_prompt, user_prompt, max_retries=3):
     backoffs = [5, 10, 20]
 
     for attempt in range(max_retries):
-        client = _pool.get()
+        client = _pool.get_client(DEEPSEEK_API_KEY, DEEPSEEK_BASE_URL)
         try:
             resp = client.chat.completions.create(
                 model="deepseek-chat",

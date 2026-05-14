@@ -4,7 +4,6 @@ import os
 import sys
 import time
 
-import pymysql
 from dotenv import load_dotenv
 
 from error_handler import (
@@ -20,16 +19,11 @@ from news_region_utils import (
     table_has_region_column,
     validate_region_table_name,
 )
+from db_utils import get_connection
 
 
 setup_global_exception_handler()
 load_dotenv()
-
-MYSQL_HOST = os.getenv("MYSQL_HOST")
-MYSQL_PORT = int(os.getenv("MYSQL_PORT", 3306))
-MYSQL_USER = os.getenv("MYSQL_USER")
-MYSQL_PASSWORD = os.getenv("MYSQL_PASSWORD")
-MYSQL_DB = os.getenv("MYSQL_DB")
 
 
 def parse_date(value):
@@ -42,15 +36,7 @@ def parse_date(value):
 
 
 def get_conn():
-    return pymysql.connect(
-        host=MYSQL_HOST,
-        port=MYSQL_PORT,
-        user=MYSQL_USER,
-        password=MYSQL_PASSWORD,
-        database=MYSQL_DB,
-        charset="utf8mb4",
-        autocommit=True,
-    )
+    return get_connection(autocommit=True)
 
 
 def build_query(table_name, keyword, date=None, date_from=None, date_to=None, limit=None):

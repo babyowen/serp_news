@@ -6,8 +6,7 @@ import datetime
 from urllib.parse import urljoin
 import requests
 from bs4 import BeautifulSoup
-import pymysql
-from dotenv import load_dotenv
+from db_utils import get_connection
 from fetch_content import fetch_article_content
 import trafilatura
 import json
@@ -138,13 +137,7 @@ def log_error(msg: str):
     print(msg)
 
 def get_conn():
-    load_dotenv()
-    host = os.getenv("MYSQL_HOST")
-    port = int(os.getenv("MYSQL_PORT", 3306))
-    user = os.getenv("MYSQL_USER")
-    password = os.getenv("MYSQL_PASSWORD")
-    db = os.getenv("MYSQL_DB")
-    return pymysql.connect(host=host, port=port, user=user, password=password, database=db, charset="utf8mb4", autocommit=True)
+    return get_connection(autocommit=True)
 
 def has_chinese(text: str) -> bool:
     if not text:
