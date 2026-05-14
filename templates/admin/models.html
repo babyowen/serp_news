@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}模型配置{% endblock %}
+{% block content %}
+<h2>模型配置</h2>
+<div class="row">
+{% for task, info in config.items() %}
+<div class="col-md-4 mb-3">
+    <div class="card">
+        <div class="card-header">
+            {% if task == 'scoring' %}新闻评分
+            {% elif task == 'item_summarizer' %}单条摘要
+            {% elif task == 'region' %}地域分析
+            {% else %}{{ task }}{% endif %}
+        </div>
+        <div class="card-body">
+            <table class="table table-sm table-borderless mb-0">
+                <tr><td class="text-muted">平台</td><td>{{ info.platform }}</td></tr>
+                <tr><td class="text-muted">模型</td><td><code>{{ info.model }}</code></td></tr>
+                <tr><td class="text-muted">API地址</td><td><small>{{ info.base_url }}</small></td></tr>
+                <tr><td class="text-muted">API密钥</td><td>
+                    {% if info.api_key_set %}
+                        <span class="badge bg-success">已配置</span>
+                    {% else %}
+                        <span class="badge bg-danger">未配置</span>
+                    {% endif %}
+                </td></tr>
+            </table>
+        </div>
+    </div>
+</div>
+{% endfor %}
+</div>
+<div class="alert alert-info mt-3">
+    模型配置通过 <code>config.py</code> 和 <code>.env</code> 文件管理。修改后需重启应用生效。
+</div>
+{% endblock %}

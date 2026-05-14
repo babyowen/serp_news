@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block title %}运行监控{% endblock %}
+{% block content %}
+<h2>运行监控</h2>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">触发新运行</div>
+            <div class="card-body">
+                <form method="post" action="/admin/runs/start">
+                    <div class="row">
+                        <div class="col-md-7">
+                            <input type="date" name="date" class="form-control" id="runDate">
+                        </div>
+                        <div class="col-md-5">
+                            <button type="submit" class="btn btn-primary w-100" id="startBtn">开始运行</button>
+                        </div>
+                    </div>
+                    <small class="text-muted">留空默认处理昨天数据</small>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">当前状态</div>
+            <div class="card-body">
+                {% if status.status == 'running' %}
+                    <h4><span class="badge bg-warning text-dark">运行中</span></h4>
+                    <p class="mb-1">日期: {{ status.date }}</p>
+                    <p class="mb-1">开始时间: {{ status.started_at }}</p>
+                    <p class="mb-0">PID: {{ status.pid }}</p>
+                {% elif status.status == 'finished' %}
+                    <h4><span class="badge bg-success">已完成</span></h4>
+                    <p class="mb-1">日期: {{ status.date }}</p>
+                    <p class="mb-0">开始时间: {{ status.started_at }}</p>
+                {% else %}
+                    <h4><span class="badge bg-secondary">空闲</span></h4>
+                    <p class="text-muted mb-0">没有正在运行的任务</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if status.steps %}
+<div class="card mb-4">
+    <div class="card-header">步骤进度</div>
+    <div class="card-body">
+        <div class="d-flex flex-wrap gap-2">
+        {% for step, info in status.steps.items() %}
+            {% if info.status == 'success' %}
+                <span class="badge bg-success step-badge">{{ step }}</span>
+            {% elif info.status == 'running' %}
+                <span class="badge bg-warning text-dark step-badge">{{ step }}</span>
+            {% elif info.status == 'failed' %}
+                <span class="badge bg-danger step-badge">{{ step }}</span>
+            {% else %}
+                <span class="badge bg-secondary step-badge">{{ step }}</span>
+            {% endif %}
+        {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="card">
+    <div class="card-header">历史运行（最近30天）</div>
+    <div class="card-body">
+        <table class="table table-sm table-hover">
+            <thead><tr><th>日期</th><th>文件数</th><th>操作</th></tr></thead>
+            <tbody>
+            {% for run in history %}
+            <tr>
+                <td>{{ run.date }}</td>
+                <td>{{ run.file_count }} 个文件</td>
+                <td><a href="/admin/runs/{{ run.date }}/log" class="btn btn-sm btn-outline-secondary">查看日志</a></td>
+            </tr>
+            {% else %}
+            <tr><td colspan="3" class="text-muted">暂无历史记录</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+// 默认日期设为昨天
+var yesterday = new Date();
+yesterday.setDate(yesterday.getDate() - 1);
+document.getElementById('runDate').value = yesterday.toISOString().split('T')[0];
+// 自动刷新运行状态
+{% if status.status == 'running' %}
+setTimeout(function(){ location.reload(); }, 5000);
+{% endif %}
+</script>
+{% endblock %}

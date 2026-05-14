@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}运行日志 - {{ date }}{% endblock %}
+{% block content %}
+<a href="/admin/runs" class="btn btn-outline-secondary mb-3">&larr; 返回运行监控</a>
+<h2>运行日志 - {{ date }}</h2>
+<div class="card">
+    <div class="card-body">
+        <pre style="max-height:600px;overflow-y:auto;font-size:0.85em;white-space:pre-wrap;">{{ log_content }}</pre>
+    </div>
+</div>
+{% endblock %}

@@ -13,6 +13,7 @@ transformers
 openai
 pymysql
 flask
+flask-httpauth
 google-search-results
 
 # HTTP请求，抓取API和网页
