@@ -345,13 +345,62 @@ def main(date=None):
             '将scored结果写入数据库'
         )
 
+        # 步骤5：单条500字摘要（受环境变量控制）
+        enable_item_summarizer = os.getenv("ENABLE_ITEM_SUMMARIZER", "1") == "1"
+        if enable_item_summarizer:
+            print(f"\n[步骤5] 开始执行步骤5：单条新闻摘要阶段")
+            item_summary_success = safe_subprocess_run(
+                f'python news_item_summarizer.py {date}',
+                '单条新闻摘要',
+                keyword='all',
+                check=False
+            )
+        else:
+            print(f"\n[步骤5] 已通过 ENABLE_ITEM_SUMMARIZER=0 关闭，跳过")
+            item_summary_success = True
+
+        # 步骤6：地域分析（仅公积金关键词，受环境变量控制）
+        has_gjj = "公积金" in DEFAULT_KEYWORDS
+        enable_region = os.getenv("ENABLE_REGION_ANALYZER", "1") == "1"
+        if has_gjj and enable_region:
+            print(f"\n[步骤6] 开始执行步骤6：公积金地域分析阶段")
+            region_success = safe_subprocess_run(
+                f'python news_region_analyzer.py --keyword 公积金 --date {date}',
+                '公积金地域分析',
+                keyword='公积金',
+                check=False
+            )
+        else:
+            if not has_gjj:
+                print(f"\n[步骤6] 关键词不含'公积金'，跳过地域分析")
+            else:
+                print(f"\n[步骤6] 已通过 ENABLE_REGION_ANALYZER=0 关闭，跳过")
+            region_success = True
+
+        # 步骤7：烟草官网爬取（仅中国烟草关键词，条件触发）
+        has_tobacco = "中国烟草" in DEFAULT_KEYWORDS
+        if has_tobacco:
+            print(f"\n[步骤7] 开始执行步骤7：烟草官网爬取阶段")
+            tobacco_success = safe_subprocess_run(
+                'python tobacco_gov_crawler.py',
+                '烟草官网爬取',
+                keyword='中国烟草',
+                check=False
+            )
+        else:
+            print(f"\n[步骤7] 关键词不含'中国烟草'，跳过")
+            tobacco_success = True
+
         # 统计整体执行情况
-        total_steps = 4
+        total_steps = 7
         successful_steps = sum([
             1 if fetch_failed == 0 else 0,
             1 if content_failed == 0 else 0,
             1 if score_failed == 0 else 0,
-            1 if database_success else 0
+            1 if database_success else 0,
+            1 if item_summary_success else 0,
+            1 if region_success else 0,
+            1 if tobacco_success else 0,
         ])
 
         success_rate = successful_steps / total_steps * 100
@@ -361,7 +410,10 @@ def main(date=None):
             f"新闻采集：{fetch_success}成功/{fetch_failed}失败\n"
             f"正文抓取：{content_success}成功/{content_failed}失败\n"
             f"AI评分：{score_success}成功/{score_failed}失败\n"
-            f"数据库写入：{'成功' if database_success else '失败'}"
+            f"数据库写入：{'成功' if database_success else '失败'}\n"
+            f"单条摘要：{'成功' if item_summary_success else '失败'}\n"
+            f"地域分析：{'成功' if region_success else '跳过'}\n"
+            f"烟草爬取：{'成功' if tobacco_success else '跳过'}"
         )
         
         print(f"\n[完成] 全部流程执行完成！")
