@@ -335,48 +335,32 @@ def main(date=None):
         
         print("[INFO] 全部关键词处理完成。")
 
-        # 步骤4：自动总结主关键词（可通过环境变量 ENABLE_SUMMARIZER=0 关闭）
+        # 步骤4：自动写入数据库
         date_arg = f'--date {date}' if date else ''
-        enable_summarizer = os.getenv("ENABLE_SUMMARIZER", "1") == "1"
-        if enable_summarizer:
-            print("\n[步骤4] 开始执行步骤4：智能摘要阶段")
-            summarize_success = run_step(
-                f'python news_summarizer.py {date_arg}',
-                '自动总结主关键词',
-                'news_summarizer.py',
-                '对所有主关键词进行总结，自动合并搜索关键词新闻'
-            )
-        else:
-            print("\n[步骤4] 已通过 ENABLE_SUMMARIZER=0 关闭，跳过智能摘要阶段")
-            summarize_success = True  # 跳过即视为"无失败"，防止统计/日志栏报错
-        
-        # 步骤5：自动写入数据库
-        print("\n[步骤5] 开始执行步骤5：数据库写入阶段")
+        print("\n[步骤4] 开始执行步骤4：数据库写入阶段")
         database_success = run_step(
-            f'python write_to_mysql.py {date_arg}', 
-            '自动写入数据库', 
-            'write_to_mysql.py', 
-            '将scored和summary结果写入数据库'
+            f'python write_to_mysql.py {date_arg}',
+            '自动写入数据库',
+            'write_to_mysql.py',
+            '将scored结果写入数据库'
         )
-        
+
         # 统计整体执行情况
-        total_steps = 5
+        total_steps = 4
         successful_steps = sum([
             1 if fetch_failed == 0 else 0,
-            1 if content_failed == 0 else 0, 
+            1 if content_failed == 0 else 0,
             1 if score_failed == 0 else 0,
-            1 if summarize_success else 0,
             1 if database_success else 0
         ])
-        
+
         success_rate = successful_steps / total_steps * 100
-        
+
         completion_message = (
             f"总体完成情况：{successful_steps}/{total_steps} 步骤成功 ({success_rate:.1f}%)\n"
             f"新闻采集：{fetch_success}成功/{fetch_failed}失败\n"
             f"正文抓取：{content_success}成功/{content_failed}失败\n"
             f"AI评分：{score_success}成功/{score_failed}失败\n"
-            f"智能摘要：{'成功' if summarize_success else '失败'}\n"
             f"数据库写入：{'成功' if database_success else '失败'}"
         )
         

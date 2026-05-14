@@ -316,20 +316,15 @@ def main():
             print(f"文件不存在，跳过: {stats_json_path}")
 
         for keyword in DEFAULT_KEYWORDS:
-            for suffix in ['scored', 'summary']:
-                filename = f"{target_date}_{keyword}_{suffix}.json"
-                filepath = os.path.join("output", target_date, filename)
-                if not os.path.exists(filepath):
-                    print(f"文件不存在，跳过: {filepath}")
-                    continue
-                try:
-                    if suffix == 'scored':
-                        print(f"正在导入: {filepath} 到 scored_news ...")
-                        insert_scored_news(filepath, keyword)
-                    else:
-                        print(f"正在导入: {filepath} 到 summary_news ...")
-                        insert_summary_news(filepath, keyword)
-                except Exception as e:
+            filename = f"{target_date}_{keyword}_scored.json"
+            filepath = os.path.join("output", target_date, filename)
+            if not os.path.exists(filepath):
+                print(f"文件不存在，跳过: {filepath}")
+                continue
+            try:
+                print(f"正在导入: {filepath} 到 scored_news ...")
+                insert_scored_news(filepath, keyword)
+            except Exception as e:
                     now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                     log_msg = f"[{now}] 导入数据库\n  关键词: {keyword}\n  文件: {filepath}\n  表: {suffix}_news\n  错误: {e}\n------------------------------"
                     write_log(log_msg)
