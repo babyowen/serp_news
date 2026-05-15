@@ -34,20 +34,20 @@
             letter-spacing: .3px;
         }
         .navbar-brand i { opacity: .7; margin-right: 6px; }
-        .nav-link {
+        .navbar .nav-link {
             color: rgba(255,255,255,.7) !important;
             font-size: .9rem;
             padding: .5rem .8rem !important;
             border-radius: 6px;
             transition: background .15s, color .15s;
         }
-        .nav-link:hover { color: #fff !important; background: rgba(255,255,255,.1); }
-        .nav-link.active {
+        .navbar .nav-link:hover { color: #fff !important; background: rgba(255,255,255,.1); }
+        .navbar .nav-link.active {
             color: #fff !important;
             background: rgba(255,255,255,.15);
             font-weight: 500;
         }
-        .nav-link i { margin-right: 4px; }
+        .navbar .nav-link i { margin-right: 4px; }
 
         /* 容器 */
         .content { padding: 1.5rem 0 3rem; }
@@ -69,13 +69,15 @@
         .card-body { padding: 1rem; }
 
         /* 表格 */
-        .table th {
-            font-size: .8rem;
-            text-transform: uppercase;
-            letter-spacing: .3px;
+        .table thead th {
+            font-size: .82rem;
+            letter-spacing: .5px;
             color: var(--text-muted);
-            border-bottom-width: 1px;
+            border-bottom: 2px solid var(--accent);
             font-weight: 600;
+            padding: .65rem .75rem;
+            background: transparent;
+            white-space: nowrap;
         }
         .table td { font-size: .88rem; vertical-align: middle; }
         .table-hover tbody tr:hover { background: #f0f5ff; }
