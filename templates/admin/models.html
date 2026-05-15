@@ -1,27 +1,28 @@
 {% extends "base.html" %}
 {% block title %}模型配置{% endblock %}
 {% block content %}
-<h2>模型配置</h2>
-<div class="row">
+<h4 class="mb-3"><i class="bi bi-cpu me-1"></i>模型配置</h4>
+
+<div class="row g-3 mb-3">
 {% for task, info in config.items() %}
-<div class="col-md-4 mb-3">
-    <div class="card">
-        <div class="card-header">
-            {% if task == 'scoring' %}新闻评分
-            {% elif task == 'item_summarizer' %}单条摘要
-            {% elif task == 'region' %}地域分析
+<div class="col-md-4">
+    <div class="card h-100">
+        <div class="card-header d-flex align-items-center">
+            {% if task == 'scoring' %}<i class="bi bi-star me-2"></i>新闻评分
+            {% elif task == 'item_summarizer' %}<i class="bi bi-file-text me-2"></i>单条摘要
+            {% elif task == 'region' %}<i class="bi bi-geo-alt me-2"></i>地域分析
             {% else %}{{ task }}{% endif %}
         </div>
         <div class="card-body">
             <table class="table table-sm table-borderless mb-0">
-                <tr><td class="text-muted">平台</td><td>{{ info.platform }}</td></tr>
-                <tr><td class="text-muted">模型</td><td><code>{{ info.model }}</code></td></tr>
-                <tr><td class="text-muted">API地址</td><td><small>{{ info.base_url }}</small></td></tr>
-                <tr><td class="text-muted">API密钥</td><td>
+                <tr><td class="text-muted ps-0">平台</td><td>{{ info.platform }}</td></tr>
+                <tr><td class="text-muted ps-0">模型</td><td><code>{{ info.model }}</code></td></tr>
+                <tr><td class="text-muted ps-0">API</td><td><small class="text-break">{{ info.base_url }}</small></td></tr>
+                <tr><td class="text-muted ps-0">密钥</td><td>
                     {% if info.api_key_set %}
-                        <span class="badge bg-success">已配置</span>
+                        <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>已配置</span>
                     {% else %}
-                        <span class="badge bg-danger">未配置</span>
+                        <span class="badge bg-danger"><i class="bi bi-x-circle me-1"></i>未配置</span>
                     {% endif %}
                 </td></tr>
             </table>
@@ -30,7 +31,47 @@
 </div>
 {% endfor %}
 </div>
-<div class="alert alert-info mt-3">
-    模型配置通过 <code>config.py</code> 和 <code>.env</code> 文件管理。修改后需重启应用生效。
+
+<div class="alert alert-info mb-4 py-2">
+    <i class="bi bi-info-circle me-1"></i>
+    模型配置通过 <code>config.py</code> 和 <code>.env</code> 管理，修改后需重启应用。
 </div>
+
+<!-- Prompt 配置 -->
+<h5 class="section-title"><i class="bi bi-chat-square-text me-1"></i>Prompt 配置</h5>
+<p class="text-muted mb-3">所有 Prompt 定义在 <code>config.py</code> 中，仅展示当前启用的。</p>
+
+{% for group in prompt_groups %}
+<div class="card mb-3">
+    <div class="card-header d-flex justify-content-between align-items-center collapsed"
+         data-bs-toggle="collapse" data-bs-target="#pg-{{ loop.index }}" style="cursor:pointer">
+        <span><i class="bi bi-chevron-right me-1 small transition-chevron"></i>{{ group.group }}</span>
+        <span class="badge bg-secondary">{{ group.prompts|length }}</span>
+    </div>
+    <div class="collapse show" id="pg-{{ loop.index }}">
+        <div class="card-body p-0">
+            {% for item in group.prompts %}
+            <div class="{% if not loop.last %}border-bottom {% endif %}py-3 px-3">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span>
+                        <strong>{{ item.name }}</strong>
+                        <code class="ms-2" style="font-size:.78em;">{{ item.var }}</code>
+                    </span>
+                    {% if item.note %}
+                    <span class="badge bg-light text-dark border">{{ item.note }}</span>
+                    {% endif %}
+                </div>
+                <pre class="bg-light p-3 rounded mb-0" style="font-size:.8em;line-height:1.7;max-height:220px;overflow-y:auto;white-space:pre-wrap;word-break:break-all;">{{ item.content.strip() }}</pre>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<style>
+.transition-chevron { transition: transform .2s; }
+.collapsed .transition-chevron { transform: rotate(0deg); }
+:not(.collapsed) > span > .transition-chevron { transform: rotate(90deg); }
+</style>
 {% endblock %}

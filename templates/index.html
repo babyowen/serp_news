@@ -1,12 +1,152 @@
 {% extends "base.html" %}
-{% block title %}新闻抓取结果 - 选择日期{% endblock %}
+{% block title %}新闻采集系统{% endblock %}
 {% block content %}
-<h2>新闻抓取结果 - 选择日期</h2>
-<div class="list-group">
-{% for date in dates %}
-    <a href="/date/{{ date }}" class="list-group-item list-group-item-action">{{ date }}</a>
-{% else %}
-    <div class="list-group-item text-muted">暂无数据</div>
-{% endfor %}
+<div class="d-flex align-items-center mb-4">
+    <h4 class="mb-0"><i class="bi bi-grid-1x2 me-2"></i>新闻采集看板</h4>
+    <span class="badge bg-light text-dark border ms-auto">
+        <i class="bi bi-calendar3 me-1"></i>
+        {% if date_to != date_from %}{{ date_from }} ~ {{ date_to }}{% else %}{{ date_from }}{% endif %}
+    </span>
 </div>
+
+<!-- 筛选条件 -->
+<div class="card mb-4 shadow-sm">
+    <div class="card-header py-2">
+        <i class="bi bi-funnel me-1"></i>筛选条件
+        <a href="/" class="btn btn-sm btn-outline-secondary float-end py-0" style="font-size:.78em;margin-top:-2px;">
+            <i class="bi bi-arrow-counterclockwise me-1"></i>重置
+        </a>
+    </div>
+    <form method="get" action="/">
+        <div class="card-body py-3">
+            <div class="row g-3 align-items-end">
+                <div class="col-lg-2 col-md-4 col-6">
+                    <label class="form-label small text-muted mb-1">开始日期</label>
+                    <input type="date" name="date_from" class="form-control form-control-sm" value="{{ date_from }}">
+                </div>
+                <div class="col-lg-2 col-md-4 col-6">
+                    <label class="form-label small text-muted mb-1">结束日期</label>
+                    <input type="date" name="date_to" class="form-control form-control-sm" value="{{ date_to }}">
+                </div>
+                <div class="col-lg-1 col-md-2 col-4">
+                    <label class="form-label small text-muted mb-1">评分 >=</label>
+                    <input type="number" name="score_min" class="form-control form-control-sm" min="0" max="5" value="{{ score_min }}" placeholder="0">
+                </div>
+                <div class="col-lg-1 col-md-2 col-4">
+                    <label class="form-label small text-muted mb-1">评分 <=</label>
+                    <input type="number" name="score_max" class="form-control form-control-sm" min="0" max="5" value="{{ score_max }}" placeholder="5">
+                </div>
+                <div class="col-lg-2 col-md-3 col-6">
+                    <label class="form-label small text-muted mb-1">来源</label>
+                    <input type="text" name="source" class="form-control form-control-sm" value="{{ source }}" placeholder="模糊搜索">
+                </div>
+                <div class="col-lg-2 col-md-3 col-6">
+                    <label class="form-label small text-muted mb-1">API</label>
+                    <select name="sourceapi" class="form-select form-select-sm">
+                        <option value="">全部</option>
+                        {% for api in api_options %}
+                        <option value="{{ api }}" {% if api == sourceapi %}selected{% endif %}>{{ api }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-lg-2 col-md-4 col-12">
+                    <button type="submit" class="btn btn-primary btn-sm w-100"><i class="bi bi-search me-1"></i>查询</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- 统计概览 -->
+<div class="row g-3 mb-4">
+    <div class="col">
+        <div class="card stat-card h-100">
+            <div class="card-body text-center py-3">
+                <div class="stat-value">{{ total }}</div>
+                <div class="stat-label">总收录</div>
+            </div>
+        </div>
+    </div>
+    {% for s in kw_stats %}
+    <div class="col">
+        <div class="card stat-card h-100">
+            <div class="card-body text-center py-3">
+                <div class="stat-value">{{ s.cnt }}</div>
+                <div class="stat-label">{{ s.keyword }}</div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- 新闻列表 -->
+{% if grouped %}
+<div class="card shadow-sm">
+    <div class="card-header d-flex align-items-center py-2">
+        <i class="bi bi-list-ul me-1"></i>新闻列表
+        <span class="badge bg-primary ms-2">{{ total }} 条</span>
+    </div>
+    <div class="card-body p-0">
+        <!-- 关键词 Tab -->
+        <div class="px-3 pt-3 pb-2" style="background:var(--surface-alt);">
+            <ul class="nav nav-pills gap-2" id="kwTabs">
+                {% for kw in grouped %}
+                <li class="nav-item">
+                    <a class="nav-link py-1 px-3 {% if loop.first %}active{% endif %}" data-bs-toggle="pill" href="#kw-{{ loop.index }}"
+                       style="font-size:.84rem;">
+                        {{ kw }}
+                        <span class="badge {% if loop.first %}bg-white text-primary{% else %}bg-secondary{% endif %} ms-1">{{ grouped[kw]|length }}</span>
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="tab-content">
+            {% for kw, items in grouped.items() %}
+            <div class="tab-pane fade {% if loop.first %}show active{% endif %}" id="kw-{{ loop.index }}">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0 align-middle" style="font-size:.88rem;">
+                        <thead><tr>
+                            <th style="width:50%">标题</th>
+                            <th style="width:15%">来源</th>
+                            <th style="width:8%">评分</th>
+                            <th style="width:14%">API</th>
+                            <th>日期</th>
+                        </tr></thead>
+                        <tbody style="line-height:1.6;">
+                        {% for item in items %}
+                        <tr style="padding:6px 0;">
+                            <td style="padding:8px 6px;">
+                                <a href="{{ item.link }}" target="_blank" class="fw-medium" style="color:var(--text)">{{ item.title or '' }}</a>
+                                {% if item.short_summary %}
+                                <div class="text-muted mt-1" style="font-size:.8em;line-height:1.5;">{{ item.short_summary[:100] }}{% if item.short_summary|length > 100 %}<span class="opacity-50">...</span>{% endif %}</div>
+                                {% endif %}
+                            </td>
+                            <td><small class="text-muted">{{ item.source or '' }}</small></td>
+                            <td>
+                                {% if item.score is not none %}
+                                    {% if item.score >= 4 %}<span class="badge rounded-pill bg-success">{{ item.score }}</span>
+                                    {% elif item.score >= 2 %}<span class="badge rounded-pill bg-warning text-dark">{{ item.score }}</span>
+                                    {% else %}<span class="badge rounded-pill bg-secondary">{{ item.score }}</span>
+                                    {% endif %}
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td><span class="badge bg-light text-dark border" style="font-size:.72em;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;">{{ item.sourceapi or '' }}</span></td>
+                            <td><small class="text-muted" style="white-space:nowrap;">{{ item.fetchdate or '' }}</small></td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="alert alert-info"><i class="bi bi-info-circle me-1"></i>该日期范围内无数据</div>
+{% endif %}
 {% endblock %}

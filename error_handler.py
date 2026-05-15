@@ -151,14 +151,9 @@ def safe_subprocess_run(cmd: str, step_name: str, keyword: str = None,
                        check: bool = True) -> bool:
     """安全执行子进程，自动记录错误"""
     error_handler = ErrorHandler()
-    
-    print(f"\n==============================")
-    print(f"[开始] 开始执行步骤: {step_name}")
-    if keyword:
-        print(f"[关键词] 关键词: {keyword}")
-    print(f"[命令] 执行命令: {cmd}")
-    print(f"==============================")
-    
+
+    print(f"[开始] {step_name}")
+
     try:
         # Windows环境编码兼容性处理
         import sys
@@ -171,10 +166,8 @@ def safe_subprocess_run(cmd: str, step_name: str, keyword: str = None,
             result = subprocess.run(cmd, shell=True, check=check, 
                                   capture_output=True, text=True, encoding='utf-8')
         
-        print(f"==============================")
-        print(f"[完成] 步骤完成: {step_name}")
-        print(f"==============================\n")
-        
+        print(f"[完成] {step_name}")
+
         return True
         
     except subprocess.CalledProcessError as e:
@@ -185,12 +178,10 @@ def safe_subprocess_run(cmd: str, step_name: str, keyword: str = None,
         if e.stderr:
             error_msg += f"\n错误输出: {e.stderr}"
         
-        print(f"[错误] {step_name} 执行失败")
-        print(f"[ERROR] 返回码: {e.returncode}")
+        print(f"[错误] {step_name} 返回码: {e.returncode}")
         if e.stderr:
-            print(f"[ERROR] 错误信息: {e.stderr}")
-        print(f"==============================\n")
-        
+            print(f"[ERROR] {e.stderr[:200]}")
+
         error_handler.log_step_failure(
             step_name=step_name,
             cmd=cmd,
@@ -214,9 +205,8 @@ def safe_subprocess_run(cmd: str, step_name: str, keyword: str = None,
         error_msg = f"执行命令时发生异常: {str(e)}"
         traceback_info = traceback.format_exc()
         
-        print(f"[错误] {step_name} 发生异常: {e}")
-        print(f"==============================\n")
-        
+        print(f"[错误] {step_name} 异常: {e}")
+
         error_handler.log_step_failure(
             step_name=step_name,
             cmd=cmd,
@@ -271,17 +261,10 @@ def log_script_start(script_name: str, args: List[str] = None):
     """记录脚本开始执行"""
     error_handler = ErrorHandler()
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    
-    log_entry = (
-        f"\n[{now}]\n"
-        f"[开始执行] 开始执行: {script_name}\n"
-    )
-    
-    if args:
-        log_entry += f"[参数] 执行参数: {' '.join(args)}\n"
-    
-    log_entry += f"==============================\n"
-    
+
+    args_str = f" {' '.join(args)}" if args else ""
+    log_entry = f"\n[{now}] [开始执行] {script_name}{args_str}\n"
+
     with open(error_handler.run_log_path, "a", encoding="utf-8") as f:
         f.write(log_entry)
 
@@ -289,18 +272,12 @@ def log_script_complete(script_name: str, success: bool = True, message: str = N
     """记录脚本执行完成"""
     error_handler = ErrorHandler()
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    
-    status = "[执行完成] 执行完成" if success else "[执行失败] 执行失败"
-    
-    log_entry = (
-        f"\n[{now}]\n"
-        f"{status}: {script_name}\n"
-    )
-    
+
+    status = "执行完成" if success else "执行失败"
+    log_entry = f"[{now}] [{status}] {script_name}"
     if message:
-        log_entry += f"[说明] 说明: {message}\n"
-    
-    log_entry += f"==============================\n"
-    
+        log_entry += f" — {message}"
+    log_entry += "\n"
+
     with open(error_handler.run_log_path, "a", encoding="utf-8") as f:
         f.write(log_entry) 

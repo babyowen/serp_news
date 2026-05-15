@@ -74,16 +74,13 @@ def table_has_region_column(cursor, table_name):
 
 
 def _call_llm(system_prompt, user_prompt, max_retries=3):
-    safe_print(f"[模型] deepseek-chat @ {DEEPSEEK_BASE_URL}")
-    safe_print(f"【LLM system前120字】 {system_prompt.strip()[:120].replace(chr(10), ' ')}")
-    safe_print(f"【LLM user前200字】 {user_prompt.strip()[:200].replace(chr(10), ' ')}")
     backoffs = [5, 10, 20]
 
     for attempt in range(max_retries):
         client = _pool.get_client(DEEPSEEK_API_KEY, DEEPSEEK_BASE_URL)
         try:
             resp = client.chat.completions.create(
-                model="deepseek-chat",
+                model="deepseek-v4-flash",
                 messages=[
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_prompt},

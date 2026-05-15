@@ -15,7 +15,7 @@
 
 - 🌐 **多源采集**：像侦察兵一样，同时从Google News、百度新闻、Bing News、DuckDuckGo News四个平台搜集信息。
 - 🔑 **智能抓取**：配备“万能钥匙”，通过多级兜底策略（定制规则 > 工具库 > 模拟浏览器）确保高成功率地获取新闻全文。
-- 🤖 **AI智能分析**：集成DeepSeek等大模型，实现高精度的AI评分（0-5分）和智能摘要；默认执行单轮摘要，如需启用“写作-评审-优化-热点追踪”多轮流程，可在 `news_summarizer.py` 中将 `ENABLE_MULTI_ROUND_SUMMARY` 设为 `True`。支持关键词特定的评分提示、并发处理和DeepSeek/百炼双平台自动切换。
+- 🤖 **AI智能分析**：集成DeepSeek等大模型（当前使用 deepseek-v4-flash），实现高精度的AI评分（0-5分）和智能摘要。支持关键词特定的评分提示、并发处理和DeepSeek/百炼双平台自动切换。
 - ⚡ **并发处理**：支持多线程并发AI评分（默认最大并发数3），大幅提升处理效率。
 - 🔄 **全自动化**：从采集到入库，一键运行，并支持断点续传。
 - 📊 **数据可视化**：提供简洁的Web界面，让数据结果和统计分析一目了然。
@@ -158,7 +158,7 @@
 python main.py
 
 # 2. 启动Web界面查看结果
-python app.py
+python app.py  # 默认端口5001
 ```
 默认情况下，系统会自动处理**昨天**的新闻。你也可以在运行 `main.py` 时传入指定日期，例如 `python main.py 2025-06-10`。
 
@@ -172,9 +172,9 @@ python app.py
 | **正文抓取** | `python fetch_content.py "养老" 2025-06-10` |
 | **单网页测试** | `python fetch_content.py "关键词" 2025-06-10 --url="https://example.com/news"` |
 | **AI评分** | `python news_scorer.py "养老" 2025-06-10` |
-| **智能摘要** | `python news_summarizer.py --keyword "养老" --date 2025-06-10` |
-| **数据入库** | `python write_to_mysql.py --date 2025-06-10` |
 | **500字短摘要** | `python news_item_summarizer.py 2025-06-10` |
+| **公积金地域分析** | `python news_region_analyzer.py --keyword 公积金 --date 2025-06-10` |
+| **数据入库** | `python write_to_mysql.py --date 2025-06-10` |
 
 ### 📝 单网页抓取测试说明
 
@@ -234,4 +234,4 @@ python fetch_content.py "测试" 2025-06-10 --url="https://www.sina.com.cn/"
 - **`error_log.txt`**：结构化的错误日志，当出现问题时，这里会提供详细的错误时间、脚本、关键词和错误信息，便于快速排查。
 
 ---
-*该文档最后更新于：2026-01-17*
+*该文档最后更新于：2026-05-14*

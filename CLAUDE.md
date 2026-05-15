@@ -61,7 +61,7 @@ playwright install
 
 ## 共享工具模块
 
-- **`db_utils.py`** — 统一数据库连接 + `MYSQL_TABLE` 环境变量切换测试表
+- **`db_utils.py`** — 统一数据库连接（含3次重试）+ `MYSQL_TABLE` 环境变量切换测试表 + `ping_connection` 保活
 - **`llm_client_pool.py`** — 统一LLM客户端池，按(api_key, base_url)复用，自动回收
 - **`config_manager.py`** — 读写 config.py 中的关键词和模型配置（供前端调用）
 - **`run_manager.py`** — 运行状态管理（启动/监控/历史/日志）
@@ -81,7 +81,7 @@ playwright install
 
 ## Flask管理前端
 
-- **公开路由**：`/`（日期列表）、`/date/<date>`（新闻浏览）、`/database`（数据库查看）
+- **公开路由**：`/`（新闻看板：筛选+统计+Tab分组列表）、`/date/<date>`（单日浏览）、`/database`（数据库查看）
 - **管理路由**（需Basic Auth）：`/admin/keywords`、`/admin/models`、`/admin/runs`
 - 模板在 `templates/`，管理页在 `templates/admin/`
 - 路由代码在 `routes/views.py`（公开）和 `routes/admin.py`（需认证）
@@ -98,8 +98,13 @@ python -c "from config import SEARCH_KEYWORDS; print(SEARCH_KEYWORDS)"
 
 ## 注意事项
 
-- `news_scorer.py` 使用 `deepseek-chat`(V3) 模型
+- 所有 AI 模块（评分/摘要/地域）统一使用 `deepseek-v4-flash` 模型，配置在 `config.py`
+- 日志系统：正常操作一行摘要，错误场景给出诊断字段（正文字数、错误原因、URL）
+- `/admin/models` 页面展示当前启用的 Prompt（按评分/摘要/公积金/地域分组）
 - 内容提取含防屏蔽：User-Agent伪装、SSL忽略、同站点1-4秒间隔
 - `msn.cn` 跳过、`tv.cctv.com` 跳过、`people.com.cn` 强制HTTP
 - `tobacco_gov_crawler.py` 独立脚本，固定4分，直接写MySQL不经过JSON
 - `output/` 目录已 gitignore
+- Flask 默认端口 5001（macOS AirPlay 占用 5000）
+- 路由中所有表名通过 `get_table_name()` 获取，`.env` 中 `MYSQL_TABLE` 控制读写哪张表
+- `main.py` 实时更新 `output/run_status.json` 中的步骤状态（running/success/failed），流水线结束标记 finished

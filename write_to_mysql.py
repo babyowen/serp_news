@@ -46,16 +46,16 @@ def insert_scored_news(json_path, keyword):
     with open(json_path, 'r', encoding='utf-8') as f:
         data = json.load(f)
     success, fail, skip = 0, 0, 0
-    empty_content_skip = 0  # 新增：记录因内容为空而跳过的数量
-    
+    empty_content_skip = 0
+    dup_title_skip = 0
+
     for item in data:
         # 新增：过滤空内容
         content = item.get('content', '')
         if not content or content.strip() == '':
             empty_content_skip += 1
-            write_log(f"[跳过空内容] scored_news: {item.get('title', '')[:50]}... (内容为空)")
             continue
-            
+
         # 查重：title+link
         cursor.execute(
             f"SELECT id FROM {TABLE_NAME} WHERE title=%s AND link=%s",
@@ -64,7 +64,16 @@ def insert_scored_news(json_path, keyword):
         if cursor.fetchone():
             skip += 1
             continue
-            
+
+        # 兜底查重：同一关键词下 title 完全相同（URL可能不同）
+        cursor.execute(
+            f"SELECT id FROM {TABLE_NAME} WHERE title=%s AND keyword=%s",
+            (item.get('title'), item.get('keyword'))
+        )
+        if cursor.fetchone():
+            dup_title_skip += 1
+            continue
+
         sql = f'''
         INSERT INTO {TABLE_NAME} (
             date, title, link, source, fetchdate, sourceapi, thumbnail, keyword, content, wordcount, custom_grab, score, search_keyword
@@ -89,17 +98,43 @@ def insert_scored_news(json_path, keyword):
                 item.get('wordcount'),
                 int(custom_grab),
                 item.get('score'),
-                item.get('search_keyword')  # 新增：从JSON中获取search_keyword字段
+                item.get('search_keyword')
             ))
             success += 1
         except Exception as e:
             fail += 1
-            write_log(f"[导入异常] scored_news: {item.get('title', '')} 错误: {e}")
+            write_log(f"[导入异常] {item.get('title', '')[:30]}... 错误: {e}")
     conn.commit()
     now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    # 修改日志信息，添加空内容跳过统计
-    log_msg = f"[{now}] 导入数据库\n  关键词: {keyword}\n  文件: {json_path}\n  表: {TABLE_NAME}\n  成功写入: {success} 条\n  跳过(已存在): {skip} 条\n  跳过(空内容): {empty_content_skip} 条\n  失败: {fail} 条\n------------------------------"
-    write_log(log_msg)
+    parts = [f"成功: {success}", f"跳过: {skip}", f"空内容: {empty_content_skip}"]
+    if dup_title_skip:
+        parts.append(f"标题重复: {dup_title_skip}")
+    if fail:
+        parts.append(f"失败: {fail}")
+    write_log(f"[{now}] 导入数据库 {keyword}: {', '.join(parts)}")
+
+
+def update_scores_from_json(json_path, keyword):
+    """重评后更新数据库中已有记录的分数"""
+    with open(json_path, 'r', encoding='utf-8') as f:
+        data = json.load(f)
+    updated = 0
+    for item in data:
+        score = item.get('score')
+        title = item.get('title', '')
+        if not score or not title:
+            continue
+        cursor.execute(
+            f"UPDATE {TABLE_NAME} SET score=%s WHERE title=%s AND keyword=%s AND score IS NULL",
+            (score, title, item.get('keyword', keyword))
+        )
+        if cursor.rowcount > 0:
+            updated += cursor.rowcount
+    conn.commit()
+    now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    write_log(f"[{now}] 更新评分 {keyword}: 更新{updated}条")
+    print(f"[更新评分] {keyword}: 更新了 {updated} 条记录的分数")
+    return updated
 
 # 写入 summary_news 表（新闻摘要）
 # 数据获取：从json_path读取摘要数据
@@ -146,8 +181,7 @@ def insert_summary_news(json_path, keyword):
             write_log(f"[导入异常] summary_news: {s.get('summary', '')[:30]}... 错误: {e}")
     conn.commit()
     now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    log_msg = f"[{now}] 导入数据库\n  关键词: {keyword}\n  文件: {json_path}\n  表: summary_news\n  成功写入: {success} 条\n  跳过: {skip} 条\n  失败: {fail} 条\n------------------------------"
-    write_log(log_msg)
+    write_log(f"[{now}] 导入摘要 {keyword}: 成功{success}, 跳过{skip}, 失败{fail}")
 
 # 写入 news_websites 表（新闻源域名）
 # 数据获取：从txt_path读取新闻源域名列表
@@ -157,14 +191,12 @@ def insert_news_websites(txt_path):
     with open(txt_path, 'r', encoding='utf-8') as f:
         websites = set(line.strip() for line in f if line.strip())
     success, skip = 0, 0
-    duplicate_found = False  # 标记是否有查重
     for website in websites:
         cursor.execute(
             "SELECT website FROM news_websites WHERE website=%s",
             (website,)
         )
         if cursor.fetchone():
-            duplicate_found = True
             skip += 1
             continue
         try:
@@ -173,16 +205,11 @@ def insert_news_websites(txt_path):
                 (website, None)
             )
             success += 1
-            write_log(f"[写入] news_websites 新增: {website}")
-        except Exception as e:
-            write_log(f"[导入异常] news_websites: {website} 错误: {e}")
-    # 只输出一条查重日志
-    if duplicate_found:
-        write_log(f"[查重] news_websites 已存在，跳过部分已存在网站（仅提示一次）")
+        except Exception:
+            skip += 1
     conn.commit()
     now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    log_msg = f"[{now}] 导入数据库\n  文件: {txt_path}\n  表: news_websites\n  成功写入: {success} 条\n  跳过: {skip} 条\n------------------------------"
-    write_log(log_msg)
+    write_log(f"[{now}] 导入网站源: 成功{success}, 跳过{skip}")
 
 # 写入 news_source_stats 表（新闻源分布统计）
 # 数据获取：从json_path读取新闻源统计数据
@@ -201,7 +228,6 @@ def insert_news_source_stats(json_path, target_date):
             (item.get('date'), item.get('keyword'), item.get('domain'))
         )
         if cursor.fetchone():
-            write_log(f"[查重] news_source_stats 已存在，跳过: {item.get('date')} | {item.get('keyword')} | {item.get('domain')}")
             skip += 1
             continue
         sql = '''
@@ -222,8 +248,7 @@ def insert_news_source_stats(json_path, target_date):
             write_log(f"[导入异常] news_source_stats: {item.get('date')} | {item.get('keyword')} | {item.get('domain')} 错误: {e}")
     conn.commit()
     now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    log_msg = f"[{now}] 导入数据库\n  文件: {json_path}\n  表: news_source_stats\n  成功写入: {success} 条\n  跳过: {skip} 条\n  失败: {fail} 条\n------------------------------"
-    write_log(log_msg)
+    write_log(f"[{now}] 导入来源统计: 成功{success}, 跳过{skip}, 失败{fail}")
 
 # 获取目标日期（无参数则为昨天）
 # 数据获取：命令行参数或默认昨天

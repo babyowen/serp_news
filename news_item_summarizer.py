@@ -44,15 +44,12 @@ def parse_date(arg):
 
 def call_llm(title, content, max_retries=3):
     user_prompt = NEWS_ITEM_SUMMARY_USER_PROMPT_500.format(title=title.strip(), content=content.strip())
-    safe_print(f"[模型] deepseek-chat @ {DEEPSEEK_BASE_URL}")
-    safe_print(f"【LLM system前120字】 {NEWS_ITEM_SUMMARY_SYSTEM_PROMPT_500.strip()[:120].replace(chr(10),' ')}")
-    safe_print(f"【LLM user前200字】 {user_prompt.strip()[:200].replace(chr(10),' ')}")
     backoffs = [5, 10, 20]
     for i in range(max_retries):
         client = _pool.get_client(DEEPSEEK_API_KEY, DEEPSEEK_BASE_URL)
         try:
             resp = client.chat.completions.create(
-                model='deepseek-chat',
+                model='deepseek-v4-flash',
                 messages=[
                     {"role": "system", "content": NEWS_ITEM_SUMMARY_SYSTEM_PROMPT_500},
                     {"role": "user", "content": user_prompt}
@@ -73,14 +70,7 @@ def get_conn():
 def log_run(date, table_name, total, success, fail, skip):
     now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     log_path = os.path.join('output', 'run_log.txt')
-    msg = (
-        f"\n[{now}]\n"
-        f"执行程序: news_item_summarizer\n"
-        f"[抓取日期] {date}\n"
-        f"[数据表] {table_name}\n"
-        f"[统计] 待处理: {total} 成功: {success} 失败: {fail} 跳过: {skip}\n"
-        f"==============================\n"
-    )
+    msg = f"[{now}] 单条摘要 {date}: 待处理{total}, 成功{success}, 失败{fail}, 跳过{skip}\n"
     with open(log_path, 'a', encoding='utf-8') as f:
         f.write(msg)
 
@@ -148,13 +138,6 @@ def main():
             for rid, title, content, keyword in rows:
                 if not content or not str(content).strip():
                     skip += 1
-                    safe_print(f"[跳过空内容] id={rid}")
-                    try:
-                        _lp = os.path.join('output','run_log.txt')
-                        with open(_lp, 'a', encoding='utf-8') as _f:
-                            _f.write(f"[SKIP] 空内容记录 id={rid}\n")
-                    except Exception:
-                        pass
                     continue
                 text = str(content).strip()
                 is_gjj = keyword == "公积金"

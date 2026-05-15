@@ -70,14 +70,7 @@ def build_query(table_name, keyword, date=None, date_from=None, date_to=None, li
 def log_run(table_name, keyword, total, success, fail, skip):
     now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     log_path = os.path.join("output", "run_log.txt")
-    msg = (
-        f"\n[{now}]\n"
-        f"执行程序: news_region_analyzer\n"
-        f"[数据表] {table_name}\n"
-        f"[关键词] {keyword}\n"
-        f"[统计] 待处理: {total} 成功: {success} 失败: {fail} 跳过: {skip}\n"
-        f"==============================\n"
-    )
+    msg = f"[{now}] 地域分析 {keyword}: 待处理{total}, 成功{success}, 失败{fail}, 跳过{skip}\n"
     with open(log_path, "a", encoding="utf-8") as f:
         f.write(msg)
 

@@ -200,31 +200,21 @@ def get_chrome_service_for_windows():
 
 # 用Selenium抓取新闻正文，支持定制化规则和通用抓取
 def fetch_article_content_with_selenium(url):
-    print(f"[调试] fetch_article_content_with_selenium 启动, url={url}")
-    
-    # 使用Windows优化的Chrome选项和服务
     options = get_chrome_options_for_windows()
     service = get_chrome_service_for_windows()
-    
+
     driver = webdriver.Chrome(service=service, options=options)
-    
-    # 设置超时时间
     driver.set_page_load_timeout(30)
     driver.implicitly_wait(10)
-    
+
     custom_grab = False
     try:
         driver.get(url)
         time.sleep(5)
-        print(f"[调试] 开始遍历定制化规则, CUSTOM_GRAB_RULES 长度: {len(CUSTOM_GRAB_RULES)}")
         for match_func, grab_func in CUSTOM_GRAB_RULES:
-            print(f"[调试] 检查规则: {grab_func.__name__}, url={url.lower()}")
             if match_func(url.lower()):
-                print(f"[调试] 命中定制化规则: {grab_func.__name__}, url={url}")
                 text, grab_type = grab_func(driver)
-                # 只要命中定制化规则就直接返回，无论是否抓到正文
                 return text, len(text), True
-        print("[调试] 未命中任何定制化规则，进入通用抓取")
         candidates = [
             'article', '.article-content', '#main-content', '.content', '.news_content', '.content-article', '.news-content'
         ]
@@ -237,13 +227,12 @@ def fetch_article_content_with_selenium(url):
                     text = t
         return text, len(text), False
     except Exception as e:
-        print(f"[调试] fetch_article_content_with_selenium 异常: {e}")
         return '', 0, custom_grab
     finally:
         try:
             driver.quit()
         except:
-            pass  # 忽略退出时的异常
+            pass
 
 # 用requests+trafilatura/newspaper3k抓取正文，适合特殊编码站点
 def fetch_article_content_with_requests(url):
@@ -274,78 +263,53 @@ def fetch_article_content_with_requests(url):
 
 # 用Playwright渲染页面并抓取正文，支持定制化规则
 def fetch_article_content_with_playwright(url):
-    print(f"[调试] fetch_article_content_with_playwright 启动, url={url}")
     custom_grab = False
     try:
-        print(f"[调试] 当前已注册定制化规则: {[f.__name__ for _, f in CUSTOM_GRAB_RULES]}")
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=True)
             page = browser.new_page()
             page.goto(url, timeout=30000)
             # 遍历定制化规则
             for match_func, grab_func in CUSTOM_GRAB_RULES:
-                print(f"[调试] [Playwright] 检查规则: {grab_func.__name__}, url={url.lower()}")
                 if match_func(url.lower()):
-                    print(f"[调试] [Playwright] 命中定制化规则: {grab_func.__name__}, url={url}")
                     grab_func_name = grab_func.__name__ + '_playwright'
-                    print(f"[调试] [Playwright] 期望调用: {grab_func_name}")
                     if grab_func_name in globals():
-                        print(f"[调试] [Playwright] 找到 {grab_func_name}，即将调用")
                         text, grab_type = globals()[grab_func_name](page)
                         browser.close()
-                        print(f"[调试] [Playwright] {grab_func_name} 返回字数: {len(text)}")
                         return text, len(text), True
                     else:
-                        print(f"[调试] [Playwright] 未实现 {grab_func_name}，跳过")
-                        print(f"[调试] [Playwright] 当前globals()中可用函数: {[k for k in globals().keys() if 'msn' in k or 'playwright' in k]}")
-                        # 输出渲染后HTML片段
-                        html_full = page.content()
-                        with open('output/msn_playwright_debug.html', 'w', encoding='utf-8') as f:
-                            f.write(html_full)
-                        print(f"[调试] [Playwright] 渲染后完整HTML已写入 output/msn_playwright_debug.html")
-                        break
+                        browser.close()
+                        return '', 0, False
             browser.close()
-        print("[调试] [Playwright] 未命中任何定制化规则")
         return '', 0, False
     except Exception as e:
-        print(f"[调试] fetch_article_content_with_playwright 异常: {e}")
         return '', 0, False
 
 # 综合抓取正文的核心实现（不包含重试逻辑）
 def _fetch_article_content_core(url):
-    print(f"[调试] _fetch_article_content_core 启动, url={url}")
     # 1. msn.cn 直接跳过抓取
     if 'msn.cn' in url:
-        print("[调试] msn.cn 暂不支持正文抓取，已跳过")
         return '', 0, False
     # 2. 其它站点走原有流程
     for match_func, grab_func in CUSTOM_GRAB_RULES:
         if match_func(url.lower()):
-            print(f"[调试] 优先命中定制化规则: {grab_func.__name__}, url={url}")
             try:
                 text, grab_type = grab_func(fetch_article_content_with_selenium_driver(url))
-                # 乱码检测
                 if is_garbled(text):
-                    print(f"[WARN] 定制化规则抓取到疑似乱码或异常正文，已丢弃。url={url}")
                     return '', 0, False
-                if text and len(text) > 0:  # 只要有内容就返回
+                if text and len(text) > 0:
                     return text, len(text), True
-            except Exception as e:
-                print(f"[调试] 定制化规则异常: {e}")
-                raise  # 抛出异常以便重试机制捕获
+            except Exception:
+                raise
     # 针对GBK/GB2312等特殊站点优先用requests自动编码识别
     if any(domain in url for domain in ['jxnews.com.cn']):
-        print("[调试] 命中特殊编码站点，优先 requests 抓取")
         text, wc, used_custom = fetch_article_content_with_requests(url)
         if is_garbled(text):
-            print(f"[WARN] requests抓取到疑似乱码或异常正文，已丢弃。url={url}")
             return '', 0, False
         if text and wc > 50:
-            print("[调试] requests 抓取成功，提前 return")
             return text, wc, used_custom
     # 2. trafilatura
     try:
-        print(f"[调试] trafilatura 抓取")
         downloaded = trafilatura.fetch_url(url)
         if downloaded:
             result = trafilatura.extract(downloaded, output_format='json')
@@ -353,33 +317,25 @@ def _fetch_article_content_core(url):
                 data = json.loads(result)
                 text = data.get('text', '')
                 if is_garbled(text):
-                    print(f"[WARN] trafilatura抓取到疑似乱码或异常正文，已丢弃。url={url}")
                     return '', 0, False
                 if text and len(text) > 50:
-                    print("[调试] trafilatura 抓取成功，提前 return")
                     return text, len(text), False
-    except Exception as e:
-        print(f"[调试] trafilatura 异常: {e}")
-        raise  # 抛出异常以便重试机制捕获
+    except Exception:
+        raise
     # 3. newspaper3k
     try:
-        print("[调试] newspaper3k 抓取")
         article = Article(url, language='zh')
         article.download()
         article.parse()
         text = article.text
         if is_garbled(text):
-            print(f"[WARN] newspaper3k抓取到疑似乱码或异常正文，已丢弃。url={url}")
             return '', 0, False
         if text and len(text) > 50:
-            print("[调试] newspaper3k 抓取成功，提前 return")
             return text, len(text), False
-    except Exception as e:
-        print(f"[调试] newspaper3k 异常: {e}")
-        raise  # 抛出异常以便重试机制捕获
+    except Exception:
+        raise
     # 4. Playwright渲染+正文提取
     try:
-        print("[调试] Playwright 渲染+正文提取")
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=True)
             page = browser.new_page()
@@ -394,13 +350,11 @@ def _fetch_article_content_core(url):
             article.parse()
             text = article.text
             if is_garbled(text):
-                print(f"[WARN] Playwright+Newspaper3k抓取到疑似乱码或异常正文，已丢弃。url={url}")
                 return '', 0, False
             if text and len(text) > 50:
-                print("[调试] Playwright+Newspaper3k 抓取成功，提前 return")
                 return text, len(text), False
-        except Exception as e:
-            print(f"[调试] Playwright+Newspaper3k 异常: {e}")
+        except Exception:
+            pass
         # 4.2 Readability 提取
         try:
             doc = Document(html_content)
@@ -408,105 +362,60 @@ def _fetch_article_content_core(url):
             soup = BeautifulSoup(text, 'html.parser')
             pure_text = soup.get_text(separator='\n').strip()
             if is_garbled(pure_text):
-                print(f"[WARN] Playwright+Readability抓取到疑似乱码或异常正文，已丢弃。url={url}")
                 return '', 0, False
             if pure_text and len(pure_text) > 50:
-                print("[调试] Playwright+Readability 抓取成功，提前 return")
                 return pure_text, len(pure_text), False
-        except Exception as e:
-            print(f"[调试] Playwright+Readability 异常: {e}")
-    except Exception as e:
-        print(f"[调试] Playwright 渲染异常: {e}")
-        raise  # 抛出异常以便重试机制捕获
-    # 5. Selenium定制化兜底（如未命中定制化规则时的通用抓取）
+        except Exception:
+            pass
+    except Exception:
+        raise
+    # 5. Selenium定制化兜底
     try:
-        print("[调试] selenium 定制化抓取")
         text, wc, custom_grab = fetch_article_content_with_selenium(url)
         if is_garbled(text):
-            print(f"[WARN] selenium抓取到疑似乱码或异常正文，已丢弃。url={url}")
             return '', 0, False
         if custom_grab or (text and wc > 50):
-            print("[调试] selenium 定制化抓取命中，提前 return")
             return text, wc, custom_grab
-    except Exception as e:
-        print(f"[调试] selenium 定制化异常: {e}")
-        raise  # 抛出异常以便重试机制捕获
-    print("[调试] 全部抓取失败，返回空")
+    except Exception:
+        raise
     return '', 0, False
 
 # 带重试机制的正文抓取包装函数
 def fetch_article_content(url, max_retries=3, retry_interval=10):
-    """
-    带重试机制的正文抓取函数
-    
-    Args:
-        url: 要抓取的网页URL
-        max_retries: 最大重试次数，默认3次
-        retry_interval: 重试间隔秒数，默认10秒
-    
-    Returns:
-        tuple: (content, wordcount, custom_grab)
-    """
-    print(f"[调试] fetch_article_content 启动，最大重试次数: {max_retries}, url={url}")
-    
     last_exception = None
-    
+
     for attempt in range(max_retries):
         try:
-            print(f"[调试] 第 {attempt + 1} 次尝试抓取正文")
             content, wordcount, custom_grab = _fetch_article_content_core(url)
-            
-            # 如果抓取成功（有内容），直接返回
             if wordcount > 0:
-                print(f"[调试] 第 {attempt + 1} 次尝试成功，字数: {wordcount}")
                 return content, wordcount, custom_grab
-            
-            # 如果没有内容但没有异常，也算一次尝试
-            print(f"[调试] 第 {attempt + 1} 次尝试未获取到内容")
             if attempt < max_retries - 1:
-                print(f"[调试] 等待 {retry_interval} 秒后重试...")
                 time.sleep(retry_interval)
-            
         except Exception as e:
             last_exception = e
-            print(f"[调试] 第 {attempt + 1} 次尝试异常: {e}")
-            
             if attempt < max_retries - 1:
-                print(f"[调试] 等待 {retry_interval} 秒后重试...")
                 time.sleep(retry_interval)
-            else:
-                print(f"[调试] 已达到最大重试次数 {max_retries}，放弃抓取")
-    
-    # 所有重试都失败了
-    if last_exception:
-        print(f"[ERROR] 抓取失败，最后一次异常: {last_exception}")
-    else:
-        print(f"[ERROR] 抓取失败，{max_retries} 次尝试均未获取到内容")
-    
+
     return '', 0, False
 
 # 用Selenium驱动返回driver对象，供定制化规则使用
 def fetch_article_content_with_selenium_driver(url):
-    # 使用Windows优化的Chrome选项和服务
     options = get_chrome_options_for_windows()
     service = get_chrome_service_for_windows()
-    
+
     driver = webdriver.Chrome(service=service, options=options)
-    
-    # 设置超时时间
     driver.set_page_load_timeout(30)
     driver.implicitly_wait(10)
-    
+
     try:
         driver.get(url)
         time.sleep(5)
         return driver
-    except Exception as e:
-        print(f"[调试] fetch_article_content_with_selenium_driver 异常: {e}")
+    except Exception:
         try:
             driver.quit()
         except:
-            pass  # 忽略退出时的异常
+            pass
         raise
 
 # 获取url的主域名
@@ -531,41 +440,11 @@ def process_json(keyword, date_str=None, mode='正式'):
     # 但是如果新闻列表为空，则不应该跳过
     all_has_content_field = len(news_list) > 0 and all('content' in item for item in news_list)
     if all_has_content_field:
-        print(f"[SKIP] {json_path} 所有新闻已包含content字段，跳过 {keyword}")
-        # 可选：写入日志
+        print(f"[SKIP] {json_path} 所有新闻已包含content字段，跳过")
         now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        log_path = os.path.join("output", "run_log.txt")
-        skip_log = (
-            f"[{now}]\n[SKIP] 跳过关键词: {keyword}\n原因: {json_path} 所有新闻已包含content字段，正文抓取已执行\n==============================\n"
-        )
-        # 清理Unicode字符
-        def clean_unicode_for_log(text):
-            if not text:
-                return text
-            replacements = {
-                '🕒': '[时间]',
-                '📰': '[新闻]',
-                '🔑': '[关键词]'
-            }
-            cleaned_text = text
-            for emoji, replacement in replacements.items():
-                cleaned_text = cleaned_text.replace(emoji, replacement)
-            try:
-                cleaned_text.encode('gbk')
-            except UnicodeEncodeError:
-                safe_chars = []
-                for char in cleaned_text:
-                    try:
-                        char.encode('gbk')
-                        safe_chars.append(char)
-                    except UnicodeEncodeError:
-                        safe_chars.append('?')
-                cleaned_text = ''.join(safe_chars)
-            return cleaned_text
-        
-        cleaned_skip_log = clean_unicode_for_log(skip_log)
+        skip_log = f"[{now}] [SKIP] 正文抓取: {keyword} 已完成\n"
         with open(log_path, "a", encoding="utf-8") as f:
-            f.write(cleaned_skip_log)
+            f.write(skip_log)
         return True  # 跳过也算成功
     # 新增：将 https://people.com.cn 及其所有子域名替换为 http
     for item in news_list:
@@ -577,20 +456,15 @@ def process_json(keyword, date_str=None, mode='正式'):
     # 1. 先抓取正文，写入item，并加同一网站间隔
     prev_domain = None
     filtered_news_list = []
-    skipped_video_items = []
     for item in news_list:
         url = item.get('link')
         curr_domain = get_domain(url) if url else None
         # 只在抓取正文时加间隔
         if prev_domain and curr_domain and prev_domain == curr_domain:
-            sleep_time = random.uniform(1, 4)
-            print(f"同一网站({curr_domain})，等待 {sleep_time:.1f} 秒防反爬...")
-            time.sleep(sleep_time)
+            time.sleep(random.uniform(1, 4))
         prev_domain = curr_domain
         # 跳过tv.cctv.com，仅日志记录
         if url and 'tv.cctv.com' in url:
-            print(f"[跳过] {url} 为视频新闻，未写入json，仅日志记录")
-            skipped_video_items.append({'title': item.get('title', ''), 'link': url})
             continue
         if not url:
             item['content'] = ''
@@ -700,81 +574,21 @@ def process_json(keyword, date_str=None, mode='正式'):
     with open(stats_path, 'w', encoding='utf-8') as sf:
         json.dump(stats_records, sf, ensure_ascii=False, indent=2)
     # 写日志
-    log_content = f"\n==============================\n"
-    log_content += f"[时间] {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"
-    log_content += f"[关键词] 关键词: {keyword}\n"
-    log_content += f"[模式] 模式: {mode}\n"
-    log_content += f"[文件] 处理的json文件: {json_path}\n"
-    log_content += f"\n[统计] 抓取统计：\n"
-    log_content += f"  [成功] 成功抓取正文: {success_count} 篇\n"
-    log_content += f"  [定制] 其中定制化抓取: {len(custom_used_items)} 篇\n"
-    log_content += f"  [来源] 本次采集新闻源数量: {len(current_domains)}\n"
-    log_content += f"  [失败] 抓取失败: {len(fail_items)} 篇\n"
-    if custom_grab_domain_count:
-        log_content += "\n[命中] 定制化抓取命中统计：\n"
-        for domain, count in custom_grab_domain_count.items():
-            log_content += f"  - {domain}: {count} 篇\n"
-            for item in custom_grab_domain_items[domain]:
-                log_content += f"      • {item['title']} | {item['link']}\n"
+    now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    log_content = f"\n[{now}]\n"
+    log_content += f"执行程序: 正文抓取\n"
+    log_content += f"[关键词] {keyword}\n"
+    log_content += f"[统计] 成功: {success_count}, 定制: {len(custom_used_items)}, 失败: {len(fail_items)}\n"
     if fail_items:
-        log_content += "\n[警告] 未能抓取的新闻：\n"
-        for fail in fail_items:
-            mark = "(定制化)" if fail.get('custom') else ""
-            log_content += f"  - {fail['title']} | {fail['link']} {mark}\n"
-    # 在日志中单独记录tv.cctv.com跳过情况
-    if skipped_video_items:
-        log_content += "\n[视频] 跳过仅含视频的新闻（tv.cctv.com）：\n"
-        for item in skipped_video_items:
-            log_content += f"  - {item['title']} | {item['link']}\n"
-    log_content += "==============================\n\n"
-    
-    # 添加Unicode清理机制
-    def clean_unicode_for_log(text):
-        """清理日志中的Unicode字符，避免Windows GBK编码错误"""
-        if not text:
-            return text
-        
-        # 替换emoji字符
-        replacements = {
-            '📰': '[新闻]',
-            '🔑': '[关键词]',
-            '🗂️': '[模式]',
-            '📄': '[文件]',
-            '📊': '[统计]',
-            '✅': '[成功]',
-            '✨': '[定制]',
-            '🌐': '[来源]',
-            '❌': '[失败]',
-            '🎯': '[命中]',
-            '⚠️': '[警告]',
-            '📺': '[视频]',
-            '•': '*'
-        }
-        
-        cleaned_text = text
-        for emoji, replacement in replacements.items():
-            cleaned_text = cleaned_text.replace(emoji, replacement)
-        
-        # 进一步清理可能的Unicode问题
-        try:
-            cleaned_text.encode('gbk')
-        except UnicodeEncodeError:
-            # 逐字符检查并替换
-            safe_chars = []
-            for char in cleaned_text:
-                try:
-                    char.encode('gbk')
-                    safe_chars.append(char)
-                except UnicodeEncodeError:
-                    safe_chars.append('?')
-            cleaned_text = ''.join(safe_chars)
-        
-        return cleaned_text
-    
-    # 清理并写入日志
-    cleaned_log_content = clean_unicode_for_log(log_content)
+        log_content += f"[失败] 未抓取正文: {len(fail_items)}篇\n"
+        for fail in fail_items[:5]:  # 最多列出5条
+            log_content += f"  - {fail['title'][:40]} | {fail['link']}\n"
+        if len(fail_items) > 5:
+            log_content += f"  ... 还有{len(fail_items)-5}条\n"
+    log_content += f"==============================\n"
+
     with open(log_path, 'a', encoding='utf-8') as logf:
-        logf.write(cleaned_log_content)
+        logf.write(log_content)
     print(f"Updated: {json_path}")
     print(f"日志已写入 {log_path}")
     print(f"已写入新闻来源统计: {sources_path}")

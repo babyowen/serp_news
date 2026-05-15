@@ -9,11 +9,12 @@ GNEWS_API_KEY = os.getenv("GNEWS_API_KEY")  # GNews API Key
 # ========== 新关键词配置 ===========
 # SEARCH_KEYWORDS: 主关键词 -> [搜索用关键词1, 搜索用关键词2, ...]
 SEARCH_KEYWORDS = {
-    "养老": ["养老"],
-    "公积金": ["公积金"],
-    "数字政务": ["数字政务"],
-    "政府基金": ["政府基金", "引导基金", "母基金"],
-    "中国烟草": ["中国烟草", "江苏烟草"],
+    "养老": ['养老'],
+    "公积金": ['公积金'],
+    "数字政务": ['数字政务'],
+    "政府基金": ['政府基金', '引导基金', '母基金'],
+    "中国烟草": ['中国烟草', '江苏烟草'],
+    "零基预算": ['零基预算'],
 }
 # 主关键词列表
 DEFAULT_KEYWORDS = list(SEARCH_KEYWORDS.keys())
@@ -204,10 +205,10 @@ NEWS_SUMMARY_MODELS = {
             "base_url": "https://api.deepseek.com",
             "model": "deepseek-reasoner"
         },
-        "deepseek-chat": {
+        "deepseek-v4-flash": {
             "api_key": os.getenv("DEEPSEEK_API_KEY"),
             "base_url": "https://api.deepseek.com",
-            "model": "deepseek-chat"
+            "model": "deepseek-v4-flash"
         },
         # 未来可扩展更多deepseek模型
     },

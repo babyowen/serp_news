@@ -6,27 +6,54 @@ import json
 import concurrent.futures
 from config import DEFAULT_KEYWORDS, SEARCH_KEYWORDS
 from error_handler import (
-    setup_global_exception_handler, 
-    safe_subprocess_run, 
+    setup_global_exception_handler,
+    safe_subprocess_run,
     with_error_handling,
     log_script_start,
     log_script_complete,
     ErrorHandler
 )
 
+STATUS_FILE = os.path.join("output", "run_status.json")
+
+def _update_step(step_name, step_status):
+    """更新 run_status.json 中某个步骤的状态"""
+    try:
+        if os.path.exists(STATUS_FILE):
+            with open(STATUS_FILE, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            if "steps" in data and step_name in data["steps"]:
+                data["steps"][step_name]["status"] = step_status
+                with open(STATUS_FILE, "w", encoding="utf-8") as f:
+                    json.dump(data, f, ensure_ascii=False, indent=2)
+    except Exception:
+        pass
+
+def _finish_run():
+    """标记运行完成"""
+    try:
+        if os.path.exists(STATUS_FILE):
+            with open(STATUS_FILE, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            data["status"] = "finished"
+            with open(STATUS_FILE, "w", encoding="utf-8") as f:
+                json.dump(data, f, ensure_ascii=False, indent=2)
+    except Exception:
+        pass
+
 # 设置全局异常处理器
 setup_global_exception_handler()
 
 def run_step(cmd, step_name, script_name=None, desc=None, keyword=None):
     """安全运行步骤，使用新的错误处理机制"""
-    if script_name or desc:
-        print(f"\n------ 即将执行: {script_name or ''} ------")
-        if desc:
-            print(f"功能说明: {desc}")
-        print(f"-----------------------------------\n")
-    
-    # 使用safe_subprocess_run替代原来的subprocess.run
-    return safe_subprocess_run(cmd, step_name, keyword=keyword, check=True)
+    _update_step(step_name, "running")
+    try:
+        result = safe_subprocess_run(cmd, step_name, keyword=keyword, check=True)
+        _update_step(step_name, "success")
+        return result
+    except Exception as e:
+        _update_step(step_name, "failed")
+        raise
 
 def all_news_has_content(json_path):
     """判断json文件中所有新闻条目都已存在非空content字段"""
@@ -53,14 +80,12 @@ def write_skip_log(keyword, reason, file_path):
     """记录跳过信息到日志"""
     now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     log_path = os.path.join("output", "run_log.txt")
-    skip_log = (
-        f"[{now}]\n[SKIP] 跳过关键词: {keyword}\n原因: {reason} {file_path}\n==============================\n"
-    )
+    skip_log = f"[{now}] [SKIP] {keyword}: {reason}\n"
     try:
         with open(log_path, "a", encoding="utf-8") as f:
             f.write(skip_log)
-    except Exception as e:
-        print(f"[WARN] 无法写入跳过日志: {e}")
+    except Exception:
+        pass
 
 @with_error_handling("main.py", "新闻采集阶段")
 def execute_news_fetching(date, main_kw):
@@ -241,41 +266,12 @@ def execute_scoring_concurrent(date, keywords, max_workers=3):
     # 记录详细结果到日志
     now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     log_path = os.path.join("output", "run_log.txt")
-    
-    concurrent_log = f"\n[{now}]\n"
-    concurrent_log += f"执行程序: main.py (并发AI评分)\n"
-    concurrent_log += f"并发处理关键词: {', '.join(keywords)}\n"
-    concurrent_log += f"最大并发数: {max_workers}\n"
-    concurrent_log += f"总耗时: {duration.total_seconds():.1f}秒\n"
-    concurrent_log += f"成功: {success_count}，失败: {fail_count}\n"
-    concurrent_log += f"详细结果:\n"
-    
-    for kw, result in results.items():
-        status = "成功" if result else "失败"
-        concurrent_log += f"  - {kw}: {status}\n"
-    
-    concurrent_log += f"==============================\n"
-    
-    # 清理Unicode字符
-    def clean_unicode_for_log(text):
-        if not text:
-            return text
-        try:
-            text.encode('gbk')
-        except UnicodeEncodeError:
-            safe_chars = []
-            for char in text:
-                try:
-                    char.encode('gbk')
-                    safe_chars.append(char)
-                except UnicodeEncodeError:
-                    safe_chars.append('?')
-            text = ''.join(safe_chars)
-        return text
-    
-    cleaned_log = clean_unicode_for_log(concurrent_log)
+
+    results_summary = ", ".join(f"{kw}={'成功' if r else '失败'}" for kw, r in results.items())
+    concurrent_log = f"[{now}] 并发AI评分完成: 成功{success_count}, 失败{fail_count}, 耗时{duration.total_seconds():.0f}秒\n"
+
     with open(log_path, "a", encoding="utf-8") as f:
-        f.write(cleaned_log)
+        f.write(concurrent_log)
     
     return success_count, fail_count
 
@@ -442,7 +438,7 @@ if __name__ == "__main__":
     
     # 执行主函数
     success = main(date)
-    
+    _finish_run()
     # 根据执行结果设置退出码
     if success:
         sys.exit(0)

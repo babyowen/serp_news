@@ -54,19 +54,19 @@ def read_model_config():
     return {
         "scoring": {
             "platform": "deepseek",
-            "model": "deepseek-chat",
+            "model": "deepseek-v4-flash",
             "base_url": DEEPSEEK_BASE_URL,
             "api_key_set": bool(DEEPSEEK_API_KEY),
         },
         "item_summarizer": {
             "platform": "deepseek",
-            "model": "deepseek-chat",
+            "model": "deepseek-v4-flash",
             "base_url": DEEPSEEK_BASE_URL,
             "api_key_set": bool(DEEPSEEK_API_KEY),
         },
         "region": {
             "platform": "deepseek",
-            "model": "deepseek-chat",
+            "model": "deepseek-v4-flash",
             "base_url": DEEPSEEK_BASE_URL,
             "api_key_set": bool(DEEPSEEK_API_KEY),
         },

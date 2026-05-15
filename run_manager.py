@@ -102,26 +102,71 @@ class RunManager:
         return dirs[:limit]
 
     def get_log(self, date):
-        """读取指定日期的运行日志"""
+        """读取指定日期的运行日志，格式化为易读摘要"""
         log_path = os.path.join(OUTPUT_DIR, "run_log.txt")
         if not os.path.exists(log_path):
-            return ""
+            return ["暂无日志"]
+
         try:
             with open(log_path, "r", encoding="utf-8") as f:
                 lines = f.readlines()
-            # 过滤出包含该日期的日志段
-            result = []
-            capture = False
-            for line in lines:
+
+            # 收集包含该日期的行号范围
+            date_lines = []
+            for i, line in enumerate(lines):
                 if date in line:
-                    capture = True
-                if capture:
-                    result.append(line)
-                if "==============" in line and capture and len(result) > 1:
-                    capture = False
-            return "".join(result[-200:]) if result else "".join(lines[-200:])
-        except Exception:
-            return ""
+                    date_lines.append(i)
+
+            if not date_lines:
+                return [l.rstrip() for l in lines[-80:]]
+
+            start = max(0, date_lines[0] - 2)
+            end = min(len(lines), date_lines[-1] + 30)
+
+            raw = lines[start:end]
+
+            # 必须保留的关键信息
+            important_keywords = [
+                "[ERROR]", "[失败]", "错误", "异常", "失败:",
+                "[WARN]", "[跳过空内容]",
+                "[执行完成]", "[执行失败]", "[开始执行]",
+                "导入数据库", "[统计]", "[完成]",
+                "[SKIP]", "跳过",
+            ]
+
+            # 过滤噪音（源头已精简，只保留少量仍可能出现的情况）
+            skip_patterns = [
+                "倒计时",
+                "准备重试",
+            ]
+
+            result = []
+            for line in raw:
+                stripped = line.rstrip()
+                if not stripped:
+                    continue
+
+                # 重要行保留
+                is_important = any(k in stripped for k in important_keywords)
+                if is_important:
+                    result.append(stripped)
+                    continue
+
+                # 噪音行过滤
+                if any(p in stripped for p in skip_patterns):
+                    continue
+
+                # 连续的分隔线只保留一条
+                if "=====" in stripped:
+                    if result and "=====" in result[-1]:
+                        continue
+
+                result.append(stripped)
+
+            return result if result else ["无关键日志"]
+
+        except Exception as e:
+            return [f"读取日志失败: {e}"]
 
 
 import re
