@@ -108,3 +108,6 @@ python -c "from config import SEARCH_KEYWORDS; print(SEARCH_KEYWORDS)"
 - Flask 默认端口 5001（macOS AirPlay 占用 5000）
 - 路由中所有表名通过 `get_table_name()` 获取，`.env` 中 `MYSQL_TABLE` 控制读写哪张表
 - `main.py` 实时更新 `output/run_status.json` 中的步骤状态（running/success/failed），流水线结束标记 finished
+- `main.py` 使用 `sys.executable` 调用子进程，确保与当前 Python 环境一致（不硬编码 `python`）
+- `tobacco_gov_crawler.py` 通过 macOS launchd 定时任务每日凌晨 1:00 自动运行（`~/Library/LaunchAgents/com.tobacco.gov.crawler.plist`）
+- `.env` 中的 `MYSQL_TABLE` 会影响定时任务的写入目标表，开发期间切换测试表后注意恢复

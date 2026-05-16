@@ -102,7 +102,7 @@ def execute_news_fetching(date, main_kw):
     for search_kw in SEARCH_KEYWORDS[main_kw]:
         # 调用采集脚本，采集结果临时存储
         tmp_file = f"output/{date}/tmp_{date}_{main_kw}_{search_kw}.json"
-        cmd = f'python fetch_and_filter.py "{search_kw}" {date} --output "{tmp_file}"'
+        cmd = f'{sys.executable} fetch_and_filter.py "{search_kw}" {date} --output "{tmp_file}"'
         
         # 使用安全的subprocess调用
         success = safe_subprocess_run(
@@ -188,7 +188,7 @@ def execute_content_fetching(date, kw):
         return True
     
     print(f"[INFO] [步骤2] 抓正文: {kw}")
-    cmd = f'python fetch_content.py {kw} {date}'
+    cmd = f'{sys.executable} fetch_content.py {kw} {date}'
     
     return safe_subprocess_run(cmd, f"抓取正文-{kw}", keyword=kw, check=False)
 
@@ -210,7 +210,7 @@ def execute_scoring(date, kw):
         return True
     
     print(f"[INFO] [步骤3] 评分: {kw}")
-    cmd = f'python news_scorer.py {kw} {date}'
+    cmd = f'{sys.executable} news_scorer.py {kw} {date}'
     
     return safe_subprocess_run(cmd, f"AI评分-{kw}", keyword=kw, check=False)
 
@@ -335,7 +335,7 @@ def main(date=None):
         date_arg = f'--date {date}' if date else ''
         print("\n[步骤4] 开始执行步骤4：数据库写入阶段")
         database_success = run_step(
-            f'python write_to_mysql.py {date_arg}',
+            f'{sys.executable} write_to_mysql.py {date_arg}',
             '自动写入数据库',
             'write_to_mysql.py',
             '将scored结果写入数据库'
@@ -346,7 +346,7 @@ def main(date=None):
         if enable_item_summarizer:
             print(f"\n[步骤5] 开始执行步骤5：单条新闻摘要阶段")
             item_summary_success = safe_subprocess_run(
-                f'python news_item_summarizer.py {date}',
+                f'{sys.executable} news_item_summarizer.py {date}',
                 '单条新闻摘要',
                 keyword='all',
                 check=False
@@ -361,7 +361,7 @@ def main(date=None):
         if has_gjj and enable_region:
             print(f"\n[步骤6] 开始执行步骤6：公积金地域分析阶段")
             region_success = safe_subprocess_run(
-                f'python news_region_analyzer.py --keyword 公积金 --date {date}',
+                f'{sys.executable} news_region_analyzer.py --keyword 公积金 --date {date}',
                 '公积金地域分析',
                 keyword='公积金',
                 check=False
@@ -378,7 +378,7 @@ def main(date=None):
         if has_tobacco:
             print(f"\n[步骤7] 开始执行步骤7：烟草官网爬取阶段")
             tobacco_success = safe_subprocess_run(
-                'python tobacco_gov_crawler.py',
+                f'{sys.executable} tobacco_gov_crawler.py',
                 '烟草官网爬取',
                 keyword='中国烟草',
                 check=False
