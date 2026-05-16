@@ -126,8 +126,9 @@
                             <td class="text-center"><small class="text-muted">{{ item.source or '' }}</small></td>
                             <td class="text-center">
                                 {% if item.score is not none %}
-                                    {% if item.score >= 4 %}<span class="badge rounded-pill bg-success">{{ item.score }}</span>
-                                    {% elif item.score >= 2 %}<span class="badge rounded-pill bg-warning text-dark">{{ item.score }}</span>
+                                    {% if item.score == 5 %}<span class="badge rounded-pill text-white" style="background:#158037">{{ item.score }}</span>
+                                    {% elif item.score == 4 %}<span class="badge rounded-pill text-white" style="background:#4ade80">{{ item.score }}</span>
+                                    {% elif item.score == 3 %}<span class="badge rounded-pill bg-warning text-dark">{{ item.score }}</span>
                                     {% else %}<span class="badge rounded-pill bg-secondary">{{ item.score }}</span>
                                     {% endif %}
                                 {% else %}
