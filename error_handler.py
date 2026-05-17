@@ -19,7 +19,12 @@ class ErrorHandler:
     def __init__(self, log_dir: str = "output"):
         self.log_dir = log_dir
         self.error_log_path = os.path.join(log_dir, "error_log.txt")
-        self.run_log_path = os.path.join(log_dir, "run_log.txt")
+        # 优先使用环境变量指定的批次日志路径
+        env_path = os.environ.get("RUN_LOG_PATH")
+        if env_path:
+            self.run_log_path = env_path
+        else:
+            self.run_log_path = os.path.join(log_dir, "run_log.txt")
         self.ensure_log_dir()
         
     def ensure_log_dir(self):
@@ -159,12 +164,14 @@ def safe_subprocess_run(cmd: str, step_name: str, keyword: str = None,
         import sys
         if sys.platform.startswith('win'):
             # Windows下使用系统默认编码，避免UTF-8解码错误
-            result = subprocess.run(cmd, shell=True, check=check, 
-                                  capture_output=True, text=True, encoding='gbk', errors='ignore')
+            result = subprocess.run(cmd, shell=True, check=check,
+                                  capture_output=True, text=True, encoding='gbk', errors='ignore',
+                                  env=os.environ)
         else:
             # 非Windows环境使用UTF-8
-            result = subprocess.run(cmd, shell=True, check=check, 
-                                  capture_output=True, text=True, encoding='utf-8')
+            result = subprocess.run(cmd, shell=True, check=check,
+                                  capture_output=True, text=True, encoding='utf-8',
+                                  env=os.environ)
         
         print(f"[完成] {step_name}")
 

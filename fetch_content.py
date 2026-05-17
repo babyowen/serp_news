@@ -78,8 +78,7 @@ def get_json_path(keyword, date_str=None):
 
 # 获取日志文件路径
 def get_log_path(date_str=None):
-    # 日志统一放在output目录下
-    return os.path.join('output', 'run_log.txt')
+    return os.environ.get("RUN_LOG_PATH", os.path.join('output', 'run_log.txt'))
 
 # 获取chromedriver路径（自动下载）
 def get_chromedriver_path():

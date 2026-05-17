@@ -76,10 +76,13 @@ def all_news_has_content(json_path):
         print(f"[WARN] 检查content时读取失败: {json_path}, 错误: {e}")
         return False
 
+def _run_log_path():
+    return os.environ.get("RUN_LOG_PATH", os.path.join("output", "run_log.txt"))
+
 def write_skip_log(keyword, reason, file_path):
     """记录跳过信息到日志"""
     now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    log_path = os.path.join("output", "run_log.txt")
+    log_path = _run_log_path()
     skip_log = f"[{now}] [SKIP] {keyword}: {reason}\n"
     try:
         with open(log_path, "a", encoding="utf-8") as f:
@@ -265,7 +268,7 @@ def execute_scoring_concurrent(date, keywords, max_workers=3):
     
     # 记录详细结果到日志
     now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    log_path = os.path.join("output", "run_log.txt")
+    log_path = _run_log_path()
 
     results_summary = ", ".join(f"{kw}={'成功' if r else '失败'}" for kw, r in results.items())
     concurrent_log = f"[{now}] 并发AI评分完成: 成功{success_count}, 失败{fail_count}, 耗时{duration.total_seconds():.0f}秒\n"
@@ -286,7 +289,12 @@ def main(date=None):
         # 如果未指定日期，自动赋值为昨天日期
         if not date:
             date = (datetime.datetime.now() - datetime.timedelta(days=1)).strftime("%Y-%m-%d")
-        
+
+        # 生成批次ID，设置批次日志路径
+        run_id = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        batch_log_path = os.path.join("output", date, f"run_{run_id}.log")
+        os.environ["RUN_LOG_PATH"] = batch_log_path
+        print(f"[INFO] 本次运行批次: {run_id}，日志文件: {batch_log_path}")
         print(f"[INFO] 本次批量处理主关键词: {DEFAULT_KEYWORDS}")
         
         # 输出所有搜索关键词
@@ -355,23 +363,9 @@ def main(date=None):
             print(f"\n[步骤5] 已通过 ENABLE_ITEM_SUMMARIZER=0 关闭，跳过")
             item_summary_success = True
 
-        # 步骤6：地域分析（仅公积金关键词，受环境变量控制）
-        has_gjj = "公积金" in DEFAULT_KEYWORDS
-        enable_region = os.getenv("ENABLE_REGION_ANALYZER", "1") == "1"
-        if has_gjj and enable_region:
-            print(f"\n[步骤6] 开始执行步骤6：公积金地域分析阶段")
-            region_success = safe_subprocess_run(
-                f'{sys.executable} news_region_analyzer.py --keyword 公积金 --date {date}',
-                '公积金地域分析',
-                keyword='公积金',
-                check=False
-            )
-        else:
-            if not has_gjj:
-                print(f"\n[步骤6] 关键词不含'公积金'，跳过地域分析")
-            else:
-                print(f"\n[步骤6] 已通过 ENABLE_REGION_ANALYZER=0 关闭，跳过")
-            region_success = True
+        # 步骤6：地域分析 — 已由 news_item_summarizer.py 在生成摘要时一并处理
+        # news_region_analyzer.py 保留为独立脚本，可手动运行作为补充/应急
+        region_success = True
 
         # 步骤7：烟草官网爬取（仅中国烟草关键词，条件触发）
         has_tobacco = "中国烟草" in DEFAULT_KEYWORDS

@@ -27,7 +27,7 @@ load_dotenv()
 
 from db_utils import get_connection, get_table_name
 
-LOG_PATH = os.path.join('output', 'run_log.txt')
+LOG_PATH = os.environ.get("RUN_LOG_PATH", os.path.join('output', 'run_log.txt'))
 TABLE_NAME = get_table_name()
 
 def write_log(msg):

@@ -57,7 +57,7 @@ def score_news(title: str, content: str, keyword: str, main_keyword: str = None,
             content_len = len(content) if content else 0
             msg = f"[WARN] 评分token超限 | token数: {token_count} | 正文字数: {content_len} | 标题: {title[:40]}"
             safe_print(msg)
-            with open("output/run_log.txt", "a", encoding="utf-8") as f:
+            with open(os.environ.get("RUN_LOG_PATH", "output/run_log.txt"), "a", encoding="utf-8") as f:
                 f.write(msg + "\n")
             return 0
     except Exception:
@@ -110,7 +110,7 @@ def score_news(title: str, content: str, keyword: str, main_keyword: str = None,
                 content_len = len(content) if content else 0
                 msg = f"[WARN] 评分API token超限 | 正文字数: {content_len} | 标题: {title[:40]}"
                 safe_print(msg)
-                with open("output/run_log.txt", "a", encoding="utf-8") as f:
+                with open(os.environ.get("RUN_LOG_PATH", "output/run_log.txt"), "a", encoding="utf-8") as f:
                     f.write(msg + "\n")
                 # Token超限是不可重试的错误，直接返回0分
                 return 0
@@ -126,7 +126,7 @@ def score_news(title: str, content: str, keyword: str, main_keyword: str = None,
                 content_len = len(content) if content else 0
                 msg = f"[ERROR] 评分连续{max_retries}次失败({err_type}) | 关键词: {keyword} | 正文字数: {content_len} | 标题: {title[:40]} | 错误: {str(e)[:80]}"
                 safe_print(msg)
-                with open("output/run_log.txt", "a", encoding="utf-8") as f:
+                with open(os.environ.get("RUN_LOG_PATH", "output/run_log.txt"), "a", encoding="utf-8") as f:
                     f.write(msg + "\n")
 
     # 所有重试都失败后返回0分
@@ -207,7 +207,7 @@ def write_scored_json(results, json_path):
 # rule_based_titles: 可选，规则打分标题列表
 def append_log(keyword, json_path, total, score_counter, scored_count, scored_json_path, results=None, rule_based_titles=None):
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    log_path = os.path.join("output", "run_log.txt")
+    log_path = os.environ.get("RUN_LOG_PATH", os.path.join("output", "run_log.txt"))
     score_line = " ".join([f"{i}分: {score_counter.get(i,0)}" for i in range(6)])
 
     log = (

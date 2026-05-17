@@ -88,21 +88,70 @@ class RunManager:
         return status
 
     def get_run_history(self, limit=30):
-        """扫描 output/ 目录获取历史运行日期"""
+        """扫描 output/ 目录获取历史运行，按日期+批次组织"""
         if not os.path.exists(OUTPUT_DIR):
             return []
         dirs = []
         for d in os.listdir(OUTPUT_DIR):
             full = os.path.join(OUTPUT_DIR, d)
             if os.path.isdir(full) and re.match(r"\d{4}-\d{2}-\d{2}", d):
-                # 统计文件数量
                 files = [f for f in os.listdir(full) if f.endswith(".json")]
-                dirs.append({"date": d, "file_count": len(files)})
+                runs = sorted(
+                    [f for f in os.listdir(full) if f.startswith("run_") and f.endswith(".log")],
+                    reverse=True
+                )
+                entry = {"date": d, "file_count": len(files), "runs": runs}
+                # 从批次文件名提取运行时间
+                if runs:
+                    # run_20260517_120500.log → 2026-05-17 12:05:00
+                    first_run = runs[0]
+                    try:
+                        ts = first_run.replace("run_", "").replace(".log", "")
+                        entry["latest_run"] = f"{ts[:4]}-{ts[4:6]}-{ts[6:8]} {ts[9:11]}:{ts[11:13]}:{ts[13:15]}"
+                    except Exception:
+                        pass
+                dirs.append(entry)
         dirs.sort(key=lambda x: x["date"], reverse=True)
         return dirs[:limit]
 
     def get_log(self, date):
-        """读取指定日期的运行日志，格式化为易读摘要"""
+        """读取指定日期的批次日志文件，合并返回"""
+        date_dir = os.path.join(OUTPUT_DIR, date)
+        if not os.path.isdir(date_dir):
+            # fallback: 尝试从全局日志读取
+            return self._read_legacy_log(date)
+
+        run_files = sorted(
+            [f for f in os.listdir(date_dir) if f.startswith("run_") and f.endswith(".log")]
+        )
+
+        if not run_files:
+            return self._read_legacy_log(date)
+
+        all_lines = []
+        for rf in run_files:
+            path = os.path.join(date_dir, rf)
+            # 从文件名提取批次时间
+            try:
+                ts = rf.replace("run_", "").replace(".log", "")
+                batch_label = f"{ts[:4]}-{ts[4:6]}-{ts[6:8]} {ts[9:11]}:{ts[11:13]}:{ts[13:15]}"
+            except Exception:
+                batch_label = rf
+            all_lines.append(f"━━━ 运行批次: {batch_label} ━━━")
+            try:
+                with open(path, "r", encoding="utf-8") as f:
+                    for line in f:
+                        stripped = line.rstrip()
+                        if stripped:
+                            all_lines.append(stripped)
+            except Exception as e:
+                all_lines.append(f"[读取失败] {path}: {e}")
+            all_lines.append("")
+
+        return self._filter_log_lines(all_lines) if all_lines else ["暂无日志"]
+
+    def _read_legacy_log(self, date):
+        """从旧的全局 run_log.txt 读取（兼容旧数据）"""
         log_path = os.path.join(OUTPUT_DIR, "run_log.txt")
         if not os.path.exists(log_path):
             return ["暂无日志"]
@@ -111,62 +160,58 @@ class RunManager:
             with open(log_path, "r", encoding="utf-8") as f:
                 lines = f.readlines()
 
-            # 收集包含该日期的行号范围
             date_lines = []
             for i, line in enumerate(lines):
                 if date in line:
                     date_lines.append(i)
 
             if not date_lines:
-                return [l.rstrip() for l in lines[-80:]]
+                result = [l.rstrip() for l in lines[-80:] if l.rstrip()]
+                return self._filter_log_lines(result) if result else ["暂无日志"]
 
             start = max(0, date_lines[0] - 2)
             end = min(len(lines), date_lines[-1] + 30)
 
-            raw = lines[start:end]
-
-            # 必须保留的关键信息
-            important_keywords = [
-                "[ERROR]", "[失败]", "错误", "异常", "失败:",
-                "[WARN]", "[跳过空内容]",
-                "[执行完成]", "[执行失败]", "[开始执行]",
-                "导入数据库", "[统计]", "[完成]",
-                "[SKIP]", "跳过",
-            ]
-
-            # 过滤噪音（源头已精简，只保留少量仍可能出现的情况）
-            skip_patterns = [
-                "倒计时",
-                "准备重试",
-            ]
-
-            result = []
-            for line in raw:
-                stripped = line.rstrip()
-                if not stripped:
-                    continue
-
-                # 重要行保留
-                is_important = any(k in stripped for k in important_keywords)
-                if is_important:
-                    result.append(stripped)
-                    continue
-
-                # 噪音行过滤
-                if any(p in stripped for p in skip_patterns):
-                    continue
-
-                # 连续的分隔线只保留一条
-                if "=====" in stripped:
-                    if result and "=====" in result[-1]:
-                        continue
-
-                result.append(stripped)
-
-            return result if result else ["无关键日志"]
+            raw = [line.rstrip() for line in lines[start:end] if line.rstrip()]
+            return self._filter_log_lines(raw) if raw else ["暂无日志"]
 
         except Exception as e:
             return [f"读取日志失败: {e}"]
+
+    @staticmethod
+    def _filter_log_lines(lines):
+        """过滤日志行，保留关键信息"""
+        important_keywords = [
+            "[ERROR]", "[失败]", "错误", "异常", "失败:",
+            "[WARN]", "[跳过空内容]",
+            "[执行完成]", "[执行失败]", "[开始执行]",
+            "导入数据库", "[统计]", "[完成]",
+            "[SKIP]", "跳过",
+            "━━━",
+        ]
+
+        skip_patterns = ["倒计时", "准备重试"]
+
+        result = []
+        for line in lines:
+            # 重要行保留
+            is_important = any(k in line for k in important_keywords)
+            if is_important:
+                result.append(line)
+                continue
+
+            # 噪音行过滤
+            if any(p in line for p in skip_patterns):
+                continue
+
+            # 连续的分隔线只保留一条
+            if "=====" in line:
+                if result and "=====" in result[-1]:
+                    continue
+
+            result.append(line)
+
+        return result if result else ["无关键日志"]
 
 
 import re

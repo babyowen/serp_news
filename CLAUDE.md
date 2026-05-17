@@ -4,12 +4,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 项目概述
 
-自动化新闻采集与AI分析系统。7步流水线：采集 → 正文提取 → AI评分 → 数据库写入 → 单条摘要 → 地域分析 → 烟草爬虫。Bootstrap管理前端支持关键词配置、模型查看、运行监控。
+自动化新闻采集与AI分析系统。6步流水线：采集 → 正文提取 → AI评分 → 数据库写入 → 单条摘要 → 烟草爬虫。地域分析已由摘要步骤一并处理。Bootstrap管理前端支持关键词配置、模型查看、运行监控。
 
 ## 常用命令
 
 ```bash
-# 运行完整流水线（默认处理昨天新闻，7步）
+# 运行完整流水线（默认处理昨天新闻，6步）
 python main.py
 python main.py YYYY-MM-DD          # 指定日期
 
@@ -42,9 +42,10 @@ playwright install
 | 2 | `fetch_content.py` | 5级兜底正文提取 | - |
 | 3 | `news_scorer.py` | AI评分0-5分，3线程并发 | - |
 | 4 | `write_to_mysql.py` | MySQL持久化 | - |
-| 5 | `news_item_summarizer.py` | 单条500字摘要 | `ENABLE_ITEM_SUMMARIZER` |
-| 6 | `news_region_analyzer.py` | 公积金地域分析 | 条件触发+`ENABLE_REGION_ANALYZER` |
-| 7 | `tobacco_gov_crawler.py` | 烟草官网爬取 | 条件触发（含中国烟草时） |
+| 5 | `news_item_summarizer.py` | 单条500字摘要（公积金同时写地域） | `ENABLE_ITEM_SUMMARIZER` |
+| 6 | `tobacco_gov_crawler.py` | 烟草官网爬取 | 条件触发（含中国烟草时） |
+
+> `news_region_analyzer.py` 已从流水线移除，保留为独立脚本可手动运行补充地域数据。
 
 ## 关键词两层结构
 
@@ -99,7 +100,7 @@ python -c "from config import SEARCH_KEYWORDS; print(SEARCH_KEYWORDS)"
 ## 注意事项
 
 - 所有 AI 模块（评分/摘要/地域）统一使用 `deepseek-v4-flash` 模型，配置在 `config.py`
-- 日志系统：正常操作一行摘要，错误场景给出诊断字段（正文字数、错误原因、URL）
+- 日志系统：每次运行生成独立批次日志 `output/{date}/run_{YYYYMMDD_HHMMSS}.log`，通过 `RUN_LOG_PATH` 环境变量传递给子进程；手动运行单个脚本时 fallback 到 `output/run_log.txt`
 - `/admin/models` 页面展示当前启用的 Prompt（按评分/摘要/公积金/地域分组）
 - 内容提取含防屏蔽：User-Agent伪装、SSL忽略、同站点1-4秒间隔
 - `msn.cn` 跳过、`tv.cctv.com` 跳过、`people.com.cn` 强制HTTP

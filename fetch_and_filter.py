@@ -400,7 +400,7 @@ def main():
                 json.dump(filtered_news, f, ensure_ascii=False, indent=2)
             print(f"[INFO] 已保存 {len(filtered_news)} 条新闻到 {output_path}")
             # 统一风格写日志
-            log_path = os.path.join("output", "run_log.txt")
+            log_path = os.environ.get("RUN_LOG_PATH", os.path.join("output", "run_log.txt"))
             now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             log = (
                 f"\n[{now}]\n"
