@@ -294,6 +294,9 @@ def main(date=None):
         run_id = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
         batch_log_path = os.path.join("output", date, f"run_{run_id}.log")
         os.environ["RUN_LOG_PATH"] = batch_log_path
+        os.makedirs(os.path.dirname(batch_log_path), exist_ok=True)
+        with open(batch_log_path, "w", encoding="utf-8") as f:
+            pass  # 创建空日志文件，确保子进程首次 open("a") 不因目录不存在而崩溃
         print(f"[INFO] 本次运行批次: {run_id}，日志文件: {batch_log_path}")
         print(f"[INFO] 本次批量处理主关键词: {DEFAULT_KEYWORDS}")
         
