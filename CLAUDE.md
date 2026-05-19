@@ -73,9 +73,17 @@ playwright install
 - **`config_grab_rules.py`** — 站点专属抓取规则（`CUSTOM_GRAB_RULES`注册表）
 - **`.env`** — API密钥、MySQL连接、流程开关、管理员认证
 
+## 术语约定
+
+- **日期**：统一以 `fetchdate` 字段为准（抓取日期），而非新闻自身的 `date` 字段（可能是相对时间如"昨天"、"7小时前"）
+- **生产表**：`scored_news` — 线上正式数据
+- **测试表**：`scored_news_test` — 本地开发测试数据
+- 通过 `.env` 中 `MYSQL_TABLE` 环境变量控制读写哪张表，默认应设为 `scored_news_test`
+
 ## 数据库表
 
-- **scored_news** — 新闻主表（含 `short_summary` 和 `region` 字段）
+- **scored_news** — 新闻主表/生产表（含 `short_summary` 和 `region` 字段）
+- **scored_news_test** — 新闻测试表（结构与生产表相同，本地开发用）
 - **summary_news** — 日报摘要（已废弃，保留表结构）
 - **news_source_stats** — 源域名统计
 - **news_websites** — 网站元数据
