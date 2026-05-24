@@ -6,8 +6,7 @@ import datetime
 from urllib.parse import urljoin
 import requests
 from bs4 import BeautifulSoup
-import pymysql
-from dotenv import load_dotenv
+from db_utils import get_connection, get_table_name
 from fetch_content import fetch_article_content
 import trafilatura
 import json
@@ -138,13 +137,7 @@ def log_error(msg: str):
     print(msg)
 
 def get_conn():
-    load_dotenv()
-    host = os.getenv("MYSQL_HOST")
-    port = int(os.getenv("MYSQL_PORT", 3306))
-    user = os.getenv("MYSQL_USER")
-    password = os.getenv("MYSQL_PASSWORD")
-    db = os.getenv("MYSQL_DB")
-    return pymysql.connect(host=host, port=port, user=user, password=password, database=db, charset="utf8mb4", autocommit=True)
+    return get_connection(autocommit=True)
 
 def has_chinese(text: str) -> bool:
     if not text:
@@ -170,10 +163,11 @@ def fix_title_via_trafilatura(url: str, title: str) -> str:
         return title
 
 def insert_item(conn, item: dict):
+    table = get_table_name()
     try:
         with conn.cursor() as cursor:
             cursor.execute(
-                "SELECT id FROM scored_news WHERE title=%s AND link=%s",
+                f"SELECT id FROM {table} WHERE title=%s AND link=%s",
                 (item.get("title"), item.get("link"))
             )
             if cursor.fetchone():
@@ -183,7 +177,7 @@ def insert_item(conn, item: dict):
                 log_info(f"SkippedEmptyContent | {item.get('title', '')[:50]} | {item.get('link', '')}")
                 return False
             sql = (
-                "INSERT INTO scored_news (date, title, link, source, fetchdate, sourceapi, thumbnail, keyword, content, wordcount, custom_grab, score, search_keyword) "
+                f"INSERT INTO {table} (date, title, link, source, fetchdate, sourceapi, thumbnail, keyword, content, wordcount, custom_grab, score, search_keyword) "
                 "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
             )
             cursor.execute(sql, (
@@ -223,7 +217,7 @@ def main():
 
     run_log, err_log = log_paths()
     mode = "昨天" if exact_yesterday else f"近{days}天"
-    log_info(f"Start | page={page} | mode={mode} | exact_yesterday={exact_yesterday} | dry_run={args.dry_run} | throttle={not args.no_throttle} | delay={args.min_delay}-{args.max_delay}s | table=scored_news")
+    log_info(f"Start | page={page} | mode={mode} | exact_yesterday={exact_yesterday} | dry_run={args.dry_run} | throttle={not args.no_throttle} | delay={args.min_delay}-{args.max_delay}s | table={get_table_name()}")
 
     conn = None
     if not args.dry_run:

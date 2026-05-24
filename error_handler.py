@@ -19,7 +19,12 @@ class ErrorHandler:
     def __init__(self, log_dir: str = "output"):
         self.log_dir = log_dir
         self.error_log_path = os.path.join(log_dir, "error_log.txt")
-        self.run_log_path = os.path.join(log_dir, "run_log.txt")
+        # 优先使用环境变量指定的批次日志路径
+        env_path = os.environ.get("RUN_LOG_PATH")
+        if env_path:
+            self.run_log_path = env_path
+        else:
+            self.run_log_path = os.path.join(log_dir, "run_log.txt")
         self.ensure_log_dir()
         
     def ensure_log_dir(self):
@@ -147,95 +152,79 @@ def with_error_handling(script_name: str, stage: str = "main"):
         return wrapper
     return decorator
 
-def safe_subprocess_run(cmd: str, step_name: str, keyword: str = None, 
-                       check: bool = True) -> bool:
-    """安全执行子进程，自动记录错误"""
+def safe_subprocess_run(cmd: str, step_name: str, keyword: str = None,
+                       check: bool = True, retries: int = 2) -> bool:
+    """安全执行子进程，失败时自动重试"""
     error_handler = ErrorHandler()
-    
-    print(f"\n==============================")
-    print(f"[开始] 开始执行步骤: {step_name}")
-    if keyword:
-        print(f"[关键词] 关键词: {keyword}")
-    print(f"[命令] 执行命令: {cmd}")
-    print(f"==============================")
-    
-    try:
-        # Windows环境编码兼容性处理
-        import sys
-        if sys.platform.startswith('win'):
-            # Windows下使用系统默认编码，避免UTF-8解码错误
-            result = subprocess.run(cmd, shell=True, check=check, 
-                                  capture_output=True, text=True, encoding='gbk', errors='ignore')
-        else:
-            # 非Windows环境使用UTF-8
-            result = subprocess.run(cmd, shell=True, check=check, 
-                                  capture_output=True, text=True, encoding='utf-8')
-        
-        print(f"==============================")
-        print(f"[完成] 步骤完成: {step_name}")
-        print(f"==============================\n")
-        
-        return True
-        
-    except subprocess.CalledProcessError as e:
-        error_msg = f"命令执行失败，返回码: {e.returncode}"
-        
-        if e.stdout:
-            error_msg += f"\n标准输出: {e.stdout}"
-        if e.stderr:
-            error_msg += f"\n错误输出: {e.stderr}"
-        
-        print(f"[错误] {step_name} 执行失败")
-        print(f"[ERROR] 返回码: {e.returncode}")
-        if e.stderr:
-            print(f"[ERROR] 错误信息: {e.stderr}")
-        print(f"==============================\n")
-        
-        error_handler.log_step_failure(
-            step_name=step_name,
-            cmd=cmd,
-            error_msg=error_msg,
-            keyword=keyword
-        )
-        
-        error_handler.log_error(
-            error_type="SUBPROCESS_ERROR",
-            error_msg=error_msg,
-            script_name="main.py",
-            keyword=keyword,
-            context={"command": cmd, "step": step_name, "returncode": e.returncode}
-        )
-        
-        if check:
-            raise
-        return False
-        
-    except Exception as e:
-        error_msg = f"执行命令时发生异常: {str(e)}"
-        traceback_info = traceback.format_exc()
-        
-        print(f"[错误] {step_name} 发生异常: {e}")
-        print(f"==============================\n")
-        
-        error_handler.log_step_failure(
-            step_name=step_name,
-            cmd=cmd,
-            error_msg=error_msg,
-            keyword=keyword
-        )
-        
-        error_handler.log_error(
-            error_type="SUBPROCESS_EXCEPTION",
-            error_msg=error_msg,
-            script_name="main.py", 
-            keyword=keyword,
-            traceback_info=traceback_info,
-            context={"command": cmd, "step": step_name}
-        )
-        
-        if check:
-            raise
-        return False
+    import time
+
+    for attempt in range(1, retries + 1):
+        print(f"[开始] {step_name}" + (f" (重试 {attempt}/{retries})" if attempt > 1 else ""))
+
+        try:
+            if sys.platform.startswith('win'):
+                result = subprocess.run(cmd, shell=True, check=check,
+                                      capture_output=True, text=True, encoding='gbk', errors='ignore',
+                                      env=os.environ)
+            else:
+                result = subprocess.run(cmd, shell=True, check=check,
+                                      capture_output=True, text=True, encoding='utf-8',
+                                      env=os.environ)
+
+            print(f"[完成] {step_name}")
+            return True
+
+        except subprocess.CalledProcessError as e:
+            error_msg = f"命令执行失败，返回码: {e.returncode}"
+            if e.stdout:
+                error_msg += f"\n标准输出: {e.stdout}"
+            if e.stderr:
+                error_msg += f"\n错误输出: {e.stderr}"
+
+            if attempt < retries:
+                print(f"[重试] {step_name} 返回码 {e.returncode}，{3}秒后重试 ({attempt}/{retries})")
+                time.sleep(3)
+                continue
+
+            print(f"[错误] {step_name} 返回码: {e.returncode} (已重试{retries}次)")
+            if e.stderr:
+                print(f"[ERROR] {e.stderr[:200]}")
+
+            error_handler.log_step_failure(
+                step_name=step_name, cmd=cmd, error_msg=error_msg, keyword=keyword
+            )
+            error_handler.log_error(
+                error_type="SUBPROCESS_ERROR", error_msg=error_msg,
+                script_name="main.py", keyword=keyword,
+                context={"command": cmd, "step": step_name, "returncode": e.returncode, "retries": retries}
+            )
+            if check:
+                raise
+            return False
+
+        except Exception as e:
+            error_msg = f"执行命令时发生异常: {str(e)}"
+
+            if attempt < retries:
+                print(f"[重试] {step_name} 异常: {e}，3秒后重试 ({attempt}/{retries})")
+                time.sleep(3)
+                continue
+
+            traceback_info = traceback.format_exc()
+            print(f"[错误] {step_name} 异常: {e} (已重试{retries}次)")
+
+            error_handler.log_step_failure(
+                step_name=step_name, cmd=cmd, error_msg=error_msg, keyword=keyword
+            )
+            error_handler.log_error(
+                error_type="SUBPROCESS_EXCEPTION", error_msg=error_msg,
+                script_name="main.py", keyword=keyword,
+                traceback_info=traceback_info,
+                context={"command": cmd, "step": step_name, "retries": retries}
+            )
+            if check:
+                raise
+            return False
 
 def setup_global_exception_handler():
     """设置全局异常处理器"""
@@ -271,17 +260,11 @@ def log_script_start(script_name: str, args: List[str] = None):
     """记录脚本开始执行"""
     error_handler = ErrorHandler()
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    
-    log_entry = (
-        f"\n[{now}]\n"
-        f"[开始执行] 开始执行: {script_name}\n"
-    )
-    
-    if args:
-        log_entry += f"[参数] 执行参数: {' '.join(args)}\n"
-    
-    log_entry += f"==============================\n"
-    
+
+    args_str = f" {' '.join(args)}" if args else ""
+    log_entry = f"\n[{now}] [开始执行] {script_name}{args_str}\n"
+
+    os.makedirs(os.path.dirname(error_handler.run_log_path), exist_ok=True)
     with open(error_handler.run_log_path, "a", encoding="utf-8") as f:
         f.write(log_entry)
 
@@ -289,18 +272,13 @@ def log_script_complete(script_name: str, success: bool = True, message: str = N
     """记录脚本执行完成"""
     error_handler = ErrorHandler()
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    
-    status = "[执行完成] 执行完成" if success else "[执行失败] 执行失败"
-    
-    log_entry = (
-        f"\n[{now}]\n"
-        f"{status}: {script_name}\n"
-    )
-    
+
+    status = "执行完成" if success else "执行失败"
+    log_entry = f"[{now}] [{status}] {script_name}"
     if message:
-        log_entry += f"[说明] 说明: {message}\n"
-    
-    log_entry += f"==============================\n"
-    
+        log_entry += f" — {message}"
+    log_entry += "\n"
+
+    os.makedirs(os.path.dirname(error_handler.run_log_path), exist_ok=True)
     with open(error_handler.run_log_path, "a", encoding="utf-8") as f:
-        f.write(log_entry) 
+        f.write(log_entry)

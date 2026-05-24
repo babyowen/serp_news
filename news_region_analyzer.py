@@ -4,7 +4,6 @@ import os
 import sys
 import time
 
-import pymysql
 from dotenv import load_dotenv
 
 from error_handler import (
@@ -20,16 +19,11 @@ from news_region_utils import (
     table_has_region_column,
     validate_region_table_name,
 )
+from db_utils import get_connection, get_table_name
 
 
 setup_global_exception_handler()
 load_dotenv()
-
-MYSQL_HOST = os.getenv("MYSQL_HOST")
-MYSQL_PORT = int(os.getenv("MYSQL_PORT", 3306))
-MYSQL_USER = os.getenv("MYSQL_USER")
-MYSQL_PASSWORD = os.getenv("MYSQL_PASSWORD")
-MYSQL_DB = os.getenv("MYSQL_DB")
 
 
 def parse_date(value):
@@ -42,15 +36,7 @@ def parse_date(value):
 
 
 def get_conn():
-    return pymysql.connect(
-        host=MYSQL_HOST,
-        port=MYSQL_PORT,
-        user=MYSQL_USER,
-        password=MYSQL_PASSWORD,
-        database=MYSQL_DB,
-        charset="utf8mb4",
-        autocommit=True,
-    )
+    return get_connection(autocommit=True)
 
 
 def build_query(table_name, keyword, date=None, date_from=None, date_to=None, limit=None):
@@ -83,15 +69,8 @@ def build_query(table_name, keyword, date=None, date_from=None, date_to=None, li
 
 def log_run(table_name, keyword, total, success, fail, skip):
     now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    log_path = os.path.join("output", "run_log.txt")
-    msg = (
-        f"\n[{now}]\n"
-        f"执行程序: news_region_analyzer\n"
-        f"[数据表] {table_name}\n"
-        f"[关键词] {keyword}\n"
-        f"[统计] 待处理: {total} 成功: {success} 失败: {fail} 跳过: {skip}\n"
-        f"==============================\n"
-    )
+    log_path = os.environ.get("RUN_LOG_PATH", os.path.join("output", "run_log.txt"))
+    msg = f"[{now}] 地域分析 {keyword}: 待处理{total}, 成功{success}, 失败{fail}, 跳过{skip}\n"
     with open(log_path, "a", encoding="utf-8") as f:
         f.write(msg)
 
@@ -102,7 +81,7 @@ def main():
     err = ErrorHandler()
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--table", default="scored_news", help="Target table name")
+    parser.add_argument("--table", default=None, help="Target table name (default: MYSQL_TABLE env var)")
     parser.add_argument("--keyword", default="公积金", help="Only 公积金 is supported")
     parser.add_argument("--date", default=None, help="Single fetch date")
     parser.add_argument("--date-from", dest="date_from", default=None, help="Start fetch date")
@@ -113,7 +92,7 @@ def main():
     if args.keyword != "公积金":
         raise ValueError("news_region_analyzer.py only supports keyword=公积金")
 
-    table_name = validate_region_table_name(args.table)
+    table_name = validate_region_table_name(args.table or get_table_name())
     target_date = parse_date(args.date)
     date_from = parse_date(args.date_from)
     date_to = parse_date(args.date_to)

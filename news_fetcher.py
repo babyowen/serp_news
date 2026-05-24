@@ -50,6 +50,15 @@ def fetch_serpapi_google_news(keyword, max_pages=2):
                 resp = requests.get(url, params=params, timeout=15)
                 resp.raise_for_status()
                 data = resp.json()
+
+                # serpapi 返回 error 字段时重试
+                if data.get('error'):
+                    if attempt < 2:
+                        log_error(f"google_news_retry", keyword, data['error'])
+                        time.sleep(3)
+                        continue
+                    log_error(f"google_news", keyword, data['error'])
+
                 results = data.get("news_results", [])
                 if not results:
                     break
@@ -78,7 +87,15 @@ def fetch_serpapi_baidu_news(keyword):
         try:
             resp = requests.get(url, params=params, timeout=15)
             resp.raise_for_status()
-            return resp.json()  # 成功时直接返回JSON数据
+            data = resp.json()
+            # serpapi 返回 error 字段时重试（如限流、服务异常）
+            if data.get('error'):
+                if attempt < 2:
+                    log_error(f"baidu_news_retry", keyword, data['error'])
+                    time.sleep(3)
+                    continue
+                log_error(f"baidu_news", keyword, data['error'])
+            return data
         except Exception as e:
             if attempt == 2:
                 log_error(f"baidu_news", keyword, str(e))
@@ -128,7 +145,7 @@ def fetch_baidu_news_web(keyword="养老", max_pages=3):
 def fetch_serpapi_bing_news(keyword, max_pages=1):
     """使用SerpApi获取Bing新闻"""
     results = []
-    
+
     url = "https://serpapi.com/search.json"
     params = {
         "engine": "bing_news",
@@ -137,13 +154,21 @@ def fetch_serpapi_bing_news(keyword, max_pages=1):
         "device": "desktop",
         "qft": 'interval="7"'
     }
-    
+
     for attempt in range(3):
         try:
             resp = requests.get(url, params=params, timeout=15)
             resp.raise_for_status()
             search_results = resp.json()
-            
+
+            # serpapi 返回 error 字段时重试
+            if search_results.get('error'):
+                if attempt < 2:
+                    log_error(f"bing_news_retry", keyword, search_results['error'])
+                    time.sleep(3)
+                    continue
+                log_error(f"bing_news", keyword, search_results['error'])
+
             if "organic_results" in search_results:
                 for result in search_results["organic_results"]:
                     news_item = {
@@ -155,14 +180,14 @@ def fetch_serpapi_bing_news(keyword, max_pages=1):
                     }
                     results.append(news_item)
             break  # 成功则跳出重试
-                    
+
         except Exception as e:
             if attempt == 2:
                 print(f"获取Bing新闻时出错: {e}")
                 log_error(f"bing_news", keyword, str(e))
             else:
                 time.sleep(3)
-    
+
     return {"organic_results": results}
 
 def fetch_serpapi_duckduckgo_news(keyword, max_pages=1):
@@ -187,6 +212,15 @@ def fetch_serpapi_duckduckgo_news(keyword, max_pages=1):
                 resp = requests.get(url, params=params, timeout=15)
                 resp.raise_for_status()
                 data = resp.json()
+
+                # serpapi 返回 error 字段时重试
+                if data.get('error'):
+                    if attempt < 2:
+                        log_error(f"duckduckgo_news_retry", keyword, data['error'])
+                        time.sleep(3)
+                        continue
+                    log_error(f"duckduckgo_news", keyword, data['error'])
+
                 results = data.get("news_results", [])
                 if not results:
                     break

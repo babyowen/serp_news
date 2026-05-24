@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}运行日志 - {{ date }}{% endblock %}
+{% block content %}
+<a href="/admin/runs" class="btn btn-outline-secondary btn-sm mb-3"><i class="bi bi-arrow-left me-1"></i>返回运行监控</a>
+<h5 class="mb-3"><i class="bi bi-file-text me-1"></i>运行日志 — {{ date }}</h5>
+<div class="card">
+    <div class="card-body p-0">
+        <div class="p-3" style="max-height:650px;overflow-y:auto;font-size:.82em;line-height:1.9;font-family:'Menlo','Consolas','Monaco',monospace;">
+            {% for line in log_lines %}{% if '[ERROR]' in line or '[失败]' in line or '错误' in line or '异常' in line %}
+            <div style="color:#dc3545;font-weight:600;padding:2px 8px;background:#fff5f5;border-radius:4px;margin:1px 0;"><i class="bi bi-x-circle me-1"></i>{{ line }}</div>
+            {% elif '[WARN]' in line or '[跳过' in line %}
+            <div style="color:#fd7e14;padding:2px 8px;"><i class="bi bi-exclamation-triangle me-1"></i>{{ line }}</div>
+            {% elif '[执行完成]' in line %}
+            <div style="color:#198754;font-weight:600;padding:4px 8px;background:#f0fff4;border-radius:4px;margin:2px 0;"><i class="bi bi-check-circle me-1"></i>{{ line }}</div>
+            {% elif '[执行失败]' in line %}
+            <div style="color:#dc3545;font-weight:600;padding:4px 8px;background:#fff5f5;border-radius:4px;margin:2px 0;"><i class="bi bi-x-circle me-1"></i>{{ line }}</div>
+            {% elif '[开始执行]' in line %}
+            <div style="color:#4f6ef7;font-weight:600;padding:4px 8px;background:#f0f4ff;border-radius:4px;margin:6px 0 2px 0;"><i class="bi bi-play-circle me-1"></i>{{ line }}</div>
+            {% elif '=====' in line %}
+            <div style="color:#cbd5e1;margin:4px 0;">{{ line }}</div>
+            {% elif '[SKIP]' in line %}
+            <div style="color:#64748b;padding:2px 8px;"><i class="bi bi-skip-forward me-1"></i>{{ line }}</div>
+            {% elif '[统计]' in line or '[完成]' in line %}
+            <div style="color:#198754;padding:2px 8px;"><i class="bi bi-bar-chart me-1"></i>{{ line }}</div>
+            {% else %}
+            <div style="color:#475569;padding:1px 8px;">{{ line }}</div>
+            {% endif %}{% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

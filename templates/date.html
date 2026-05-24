@@ -1,70 +1,44 @@
-<!DOCTYPE html>
-<html lang="zh">
-<head>
-    <meta charset="UTF-8">
-    <title>新闻抓取结果 - {{ date }}</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 2em; }
-        h1 { color: #2c3e50; }
-        .file-block { margin-bottom: 2em; border-bottom: 1px solid #eee; padding-bottom: 1em; }
-        .news-list { display: flex; flex-wrap: wrap; gap: 1em; }
-        .news-item { border: 1px solid #ddd; border-radius: 6px; padding: 1em; width: 350px; background: #fafbfc; box-shadow: 1px 1px 4px #eee; }
-        .news-item img { max-width: 100%; max-height: 120px; display: block; margin-bottom: 0.5em; }
-        .news-title { font-size: 1.1em; font-weight: bold; margin-bottom: 0.3em; }
-        .news-meta { color: #888; font-size: 0.95em; margin-bottom: 0.5em; }
-        .news-snippet { margin-bottom: 0.5em; }
-        .back-link { margin-bottom: 2em; display: inline-block; }
-        .file-title { color: #2980b9; margin-bottom: 0.5em; }
-    </style>
-</head>
-<body>
-    <a class="back-link" href="/">← 返回日期选择</a>
-    <h1>新闻抓取结果 - {{ date }}</h1>
-    <div style="margin-bottom:1.5em;">
-        关键词：
-        {% for kw in keywords %}
-            {% if kw == keyword %}
-                <span style="color:#e67e22;font-weight:bold;">{{ kw }}</span>
-            {% else %}
-                <a href="/date/{{ date }}?keyword={{ kw }}" style="margin-right:1em;">{{ kw }}</a>
-            {% endif %}
-        {% endfor %}
-    </div>
-    {% for group in news_data %}
-        <div class="file-block">
-            <div class="file-title">{{ group.file }}</div>
-            {% if group.error %}
-                <div style="color:red;">文件读取错误: {{ group.error }}</div>
-            {% elif group['items']|length == 0 %}
-                <div style="color:#888;">无新闻数据</div>
-            {% else %}
-                <div class="news-list">
-                {% for item in group['items'] %}
-                    <div class="news-item">
-                        {% if item.thumbnail %}
-                            <img src="{{ item.thumbnail }}" alt="图片">
-                        {% endif %}
-                        <div class="news-title">
-                            {% if item.link %}
-                                <a href="{{ item.link }}" target="_blank">{{ item.title }}</a>
-                            {% else %}
-                                {{ item.title }}
-                            {% endif %}
-                        </div>
-                        <div class="news-meta">
-                            <span style="color:#888;">来源:</span> {{ item.source or '' }}<br>
-                            <span style="color:#888;">原始时间:</span> {{ item.date or '' }}<br>
-                            <span style="color:#888;">抓取日期:</span> {{ item.fetchdate or '' }}<br>
-                            <span style="color:#888;">来源API:</span> <span style="background:#e1ecf4;color:#39739d;padding:0.1em 0.5em;border-radius:4px;font-size:0.95em;">{{ item.sourceapi }}</span>
-                        </div>
-                        {% if item.keyword %}
-                            <div style="color:#aaa;font-size:0.9em;">关键词: <span style="background:#f6e58d;color:#7f6d00;padding:0.1em 0.5em;border-radius:4px;">{{ item.keyword }}</span></div>
-                        {% endif %}
-                    </div>
-                {% endfor %}
-                </div>
-            {% endif %}
-        </div>
+{% extends "base.html" %}
+{% block title %}新闻 - {{ date }} - {{ keyword }}{% endblock %}
+{% block content %}
+<a href="/date/{{ date }}" class="btn btn-outline-secondary mb-3">&larr; 返回关键词选择</a>
+<h2>{{ date }} - {{ keyword }}</h2>
+<div class="mb-3">
+    关键词：
+    {% for kw in keywords %}
+        {% if kw == keyword %}
+            <span class="badge bg-warning text-dark">{{ kw }}</span>
+        {% else %}
+            <a href="/date/{{ date }}?keyword={{ kw }}" class="badge bg-light text-dark text-decoration-none">{{ kw }}</a>
+        {% endif %}
     {% endfor %}
-</body>
-</html> 
+</div>
+{% for group in news_data %}
+    <div class="card mb-3">
+        <div class="card-header">{{ group.file }}</div>
+        {% if group.error %}
+            <div class="card-body text-danger">读取错误: {{ group.error }}</div>
+        {% elif group['items']|length == 0 %}
+            <div class="card-body text-muted">无新闻数据</div>
+        {% else %}
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover">
+                        <thead><tr><th>标题</th><th>来源</th><th>分数</th><th>API</th></tr></thead>
+                        <tbody>
+                        {% for item in group['items'] %}
+                            <tr>
+                                <td><a href="{{ item.link }}" target="_blank">{{ item.title }}</a></td>
+                                <td>{{ item.source or '' }}</td>
+                                <td>{{ item.score or '' }}</td>
+                                <td><span class="badge bg-info">{{ item.sourceapi }}</span></td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+{% endfor %}
+{% endblock %}

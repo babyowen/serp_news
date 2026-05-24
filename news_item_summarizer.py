@@ -26,29 +26,13 @@ from news_region_utils import (
     table_has_region_column,
     validate_region_table_name,
 )
+from db_utils import get_connection, get_table_name
+from llm_client_pool import get_pool
 
 setup_global_exception_handler()
 load_dotenv()
 
-MYSQL_HOST = os.getenv('MYSQL_HOST')
-MYSQL_PORT = int(os.getenv('MYSQL_PORT', 3306))
-MYSQL_USER = os.getenv('MYSQL_USER')
-MYSQL_PASSWORD = os.getenv('MYSQL_PASSWORD')
-MYSQL_DB = os.getenv('MYSQL_DB')
-
-class DSClientPool:
-    def __init__(self):
-        self.client = None
-        self.usage = 0
-        self.max_usage = 200
-    def get(self):
-        if self.client is None or self.usage >= self.max_usage:
-            self.client = OpenAI(api_key=DEEPSEEK_API_KEY, base_url=DEEPSEEK_BASE_URL)
-            self.usage = 0
-        self.usage += 1
-        return self.client
-
-_pool = DSClientPool()
+_pool = get_pool()
 
 def parse_date(arg):
     if not arg:
@@ -60,15 +44,12 @@ def parse_date(arg):
 
 def call_llm(title, content, max_retries=3):
     user_prompt = NEWS_ITEM_SUMMARY_USER_PROMPT_500.format(title=title.strip(), content=content.strip())
-    safe_print(f"[模型] deepseek-chat @ {DEEPSEEK_BASE_URL}")
-    safe_print(f"【LLM system前120字】 {NEWS_ITEM_SUMMARY_SYSTEM_PROMPT_500.strip()[:120].replace(chr(10),' ')}")
-    safe_print(f"【LLM user前200字】 {user_prompt.strip()[:200].replace(chr(10),' ')}")
     backoffs = [5, 10, 20]
     for i in range(max_retries):
-        client = _pool.get()
+        client = _pool.get_client(DEEPSEEK_API_KEY, DEEPSEEK_BASE_URL)
         try:
             resp = client.chat.completions.create(
-                model='deepseek-chat',
+                model='deepseek-v4-flash',
                 messages=[
                     {"role": "system", "content": NEWS_ITEM_SUMMARY_SYSTEM_PROMPT_500},
                     {"role": "user", "content": user_prompt}
@@ -84,27 +65,12 @@ def call_llm(title, content, max_retries=3):
     return None
 
 def get_conn():
-    return pymysql.connect(
-        host=MYSQL_HOST,
-        port=MYSQL_PORT,
-        user=MYSQL_USER,
-        password=MYSQL_PASSWORD,
-        database=MYSQL_DB,
-        charset='utf8mb4',
-        autocommit=True
-    )
+    return get_connection(autocommit=True)
 
 def log_run(date, table_name, total, success, fail, skip):
     now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    log_path = os.path.join('output', 'run_log.txt')
-    msg = (
-        f"\n[{now}]\n"
-        f"执行程序: news_item_summarizer\n"
-        f"[抓取日期] {date}\n"
-        f"[数据表] {table_name}\n"
-        f"[统计] 待处理: {total} 成功: {success} 失败: {fail} 跳过: {skip}\n"
-        f"==============================\n"
-    )
+    log_path = os.environ.get("RUN_LOG_PATH", os.path.join('output', 'run_log.txt'))
+    msg = f"[{now}] 单条摘要 {date}: 待处理{total}, 成功{success}, 失败{fail}, 跳过{skip}\n"
     with open(log_path, 'a', encoding='utf-8') as f:
         f.write(msg)
 
@@ -138,10 +104,10 @@ def main():
         parser = argparse.ArgumentParser()
         parser.add_argument('date', nargs='?', default=None)
         parser.add_argument('--keyword', type=str, default=None, help='Filter by keyword')
-        parser.add_argument('--table', type=str, default='scored_news', help='Target table')
+        parser.add_argument('--table', type=str, default=None, help='Target table (default: MYSQL_TABLE env var or scored_news)')
         args = parser.parse_args()
         date = parse_date(args.date)
-        table_name = validate_region_table_name(args.table)
+        table_name = validate_region_table_name(args.table or get_table_name())
         conn = get_conn()
         cur = conn.cursor()
 
@@ -172,13 +138,6 @@ def main():
             for rid, title, content, keyword in rows:
                 if not content or not str(content).strip():
                     skip += 1
-                    safe_print(f"[跳过空内容] id={rid}")
-                    try:
-                        _lp = os.path.join('output','run_log.txt')
-                        with open(_lp, 'a', encoding='utf-8') as _f:
-                            _f.write(f"[SKIP] 空内容记录 id={rid}\n")
-                    except Exception:
-                        pass
                     continue
                 text = str(content).strip()
                 is_gjj = keyword == "公积金"

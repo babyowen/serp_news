@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block title %}关键词管理{% endblock %}
+{% block content %}
+<h4 class="mb-3"><i class="bi bi-tags me-1"></i>关键词管理</h4>
+
+<div class="card mb-4">
+    <div class="card-header">当前关键词配置</div>
+    <div class="card-body">
+        <table class="table table-hover mb-0">
+            <thead><tr><th>主关键词</th><th>搜索关键词</th><th style="width:160px">操作</th></tr></thead>
+            <tbody>
+            {% for main_kw, search_list in keywords.items() %}
+            <tr>
+                <td><strong>{{ main_kw }}</strong></td>
+                <td>
+                    {% for s in search_list %}
+                    <span class="badge bg-light text-dark border me-1">{{ s }}</span>
+                    {% endfor %}
+                </td>
+                <td>
+                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editModal"
+                        data-main="{{ main_kw }}" data-search="{{ search_list | join(', ') }}">
+                        <i class="bi bi-pencil"></i> 编辑
+                    </button>
+                    <form method="post" style="display:inline;" onsubmit="return confirm('确定删除 {{ main_kw }}？')">
+                        <input type="hidden" name="action" value="delete">
+                        <input type="hidden" name="main_keyword" value="{{ main_kw }}">
+                        <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header"><i class="bi bi-plus-circle me-1"></i>添加新关键词</div>
+    <div class="card-body">
+        <form method="post">
+            <input type="hidden" name="action" value="add">
+            <div class="row g-2 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label small text-muted">主关键词</label>
+                    <input type="text" name="main_keyword" class="form-control form-control-sm" required>
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label small text-muted">搜索关键词（逗号分隔）</label>
+                    <input type="text" name="search_keywords" class="form-control form-control-sm" placeholder="关键词1, 关键词2" required>
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-primary btn-sm w-100"><i class="bi bi-plus"></i> 添加</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 编辑弹窗 -->
+<div class="modal fade" id="editModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post">
+                <input type="hidden" name="action" value="edit">
+                <input type="hidden" name="old_keyword" id="edit-old">
+                <div class="modal-header">
+                    <h6 class="modal-title"><i class="bi bi-pencil me-1"></i>编辑关键词</h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label small text-muted">主关键词</label>
+                        <input type="text" name="main_keyword" id="edit-main" class="form-control form-control-sm" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small text-muted">搜索关键词（逗号分隔）</label>
+                        <input type="text" name="search_keywords" id="edit-search" class="form-control form-control-sm" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="submit" class="btn btn-sm btn-primary">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('editModal').addEventListener('show.bs.modal', function (event) {
+    var btn = event.relatedTarget;
+    document.getElementById('edit-old').value = btn.dataset.main;
+    document.getElementById('edit-main').value = btn.dataset.main;
+    document.getElementById('edit-search').value = btn.dataset.search;
+});
+</script>
+{% endblock %}

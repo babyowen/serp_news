@@ -4,189 +4,119 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 项目概述
 
-这是一个自动化新闻采集与AI分析系统，从多个新闻源（Google News、百度新闻、Bing News、DuckDuckGo News、GNews）获取新闻，提取内容，使用AI进行重要性评分，并生成摘要。系统支持中文关键词监控，将结果存储在MySQL中，并提供Flask Web界面进行可视化。
+自动化新闻采集与AI分析系统。6步流水线：采集 → 正文提取 → AI评分 → 数据库写入 → 单条摘要 → 烟草爬虫。地域分析已由摘要步骤一并处理。Bootstrap管理前端支持关键词配置、模型查看、运行监控。
 
 ## 常用命令
 
-### 主要操作
 ```bash
-# 运行完整流水线（默认处理昨天的新闻）
+# 运行完整流水线（默认处理昨天新闻，6步）
 python main.py
+python main.py YYYY-MM-DD          # 指定日期
 
-# 运行特定日期的新闻
-python main.py YYYY-MM-DD
-
-# 启动Web界面
-python app.py
-```
-
-### 单独模块执行
-```bash
-# 新闻采集
+# 单独模块执行
 python fetch_and_filter.py "养老" YYYY-MM-DD
-
-# 内容提取
 python fetch_content.py "养老" YYYY-MM-DD
-
-# 单URL内容提取测试
-python fetch_content.py "测试" YYYY-MM-DD --url="https://example.com/news"
-
-# AI评分
+python fetch_content.py "测试" YYYY-MM-DD --url="https://example.com/news"  # 单URL调试
 python news_scorer.py "养老" YYYY-MM-DD
-
-# 生成摘要
-python news_summarizer.py --keyword "养老" --date YYYY-MM-DD
-
-# 写入数据库
-python write_to_mysql.py --date YYYY-MM-DD
-```
-
-### 500字短摘要生成（可选后处理，不在main.py中自动执行）
-```bash
-# 为评分≥3且尚未生成短摘要的新闻生成约500字短摘要
 python news_item_summarizer.py YYYY-MM-DD
+python news_region_analyzer.py --keyword 公积金 --date YYYY-MM-DD
+python tobacco_gov_crawler.py
+python write_to_mysql.py --date YYYY-MM-DD
 
-# 不传日期默认处理昨天的数据
-python news_item_summarizer.py
+# 启动Web管理界面
+python app.py
 
-# 只处理某一天、某个主关键词的短摘要（按scored_news.keyword过滤）
-python news_item_summarizer.py YYYY-MM-DD --keyword "江苏地区银行"
-```
-
-### 环境设置
-```bash
-# 激活虚拟环境（如果已创建）
-source .venv/bin/activate  # macOS/Linux
-
-# 安装依赖
+# 环境设置
+cp .env.example .env   # 填入API密钥和MySQL连接信息
 pip install -r requirements.txt
-
-# 安装Playwright浏览器
 playwright install
 ```
 
-### 测试命令
-```bash
-# 测试新闻采集功能
-python test_fetcher.py serp_googlenews "测试关键词"
-python test_fetcher.py serp_baidunews "测试关键词"
+## 架构：子进程流水线
 
-# 测试新关键词的新闻覆盖情况（推荐）
-python test_keywords.py "测试关键词"
-python test_keywords.py "测试关键词" "YYYY-MM-DD"
-```
+`main.py` 通过 `subprocess` 依次调用各模块。每个步骤是独立进程，单个失败不阻断流水线。每个步骤开始前检查输出文件是否已存在，存在则跳过（支持断点续跑）。
 
-## 架构概览
+| 步骤 | 脚本 | 说明 | 控制 |
+|------|------|------|------|
+| 1 | `fetch_and_filter.py` → `news_fetcher.py` | 5源采集，去重合并 | - |
+| 2 | `fetch_content.py` | 5级兜底正文提取 | - |
+| 3 | `news_scorer.py` | AI评分0-5分，3线程并发 | - |
+| 4 | `write_to_mysql.py` | MySQL持久化 | - |
+| 5 | `news_item_summarizer.py` | 单条500字摘要（公积金同时写地域） | `ENABLE_ITEM_SUMMARIZER` |
+| 6 | `tobacco_gov_crawler.py` | 烟草官网爬取 | 条件触发（含中国烟草时） |
 
-### 核心模块
-1. **main.py** - 运行完整流水线的编排脚本（步骤1-5）
-2. **fetch_and_filter.py** - 多源新闻采集与过滤
-3. **news_fetcher.py** - 底层新闻API封装（Google News、百度、Bing、DuckDuckGo、GNews）
-4. **fetch_content.py** - 具有5级兜底策略的内容提取
-5. **news_scorer.py** - AI驱动的新闻评分（0-5分制，并发处理）
-6. **news_summarizer.py** - AI摘要生成（支持DeepSeek/百炼双平台自动切换和客户端连接池）
-7. **news_item_summarizer.py** - 单条新闻500字短摘要生成（独立后处理，不纳入main.py流水线）
-8. **write_to_mysql.py** - 数据库持久化
-9. **app.py** - Flask Web界面
-10. **error_handler.py** - 统一错误处理系统
-11. **config.py** - 包含API密钥和关键词的中央配置
+> `news_region_analyzer.py` 已从流水线移除，保留为独立脚本可手动运行补充地域数据。
 
-### 内容提取策略
-系统使用复杂的5级兜底方法：
-1. 自定义提取规则（`config_grab_rules.py`）
-2. Trafilatura库
-3. Newspaper3k库
-4. Playwright（JavaScript渲染）
-5. Selenium（浏览器自动化）
+## 关键词两层结构
 
-### AI集成
-- **评分**：使用DeepSeek-reasoner模型和详细提示进行0-5分重要性评分
-- **摘要**：默认执行单轮摘要；如需启用"三轮流程（草稿→评判审查→优化→热点追踪）"，可在 `news_summarizer.py` 中将 `ENABLE_MULTI_ROUND_SUMMARY` 设为 `True`
-- **双平台切换**：`news_summarizer.py` 内置 DeepSeek 和百炼双平台配置，当一个平台token超限时自动切换
-- **并发处理**：`main.py` 中AI评分阶段默认使用3线程并发处理多个关键词
+定义在 `config.py:SEARCH_KEYWORDS`，主关键词用于业务分类，搜索关键词用于API调用。`DEFAULT_KEYWORDS` 自动从 `SEARCH_KEYWORDS.keys()` 生成。前端 `/admin/keywords` 可直接管理。
 
-### 配置结构
-- **关键词**：在`config.py`中定义为主关键词→搜索关键词映射
-- **API密钥**：通过环境变量管理（.env文件）
-- **自定义规则**：`config_grab_rules.py`中的站点特定提取规则
-- **AI提示**：评分和摘要的详细系统提示在`config.py`中
-
-### 数据库模式
-- **scored_news**：包含内容和评分的主要新闻表（含 `short_summary` 字段，由 `news_item_summarizer.py` 写入）
-- **summary_news**：包含平台/模型信息的生成摘要
-- **news_source_stats**：源域名统计
-- **news_websites**：网站元数据
-
-### 错误处理
-- 通过`error_handler.py`统一错误处理
-- 结构化错误日志记录到`output/error_log.txt`
-- 自动重试的优雅降级
-- 进程级隔离（单个失败不会停止整个流水线）
-
-### 输出结构
-- `output/`目录中按日期和关键词组织的JSON文件
-- 运行日志在`output/run_log.txt`
-- 错误日志在`output/error_log.txt`
-- 数据库持久化用于结构化查询
-
-## 核心架构:关键词数据流转
-
-### 关键词两层结构
-系统使用**两层关键词映射**架构（定义在 `config.py:SEARCH_KEYWORDS`）:
-
-```python
-SEARCH_KEYWORDS = {
-    "主关键词": ["搜索关键词1", "搜索关键词2", ...],
-    "养老": ["养老"],
-    "江苏地区银行": ["工商银行", "农业银行", "中国银行", ...],
-    "江苏省国资委": ["江苏省国资委", "江苏国信集团", "江苏交通控股", ...]
-}
-```
-
-- **主关键词 (Main Keyword)**: 用于业务分类和评分提示选择,例如 "江苏地区银行"、"养老"
-- **搜索关键词 (Search Keyword)**: 实际用于新闻API搜索的具体关键词,例如 "工商银行"、"农业银行"
-
-### 数据流转过程
-
-#### 1. 新闻采集阶段 (`fetch_and_filter.py`, `main.py`)
+数据流转：
 ```
 主关键词 → 遍历搜索关键词 → 调用新闻API
          ↓
-    临时文件: tmp_{date}_{main_kw}_{search_kw}.json
+    tmp_{date}_{main_kw}_{search_kw}.json（临时，合并后删除）
          ↓
-    合并去重: {date}_{main_kw}.json
+    {date}_{main_kw}.json → _scored.json（AI评分后）
 ```
-每条新闻在数据库 `scored_news` 表中存储:
-- `keyword` 字段 = 主关键词 (如 "江苏地区银行")
-- `search_keyword` 字段 = 搜索关键词 (如 "工商银行")
 
-#### 2. AI评分阶段 (`news_scorer.py`)
-- 从数据库读取 `keyword` (主关键词)
-- 在 `config.py:KEYWORD_SPECIFIC_SYSTEM_PROMPTS` 中查找对应的专门评分提示
-- 如果找到专门提示,使用专门提示;否则使用通用提示 `NEWS_SCORE_SYSTEM_MSG`
-- 示例: "江苏地区银行" → 使用 `NEWS_SCORE_SYSTEM_MSG_JIANGSU_BANKS`
+## 共享工具模块
 
-#### 3. 500字短摘要生成 (`news_item_summarizer.py`)
-- **不读取** config 的关键词配置，也不在 `main.py` 流水线中自动执行
-- 从数据库读取已评分新闻 (score≥3 且 short_summary 为空)
-- 可选通过 `--keyword` 参数过滤 (该参数匹配数据库中的 `keyword` 字段)
-- 示例: `python news_item_summarizer.py YYYY-MM-DD --keyword "江苏地区银行"`
+- **`db_utils.py`** — 统一数据库连接（含3次重试）+ `MYSQL_TABLE` 环境变量切换测试表 + `ping_connection` 保活
+- **`llm_client_pool.py`** — 统一LLM客户端池，按(api_key, base_url)复用，自动回收
+- **`config_manager.py`** — 读写 config.py 中的关键词和模型配置（供前端调用）
+- **`run_manager.py`** — 运行状态管理（启动/监控/历史/日志）
 
-#### 4. 摘要生成阶段 (`news_summarizer.py`)
-- 使用主关键词进行摘要
-- 从 `scored_news` 表读取高分新闻
-- 生成结构化摘要 (今日综述、新闻总结、观点总结)
+## 关键配置
 
-### 关键配置文件
-- **`config.py`**: 中央配置文件
-  - `SEARCH_KEYWORDS`: 主关键词→搜索关键词映射
-  - `DEFAULT_KEYWORDS`: 要处理的主关键词列表
-  - `KEYWORD_SPECIFIC_SYSTEM_PROMPTS`: 主关键词→专门评分提示映射
-  - `NEWS_SUMMARY_MODELS`: 双平台模型配置（DeepSeek + 百炼）
-  - AI模型配置、API密钥配置、评分提示词
+- **`config.py`** — 关键词映射、AI提示词（通用+关键词专属）、模型配置、黑名单
+- **`config_grab_rules.py`** — 站点专属抓取规则（`CUSTOM_GRAB_RULES`注册表）
+- **`.env`** — API密钥、MySQL连接、流程开关、管理员认证
 
-### 添加新关键词组流程
-1. 在 `config.py:SEARCH_KEYWORDS` 添加映射
-2. (可选) 在 `config.py` 创建专门的评分提示词 (如 `NEWS_SCORE_SYSTEM_MSG_XXX`)
-3. 在 `config.py:KEYWORD_SPECIFIC_SYSTEM_PROMPTS` 注册提示词映射
-4. 在 `config.py:DEFAULT_KEYWORDS` 设置要处理的主关键词列表
+## 术语约定
+
+- **日期**：统一以 `fetchdate` 字段为准（抓取日期），而非新闻自身的 `date` 字段（可能是相对时间如"昨天"、"7小时前"）
+- **生产表**：`scored_news` — 线上正式数据
+- **测试表**：`scored_news_test` — 本地开发测试数据
+- 通过 `.env` 中 `MYSQL_TABLE` 环境变量控制读写哪张表，默认应设为 `scored_news_test`
+
+## 数据库表
+
+- **scored_news** — 新闻主表/生产表（含 `short_summary` 和 `region` 字段）
+- **scored_news_test** — 新闻测试表（结构与生产表相同，本地开发用）
+- **summary_news** — 日报摘要（已废弃，保留表结构）
+- **news_source_stats** — 源域名统计
+- **news_websites** — 网站元数据
+
+## Flask管理前端
+
+- **公开路由**：`/`（新闻看板：筛选+统计+Tab分组列表）、`/date/<date>`（单日浏览）、`/database`（数据库查看）
+- **管理路由**（需Basic Auth）：`/admin/keywords`、`/admin/models`、`/admin/runs`
+- 模板在 `templates/`，管理页在 `templates/admin/`
+- 路由代码在 `routes/views.py`（公开）和 `routes/admin.py`（需认证）
+
+## 测试
+
+```bash
+# 开发测试：用 scored_news_test 表
+MYSQL_TABLE=scored_news_test python main.py YYYY-MM-DD
+
+# 验证模块加载
+python -c "from config import SEARCH_KEYWORDS; print(SEARCH_KEYWORDS)"
+```
+
+## 注意事项
+
+- 所有 AI 模块（评分/摘要/地域）统一使用 `deepseek-v4-flash` 模型，配置在 `config.py`
+- 日志系统：每次运行生成独立批次日志 `output/{date}/run_{YYYYMMDD_HHMMSS}.log`，通过 `RUN_LOG_PATH` 环境变量传递给子进程；手动运行单个脚本时 fallback 到 `output/run_log.txt`
+- `/admin/models` 页面展示当前启用的 Prompt（按评分/摘要/公积金/地域分组）
+- 内容提取含防屏蔽：User-Agent伪装、SSL忽略、同站点1-4秒间隔
+- `msn.cn` 跳过、`tv.cctv.com` 跳过、`people.com.cn` 强制HTTP
+- `tobacco_gov_crawler.py` 独立脚本，固定4分，直接写MySQL不经过JSON
+- `output/` 目录已 gitignore
+- Flask 默认端口 5001（macOS AirPlay 占用 5000）
+- 路由中所有表名通过 `get_table_name()` 获取，`.env` 中 `MYSQL_TABLE` 控制读写哪张表
+- `main.py` 实时更新 `output/run_status.json` 中的步骤状态（running/success/failed），流水线结束标记 finished
+- `main.py` 使用 `sys.executable` 调用子进程，确保与当前 Python 环境一致（不硬编码 `python`）
+- `tobacco_gov_crawler.py` 通过 macOS launchd 定时任务每日凌晨 1:00 自动运行（`~/Library/LaunchAgents/com.tobacco.gov.crawler.plist`）
+- `.env` 中的 `MYSQL_TABLE` 会影响定时任务的写入目标表，开发期间切换测试表后注意恢复

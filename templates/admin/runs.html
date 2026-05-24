@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+{% block title %}运行监控{% endblock %}
+{% block content %}
+<h4 class="mb-3"><i class="bi bi-activity me-1"></i>运行监控</h4>
+
+<div class="row g-3 mb-4">
+    <!-- 触发运行 -->
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header"><i class="bi bi-play-circle me-1"></i>触发新运行</div>
+            <div class="card-body">
+                <form method="post" action="/admin/runs/start">
+                    <div class="row g-2 align-items-end">
+                        <div class="col-7">
+                            <label class="form-label small text-muted mb-0">日期</label>
+                            <input type="date" name="date" class="form-control form-control-sm" id="runDate">
+                        </div>
+                        <div class="col-5">
+                            <button type="submit" class="btn btn-primary btn-sm w-100"><i class="bi bi-play-fill"></i> 开始运行</button>
+                        </div>
+                    </div>
+                    <small class="text-muted">留空默认处理昨天数据</small>
+                </form>
+                <hr>
+                <form method="post" action="/admin/runs/rescore">
+                    <div class="row g-2 align-items-end">
+                        <div class="col-7">
+                            <input type="date" name="date" class="form-control form-control-sm" id="rescoreDate" value="{{ status.date or '' }}">
+                        </div>
+                        <div class="col-5">
+                            <button type="submit" class="btn btn-outline-warning btn-sm w-100"><i class="bi bi-arrow-repeat"></i> 补评缺失分数</button>
+                        </div>
+                    </div>
+                    <small class="text-muted">只对无分条目调用AI评分</small>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- 当前状态 -->
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header"><i class="bi bi-heart-pulse me-1"></i>当前状态</div>
+            <div class="card-body">
+                {% if status.status == 'running' %}
+                    <h5><span class="badge bg-warning text-dark">运行中</span></h5>
+                    <p class="mb-1"><span class="text-muted">日期:</span> {{ status.date }}</p>
+                    <p class="mb-1"><span class="text-muted">开始:</span> {{ status.started_at }}</p>
+                    <p class="mb-0"><span class="text-muted">PID:</span> <code>{{ status.pid }}</code></p>
+                {% elif status.status == 'finished' %}
+                    <h5><span class="badge bg-success">已完成</span></h5>
+                    <p class="mb-1"><span class="text-muted">日期:</span> {{ status.date }}</p>
+                    <p class="mb-0"><span class="text-muted">开始:</span> {{ status.started_at }}</p>
+                {% else %}
+                    <h5><span class="badge bg-light text-dark border">空闲</span></h5>
+                    <p class="text-muted mb-0">没有正在运行的任务</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if status.steps %}
+<div class="card mb-4">
+    <div class="card-header"><i class="bi bi-list-check me-1"></i>步骤进度</div>
+    <div class="card-body">
+        <div class="d-flex flex-wrap gap-2">
+        {% for step, info in status.steps.items() %}
+            {% if info.status == 'success' %}
+                <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>{{ step }}</span>
+            {% elif info.status == 'running' %}
+                <span class="badge bg-warning text-dark"><i class="bi bi-arrow-repeat me-1"></i>{{ step }}</span>
+            {% elif info.status == 'failed' %}
+                <span class="badge bg-danger"><i class="bi bi-x-circle me-1"></i>{{ step }}</span>
+            {% else %}
+                <span class="badge bg-light text-dark border">{{ step }}</span>
+            {% endif %}
+        {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% if rescore_msg %}
+<div class="alert alert-info"><i class="bi bi-info-circle me-1"></i>{{ rescore_msg }}</div>
+{% endif %}
+
+{% if unscored_stats %}
+<div class="card mb-4">
+    <div class="card-header"><i class="bi bi-exclamation-triangle me-1"></i>缺失评分统计（最近7天）</div>
+    <div class="card-body">
+        <table class="table table-sm table-hover mb-0">
+            <thead><tr><th>日期</th><th>总数据</th><th>缺失评分</th><th>占比</th></tr></thead>
+            <tbody>
+            {% for s in unscored_stats %}
+            <tr>
+                <td>{{ s.date }}</td>
+                <td>{{ s.total }}条</td>
+                <td>
+                    {% if s.unscored > 0 %}
+                    <span class="badge bg-danger">{{ s.unscored }}条</span>
+                    {% else %}
+                    <span class="badge bg-success">0</span>
+                    {% endif %}
+                </td>
+                <td>{{ "%.1f"|format(s.unscored / s.total * 100) if s.total > 0 else "0" }}%</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+
+<!-- 历史运行 -->
+<div class="card mb-4">
+    <div class="card-header"><i class="bi bi-clock-history me-1"></i>历史运行（最近30天）</div>
+    <div class="card-body">
+        <table class="table table-sm table-hover mb-0">
+            <thead><tr><th>日期</th><th>文件数</th><th>最近运行</th><th>运行次数</th><th>操作</th></tr></thead>
+            <tbody>
+            {% for run in history %}
+            <tr>
+                <td>{{ run.date }}</td>
+                <td>{{ run.file_count }} 个文件</td>
+                <td>{{ run.latest_run or '—' }}</td>
+                <td>{{ run.runs | length if run.runs else 0 }} 次</td>
+                <td><a href="/admin/runs/{{ run.date }}/log" class="btn btn-sm btn-outline-secondary"><i class="bi bi-file-text me-1"></i>日志</a></td>
+            </tr>
+            {% else %}
+            <tr><td colspan="5" class="text-muted">暂无历史记录</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- 定时任务 -->
+<div class="card mb-4">
+    <div class="card-header"><i class="bi bi-clock me-1"></i>定时任务配置</div>
+    <div class="card-body">
+        <p class="text-muted mb-2">将以下脚本复制到宝塔面板的「计划任务 → Shell脚本」中，设置每天 0:30 执行。</p>
+        <div class="position-relative">
+            <pre class="bg-dark text-light p-3 rounded" style="font-size:.82em;line-height:1.6;white-space:pre-wrap;"><code>#!/bin/bash
+# === 新闻采集系统 - 每日定时任务 ===
+# 宝塔面板: 计划任务 → Shell脚本 → 粘贴本脚本 → 每天 00:30
+
+# 1. 项目目录（部署后改成实际路径）
+PROJECT_DIR="{{ project_dir }}"
+
+# 2. 进入项目目录
+cd $PROJECT_DIR
+
+# 3. 加载环境变量
+set -a
+source .env 2>/dev/null
+set +a
+
+# 4. 激活 Python 虚拟环境
+source .venv/bin/activate
+
+# 5. 执行流水线
+python main.py >> $PROJECT_DIR/cron.log 2>&1
+
+# 6. 退出虚拟环境
+deactivate 2>/dev/null</code></pre>
+            <button class="btn btn-sm btn-outline-light position-absolute top-0 end-0 m-2" onclick="copyScript(this)">复制</button>
+        </div>
+    </div>
+</div>
+
+<script>
+function copyScript(btn) {
+    const code = btn.previousElementSibling.querySelector('code').textContent;
+    navigator.clipboard.writeText(code).then(() => {
+        btn.textContent = '已复制';
+        setTimeout(() => btn.textContent = '复制', 2000);
+    });
+}
+var yesterday = new Date();
+yesterday.setDate(yesterday.getDate() - 1);
+document.getElementById('runDate').value = yesterday.toISOString().split('T')[0];
+{% if status.status == 'running' %}
+setTimeout(function(){ location.reload(); }, 5000);
+{% endif %}
+</script>
+{% endblock %}

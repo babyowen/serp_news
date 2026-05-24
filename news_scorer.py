@@ -13,7 +13,7 @@ from datetime import datetime, timedelta
 from collections import Counter
 from openai import OpenAI
 from config import (
-    DEEPSEEK_API_KEY, DEEPSEEK_BASE_URL, DEEPSEEK_MODEL, 
+    DEEPSEEK_API_KEY, DEEPSEEK_BASE_URL, DEEPSEEK_MODEL,
     NEWS_SCORE_PROMPT, NEWS_RULE_BASED_SCORING, NEWS_SCORE_SYSTEM_MSG, DEFAULT_KEYWORD, DEFAULT_KEYWORDS, KEYWORD_SPECIFIC_SYSTEM_PROMPTS
 )
 import argparse
@@ -25,68 +25,12 @@ from error_handler import (
     ErrorHandler
 )
 
-# 导入图标管理系统
 from icon_manager import safe_print, get_icon
 from logger_utils import NewsLogger, get_news_logger
-
-# ========== 新增：评分专用连接池管理 ==========
-class ScoringClientPool:
-    """评分专用OpenAI客户端连接池管理器"""
-    
-    def __init__(self):
-        self._client = None
-        self._usage_count = 0
-        self._max_usage_per_client = 100  # 评分客户端可以使用更多次
-    
-    def get_client(self):
-        """获取或创建评分客户端"""
-        # 检查是否需要创建新客户端
-        if (self._client is None or 
-            self._usage_count >= self._max_usage_per_client):
-            
-            # 关闭旧客户端（如果存在）
-            if self._client is not None:
-                self._close_client()
-            
-            # 创建新客户端
-            self._client = OpenAI(
-                api_key=DEEPSEEK_API_KEY, 
-                base_url=DEEPSEEK_BASE_URL
-            )
-            self._usage_count = 0
-        
-        # 增加使用计数
-        self._usage_count += 1
-        return self._client
-    
-    def _close_client(self):
-        """安全关闭客户端"""
-        if self._client is not None:
-            try:
-                if hasattr(self._client, 'close'):
-                    self._client.close()
-                elif hasattr(self._client, '_client') and hasattr(self._client._client, 'close'):
-                    self._client._client.close()
-            except Exception as e:
-                pass  # 静默处理关闭异常
-            finally:
-                self._client = None
-                self._usage_count = 0
-    
-    def close_all(self):
-        """关闭所有连接"""
-        self._close_client()
-    
-    def get_stats(self):
-        """获取连接池状态统计"""
-        return {
-            'has_client': self._client is not None,
-            'usage_count': self._usage_count,
-            'max_usage': self._max_usage_per_client
-        }
+from llm_client_pool import get_pool
 
 # 全局评分连接池实例
-_scoring_client_pool = ScoringClientPool()
+_scoring_client_pool = get_pool()
 
 # 创建新闻日志记录器
 scoring_logger = NewsLogger()
@@ -103,46 +47,33 @@ def score_news(title: str, content: str, keyword: str, main_keyword: str = None,
     # 根据主关键词选择合适的system prompt
     model_decision_keyword = main_keyword if main_keyword else keyword
     system_msg = KEYWORD_SPECIFIC_SYSTEM_PROMPTS.get(model_decision_keyword, NEWS_SCORE_SYSTEM_MSG)
-    
-    safe_print("\n===== 送给大模型的内容 =====")
-    safe_print(f"[评分关键词] {keyword}")
-    safe_print(f"[主关键词] {model_decision_keyword}")
-    safe_print(f"[system] {clean_unicode_for_console(system_msg)}")
-    safe_print(f"[user] {clean_unicode_for_console(prompt)}")
-    safe_print("==========================\n")
-    
+
     # 新增：token超限主动监控
     try:
         import tiktoken
         enc = tiktoken.get_encoding('cl100k_base')
         token_count = len(enc.encode(prompt))
         if token_count > 61000:
-            safe_print(f"[WARN] 评分prompt token数超限（主动判断），token数: {token_count}")
-            safe_print(f"[WARN] prompt开头200字: {prompt[:200]}")
-            safe_print(f"[WARN] prompt结尾200字: {prompt[-200:]}")
-            with open("output/run_log.txt", "a", encoding="utf-8") as f:
-                f.write(f"[WARN] 评分prompt token数超限（主动判断），token数: {token_count}\n")
-                f.write(f"[WARN] prompt开头200字: {prompt[:200]}\n")
-                f.write(f"[WARN] prompt结尾200字: {prompt[-200:]}\n")
-    except Exception as e:
-        safe_print(f"[WARN] tiktoken统计token失败: {e}")
-    
-    # 统一使用DeepSeek V3模型进行评分
-    model_decision_keyword = main_keyword if main_keyword else keyword
-    model_to_use = 'deepseek-chat'  # 统一使用V3模型
-    safe_print(f"[模型选择] 主关键词: {model_decision_keyword}, 评分关键词: {keyword}, 使用模型: {model_to_use} (统一使用V3)")
+            content_len = len(content) if content else 0
+            msg = f"[WARN] 评分token超限 | token数: {token_count} | 正文字数: {content_len} | 标题: {title[:40]}"
+            safe_print(msg)
+            with open(os.environ.get("RUN_LOG_PATH", "output/run_log.txt"), "a", encoding="utf-8") as f:
+                f.write(msg + "\n")
+            return 0
+    except Exception:
+        pass
+
+    model_to_use = 'deepseek-v4-flash'
     
     # 智能重试机制
     for attempt in range(1, max_retries + 1):
         # 从连接池获取客户端
-        client = _scoring_client_pool.get_client()
-        
+        client = _scoring_client_pool.get_client(DEEPSEEK_API_KEY, DEEPSEEK_BASE_URL, max_uses=100)
+
         try:
-            safe_print(f"[评分尝试] [尝试 {attempt}/{max_retries}] 正在调用评分模型...")
-            
             # 记录开始时间
             start_time = datetime.now()
-            
+
             response = client.chat.completions.create(
                 model=model_to_use,
                 messages=[
@@ -153,74 +84,52 @@ def score_news(title: str, content: str, keyword: str, main_keyword: str = None,
                 temperature=1,
                 timeout=60  # 设置60秒超时
             )
-            
+
             # 计算耗时
             end_time = datetime.now()
             duration = (end_time - start_time).total_seconds()
-            
+
             score_str = response.choices[0].message.content.strip()
             score = int(score_str[0])  # 只取第一个数字
-            
-            safe_print(f"[评分成功] 耗时: {duration:.1f}秒，得分: {score}")
+
             return score
-            
+
         except Exception as e:
             # 计算失败耗时
             end_time = datetime.now()
             duration = (end_time - start_time).total_seconds()
-            
+
             err_str = str(e)
             # 分类错误类型
             is_ssl_error = any(x in err_str.lower() for x in ["ssl", "connection", "socket", "handshake", "certificate"])
             is_timeout = any(x in err_str.lower() for x in ["timeout", "timed out", "time out"])
             is_token_limit = any(x in err_str.lower() for x in ["token", "context length", "input length", "max input limit", "too long"])
             is_network_error = any(x in err_str.lower() for x in ["network", "dns", "resolve", "unreachable", "connection refused"])
-            
+
             if is_token_limit:
-                safe_print(f"[评分失败] [Token超限] 请求失败，耗时: {duration:.1f}秒")
-                safe_print(f"[WARN] 评分API返回token超限，prompt开头200字: {prompt[:200]}")
-                safe_print(f"[WARN] 评分API返回token超限，prompt结尾200字: {prompt[-200:]}")
-                with open("output/run_log.txt", "a", encoding="utf-8") as f:
-                    f.write(f"[WARN] 评分API返回token超限，prompt开头200字: {prompt[:200]}\n")
-                    f.write(f"[WARN] 评分API返回token超限，prompt结尾200字: {prompt[-200:]}\n")
+                content_len = len(content) if content else 0
+                msg = f"[WARN] 评分API token超限 | 正文字数: {content_len} | 标题: {title[:40]}"
+                safe_print(msg)
+                with open(os.environ.get("RUN_LOG_PATH", "output/run_log.txt"), "a", encoding="utf-8") as f:
+                    f.write(msg + "\n")
                 # Token超限是不可重试的错误，直接返回0分
                 return 0
-            elif is_ssl_error:
-                safe_print(f"[评分失败] [SSL错误] 请求失败，耗时: {duration:.1f}秒")
-                safe_print(f"[SSL错误] {err_str[:200]}...")
-            elif is_timeout:
-                safe_print(f"[评分失败] [超时错误] 请求失败，耗时: {duration:.1f}秒")
-            elif is_network_error:
-                safe_print(f"[评分失败] [网络错误] 请求失败，耗时: {duration:.1f}秒")
-            else:
-                safe_print(f"[评分失败] [其他错误] 请求失败，耗时: {duration:.1f}秒")
-            
-            safe_print(f"[第{attempt}次失败] 错误类型: {type(e).__name__}")
-            safe_print(f"[错误详情] {str(e)[:200]}...")
-            
+
+            err_type = "SSL" if is_ssl_error else "超时" if is_timeout else "网络" if is_network_error else "其他"
+            safe_print(f"[评分失败] 第{attempt}次({err_type}): {str(e)[:100]}")
+
             # 重试逻辑
             if attempt < max_retries:
-                # 根据错误类型调整重试间隔
-                if is_ssl_error or is_network_error:
-                    actual_retry_interval = retry_interval * 2  # SSL/网络错误延长重试间隔
-                else:
-                    actual_retry_interval = retry_interval
-                
-                safe_print(f"[准备重试] {actual_retry_interval}秒后进行第{attempt + 1}次尝试...")
-                
-                # 倒计时显示
-                import time
-                for i in range(actual_retry_interval):
-                    time.sleep(1)
-                    if i % 2 == 0:  # 每2秒显示一次倒计时
-                        remaining = actual_retry_interval - i
-                        safe_print(f"[倒计时] 还有 {remaining} 秒...")
+                actual_retry_interval = retry_interval * 2 if (is_ssl_error or is_network_error) else retry_interval
+                time.sleep(actual_retry_interval)
             else:
-                safe_print(f"[最终失败] 已达到最大重试次数({max_retries}次)")
-    
+                content_len = len(content) if content else 0
+                msg = f"[ERROR] 评分连续{max_retries}次失败({err_type}) | 关键词: {keyword} | 正文字数: {content_len} | 标题: {title[:40]} | 错误: {str(e)[:80]}"
+                safe_print(msg)
+                with open(os.environ.get("RUN_LOG_PATH", "output/run_log.txt"), "a", encoding="utf-8") as f:
+                    f.write(msg + "\n")
+
     # 所有重试都失败后返回0分
-    safe_print(f"[ERROR] 评分连续{max_retries}次失败，关键词: {keyword}, 标题: {clean_unicode_for_console(title)}")
-    safe_print(f"[ERROR] 返回默认分数: 0")
     return 0
 
 # 规则打分函数
@@ -272,7 +181,6 @@ def batch_score_news(json_path, keyword):
         news_with_score["score"] = score  # 用英文key
         results.append(news_with_score)
         score_counter[score] = score_counter.get(score, 0) + 1
-        safe_print(f"标题: {title}\n分数: {score}\n")
     return results, score_counter, len(unique_news_list), rule_based_titles
 
 # 保存带分数的新闻到新json文件，按分数降序排列
@@ -298,46 +206,23 @@ def write_scored_json(results, json_path):
 # results: 可选，带分数的新闻列表
 # rule_based_titles: 可选，规则打分标题列表
 def append_log(keyword, json_path, total, score_counter, scored_count, scored_json_path, results=None, rule_based_titles=None):
-    safe_print(f"[DEBUG] 准备写入日志，关键词: {keyword}")
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    log_path = os.path.join("output", "run_log.txt")
+    log_path = os.environ.get("RUN_LOG_PATH", os.path.join("output", "run_log.txt"))
     score_line = " ".join([f"{i}分: {score_counter.get(i,0)}" for i in range(6)])
-    emoji_map = ["0分", "1分", "2分", "3分", "4分", "5分"]
-    emoji_score_line = " ".join([f"{emoji_map[i]}:{score_counter.get(i,0)}" for i in range(6)])
-    total_wordcount_3plus = 0
-    if results is not None:
-        for news in results:
-            if news.get("score", 0) >= 3:
-                total_wordcount_3plus += len(news.get("content", ""))
+
     log = (
         f"\n[{now}]\n"
-        f"执行程序: ai评分（统一使用DeepSeek V3模型）\n"
-        f"[关键词] 主关键词: {keyword}\n"
-        f"[文件] 原json文件: {json_path}\n"
-        f"[结果] 评分结果文件: {scored_json_path}\n"
-        f"[统计] 新闻总数: {total}\n"
-        f"[完成] 完成评分: {scored_count}\n"
-        f"{emoji_score_line}\n"
+        f"执行程序: AI评分\n"
+        f"[关键词] {keyword}\n"
+        f"[统计] 总数: {total}，完成: {scored_count}\n"
+        f"[分布] {score_line}\n"
     )
-    if results is not None:
-        log += f"[字数] 3分及以上新闻正文总字数: {total_wordcount_3plus}\n"
-    # 新增：规则打分统计
-    if rule_based_titles is not None:
-        log += f"[规则打分] 规则打分新闻数: {len(rule_based_titles)}\n"
-        if rule_based_titles:
-            log += "规则打分新闻标题：\n"
-            for t in rule_based_titles:
-                log += f"- {clean_unicode_for_console(t)}\n"
+    if rule_based_titles is not None and len(rule_based_titles) > 0:
+        log += f"[规则打分] {len(rule_based_titles)}条\n"
     log += f"==============================\n"
-    safe_print(f"[DEBUG] 日志内容预览（前100字）：{clean_unicode_for_console(log[:100])}")
-    
-    # 对整个日志字符串进行Unicode清理，避免GBK编码错误
-    cleaned_log = clean_unicode_for_console(log)
+
     with open(log_path, "a", encoding="utf-8") as f:
-        f.write(cleaned_log)
-    safe_print(f"[DEBUG] 日志写入完成，关键词: {keyword}")
-    safe_print(f"评分完成，日志已写入: {log_path}")
-    safe_print(f"评分结果文件: {scored_json_path}")
+        f.write(log)
 
 # 获取昨天日期字符串，格式YYYY-MM-DD
 def get_yesterday_str():
@@ -404,6 +289,7 @@ def main():
         parser.add_argument('keyword', nargs='?', default=None)
         parser.add_argument('date', nargs='?', default=None)
         parser.add_argument('--test_json', type=str, help='测试模式，输入一条json字符串')
+        parser.add_argument('--rescore', action='store_true', help='重评模式：只对无分数或0分的条目重新评分')
         args = parser.parse_args()
 
         if args.test_json:
@@ -440,17 +326,7 @@ def main():
                     # 跳过机制：如已存在_scored.json文件，说明已完成打分，无需重复处理
                     if os.path.exists(scored_json_path):
                         safe_print(f"[SKIP] {scored_json_path} 已存在，跳过 {keyword}")
-                        # 可选：写入日志
-                        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                        log_path = os.path.join("output", "run_log.txt")
-                        skip_log = (
-                            f"[{now}]\n[SKIP] 跳过关键词: {keyword}\n原因: 已存在 {scored_json_path}，已完成打分\n==============================\n"
-                        )
-                        # 对日志字符串进行Unicode清理，避免GBK编码错误
-                        cleaned_skip_log = clean_unicode_for_console(skip_log)
-                        with open(log_path, "a", encoding="utf-8") as f:
-                            f.write(cleaned_skip_log)
-                        processed_count += 1  # 跳过也算处理成功
+                        processed_count += 1
                         continue
                     # 检查是否已打分（兼容旧流程）
                     try:
@@ -497,20 +373,42 @@ def main():
             date_str = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
         json_path = os.path.join("output", date_str, f"{date_str}_{keyword}.json")
         scored_json_path = os.path.splitext(json_path)[0] + "_scored.json"
-        
+
+        # 重评模式：从已有的_scored.json中找无分/0分条目重新评分
+        if args.rescore:
+            if not os.path.exists(scored_json_path):
+                safe_print(f"[RESCORE] {scored_json_path} 不存在，无法重评，走正常评分流程")
+            else:
+                safe_print(f"[RESCORE] 开始重评: {keyword} {date_str}")
+                with open(scored_json_path, "r", encoding="utf-8") as f:
+                    results = json.load(f)
+                rescored_count = 0
+                for news in results:
+                    score = news.get("score")
+                    # 只重评真正缺失分数的（score为None），不重评score=0（有效评分）
+                    if score is not None:
+                        continue
+                    title = news.get("title", "")
+                    content = news.get("content", "")
+                    search_keyword = news.get("search_keyword", keyword)
+                    if not content or content.strip() == "":
+                        continue
+                    new_score = score_news(title, content, search_keyword, keyword)
+                    news["score"] = new_score
+                    rescored_count += 1
+                    safe_print(f"[RESCORE] {title[:40]}... → {new_score}分")
+                # 写回
+                results_sorted = sorted(results, key=lambda x: x.get("score", 0), reverse=True)
+                with open(scored_json_path, "w", encoding="utf-8") as f:
+                    json.dump(results_sorted, f, ensure_ascii=False, indent=2)
+                safe_print(f"[RESCORE] 完成，重评了 {rescored_count} 条")
+                log_script_complete("news_scorer.py", success=True, message=f"重评完成: {keyword}, 重评{rescored_count}条")
+                return True
+
         # 跳过机制：如已存在_scored.json文件，说明已完成打分，无需重复处理
         if os.path.exists(scored_json_path):
             safe_print(f"[SKIP] {scored_json_path} 已存在，跳过 {keyword}")
-            now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            log_path = os.path.join("output", "run_log.txt")
-            skip_log = (
-                f"[{now}]\n[SKIP] 跳过关键词: {keyword}\n原因: 已存在 {scored_json_path}，已完成打分\n==============================\n"
-            )
-            # 对日志字符串进行Unicode清理，避免GBK编码错误
-            cleaned_skip_log = clean_unicode_for_console(skip_log)
-            with open(log_path, "a", encoding="utf-8") as f:
-                f.write(cleaned_skip_log)
-            log_script_complete("news_scorer.py", success=True, message=f"跳过已处理的关键词: {keyword}")
+            log_script_complete("news_scorer.py", success=True, message=f"跳过已处理: {keyword}")
             return True
             
         if not os.path.exists(json_path):
@@ -544,14 +442,10 @@ def main():
         return False
     
     finally:
-        # 程序结束时清理连接池
         try:
-            stats = _scoring_client_pool.get_stats()
-            safe_print(f"[连接池统计] 关闭前状态: {stats}")
             _scoring_client_pool.close_all()
-            safe_print("[连接池] 评分客户端连接已关闭")
-        except Exception as e:
-            safe_print(f"[WARN] 清理评分连接池时发生异常: {e}")
+        except Exception:
+            pass
 
 if __name__ == "__main__":
     success = main()

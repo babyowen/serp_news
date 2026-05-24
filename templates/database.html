@@ -1,89 +1,91 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>数据库内容展示</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <style>
-        body { font-family: "Segoe UI", Arial, sans-serif; background: #f8f9fa; margin: 0; padding: 0; }
-        h1 { margin: 30px 0 10px 0; text-align: center; color: #333; }
-        .table-container { width: 98vw; max-width: 1800px; margin: 30px auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px #0001; padding: 20px; overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; font-size: 15px; }
-        th, td { border: 1px solid #e0e0e0; padding: 8px 10px; text-align: left; }
-        th { background: #f1f3f6; position: sticky; top: 0; z-index: 2; }
-        tr:nth-child(even) { background: #f8fafc; }
-        tr:hover { background: #e6f7ff; }
-        td.content, td.summary { max-width: 420px; word-break: break-all; white-space: pre-line; }
-        td.content, td.summary { font-family: "Menlo", "Consolas", monospace; }
-        td.content, td.summary span.ellipsis, td.content, td.summary span.ellipsis { display: inline-block; vertical-align: top; }
-        td.link { max-width: 320px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        a { color: #0074d9; text-decoration: none; }
-        a:hover { text-decoration: underline; }
-        @media (max-width: 900px) {
-            .table-container { padding: 2px; }
-            table { font-size: 13px; }
-            td.content, td.summary { max-width: 180px; }
-            td.link { max-width: 120px; }
-        }
-    </style>
-</head>
-<body>
-    <div class="table-container">
-        <h1>scored_news（最新50条）</h1>
-        <table>
-            <tr>
-                {% for col in scored_news[0].keys() %}
-                    {% if col != 'thumbnail' %}
-                        <th>{{ col }}</th>
-                    {% endif %}
-                {% endfor %}
-            </tr>
-            {% for row in scored_news %}
-            <tr>
-                {% for col, val in row.items() %}
-                    {% if col == 'thumbnail' %}
-                        {# 跳过 #}
-                    {% elif col == 'content' %}
-                        <td class="content" title="{{ val }}">{{ val[:120] }}{% if val|length > 120 %}...{% endif %}</td>
-                    {% elif col == 'link' %}
-                        <td class="link">
-                            {% if val %}
-                                <a href="{{ val }}" target="_blank" title="{{ val }}">
-                                    {{ val[:50] }}{% if val|length > 50 %}...{% endif %}
-                                </a>
-                            {% endif %}
-                        </td>
-                    {% else %}
-                        <td>{{ val }}</td>
-                    {% endif %}
-                {% endfor %}
-            </tr>
-            {% endfor %}
-        </table>
+{% extends "base.html" %}
+{% block title %}数据库浏览{% endblock %}
+{% block content %}
+<h4 class="mb-3"><i class="bi bi-database me-1"></i>数据库浏览</h4>
+
+<!-- scored_news -->
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span><i class="bi bi-table me-1"></i>scored_news（最新50条）</span>
+        <span class="badge bg-light text-dark border">{{ scored_news|length }} 条</span>
     </div>
-    <div class="table-container">
-        <h1>summary_news（最新50条）</h1>
-        <table>
-            <tr>
-                {% for col in summary_news[0].keys() %}
-                    {% if col != 'thumbnail' %}
-                        <th>{{ col }}</th>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-sm table-hover mb-0">
+                <thead><tr>
+                    {% if scored_news %}
+                        {% for col in scored_news[0].keys() %}
+                            {% if col != 'thumbnail' %}<th>{{ col }}</th>{% endif %}
+                        {% endfor %}
                     {% endif %}
+                </tr></thead>
+                <tbody>
+                {% for row in scored_news %}
+                <tr>
+                    {% for col, val in row.items() %}
+                        {% if col == 'thumbnail' %}
+                        {% elif col == 'content' %}
+                            <td style="max-width:300px;white-space:pre-line;font-size:.84em;color:var(--text-muted);">{{ (val or '')[:120] }}{% if val and val|length > 120 %}<span class="text-muted">...</span>{% endif %}</td>
+                        {% elif col == 'link' %}
+                            <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                                {% if val %}<a href="{{ val }}" target="_blank" class="small">{{ val[:50] }}{% if val|length > 50 %}...{% endif %}</a>{% endif %}
+                            </td>
+                        {% elif col == 'title' %}
+                            <td class="fw-medium" style="max-width:260px;">{{ val or '' }}</td>
+                        {% elif col == 'score' %}
+                            <td>
+                                {% if val is not none %}
+                                    {% if val >= 4 %}<span class="badge bg-success">{{ val }}</span>
+                                    {% elif val >= 2 %}<span class="badge bg-warning text-dark">{{ val }}</span>
+                                    {% else %}<span class="badge bg-secondary">{{ val }}</span>
+                                    {% endif %}
+                                {% else %}
+                                    <span class="badge bg-light text-dark">-</span>
+                                {% endif %}
+                            </td>
+                        {% elif col == 'source' or col == 'sourceapi' %}
+                            <td><span class="badge bg-light text-dark border">{{ val or '' }}</span></td>
+                        {% else %}
+                            <td><small>{{ val }}</small></td>
+                        {% endif %}
+                    {% endfor %}
+                </tr>
                 {% endfor %}
-            </tr>
-            {% for row in summary_news %}
-            <tr>
-                {% for col, val in row.items() %}
-                    {% if col == 'thumbnail' %}
-                        {# 跳过 #}
-                    {% elif col == 'summary' %}
-                        <td class="summary" title="{{ val }}">{{ val[:120] }}{% if val|length > 120 %}...{% endif %}</td>
-                    {% else %}
-                        <td>{{ val }}</td>
-                    {% endif %}
-                {% endfor %}
-            </tr>
-            {% endfor %}
-        </table>
+                </tbody>
+            </table>
+        </div>
     </div>
-</body>
-</html>
+</div>
+
+<!-- summary_news -->
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span><i class="bi bi-file-text me-1"></i>summary_news（最新50条）</span>
+        <span class="badge bg-light text-dark border">{{ summary_news|length }} 条</span>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-sm table-hover mb-0">
+                <thead><tr>
+                    {% if summary_news %}
+                        {% for col in summary_news[0].keys() %}<th>{{ col }}</th>{% endfor %}
+                    {% endif %}
+                </tr></thead>
+                <tbody>
+                {% for row in summary_news %}
+                <tr>
+                    {% for col, val in row.items() %}
+                        {% if col == 'summary' %}
+                            <td style="max-width:400px;white-space:pre-line;font-size:.84em;color:var(--text-muted);">{{ (val or '')[:120] }}{% if val and val|length > 120 %}<span class="text-muted">...</span>{% endif %}</td>
+                        {% else %}
+                            <td><small>{{ val }}</small></td>
+                        {% endif %}
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
