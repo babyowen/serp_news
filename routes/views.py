@@ -4,6 +4,7 @@ import json
 import datetime
 from flask import render_template, send_from_directory, request, Blueprint
 from db_utils import get_connection, get_table_name
+from config import DEFAULT_KEYWORDS
 
 views_bp = Blueprint("views", __name__)
 OUTPUT_DIR = "output"
@@ -36,6 +37,11 @@ def index():
     if sourceapi:
         conditions.append("sourceapi = %s")
         params.append(sourceapi)
+
+    # 仅显示本地配置的关键词，避免生产库历史数据污染
+    placeholders = ",".join(["%s"] * len(DEFAULT_KEYWORDS))
+    conditions.append(f"keyword IN ({placeholders})")
+    params.extend(DEFAULT_KEYWORDS)
 
     where = " AND ".join(conditions)
 

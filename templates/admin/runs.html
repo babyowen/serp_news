@@ -156,7 +156,7 @@ source .env 2>/dev/null
 set +a
 
 # 4. 激活 Python 虚拟环境
-source venv/bin/activate
+source .venv/bin/activate
 
 # 5. 执行流水线
 python main.py >> $PROJECT_DIR/cron.log 2>&1
