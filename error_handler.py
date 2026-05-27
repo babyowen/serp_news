@@ -172,6 +172,9 @@ def safe_subprocess_run(cmd: str, step_name: str, keyword: str = None,
                                       env=os.environ)
 
             print(f"[完成] {step_name}")
+            if result and result.stdout:
+                for line in result.stdout.strip().split('\n')[-5:]:
+                    print(f"  {line}")
             return True
 
         except subprocess.CalledProcessError as e:

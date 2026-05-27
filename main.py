@@ -374,12 +374,18 @@ def main(date=None):
         has_tobacco = "中国烟草" in DEFAULT_KEYWORDS
         if has_tobacco:
             print(f"\n[步骤7] 开始执行步骤7：烟草官网爬取阶段")
-            tobacco_success = safe_subprocess_run(
-                f'{sys.executable} tobacco_gov_crawler.py',
-                '烟草官网爬取',
-                keyword='中国烟草',
-                check=False
-            )
+            _update_step("tobacco", "running")
+            try:
+                tobacco_success = safe_subprocess_run(
+                    f'{sys.executable} tobacco_gov_crawler.py --date {date}',
+                    '烟草官网爬取',
+                    keyword='中国烟草',
+                    check=True
+                )
+            except Exception as e:
+                print(f"[WARN] 烟草官网爬取失败: {e}")
+                tobacco_success = False
+            _update_step("tobacco", "success" if tobacco_success else "failed")
         else:
             print(f"\n[步骤7] 关键词不含'中国烟草'，跳过")
             tobacco_success = True

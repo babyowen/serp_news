@@ -18,6 +18,8 @@ SECTIONS = {
     "行业要闻": "http://www.tobacco.gov.cn/gjyc/hyyw/list.shtml",
     "各地新闻": "http://www.tobacco.gov.cn/gjyc/gdxw/list.shtml",
     "基层工作": "http://www.tobacco.gov.cn/gjyc/jcgz/list.shtml",
+    "数字化转型": "http://www.tobacco.gov.cn/gjyc/ychyszhzx/list.shtml",
+    "专卖管理": "http://www.tobacco.gov.cn/gjyc/zmgl/list.shtml",
 }
 
 def ensure_dir(path):
@@ -64,6 +66,8 @@ def parse_list_page(url: str):
             "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:121.0) Gecko/20100101 Firefox/121.0"
         ])})
         if resp.status_code != 200:
+            snippet = resp.text[:200].replace('\n', ' ')
+            log_error(f"HTTP {resp.status_code} | {url} | body={snippet}")
             return items
         html = resp.content.decode("utf-8", errors="replace")
         if len(re.findall(r"[\u4e00-\u9fff]", html)) < 5:
@@ -87,24 +91,26 @@ def parse_list_page(url: str):
                 "date": date_norm
             })
         return items
-    except Exception:
+    except Exception as e:
+        log_error(f"ParseError | {url} | {type(e).__name__}: {e}")
         return items
 
-def filter_items(items, days: int, exact_yesterday: bool):
+def filter_items(items, days: int, exact_yesterday: bool, target_date=None):
     kept = []
     if exact_yesterday:
-        target = datetime.datetime.strptime(yesterday_str(), "%Y-%m-%d").date()
+        if target_date is None:
+            target_date = (datetime.date.today() - datetime.timedelta(days=1))
         for it in items:
             if not it.get("date"):
                 continue
             try:
                 d = datetime.datetime.strptime(it["date"], "%Y-%m-%d").date()
-                if d == target:
+                if d == target_date:
                     kept.append(it)
             except Exception:
                 continue
         return kept
-    threshold = datetime.date.today() - datetime.timedelta(days=days)
+    threshold = (target_date if target_date else datetime.date.today()) - datetime.timedelta(days=days)
     for it in items:
         if not it.get("date"):
             continue
@@ -167,8 +173,8 @@ def insert_item(conn, item: dict):
     try:
         with conn.cursor() as cursor:
             cursor.execute(
-                f"SELECT id FROM {table} WHERE title=%s AND link=%s",
-                (item.get("title"), item.get("link"))
+                f"SELECT id FROM {table} WHERE title=%s",
+                (item.get("title"),)
             )
             if cursor.fetchone():
                 log_info(f"SkippedDuplicate | {item.get('title', '')[:50]} | {item.get('link', '')}")
@@ -205,6 +211,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--page", type=int, default=None)
     parser.add_argument("--days", type=int, default=None)
+    parser.add_argument("--date", type=str, default=None, help="目标日期 YYYY-MM-DD，默认昨天")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--min-delay", type=float, default=0.6)
     parser.add_argument("--max-delay", type=float, default=1.8)
@@ -215,9 +222,16 @@ def main():
     page = args.page if args.page is not None else 1
     days = args.days if args.days is not None else 1
 
+    if args.date:
+        target_date = datetime.datetime.strptime(args.date, "%Y-%m-%d").date()
+    elif exact_yesterday:
+        target_date = (datetime.date.today() - datetime.timedelta(days=1))
+    else:
+        target_date = datetime.date.today()
+
     run_log, err_log = log_paths()
     mode = "昨天" if exact_yesterday else f"近{days}天"
-    log_info(f"Start | page={page} | mode={mode} | exact_yesterday={exact_yesterday} | dry_run={args.dry_run} | throttle={not args.no_throttle} | delay={args.min_delay}-{args.max_delay}s | table={get_table_name()}")
+    log_info(f"Start | page={page} | mode={mode} | target_date={target_date} | exact_yesterday={exact_yesterday} | dry_run={args.dry_run} | throttle={not args.no_throttle} | delay={args.min_delay}-{args.max_delay}s | table={get_table_name()}")
 
     conn = None
     if not args.dry_run:
@@ -251,7 +265,7 @@ def main():
                 total_parsed += len(parsed)
                 for it in parsed:
                     log_info(f"Parsed | {section_name} | {it.get('title','')[:50]} | {it.get('date')} | {it.get('link')}")
-                kept = filter_items(parsed, days, exact_yesterday)
+                kept = filter_items(parsed, days, exact_yesterday, target_date=target_date)
                 section_kept += len(kept)
                 total_kept += len(kept)
                 for it in kept:
@@ -303,6 +317,10 @@ def main():
     log_info(f"Summary | parsed={total_parsed} | kept={total_kept} | fetch_success={total_fetch_success} | fetch_fail={total_fetch_fail} | inserted={total_inserted} | skipped_dup={total_skipped_dup} | skipped_empty={total_skipped_empty}")
     run_log, _ = log_paths()
     print(f"LogFile={run_log}")
+
+    if total_parsed == 0:
+        log_error("所有板块均未获取到任何条目，可能存在网络访问问题（IP被屏蔽/连接超时）")
+        return 1
     return 0
 
 if __name__ == "__main__":
