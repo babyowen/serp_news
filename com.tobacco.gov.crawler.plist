@@ -4,12 +4,13 @@
   <key>Label</key><string>com.tobacco.gov.crawler</string>
   <key>ProgramArguments</key>
   <array>
-    <string>/Users/babyowen/Documents/GitHub/serp_news/.venv/bin/python3</string>
-    <string>/Users/babyowen/Documents/GitHub/serp_news/tobacco_gov_crawler.py</string>
+    <string>/bin/zsh</string>
+    <string>-lc</string>
+    <string>cd /Users/babyowen/Documents/GitHub/serp_news &amp;&amp; /Users/babyowen/Documents/GitHub/serp_news/.venv/bin/python3 tobacco_gov_crawler.py</string>
   </array>
   <key>WorkingDirectory</key><string>/Users/babyowen/Documents/GitHub/serp_news</string>
-  <key>StandardOutPath</key><string>/Users/babyowen/Documents/GitHub/serp_news/output/logs/launchd_tobacco_crawler.out.log</string>
-  <key>StandardErrorPath</key><string>/Users/babyowen/Documents/GitHub/serp_news/output/logs/launchd_tobacco_crawler.err.log</string>
+  <key>StandardOutPath</key><string>/private/tmp/launchd_tobacco_crawler.out.log</string>
+  <key>StandardErrorPath</key><string>/private/tmp/launchd_tobacco_crawler.err.log</string>
   <key>EnvironmentVariables</key>
   <dict>
     <key>PATH</key><string>/Users/babyowen/Documents/GitHub/serp_news/.venv/bin:/usr/local/bin:/usr/bin</string>
