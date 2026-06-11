@@ -7,7 +7,7 @@ from urllib.parse import urljoin
 import requests
 from bs4 import BeautifulSoup
 from db_utils import get_connection, get_table_name
-from fetch_content import fetch_article_content
+import subprocess
 import trafilatura
 import json
 import time
@@ -68,7 +68,7 @@ def parse_list_page(url: str):
         if resp.status_code != 200:
             snippet = resp.text[:200].replace('\n', ' ')
             log_error(f"HTTP {resp.status_code} | {url} | body={snippet}")
-            return items
+            return None
         html = resp.content.decode("utf-8", errors="replace")
         if len(re.findall(r"[\u4e00-\u9fff]", html)) < 5:
             html = resp.content.decode("gb18030", errors="replace")
@@ -93,7 +93,19 @@ def parse_list_page(url: str):
         return items
     except Exception as e:
         log_error(f"ParseError | {url} | {type(e).__name__}: {e}")
-        return items
+        return None
+
+def parse_list_page_with_retry(url, max_retries=3, base_delay=5):
+    for attempt in range(1, max_retries + 1):
+        result = parse_list_page(url)
+        if result is not None:
+            return result
+        if attempt < max_retries:
+            delay = base_delay * attempt
+            log_info(f"RetryList | attempt {attempt}/{max_retries} | {url} | waiting {delay}s")
+            time.sleep(delay)
+    log_error(f"RetryExhausted | {url} | failed after {max_retries} attempts")
+    return []
 
 def filter_items(items, days: int, exact_yesterday: bool, target_date=None):
     kept = []
@@ -141,6 +153,78 @@ def log_error(msg: str):
     with open(err_log, "a", encoding="utf-8") as f:
         f.write(f"[{now}] {msg}\n")
     print(msg)
+
+def send_feishu_notification(card_json: str) -> bool:
+    user_id = os.getenv("FEISHU_USER_ID")
+    lark_cli = os.getenv("LARK_CLI_PATH", "/Users/babyowen/.nvm/versions/node/v24.11.0/bin/lark-cli")
+    if not user_id:
+        log_info("FeishuNotify | skipped (FEISHU_USER_ID not set)")
+        return False
+    try:
+        result = subprocess.run(
+            [lark_cli, "im", "+messages-send", "--user-id", user_id,
+             "--msg-type", "interactive", "--content", card_json],
+            capture_output=True, text=True, timeout=30, env=os.environ
+        )
+        if result.returncode == 0:
+            log_info(f"FeishuNotify | sent to {user_id}")
+            return True
+        else:
+            log_error(f"FeishuNotify | lark-cli exit={result.returncode}: {result.stderr[:200]}")
+            return False
+    except Exception as e:
+        log_error(f"FeishuNotify | failed: {type(e).__name__}: {e}")
+        return False
+
+def build_notification(target_date, sections_ok, sections_total,
+                      total_parsed, total_kept, total_inserted,
+                      total_skipped_dup, total_skipped_empty,
+                      total_fetch_success, total_fetch_fail,
+                      inserted_titles, section_errors):
+    if sections_ok == sections_total:
+        title, template = "烟草爬虫运行成功", "green"
+    elif sections_ok > 0:
+        title, template = "烟草爬虫部分失败", "orange"
+    else:
+        title, template = "烟草爬虫运行失败", "red"
+
+    elements = []
+
+    # 概览区
+    overview = (
+        f"**日期** {target_date}\n"
+        f"**板块** {sections_ok}/{sections_total}  "
+        f"**解析** {total_parsed}篇  **匹配** {total_kept}篇\n"
+        f"**入库** {total_inserted}篇  **重复** {total_skipped_dup}  **空内容** {total_skipped_empty}\n"
+        f"**正文抓取** 成功{total_fetch_success} 失败{total_fetch_fail}"
+    )
+    elements.append({"tag": "div", "text": {"tag": "lark_md", "content": overview}})
+
+    # 入库文章
+    if inserted_titles:
+        elements.append({"tag": "hr"})
+        article_lines = [f"**入库文章 ({len(inserted_titles)}篇)**"]
+        for t in inserted_titles[:20]:
+            article_lines.append(f"- {t[:60]}")
+        elements.append({"tag": "div", "text": {"tag": "lark_md", "content": "\n".join(article_lines)}})
+
+    # 失败板块
+    if section_errors:
+        elements.append({"tag": "hr"})
+        error_lines = ["**失败板块**"]
+        for err in section_errors:
+            error_lines.append(f"- {err}")
+        elements.append({"tag": "div", "text": {"tag": "lark_md", "content": "\n".join(error_lines)}})
+
+    card = {
+        "config": {"wide_screen_mode": True},
+        "header": {
+            "title": {"tag": "plain_text", "content": title},
+            "template": template,
+        },
+        "elements": elements,
+    }
+    return json.dumps(card, ensure_ascii=False)
 
 def get_conn():
     return get_connection(autocommit=True)
@@ -216,6 +300,8 @@ def main():
     parser.add_argument("--min-delay", type=float, default=0.6)
     parser.add_argument("--max-delay", type=float, default=1.8)
     parser.add_argument("--no-throttle", action="store_true")
+    parser.add_argument("--retries", type=int, default=3, help="列表页请求重试次数 (default: 3)")
+    parser.add_argument("--retry-delay", type=float, default=5, help="重试基础延迟秒数 (default: 5)")
     args = parser.parse_args()
 
     exact_yesterday = (args.page is None and args.days is None)
@@ -248,6 +334,10 @@ def main():
     total_skipped_empty = 0
     total_fetch_success = 0
     total_fetch_fail = 0
+    sections_ok = 0
+    sections_fail = 0
+    inserted_titles = []
+    section_errors = []
 
     for section_name, base_url in SECTIONS.items():
         try:
@@ -260,7 +350,7 @@ def main():
                     log_info(f"Sleep {round(d,2)}s before {section_name} page {p}")
                 page_url = build_page_url(base_url, p)
                 log_info(f"FetchList | {section_name} | {page_url}")
-                parsed = parse_list_page(page_url)
+                parsed = parse_list_page_with_retry(page_url, max_retries=args.retries, base_delay=args.retry_delay)
                 section_parsed += len(parsed)
                 total_parsed += len(parsed)
                 for it in parsed:
@@ -305,18 +395,37 @@ def main():
                     ok = insert_item(conn, it) if conn else False
                     if ok:
                         total_inserted += 1
+                        inserted_titles.append(it.get("title", "")[:60])
                     else:
                         if not it.get("content") or int(it.get("wordcount") or 0) == 0:
                             total_skipped_empty += 1
                         else:
                             total_skipped_dup += 1
             print(f"Section={section_name} Parsed={section_parsed} Kept={section_kept}")
+            if section_parsed > 0:
+                sections_ok += 1
+            else:
+                sections_fail += 1
         except Exception as e:
+            sections_fail += 1
+            section_errors.append(f"{section_name}: {type(e).__name__}: {e}")
             log_error(f"ListError | {section_name} | {e}")
 
-    log_info(f"Summary | parsed={total_parsed} | kept={total_kept} | fetch_success={total_fetch_success} | fetch_fail={total_fetch_fail} | inserted={total_inserted} | skipped_dup={total_skipped_dup} | skipped_empty={total_skipped_empty}")
+    log_info(f"Summary | sections_ok={sections_ok}/{len(SECTIONS)} | parsed={total_parsed} | kept={total_kept} | fetch_success={total_fetch_success} | fetch_fail={total_fetch_fail} | inserted={total_inserted} | skipped_dup={total_skipped_dup} | skipped_empty={total_skipped_empty}")
     run_log, _ = log_paths()
     print(f"LogFile={run_log}")
+
+    try:
+        msg = build_notification(
+            target_date, sections_ok, len(SECTIONS),
+            total_parsed, total_kept, total_inserted,
+            total_skipped_dup, total_skipped_empty,
+            total_fetch_success, total_fetch_fail,
+            inserted_titles, section_errors,
+        )
+        send_feishu_notification(msg)
+    except Exception:
+        pass
 
     if total_parsed == 0:
         log_error("所有板块均未获取到任何条目，可能存在网络访问问题（IP被屏蔽/连接超时）")

@@ -128,6 +128,8 @@ python -c "from config import SEARCH_KEYWORDS; print(SEARCH_KEYWORDS)"
 - `tobacco_gov_crawler.py` 爬取5个板块：行业要闻、各地新闻、基层工作、数字化转型、专卖管理
 - `tobacco_gov_crawler.py` 支持 `--date YYYY-MM-DD` 指定日期，不传则默认抓取昨天
 - `tobacco_gov_crawler.py` HTTP错误和异常均记录到日志；三板块全空时返回退出码1（标记为访问异常）
+- `tobacco_gov_crawler.py` 列表页请求支持重试（默认3次，指数退避5s/10s/15s），通过 `--retries` 和 `--retry-delay` CLI参数控制
+- `tobacco_gov_crawler.py` 每次运行结束后通过 `lark-cli` 发送飞书私聊通知，汇报板块数/入库数/文章标题；`.env` 中 `FEISHU_USER_ID` 控制接收人，不配置则跳过
 - `output/` 目录已 gitignore
 - Flask 默认端口 5001（macOS AirPlay 占用 5000）
 - 路由中所有表名通过 `get_table_name()` 获取，`.env` 中 `MYSQL_TABLE` 控制读写哪张表
