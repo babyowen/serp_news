@@ -181,9 +181,12 @@ def build_notification(target_date, sections_ok, sections_total,
                       total_parsed, total_kept, total_inserted,
                       total_skipped_dup, total_skipped_empty,
                       total_fetch_success, total_fetch_fail,
-                      inserted_titles, section_errors):
+                      inserted_titles, section_errors, dry_run=False):
     has_errors = bool(section_errors)
-    has_content_issue = total_kept > 0 and total_inserted == 0
+    has_content_issue = (total_kept > 0
+                         and total_inserted == 0
+                         and total_skipped_dup < total_kept
+                         and not dry_run)
     if sections_ok == 0:
         title, template = "烟草爬虫运行失败", "red"
     elif has_errors or has_content_issue:
@@ -436,6 +439,7 @@ def main():
             total_skipped_dup, total_skipped_empty,
             total_fetch_success, total_fetch_fail,
             inserted_titles, section_errors,
+            dry_run=args.dry_run,
         )
         send_feishu_notification(msg)
     except Exception:
