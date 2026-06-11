@@ -7,6 +7,7 @@ from urllib.parse import urljoin
 import requests
 from bs4 import BeautifulSoup
 from db_utils import get_connection, get_table_name
+from fetch_content import fetch_article_content
 import subprocess
 import trafilatura
 import json
@@ -99,13 +100,13 @@ def parse_list_page_with_retry(url, max_retries=3, base_delay=5):
     for attempt in range(1, max_retries + 1):
         result = parse_list_page(url)
         if result is not None:
-            return result
+            return result, False
         if attempt < max_retries:
             delay = base_delay * attempt
             log_info(f"RetryList | attempt {attempt}/{max_retries} | {url} | waiting {delay}s")
             time.sleep(delay)
     log_error(f"RetryExhausted | {url} | failed after {max_retries} attempts")
-    return []
+    return [], True
 
 def filter_items(items, days: int, exact_yesterday: bool, target_date=None):
     kept = []
@@ -343,6 +344,7 @@ def main():
         try:
             section_parsed = 0
             section_kept = 0
+            section_retry_exhausted = False
             for p in range(1, page + 1):
                 if not args.no_throttle:
                     d = random.uniform(args.min_delay, args.max_delay)
@@ -350,7 +352,9 @@ def main():
                     log_info(f"Sleep {round(d,2)}s before {section_name} page {p}")
                 page_url = build_page_url(base_url, p)
                 log_info(f"FetchList | {section_name} | {page_url}")
-                parsed = parse_list_page_with_retry(page_url, max_retries=args.retries, base_delay=args.retry_delay)
+                parsed, retry_exhausted = parse_list_page_with_retry(page_url, max_retries=args.retries, base_delay=args.retry_delay)
+                if retry_exhausted:
+                    section_retry_exhausted = True
                 section_parsed += len(parsed)
                 total_parsed += len(parsed)
                 for it in parsed:
@@ -406,6 +410,8 @@ def main():
                 sections_ok += 1
             else:
                 sections_fail += 1
+            if section_retry_exhausted:
+                section_errors.append(f"{section_name}: 重试耗尽（{args.retries}次）")
         except Exception as e:
             sections_fail += 1
             section_errors.append(f"{section_name}: {type(e).__name__}: {e}")
