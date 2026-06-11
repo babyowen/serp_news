@@ -182,12 +182,14 @@ def build_notification(target_date, sections_ok, sections_total,
                       total_skipped_dup, total_skipped_empty,
                       total_fetch_success, total_fetch_fail,
                       inserted_titles, section_errors):
-    if sections_ok == sections_total:
-        title, template = "烟草爬虫运行成功", "green"
-    elif sections_ok > 0:
+    has_errors = bool(section_errors)
+    has_content_issue = total_kept > 0 and total_inserted == 0
+    if sections_ok == 0:
+        title, template = "烟草爬虫运行失败", "red"
+    elif has_errors or has_content_issue:
         title, template = "烟草爬虫部分失败", "orange"
     else:
-        title, template = "烟草爬虫运行失败", "red"
+        title, template = "烟草爬虫运行成功", "green"
 
     elements = []
 
@@ -326,6 +328,12 @@ def main():
             conn = get_conn()
         except Exception as e:
             log_error(f"DBConnectError | {e}")
+            try:
+                msg = build_notification(target_date, 0, len(SECTIONS),
+                                        0, 0, 0, 0, 0, 0, 0, [], [f"数据库连接失败: {e}"])
+                send_feishu_notification(msg)
+            except Exception:
+                pass
             return 1
 
     total_parsed = 0
