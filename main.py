@@ -13,6 +13,7 @@ from error_handler import (
     log_script_complete,
     ErrorHandler
 )
+from news_volume_alert import run as run_volume_alert
 
 STATUS_FILE = os.path.join("output", "run_status.json")
 
@@ -284,7 +285,8 @@ def main(date=None):
     # 记录脚本开始执行
     script_args = [date] if date else []
     log_script_start("main.py", script_args)
-    
+
+    main_success = True
     try:
         # 如果未指定日期，自动赋值为昨天日期
         if not date:
@@ -390,14 +392,8 @@ def main(date=None):
             print(f"\n[步骤7] 关键词不含'中国烟草'，跳过")
             tobacco_success = True
 
-        # 步骤8：新闻量波动预警（依赖 scored_news 全部数据已写入，包括烟草）
-        # 自身异常被吞掉，不影响 main.py 的退出码
-        print(f"\n[步骤8] 开始执行步骤8：新闻量波动预警阶段")
-        try:
-            from news_volume_alert import run as run_volume_alert
-            run_volume_alert(target_date=date, keywords=list(DEFAULT_KEYWORDS))
-        except Exception as e:
-            print(f"[WARN] 新闻量波动预警失败: {e}")
+        # 步骤8：新闻量波动预警已挪到 main() 末尾的收尾路径，
+        # 确保前置步骤任一异常仍能触发预警（issue #11 验收第 1 条）
 
         # 统计整体执行情况
         total_steps = 7
@@ -429,9 +425,7 @@ def main(date=None):
         
         # 记录脚本完成
         log_script_complete("main.py", success=True, message=completion_message)
-        
-        return True
-        
+
     except KeyboardInterrupt:
         print(f"\n[INFO] 用户中断程序执行")
         log_script_complete("main.py", success=False, message="用户中断执行")
@@ -440,7 +434,18 @@ def main(date=None):
         error_msg = f"main函数执行过程中发生异常: {str(e)}"
         print(f"[ERROR] {error_msg}")
         log_script_complete("main.py", success=False, message=error_msg)
-        return False
+        main_success = False
+
+    # 步骤8：新闻量波动预警 —— 收尾路径，任何前置异常后仍执行
+    # KeyboardInterrupt 已通过 sys.exit(130) 提前退出，不会走到这里
+    # 预警自身异常被吞，不影响退出码
+    print(f"\n[步骤8] 开始执行步骤8：新闻量波动预警阶段")
+    try:
+        run_volume_alert(target_date=date, keywords=list(DEFAULT_KEYWORDS))
+    except Exception as e:
+        print(f"[WARN] 新闻量波动预警失败: {e}")
+
+    return main_success
 
 if __name__ == "__main__":
     import sys

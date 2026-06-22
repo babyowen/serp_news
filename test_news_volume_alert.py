@@ -517,3 +517,73 @@ def test_build_card_preserves_keyword_input_order():
     i_yl = blob.find("养老")
     i_sz = blob.find("数字政务")
     assert i_gjj < i_yl < i_sz
+
+
+# ============== 7. main.py 流水线集成（前置异常不阻断预警）==============
+
+def test_main_runs_alert_when_prior_step_raises(monkeypatch, tmp_path):
+    """issue #11 验收第 1 条：前置步骤抛异常时，预警必须仍被调用。
+
+    场景：monkeypatch safe_subprocess_run 让步骤 4 的 run_step 抛异常，
+    main() 内部主 try 应捕获该异常、标记失败、并在收尾路径调用预警。
+    """
+    import main as main_module
+
+    alert = {"n": 0, "date": None, "keywords": None}
+
+    def fake_alert(target_date, keywords, **kwargs):
+        alert["n"] += 1
+        alert["date"] = target_date
+        alert["keywords"] = list(keywords)
+        return []
+
+    def fake_safe_subprocess_run(*a, **kw):
+        raise RuntimeError("模拟前置步骤抛异常")
+
+    monkeypatch.setattr(main_module, "run_volume_alert", fake_alert)
+    monkeypatch.setattr(main_module, "safe_subprocess_run", fake_safe_subprocess_run)
+    # 把批次日志重定向到 tmp，避免污染 output/
+    log_path = tmp_path / "run.log"
+    monkeypatch.setenv("RUN_LOG_PATH", str(log_path))
+
+    result = main_module.main("2026-06-22")
+
+    assert alert["n"] == 1, "前置异常后预警必须被调用一次"
+    assert alert["date"] == "2026-06-22"
+    assert alert["keywords"] == list(main_module.DEFAULT_KEYWORDS)
+    # 主流程标记失败
+    assert result is False
+
+
+def test_main_runs_alert_on_full_success_path(monkeypatch, tmp_path):
+    """对照测试：无异常的正常路径下，预警也被调用一次且返回 True。"""
+    import main as main_module
+
+    alert = {"n": 0}
+    monkeypatch.setattr(main_module, "run_volume_alert",
+                        lambda target_date, keywords, **kw: alert.__setitem__("n", alert["n"] + 1) or [])
+    # safe_subprocess_run 返回 True 模拟所有子步骤成功
+    monkeypatch.setattr(main_module, "safe_subprocess_run",
+                        lambda *a, **k: True)
+    monkeypatch.setenv("RUN_LOG_PATH", str(tmp_path / "run.log"))
+
+    result = main_module.main("2026-06-22")
+
+    assert alert["n"] == 1
+    assert result is True
+
+
+def test_main_alert_failure_does_not_flip_main_exit_code(monkeypatch, tmp_path):
+    """预警自身抛异常时不应改变 main 的退出码（main_success 仍为 True）。"""
+    import main as main_module
+
+    def boom_alert(*a, **kw):
+        raise RuntimeError("预警内部故障")
+    monkeypatch.setattr(main_module, "run_volume_alert", boom_alert)
+    monkeypatch.setattr(main_module, "safe_subprocess_run",
+                        lambda *a, **k: True)
+    monkeypatch.setenv("RUN_LOG_PATH", str(tmp_path / "run.log"))
+
+    result = main_module.main("2026-06-22")
+    # 主流程仍成功，预警故障被吞
+    assert result is True
