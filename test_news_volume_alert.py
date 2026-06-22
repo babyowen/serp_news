@@ -499,6 +499,135 @@ def test_send_feishu_cli_nonzero_return_code_returns_false(monkeypatch):
     assert nva.send_feishu("{}") is False
 
 
+# ============== API 路径（Linux 服务器场景）==============
+
+class _FakeResp:
+    def __init__(self, payload, text=None):
+        self._p = payload
+        self.text = text or json.dumps(payload)
+    def json(self):
+        return self._p
+
+
+def _api_endpoints(monkeypatch, token_payload, send_payload, counter):
+    """把 requests.post 桩成两段：token URL 返回 token_payload，message URL 返回 send_payload。"""
+    import requests as req_mod
+
+    def fake_post(url, *args, **kwargs):
+        counter["n"] += 1
+        if "tenant_access_token" in url:
+            counter["token_calls"] += 1
+            return _FakeResp(token_payload)
+        counter["send_calls"] += 1
+        # 校验发送请求体格式（content 必须是 JSON 字符串）
+        body = kwargs.get("json") or {}
+        if body.get("msg_type") == "interactive":
+            json.loads(body["content"])  # content 必须是合法 JSON 字符串
+        return _FakeResp(send_payload)
+
+    monkeypatch.setattr(req_mod, "post", fake_post)
+
+
+def test_send_feishu_via_api_when_cli_missing(monkeypatch):
+    """CLI 路径不存在 + 配了 APP_ID/SECRET → 走 API。"""
+    monkeypatch.setenv("FEISHU_USER_ID", "ou_test")
+    monkeypatch.setenv("LARK_CLI_PATH", "/nonexistent/lark-cli")
+    monkeypatch.setenv("FEISHU_APP_ID", "cli_test")
+    monkeypatch.setenv("FEISHU_APP_SECRET", "secret_test")
+
+    counter = {"n": 0, "token_calls": 0, "send_calls": 0}
+    _api_endpoints(monkeypatch,
+                   token_payload={"tenant_access_token": "tok_abc"},
+                   send_payload={"code": 0, "msg": "ok"},
+                   counter=counter)
+
+    assert nva.send_feishu('{"config":{}}') is True
+    assert counter["token_calls"] == 1
+    assert counter["send_calls"] == 1
+
+
+def test_send_feishu_via_api_token_failure_returns_false(monkeypatch):
+    """换 token 时 API 返回无 tenant_access_token → False。"""
+    monkeypatch.setenv("FEISHU_USER_ID", "ou_test")
+    monkeypatch.setenv("LARK_CLI_PATH", "/nonexistent/lark-cli")
+    monkeypatch.setenv("FEISHU_APP_ID", "cli_test")
+    monkeypatch.setenv("FEISHU_APP_SECRET", "wrong")
+
+    counter = {"n": 0, "token_calls": 0, "send_calls": 0}
+    _api_endpoints(monkeypatch,
+                   token_payload={"code": 99991663, "msg": "invalid app_id"},
+                   send_payload={"code": 0},
+                   counter=counter)
+
+    assert nva.send_feishu("{}") is False
+    assert counter["send_calls"] == 0  # token 都没拿到，不发消息
+
+
+def test_send_feishu_via_api_send_failure_returns_false(monkeypatch):
+    """发送消息时 API 返回 code != 0 → False。"""
+    monkeypatch.setenv("FEISHU_USER_ID", "ou_test")
+    monkeypatch.setenv("LARK_CLI_PATH", "/nonexistent/lark-cli")
+    monkeypatch.setenv("FEISHU_APP_ID", "cli_test")
+    monkeypatch.setenv("FEISHU_APP_SECRET", "secret_test")
+
+    counter = {"n": 0, "token_calls": 0, "send_calls": 0}
+    _api_endpoints(monkeypatch,
+                   token_payload={"tenant_access_token": "tok_abc"},
+                   send_payload={"code": 230002, "msg": "user not found"},
+                   counter=counter)
+
+    assert nva.send_feishu("{}") is False
+
+
+def test_send_feishu_falls_back_to_api_when_cli_fails(monkeypatch):
+    """CLI 存在但发送失败 → 自动降级到 API。"""
+    monkeypatch.setenv("FEISHU_USER_ID", "ou_test")
+    monkeypatch.setenv("LARK_CLI_PATH", "/bin/echo")  # 真实存在但不是 lark-cli
+    monkeypatch.setenv("FEISHU_APP_ID", "cli_test")
+    monkeypatch.setenv("FEISHU_APP_SECRET", "secret_test")
+
+    # 让 _send_feishu_via_cli 调用的 subprocess.run 返回非零
+    class FakeResult:
+        returncode = 1
+        stderr = "auth fail"
+    monkeypatch.setattr(subprocess, "run", lambda *a, **kw: FakeResult())
+
+    counter = {"n": 0, "token_calls": 0, "send_calls": 0}
+    _api_endpoints(monkeypatch,
+                   token_payload={"tenant_access_token": "tok_abc"},
+                   send_payload={"code": 0},
+                   counter=counter)
+
+    assert nva.send_feishu("{}") is True
+    assert counter["token_calls"] == 1
+    assert counter["send_calls"] == 1
+
+
+def test_send_feishu_via_api_network_exception_returns_false(monkeypatch):
+    """API 网络异常 → 不抛、返回 False。"""
+    import requests as req_mod
+    monkeypatch.setenv("FEISHU_USER_ID", "ou_test")
+    monkeypatch.setenv("LARK_CLI_PATH", "/nonexistent/lark-cli")
+    monkeypatch.setenv("FEISHU_APP_ID", "cli_test")
+    monkeypatch.setenv("FEISHU_APP_SECRET", "secret_test")
+
+    def boom(*a, **kw):
+        raise req_mod.ConnectionError("network down")
+    monkeypatch.setattr(req_mod, "post", boom)
+
+    assert nva.send_feishu("{}") is False
+
+
+def test_send_feishu_no_sender_configured_returns_false(monkeypatch):
+    """既无 CLI 也无 APP_ID/SECRET → 返回 False、不抛。"""
+    monkeypatch.setenv("FEISHU_USER_ID", "ou_test")
+    monkeypatch.setenv("LARK_CLI_PATH", "/nonexistent/lark-cli")
+    monkeypatch.delenv("FEISHU_APP_ID", raising=False)
+    monkeypatch.delenv("FEISHU_APP_SECRET", raising=False)
+
+    assert nva.send_feishu("{}") is False
+
+
 def test_build_card_preserves_keyword_input_order():
     """异常项在卡片中必须按传入顺序展示，不重排。"""
     anomalies = [

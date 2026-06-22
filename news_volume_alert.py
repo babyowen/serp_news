@@ -263,14 +263,15 @@ def build_card(target_date, anomalies, normals=None):
 
 # ============== 飞书发送（复用 tobacco_gov_crawler 模式）==============
 
-def send_feishu(card_json):
-    user_id = os.getenv("FEISHU_USER_ID")
-    lark_cli = os.getenv("LARK_CLI_PATH",
-                         "/Users/babyowen/.nvm/versions/node/v24.11.0/bin/lark-cli")
-    if not user_id:
-        logger.info("NewsVolumeAlert | skipped (FEISHU_USER_ID not set)")
-        print("[INFO] [预警] FEISHU_USER_ID 未配置，跳过通知")
-        return False
+DEFAULT_LARK_CLI_PATH = "/Users/babyowen/.nvm/versions/node/v24.11.0/bin/lark-cli"
+FEISHU_TOKEN_URL = "https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal"
+FEISHU_MESSAGE_URL = "https://open.feishu.cn/open-apis/im/v1/messages"
+
+
+def _send_feishu_via_cli(card_json, user_id, lark_cli):
+    """lark-cli 方式（本机优先）。返回 True/False；CLI 不存在返回 None 表示降级。"""
+    if not (lark_cli and os.path.exists(lark_cli)):
+        return None
     try:
         result = subprocess.run(
             [lark_cli, "im", "+messages-send", "--user-id", user_id,
@@ -278,17 +279,96 @@ def send_feishu(card_json):
             capture_output=True, text=True, timeout=30, env=os.environ
         )
         if result.returncode == 0:
-            logger.info(f"NewsVolumeAlert | sent to {user_id}")
-            print(f"[INFO] [预警] 飞书通知已发送给 {user_id}")
             return True
         logger.error(f"NewsVolumeAlert | lark-cli exit={result.returncode}: "
                      f"{result.stderr[:200]}")
-        print(f"[WARN] [预警] lark-cli 退出码 {result.returncode}")
         return False
     except Exception as e:
-        logger.error(f"NewsVolumeAlert | failed: {type(e).__name__}: {e}")
-        print(f"[WARN] [预警] 飞书发送失败: {type(e).__name__}: {e}")
+        logger.error(f"NewsVolumeAlert | lark-cli exception: {type(e).__name__}: {e}")
         return False
+
+
+def _send_feishu_via_api(card_json, user_id, app_id, app_secret):
+    """飞书开放平台 API 方式（Linux 服务器，纯 Python 无需 Node.js）。
+
+    1. 用 app_id/app_secret 换 tenant_access_token
+    2. 调 /im/v1/messages 发 interactive 卡片
+    """
+    try:
+        import requests
+    except ImportError:
+        logger.error("NewsVolumeAlert | requests not installed")
+        return False
+
+    try:
+        r = requests.post(
+            FEISHU_TOKEN_URL,
+            json={"app_id": app_id, "app_secret": app_secret},
+            timeout=10,
+        )
+        token = (r.json() or {}).get("tenant_access_token")
+        if not token:
+            logger.error(f"NewsVolumeAlert | API token exchange failed: {r.text[:200]}")
+            return False
+
+        r = requests.post(
+            FEISHU_MESSAGE_URL,
+            params={"receive_id_type": "open_id"},
+            headers={"Authorization": f"Bearer {token}"},
+            json={
+                "receive_id": user_id,
+                "msg_type": "interactive",
+                "content": card_json,
+            },
+            timeout=10,
+        )
+        data = r.json() or {}
+        if data.get("code") == 0:
+            return True
+        logger.error(f"NewsVolumeAlert | API send failed: {data}")
+        return False
+    except Exception as e:
+        logger.error(f"NewsVolumeAlert | API exception: {type(e).__name__}: {e}")
+        return False
+
+
+def send_feishu(card_json):
+    """发送飞书卡片。
+
+    调度顺序：
+    1. 若 LARK_CLI_PATH 存在且可执行 → 走 lark-cli（本机模式）
+    2. 若 FEISHU_APP_ID/SECRET 配置 → 走开放平台 API（Linux 服务器）
+    3. CLI 失败时也降级到 API
+    4. 都没有则记录警告并返回 False
+    """
+    user_id = os.getenv("FEISHU_USER_ID")
+    if not user_id:
+        logger.info("NewsVolumeAlert | skipped (FEISHU_USER_ID not set)")
+        print("[INFO] [预警] FEISHU_USER_ID 未配置，跳过通知")
+        return False
+
+    lark_cli = os.getenv("LARK_CLI_PATH", DEFAULT_LARK_CLI_PATH)
+    if lark_cli and os.path.exists(lark_cli):
+        result = _send_feishu_via_cli(card_json, user_id, lark_cli)
+        if result is True:
+            logger.info(f"NewsVolumeAlert | sent via lark-cli to {user_id}")
+            print(f"[INFO] [预警] 飞书通知已通过 lark-cli 发送给 {user_id}")
+            return True
+        if result is False:
+            print("[WARN] [预警] lark-cli 发送失败，尝试 API 降级")
+
+    app_id = os.getenv("FEISHU_APP_ID")
+    app_secret = os.getenv("FEISHU_APP_SECRET")
+    if app_id and app_secret:
+        if _send_feishu_via_api(card_json, user_id, app_id, app_secret):
+            logger.info(f"NewsVolumeAlert | sent via API to {user_id}")
+            print(f"[INFO] [预警] 飞书通知已通过 API 发送给 {user_id}")
+            return True
+        print("[WARN] [预警] API 发送失败")
+        return False
+
+    print("[WARN] [预警] 未配置任何可用发送方式（需要 LARK_CLI_PATH 或 FEISHU_APP_ID/SECRET）")
+    return False
 
 
 # ============== 主入口 ==============
