@@ -390,6 +390,15 @@ def main(date=None):
             print(f"\n[步骤7] 关键词不含'中国烟草'，跳过")
             tobacco_success = True
 
+        # 步骤8：新闻量波动预警（依赖 scored_news 全部数据已写入，包括烟草）
+        # 自身异常被吞掉，不影响 main.py 的退出码
+        print(f"\n[步骤8] 开始执行步骤8：新闻量波动预警阶段")
+        try:
+            from news_volume_alert import run as run_volume_alert
+            run_volume_alert(target_date=date, keywords=list(DEFAULT_KEYWORDS))
+        except Exception as e:
+            print(f"[WARN] 新闻量波动预警失败: {e}")
+
         # 统计整体执行情况
         total_steps = 7
         successful_steps = sum([
