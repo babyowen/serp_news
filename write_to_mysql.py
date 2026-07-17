@@ -26,6 +26,7 @@ setup_global_exception_handler()
 load_dotenv()
 
 from db_utils import get_connection, get_table_name
+from news_dedup_schema import ensure_keyword_scoped_dedup_index
 
 LOG_PATH = os.environ.get("RUN_LOG_PATH", os.path.join('output', 'run_log.txt'))
 TABLE_NAME = get_table_name()
@@ -40,7 +41,7 @@ cursor = conn.cursor()
 
 # 写入 scored_news 表（新闻正文及评分）
 # 数据获取：从json_path读取新闻列表
-# 执行：查重（title+link），过滤空内容，不存在则插入scored_news表
+# 执行：同一主关键词内查重（title+link），过滤空内容，不存在则插入scored_news表
 # 结果：成功/跳过/失败数统计，写入日志
 def insert_scored_news(json_path, keyword):
     with open(json_path, 'r', encoding='utf-8') as f:
@@ -49,28 +50,41 @@ def insert_scored_news(json_path, keyword):
     empty_content_skip = 0
     dup_title_skip = 0
 
+    # On legacy production tables without the keyword/title/link index, doing two
+    # SELECTs for every item turns one batch into many full-table scans. Load the
+    # existing keys once per main keyword and keep newly inserted keys in memory.
+    candidate_items = []
     for item in data:
-        # 新增：过滤空内容
         content = item.get('content', '')
         if not content or content.strip() == '':
             empty_content_skip += 1
             continue
+        candidate_items.append((item, content))
 
-        # 查重：title+link
+    existing_title_links = set()
+    existing_titles = set()
+    if candidate_items:
         cursor.execute(
-            f"SELECT id FROM {TABLE_NAME} WHERE title=%s AND link=%s",
-            (item.get('title'), item.get('link'))
+            f"SELECT title, link FROM {TABLE_NAME} WHERE keyword=%s",
+            (keyword,)
         )
-        if cursor.fetchone():
+        for title, link in cursor.fetchall():
+            if title is not None:
+                existing_titles.add(title)
+                if link is not None:
+                    existing_title_links.add((title, link))
+
+    for item, content in candidate_items:
+        title = item.get('title')
+        link = item.get('link')
+
+        # 查重：同一主关键词内 title+link。不同业务关键词允许各保留一条。
+        if title is not None and link is not None and (title, link) in existing_title_links:
             skip += 1
             continue
 
         # 兜底查重：同一关键词下 title 完全相同（URL可能不同）
-        cursor.execute(
-            f"SELECT id FROM {TABLE_NAME} WHERE title=%s AND keyword=%s",
-            (item.get('title'), item.get('keyword'))
-        )
-        if cursor.fetchone():
+        if title is not None and title in existing_titles:
             dup_title_skip += 1
             continue
 
@@ -101,6 +115,10 @@ def insert_scored_news(json_path, keyword):
                 item.get('search_keyword')
             ))
             success += 1
+            if title is not None:
+                existing_titles.add(title)
+                if link is not None:
+                    existing_title_links.add((title, link))
         except Exception as e:
             fail += 1
             write_log(f"[导入异常] {item.get('title', '')[:30]}... 错误: {e}")
@@ -305,8 +323,26 @@ def main():
     try:
         parser = argparse.ArgumentParser()
         parser.add_argument('--date', type=str, help='指定日期，格式YYYY-MM-DD')
+        parser.add_argument('--keyword', choices=DEFAULT_KEYWORDS, help='只导入指定主关键词')
         args = parser.parse_args()
         target_date = get_target_date(args.date)
+        keywords = [args.keyword] if args.keyword else DEFAULT_KEYWORDS
+
+        if os.getenv("AUTO_MIGRATE_DEDUP_INDEX", "1") == "1":
+            try:
+                if ensure_keyword_scoped_dedup_index(cursor, TABLE_NAME):
+                    write_log(f"[{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] 已迁移唯一索引: {TABLE_NAME} 使用 keyword+title+link 去重")
+                    print(f"[INFO] 已迁移唯一索引: {TABLE_NAME} 使用主关键词级去重")
+            except pymysql.MySQLError as e:
+                try:
+                    conn.rollback()
+                except pymysql.MySQLError:
+                    pass
+                warning = f"唯一索引迁移未完成，继续使用应用层查重: {e}"
+                write_log(f"[{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] [WARN] {warning}")
+                print(f"[WARN] {warning}")
+        else:
+            print("[INFO] 已通过 AUTO_MIGRATE_DEDUP_INDEX=0 跳过唯一索引迁移，使用应用层查重")
 
         # 新增：先导入 news_websites
         insert_news_websites(os.path.join("output", "news_sources.txt"))
@@ -319,7 +355,7 @@ def main():
         else:
             print(f"文件不存在，跳过: {stats_json_path}")
 
-        for keyword in DEFAULT_KEYWORDS:
+        for keyword in keywords:
             filename = f"{target_date}_{keyword}_scored.json"
             filepath = os.path.join("output", target_date, filename)
             if not os.path.exists(filepath):
@@ -374,4 +410,4 @@ def __main__():
     main()
 
 if __name__ == '__main__':
-    main() 
+    main()

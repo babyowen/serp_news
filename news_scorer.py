@@ -35,6 +35,12 @@ _scoring_client_pool = get_pool()
 # 创建新闻日志记录器
 scoring_logger = NewsLogger()
 
+
+def get_system_message(main_keyword: str = None, keyword: str = None) -> str:
+    """Select the scoring prompt by main business keyword."""
+    model_decision_keyword = main_keyword if main_keyword else keyword
+    return KEYWORD_SPECIFIC_SYSTEM_PROMPTS.get(model_decision_keyword, NEWS_SCORE_SYSTEM_MSG)
+
 # 调用大模型对单条新闻进行评分
 # title: 新闻标题
 # content: 新闻正文  
@@ -45,8 +51,7 @@ def score_news(title: str, content: str, keyword: str, main_keyword: str = None,
     prompt = NEWS_SCORE_PROMPT.format(keyword=keyword, title=title, content=content)
     
     # 根据主关键词选择合适的system prompt
-    model_decision_keyword = main_keyword if main_keyword else keyword
-    system_msg = KEYWORD_SPECIFIC_SYSTEM_PROMPTS.get(model_decision_keyword, NEWS_SCORE_SYSTEM_MSG)
+    system_msg = get_system_message(main_keyword, keyword)
 
     # 新增：token超限主动监控
     try:
@@ -449,4 +454,4 @@ def main():
 
 if __name__ == "__main__":
     success = main()
-    sys.exit(0 if success else 1) 
+    sys.exit(0 if success else 1)

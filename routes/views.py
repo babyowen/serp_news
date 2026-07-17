@@ -55,8 +55,13 @@ def index():
             f"SELECT keyword, COUNT(*) as cnt FROM {table} WHERE {where} GROUP BY keyword ORDER BY cnt DESC",
             params
         )
-        kw_stats = cursor.fetchall()
-        total = sum(r["cnt"] for r in kw_stats)
+        stored_kw_stats = cursor.fetchall()
+        count_by_keyword = {row["keyword"]: row["cnt"] for row in stored_kw_stats}
+        kw_stats = [
+            {"keyword": keyword, "cnt": count_by_keyword.get(keyword, 0)}
+            for keyword in DEFAULT_KEYWORDS
+        ]
+        total = sum(row["cnt"] for row in kw_stats)
 
         # 数据
         cursor.execute(
@@ -78,7 +83,8 @@ def index():
         conn.close()
 
     # 按关键词分组
-    grouped = {}
+    # Keep every configured keyword visible, including those awaiting their first news.
+    grouped = {keyword: [] for keyword in DEFAULT_KEYWORDS}
     for item in news_list:
         kw = item["keyword"] or "未分类"
         grouped.setdefault(kw, []).append(item)

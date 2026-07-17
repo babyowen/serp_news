@@ -30,7 +30,7 @@ def fetch_gnews(keyword, date=None, sortby="publishedAt"):
     resp.raise_for_status()
     return resp.json()
 
-def fetch_serpapi_google_news(keyword, max_pages=2):
+def fetch_serpapi_google_news(keyword, fetch_date=None, max_pages=2):
     url = "https://serpapi.com/search.json"
     params = {
         "engine": "google_news",
@@ -38,9 +38,13 @@ def fetch_serpapi_google_news(keyword, max_pages=2):
         "api_key": SERPAPI_KEY,
         "gl": "cn",
         "hl": "zh-CN",
-        "tbs": "qdr:d",  # 新增：只看过去一天的新闻
+        "tbs": "qdr:d",  # 默认只看过去一天的新闻
         "num": "100"      # 新增：每页返回100条结果
     }
+    if fetch_date:
+        target_date = datetime.strptime(fetch_date, "%Y-%m-%d")
+        date_value = f"{target_date.month}/{target_date.day}/{target_date.year}"
+        params["tbs"] = f"cdr:1,cd_min:{date_value},cd_max:{date_value}"
     all_results = []
     for page in range(max_pages):
         if page > 0:
@@ -190,7 +194,7 @@ def fetch_serpapi_bing_news(keyword, max_pages=1):
 
     return {"organic_results": results}
 
-def fetch_serpapi_duckduckgo_news(keyword, max_pages=1):
+def fetch_serpapi_duckduckgo_news(keyword, fetch_date=None, max_pages=1):
     """
     通过SerpApi DuckDuckGo News API获取新闻，拉取一天内新闻，分页，自动重试，错误日志。
     返回结构：{'news_results': [...]}，内容为原始news_results
@@ -201,8 +205,10 @@ def fetch_serpapi_duckduckgo_news(keyword, max_pages=1):
         "q": keyword,
         "api_key": SERPAPI_KEY,
         "kl": "cn-zh",
-        "df": "d"  # 修改：从w(一周)改为d(一天)
+        "df": "d"  # 默认过去一天
     }
+    if fetch_date:
+        params["df"] = f"{fetch_date}..{fetch_date}"
     all_results = []
     for page in range(max_pages):
         if page > 0:
