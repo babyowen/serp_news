@@ -4,10 +4,22 @@ import json
 import os
 import tempfile
 import unittest
+from unittest.mock import patch
 
 
-os.environ.setdefault("MYSQL_TABLE", "scored_news_test")
-import write_to_mysql
+class BootstrapCursor:
+    pass
+
+
+class BootstrapConnection:
+    def cursor(self):
+        return BootstrapCursor()
+
+
+# write_to_mysql currently opens a connection at import time. Keep this unit
+# test independent from both production and test database configuration.
+with patch("db_utils.get_connection", return_value=BootstrapConnection()):
+    import write_to_mysql
 
 
 class FakeCursor:

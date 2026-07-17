@@ -51,6 +51,8 @@ MYSQL_DB=serp_news
 # 流程开关（默认全部开启）
 # ENABLE_ITEM_SUMMARIZER=1
 # ENABLE_REGION_ANALYZER=1
+# 日常生产批次默认不执行表结构变更；仅维护窗口显式设为 1
+AUTO_MIGRATE_DEDUP_INDEX=0
 ```
 
 ### 创建数据库表
@@ -99,7 +101,7 @@ CREATE TABLE IF NOT EXISTS `news_websites` (
 
 ### 运行
 
-> `write_to_mysql.py` 会在首次运行时尝试将旧的全局 `title_link` 唯一索引迁移为主关键词级 `keyword_title_link` 唯一索引。若历史表中已有重复记录导致迁移失败，当前批次会继续使用应用层查重入库；历史重复清理需作为独立维护操作处理。相同新闻可分别保留在不同主关键词分组中。
+> `write_to_mysql.py` 日常默认使用应用层查重，不会修改表结构。仅在维护窗口显式设置 `AUTO_MIGRATE_DEDUP_INDEX=1` 时，才会将旧的全局 `title_link` 唯一索引迁移为主关键词级 `keyword_title_link` 唯一索引。迁移前应先确认历史数据不存在冲突；相同新闻可分别保留在不同主关键词分组中。
 
 ```bash
 # 运行完整流水线（默认处理昨天新闻，7步）
@@ -123,7 +125,7 @@ python news_region_analyzer.py --keyword 公积金 --date YYYY-MM-DD         # �
 python tobacco_gov_crawler.py                                             # 烟草爬虫
 python write_to_mysql.py --date YYYY-MM-DD                                # 数据入库
 python write_to_mysql.py --date YYYY-MM-DD --keyword 烟草服务银行          # 仅导入一个主关键词
-AUTO_MIGRATE_DEDUP_INDEX=0 python write_to_mysql.py --date YYYY-MM-DD     # 跳过历史表索引迁移
+AUTO_MIGRATE_DEDUP_INDEX=1 python write_to_mysql.py --date YYYY-MM-DD     # 仅维护窗口执行历史表索引迁移
 ```
 
 ## 架构
