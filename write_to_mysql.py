@@ -328,7 +328,9 @@ def main():
         target_date = get_target_date(args.date)
         keywords = [args.keyword] if args.keyword else DEFAULT_KEYWORDS
 
-        if os.getenv("AUTO_MIGRATE_DEDUP_INDEX", "1") == "1":
+        # Schema changes must be an explicit maintenance action, never the
+        # default behavior of a scheduled production batch.
+        if os.getenv("AUTO_MIGRATE_DEDUP_INDEX", "0") == "1":
             try:
                 if ensure_keyword_scoped_dedup_index(cursor, TABLE_NAME):
                     write_log(f"[{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] 已迁移唯一索引: {TABLE_NAME} 使用 keyword+title+link 去重")
