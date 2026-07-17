@@ -76,7 +76,7 @@ CREATE TABLE IF NOT EXISTS `scored_news` (
   `short_summary` text,
   `region` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `title_link` (`title`,`link`(255))
+  UNIQUE KEY `keyword_title_link` (`keyword`(100),`title`,`link`(255))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS `news_source_stats` (
@@ -99,10 +99,13 @@ CREATE TABLE IF NOT EXISTS `news_websites` (
 
 ### 运行
 
+> `write_to_mysql.py` 会在首次运行时尝试将旧的全局 `title_link` 唯一索引迁移为主关键词级 `keyword_title_link` 唯一索引。若历史表中已有重复记录导致迁移失败，当前批次会继续使用应用层查重入库；历史重复清理需作为独立维护操作处理。相同新闻可分别保留在不同主关键词分组中。
+
 ```bash
 # 运行完整流水线（默认处理昨天新闻，7步）
 python main.py
 python main.py YYYY-MM-DD          # 指定日期
+python main.py YYYY-MM-DD --keyword 烟草服务银行  # 仅补跑一个主关键词
 
 # 启动Web管理界面（端口5001）
 python app.py
@@ -119,6 +122,8 @@ python news_item_summarizer.py YYYY-MM-DD                                 # 单�
 python news_region_analyzer.py --keyword 公积金 --date YYYY-MM-DD         # 地域分析
 python tobacco_gov_crawler.py                                             # 烟草爬虫
 python write_to_mysql.py --date YYYY-MM-DD                                # 数据入库
+python write_to_mysql.py --date YYYY-MM-DD --keyword 烟草服务银行          # 仅导入一个主关键词
+AUTO_MIGRATE_DEDUP_INDEX=0 python write_to_mysql.py --date YYYY-MM-DD     # 跳过历史表索引迁移
 ```
 
 ## 架构

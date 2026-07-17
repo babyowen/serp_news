@@ -3,6 +3,8 @@ import sys
 import datetime
 import os
 import json
+import argparse
+import shlex
 import concurrent.futures
 from config import DEFAULT_KEYWORDS, SEARCH_KEYWORDS
 from error_handler import (
@@ -279,18 +281,29 @@ def execute_scoring_concurrent(date, keywords, max_workers=3):
     
     return success_count, fail_count
 
+def get_active_keywords(keyword=None):
+    """返回本次流水线处理的主关键词，并校验单关键词参数。"""
+    if keyword is None:
+        return list(DEFAULT_KEYWORDS)
+    if keyword not in SEARCH_KEYWORDS:
+        raise ValueError(f"未知主关键词: {keyword}")
+    return [keyword]
+
+
 @with_error_handling("main.py", "main")
-def main(date=None):
+def main(date=None, keyword=None):
     """主函数，控制整个新闻处理流程"""
     # 记录脚本开始执行
-    script_args = [date] if date else []
+    script_args = [arg for arg in (date, "--keyword" if keyword else None, keyword) if arg]
     log_script_start("main.py", script_args)
 
     main_success = True
+    active_keywords = None
     try:
         # 如果未指定日期，自动赋值为昨天日期
         if not date:
             date = (datetime.datetime.now() - datetime.timedelta(days=1)).strftime("%Y-%m-%d")
+        active_keywords = get_active_keywords(keyword)
 
         # 生成批次ID，设置批次日志路径
         run_id = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -300,11 +313,11 @@ def main(date=None):
         with open(batch_log_path, "w", encoding="utf-8") as f:
             pass  # 创建空日志文件，确保子进程首次 open("a") 不因目录不存在而崩溃
         print(f"[INFO] 本次运行批次: {run_id}，日志文件: {batch_log_path}")
-        print(f"[INFO] 本次批量处理主关键词: {DEFAULT_KEYWORDS}")
+        print(f"[INFO] 本次批量处理主关键词: {active_keywords}")
         
         # 输出所有搜索关键词
         all_search_keywords = set()
-        for main_kw in DEFAULT_KEYWORDS:
+        for main_kw in active_keywords:
             all_search_keywords.update(SEARCH_KEYWORDS[main_kw])
         print(f"[INFO] 本次所有搜索关键词: {sorted(all_search_keywords)}")
         
@@ -318,7 +331,7 @@ def main(date=None):
         
         # 步骤1：抓取API
         print(f"\n[步骤1] 开始执行步骤1：新闻采集阶段")
-        for main_kw in DEFAULT_KEYWORDS:
+        for main_kw in active_keywords:
             if execute_news_fetching(date, main_kw):
                 fetch_success += 1
             else:
@@ -328,7 +341,7 @@ def main(date=None):
         
         # 步骤2：抓正文
         print(f"\n[步骤2] 开始执行步骤2：正文抓取阶段")
-        for kw in DEFAULT_KEYWORDS:
+        for kw in active_keywords:
             if execute_content_fetching(date, kw):
                 content_success += 1
             else:
@@ -338,17 +351,18 @@ def main(date=None):
         
         # 步骤3：评分（并发处理）
         print(f"\n[步骤3] 开始执行步骤3：AI评分阶段（并发处理）")
-        score_success, score_failed = execute_scoring_concurrent(date, DEFAULT_KEYWORDS, max_workers=3)
+        score_success, score_failed = execute_scoring_concurrent(date, active_keywords, max_workers=3)
         
         print(f"\n[统计] 步骤3完成统计：成功 {score_success}，失败 {score_failed}")
         
         print("[INFO] 全部关键词处理完成。")
 
         # 步骤4：自动写入数据库
-        date_arg = f'--date {date}' if date else ''
+        date_arg = f'--date {shlex.quote(date)}'
+        keyword_arg = f' --keyword {shlex.quote(keyword)}' if keyword else ''
         print("\n[步骤4] 开始执行步骤4：数据库写入阶段")
         database_success = run_step(
-            f'{sys.executable} write_to_mysql.py {date_arg}',
+            f'{sys.executable} write_to_mysql.py {date_arg}{keyword_arg}',
             '自动写入数据库',
             'write_to_mysql.py',
             '将scored结果写入数据库'
@@ -359,7 +373,7 @@ def main(date=None):
         if enable_item_summarizer:
             print(f"\n[步骤5] 开始执行步骤5：单条新闻摘要阶段")
             item_summary_success = safe_subprocess_run(
-                f'{sys.executable} news_item_summarizer.py {date}',
+                f'{sys.executable} news_item_summarizer.py {shlex.quote(date)}{keyword_arg}',
                 '单条新闻摘要',
                 keyword='all',
                 check=False
@@ -373,7 +387,7 @@ def main(date=None):
         region_success = True
 
         # 步骤7：烟草官网爬取（仅中国烟草关键词，条件触发）
-        has_tobacco = "中国烟草" in DEFAULT_KEYWORDS
+        has_tobacco = "中国烟草" in active_keywords
         if has_tobacco:
             print(f"\n[步骤7] 开始执行步骤7：烟草官网爬取阶段")
             _update_step("tobacco", "running")
@@ -439,25 +453,28 @@ def main(date=None):
     # 步骤8：新闻量波动预警 —— 收尾路径，任何前置异常后仍执行
     # KeyboardInterrupt 已通过 sys.exit(130) 提前退出，不会走到这里
     # 预警自身异常被吞，不影响退出码
-    print(f"\n[步骤8] 开始执行步骤8：新闻量波动预警阶段")
-    try:
-        run_volume_alert(target_date=date, keywords=list(DEFAULT_KEYWORDS))
-    except Exception as e:
-        print(f"[WARN] 新闻量波动预警失败: {e}")
+    if active_keywords:
+        print(f"\n[步骤8] 开始执行步骤8：新闻量波动预警阶段")
+        try:
+            run_volume_alert(target_date=date, keywords=active_keywords)
+        except Exception as e:
+            print(f"[WARN] 新闻量波动预警失败: {e}")
+    else:
+        print("\n[步骤8] 未确定有效主关键词，跳过新闻量波动预警")
 
     return main_success
 
 if __name__ == "__main__":
-    import sys
-    date = None
-    if len(sys.argv) > 1:
-        date = sys.argv[1]
+    parser = argparse.ArgumentParser(description="运行新闻处理流水线")
+    parser.add_argument("date", nargs="?", default=None, help="目标日期，格式 YYYY-MM-DD")
+    parser.add_argument("--keyword", choices=DEFAULT_KEYWORDS, help="只处理指定主关键词")
+    args = parser.parse_args()
     
     # 执行主函数
-    success = main(date)
+    success = main(args.date, keyword=args.keyword)
     _finish_run()
     # 根据执行结果设置退出码
     if success:
         sys.exit(0)
     else:
-        sys.exit(1) 
+        sys.exit(1)

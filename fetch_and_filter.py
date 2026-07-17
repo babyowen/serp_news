@@ -24,6 +24,41 @@ from error_handler import (
 # 设置全局异常处理器
 setup_global_exception_handler()
 
+def _reference_now(reference_now=None):
+    return reference_now or datetime.now()
+
+
+def _target_date(target_date, reference_now=None):
+    if target_date is None:
+        return (_reference_now(reference_now) - timedelta(days=1)).date()
+    if isinstance(target_date, datetime):
+        return target_date.date()
+    if hasattr(target_date, "year") and not isinstance(target_date, str):
+        return target_date
+    return datetime.strptime(target_date, "%Y-%m-%d").date()
+
+
+def _is_relative_date(date_str):
+    value = (date_str or "").strip()
+    return (
+        "昨天" in value
+        or "前天" in value
+        or bool(re.search(r"\d+\s*(小时前|分钟前|小時|分鐘|天)", value))
+        or bool(re.fullmatch(r"\d+[hmd]", value, re.IGNORECASE))
+        or bool(re.fullmatch(r"\d+\s+(days?|hours?|minutes?)\s+ago", value, re.IGNORECASE))
+    )
+
+
+def _is_on_target_date(date_str, target_date, parse_func, reference_now=None):
+    now = _reference_now(reference_now)
+    target = _target_date(target_date, now)
+    # Historical runs cannot safely reinterpret a source's relative timestamp.
+    if _is_relative_date(date_str) and target != (now - timedelta(days=1)).date():
+        return False
+    parsed = parse_func(date_str, reference_now=now)
+    return parsed == target.strftime("%Y-%m-%d")
+
+
 # 判断Baidu News返回的date字段是否为昨天
 def is_baidu_news_yesterday(date_str):
     """
@@ -33,49 +68,16 @@ def is_baidu_news_yesterday(date_str):
     - 具体日期等于昨天
     - "几小时前"/"几分钟前"，根据当前时间推算是否属于昨天
     """
-    if not date_str:
-        return False
-    now = datetime.now()
-    yesterday = (now - timedelta(days=1)).date()
-    if "昨天" in date_str:
-        return True
-    if "前天" in date_str:
-        return False
-    # 处理"几小时前"
-    match = re.match(r"(\d+)小时前", date_str)
-    if match:
-        hours_ago = int(match.group(1))
-        news_time = now - timedelta(hours=hours_ago)
-        return news_time.date() == yesterday
-    # 处理"几分钟前"
-    match = re.match(r"(\d+)分钟前", date_str)
-    if match:
-        minutes_ago = int(match.group(1))
-        news_time = now - timedelta(minutes=minutes_ago)
-        return news_time.date() == yesterday
-    # 处理具体日期（如"2024-07-23 11:45"或"2024-07-23"）
-    try:
-        # 只保留数字和-，防止有"昨天18:47"这种混合格式
-        date_part = ''.join([c for c in date_str if c.isdigit() or c == '-'])
-        if len(date_part) == 8:  # 20240723
-            date_part = f"{date_part[:4]}-{date_part[4:6]}-{date_part[6:]}"
-        if len(date_part) == 10:
-            date_part = f"{date_part[:4]}-{date_part[4:6]}-{date_part[6:]}"
-            news_date = datetime.strptime(date_part, "%Y-%m-%d").date()
-            return news_date == yesterday
-    except Exception:
-        pass
-    # 其它情况（如"几天前"等）不算昨天
-    return False
+    return is_baidu_news_on_date(date_str, None)
 
 # 解析Baidu News的date字段为具体日期字符串
-def parse_baidu_news_date(date_str):
+def parse_baidu_news_date(date_str, reference_now=None):
     """
     将Baidu News的date字段解析为具体日期（YYYY-MM-DD），解析失败返回None。
     """
     if not date_str:
         return None
-    now = datetime.now()
+    now = _reference_now(reference_now)
     if "昨天" in date_str:
         return (now - timedelta(days=1)).strftime("%Y-%m-%d")
     if "前天" in date_str:
@@ -90,26 +92,29 @@ def parse_baidu_news_date(date_str):
         minutes_ago = int(match.group(1))
         news_time = now - timedelta(minutes=minutes_ago)
         return news_time.strftime("%Y-%m-%d")
-    # 处理具体日期
+    # 处理具体日期；保留前十位，避免日期后带时间导致无法识别。
     try:
-        date_part = ''.join([c for c in date_str if c.isdigit() or c == '-'])
-        if len(date_part) == 8:
-            date_part = f"{date_part[:4]}-{date_part[4:6]}-{date_part[6:]}"
-        if len(date_part) == 10:
-            return date_part
+        match = re.search(r"(\d{4})[-/]?(\d{1,2})[-/]?(\d{1,2})", date_str)
+        if match:
+            year, month, day = match.groups()
+            return f"{year}-{int(month):02d}-{int(day):02d}"
     except Exception:
         pass
     return None
 
+
+def is_baidu_news_on_date(date_str, target_date, reference_now=None):
+    return _is_on_target_date(date_str, target_date, parse_baidu_news_date, reference_now)
+
 # 解析Google News的date字段为具体日期字符串
-def parse_google_news_date(date_str):
+def parse_google_news_date(date_str, reference_now=None):
     """
     尝试将Google News的date字段解析为具体日期（YYYY-MM-DD），解析失败返回None。
     支持"昨天"、"几小时前"、"几分钟前"、中文日期、标准日期、国际化日期（如05/24/2025, 11:21 PM, +0000 UTC）等。
     """
     if not date_str:
         return None
-    now = datetime.now()
+    now = _reference_now(reference_now)
     # 处理"昨天"
     if "昨天" in date_str:
         return (now - timedelta(days=1)).strftime("%Y-%m-%d")
@@ -147,62 +152,32 @@ def is_google_news_yesterday(date_str):
     """
     判断Google News返回的date字段是否为昨天。
     """
-    parsed = parse_google_news_date(date_str)
-    if not parsed:
-        return False
-    yesterday = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
-    return parsed == yesterday
+    return is_google_news_on_date(date_str, None)
+
+
+def is_google_news_on_date(date_str, target_date, reference_now=None):
+    return _is_on_target_date(date_str, target_date, parse_google_news_date, reference_now)
 
 # 判断Bing News返回的date字段是否为昨天
 def is_bing_news_yesterday(date_str):
+    return is_bing_news_on_date(date_str, None)
+
+
+def parse_bing_news_date(date_str, reference_now=None):
     if not date_str:
-        return False
-    now = datetime.now()
-    yesterday = (now - timedelta(days=1)).date()
-    
-    # 处理英文格式 "Xh" (小时)
-    match = re.match(r"(\d+)h$", date_str)
-    if match:
-        hours_ago = int(match.group(1))
-        news_time = now - timedelta(hours=hours_ago)
-        # 24小时内的都认为是有效的
-        return hours_ago <= 24
-    
-    # 处理英文格式 "Xm" (分钟)
-    match = re.match(r"(\d+)m$", date_str)
-    if match:
-        minutes_ago = int(match.group(1))
-        news_time = now - timedelta(minutes=minutes_ago)
-        # 24小时内的都认为是有效的
-        return minutes_ago <= 1440  # 24*60分钟
-    
-    # 处理英文格式 "Xd" (天)
-    match = re.match(r"(\d+)d$", date_str)
-    if match:
-        days_ago = int(match.group(1))
-        # 只要1天内的都认为是有效的
-        return days_ago <= 1
-    
-    # 处理"X 小時"
-    match = re.match(r"(\d+)\s*小時", date_str)
-    if match:
-        hours_ago = int(match.group(1))
-        news_time = now - timedelta(hours=hours_ago)
-        return news_time.date() == yesterday
-    # 处理"X 分鐘"
-    match = re.match(r"(\d+)\s*分鐘", date_str)
-    if match:
-        minutes_ago = int(match.group(1))
-        news_time = now - timedelta(minutes=minutes_ago)
-        return news_time.date() == yesterday
-    # 处理"X 天"
-    match = re.match(r"(\d+)\s*天", date_str)
-    if match:
-        days_ago = int(match.group(1))
-        news_time = now - timedelta(days=days_ago)
-        return news_time.date() == yesterday
-    # 兼容其它格式
-    return False
+        return None
+    now = _reference_now(reference_now)
+    patterns = ((r"(\d+)h$", "hours"), (r"(\d+)m$", "minutes"), (r"(\d+)d$", "days"),
+                (r"(\d+)\s*小時", "hours"), (r"(\d+)\s*分鐘", "minutes"), (r"(\d+)\s*天", "days"))
+    for pattern, unit in patterns:
+        match = re.match(pattern, date_str, re.IGNORECASE)
+        if match:
+            return (now - timedelta(**{unit: int(match.group(1))})).strftime("%Y-%m-%d")
+    return parse_google_news_date(date_str, reference_now=now)
+
+
+def is_bing_news_on_date(date_str, target_date, reference_now=None):
+    return _is_on_target_date(date_str, target_date, parse_bing_news_date, reference_now)
 
 # 获取输出文件路径
 def get_output_path(fetch_date, basename):
@@ -218,40 +193,16 @@ def is_duckduckgo_news_yesterday(date_str):
     - 'X hours ago'（需判断当前时间是否属于昨天）
     - 'X minutes ago'（同上）
     """
-    if not date_str:
-        return False
-    now = datetime.now()
-    yesterday = (now - timedelta(days=1)).date()
-    # 1 day ago
-    if date_str.strip() == '1 day ago':
-        return True
-    # X days ago
-    m = re.match(r"(\d+) days ago", date_str)
-    if m:
-        days = int(m.group(1))
-        return days == 1
-    # X hours ago
-    m = re.match(r"(\d+) hours ago", date_str)
-    if m:
-        hours = int(m.group(1))
-        news_time = now - timedelta(hours=hours)
-        return news_time.date() == yesterday
-    # X minutes ago
-    m = re.match(r"(\d+) minutes ago", date_str)
-    if m:
-        minutes = int(m.group(1))
-        news_time = now - timedelta(minutes=minutes)
-        return news_time.date() == yesterday
-    return False
+    return is_duckduckgo_news_on_date(date_str, None)
 
 # 解析DuckDuckGo News的date字段为具体日期字符串
-def parse_duckduckgo_news_date(date_str):
+def parse_duckduckgo_news_date(date_str, reference_now=None):
     """
     将DuckDuckGo News的date字段解析为具体日期（YYYY-MM-DD），解析失败返回None。
     """
     if not date_str:
         return None
-    now = datetime.now()
+    now = _reference_now(reference_now)
     if date_str.strip() == '1 day ago':
         return (now - timedelta(days=1)).strftime("%Y-%m-%d")
     m = re.match(r"(\d+) days ago", date_str)
@@ -268,7 +219,11 @@ def parse_duckduckgo_news_date(date_str):
         minutes = int(m.group(1))
         news_time = now - timedelta(minutes=minutes)
         return news_time.strftime("%Y-%m-%d")
-    return None
+    return parse_google_news_date(date_str, reference_now=now)
+
+
+def is_duckduckgo_news_on_date(date_str, target_date, reference_now=None):
+    return _is_on_target_date(date_str, target_date, parse_duckduckgo_news_date, reference_now)
 
 # 主流程入口，采集四大新闻API，按日期过滤、去重、黑名单过滤、保存结果并写日志
 @with_error_handling("fetch_and_filter.py", "main")
@@ -298,6 +253,8 @@ def main():
 
         if not fetch_date or fetch_date.lower() == 'none':
             fetch_date = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
+        # Fail before making API calls when a historical backfill date is invalid.
+        datetime.strptime(fetch_date, "%Y-%m-%d")
         if not keyword:
             print("[ERROR] 必须指定搜索用关键词")
             return False
@@ -308,20 +265,21 @@ def main():
         
         # 采集四大新闻API
         print("[INFO] 正在采集 Google News ...")
-        google_data = fetch_serpapi_google_news(keyword)
+        google_data = fetch_serpapi_google_news(keyword, fetch_date=fetch_date)
         print("[INFO] 正在采集 Baidu News ...")
         baidu_data = fetch_serpapi_baidu_news(keyword)
         print("[INFO] 正在采集 Bing News ...")
         bing_data = fetch_serpapi_bing_news(keyword)
         print("[INFO] 正在采集 DuckDuckGo News ...")
-        duck_data = fetch_serpapi_duckduckgo_news(keyword)
+        duck_data = fetch_serpapi_duckduckgo_news(keyword, fetch_date=fetch_date)
 
         # 处理各个搜索引擎的数据
         baidu_news = []
         for item in baidu_data.get('organic_results', []):
             date_str = item.get('date', '')
-            if is_baidu_news_yesterday(date_str):
+            if is_baidu_news_on_date(date_str, fetch_date):
                 item = item.copy()
+                item['date'] = parse_baidu_news_date(date_str)
                 item['fetchdate'] = fetch_date
                 item['sourceapi'] = 'serp_baidunews'
                 baidu_news.append(item)
@@ -329,8 +287,9 @@ def main():
         bing_news = []
         for item in bing_data.get('organic_results', []):
             date_str = item.get('date', '')
-            if is_bing_news_yesterday(date_str):
+            if is_bing_news_on_date(date_str, fetch_date):
                 item = item.copy()
+                item['date'] = parse_bing_news_date(date_str)
                 item['fetchdate'] = fetch_date
                 item['sourceapi'] = 'serp_bingnews'
                 bing_news.append(item)
@@ -338,8 +297,9 @@ def main():
         duck_news = []
         for item in duck_data.get('news_results', []):
             date_str = item.get('date', '')
-            if is_duckduckgo_news_yesterday(date_str):
+            if is_duckduckgo_news_on_date(date_str, fetch_date):
                 item = item.copy()
+                item['date'] = parse_duckduckgo_news_date(date_str)
                 item['fetchdate'] = fetch_date
                 item['sourceapi'] = 'serp_duckduckgo_news'
                 duck_news.append(item)
@@ -347,9 +307,9 @@ def main():
         google_news = []
         for item in google_data.get('news_results', []):
             date_str = item.get('date', '')
-            if is_google_news_yesterday(date_str):
+            if is_google_news_on_date(date_str, fetch_date):
                 item = item.copy()
-                # 保留原始date
+                item['date'] = parse_google_news_date(date_str)
                 item['fetchdate'] = fetch_date
                 item['sourceapi'] = 'serp_googlenews'
                 google_news.append(item)

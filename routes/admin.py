@@ -73,7 +73,7 @@ def models():
     config = read_model_config()
     from config import (
         NEWS_SCORE_SYSTEM_MSG, NEWS_SCORE_PROMPT,
-        NEWS_SCORE_SYSTEM_MSG_ELDER_CARE, KEYWORD_SPECIFIC_SYSTEM_PROMPTS,
+        NEWS_SCORE_SYSTEM_MSG_ELDER_CARE, NEWS_SCORE_SYSTEM_MSG_TOBACCO_SERVICE_BANK,
         NEWS_ITEM_SUMMARY_SYSTEM_PROMPT_500, NEWS_ITEM_SUMMARY_USER_PROMPT_500,
         NEWS_ITEM_SUMMARY_SYSTEM_PROMPT_500_GJJ_REGION, NEWS_ITEM_SUMMARY_USER_PROMPT_500_GJJ_REGION,
         NEWS_REGION_SYSTEM_PROMPT_GJJ, NEWS_REGION_USER_PROMPT_GJJ,
@@ -84,7 +84,9 @@ def models():
             "prompts": [
                 {"name": "通用评分 System Prompt", "var": "NEWS_SCORE_SYSTEM_MSG", "content": NEWS_SCORE_SYSTEM_MSG},
                 {"name": "养老专用评分 System Prompt", "var": "NEWS_SCORE_SYSTEM_MSG_ELDER_CARE", "content": NEWS_SCORE_SYSTEM_MSG_ELDER_CARE,
-                 "note": f"生效关键词: {', '.join(KEYWORD_SPECIFIC_SYSTEM_PROMPTS.keys())}"},
+                 "note": "生效关键词: 养老"},
+                {"name": "银行专用评分 System Prompt", "var": "NEWS_SCORE_SYSTEM_MSG_TOBACCO_SERVICE_BANK", "content": NEWS_SCORE_SYSTEM_MSG_TOBACCO_SERVICE_BANK,
+                 "note": "生效关键词: 烟草服务银行"},
                 {"name": "评分 User Prompt", "var": "NEWS_SCORE_PROMPT", "content": NEWS_SCORE_PROMPT},
             ],
         },
