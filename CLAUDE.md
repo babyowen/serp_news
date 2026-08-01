@@ -4,12 +4,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 项目概述
 
-自动化新闻采集与AI分析系统。6步流水线：采集 → 正文提取 → AI评分 → 数据库写入 → 单条摘要 → 烟草爬虫。地域分析已由摘要步骤一并处理。Bootstrap管理前端支持关键词配置、模型查看、运行监控。
+自动化新闻采集与AI分析系统。7步流水线：采集 → 正文提取 → AI评分 → 数据库写入 → 单条摘要 → 地域分析 → 烟草爬虫。Bootstrap管理前端支持关键词配置、模型查看、运行监控。
 
 ## 常用命令
 
 ```bash
-# 运行完整流水线（默认处理昨天新闻，6步）
+# 运行完整流水线（默认处理昨天新闻，7步）
 python main.py
 python main.py YYYY-MM-DD          # 指定日期
 
@@ -54,10 +54,11 @@ git -c credential.helper='!f() { echo "username=babyowen"; echo "password=$(/opt
 | 2 | `fetch_content.py` | 5级兜底正文提取 | - |
 | 3 | `news_scorer.py` | AI评分0-5分，3线程并发 | - |
 | 4 | `write_to_mysql.py` | MySQL持久化 | - |
-| 5 | `news_item_summarizer.py` | 单条500字摘要（公积金同时写地域） | `ENABLE_ITEM_SUMMARIZER` |
-| 6 | `tobacco_gov_crawler.py` | 烟草官网5板块爬取，支持`--date`指定日期 | 条件触发（含中国烟草时） |
+| 5 | `news_item_summarizer.py` | 单条500字摘要（同时写地域字段） | `ENABLE_ITEM_SUMMARIZER` |
+| 6 | 地域分析 | 由单条摘要阶段一并处理 | - |
+| 7 | `tobacco_gov_crawler.py` | 烟草官网5板块爬取，支持`--date`指定日期 | 条件触发（含中国烟草时） |
 
-> `news_region_analyzer.py` 已从流水线移除，保留为独立脚本可手动运行补充地域数据。
+> `news_region_analyzer.py` 保留为独立脚本，可用于补充或应急处理地域数据；主流程不再单独启动它。
 
 ## 关键词两层结构
 
@@ -72,6 +73,12 @@ git -c credential.helper='!f() { echo "username=babyowen"; echo "password=$(/opt
     {date}_{main_kw}.json → _scored.json（AI评分后）
 ```
 
+### 烟草服务银行
+
+- 主关键词 `烟草服务银行` 对应8个搜索词：工商银行、农业银行、中国银行、建设银行、交通银行、中信银行、浦发银行、南京银行。
+- 这是江苏烟草使用的银行重要新闻分类，不要求新闻涉及烟草。评分规则以 `config.py` 的 `NEWS_SCORE_SYSTEM_MSG_TOBACCO_SERVICE_BANK` 为准：总行重大事项5分，江苏省内重要动态或银行与烟草同时出现的实质新闻原则上4分，品牌宣传/服务纪实固定3分，非8家银行主体直接1分。
+- 单主题全流程命令：`python main.py YYYY-MM-DD --keyword 烟草服务银行`。省略日期时，`main.py` 处理前一日数据。
+
 ## 共享工具模块
 
 - **`db_utils.py`** — 统一数据库连接（含3次重试）+ `MYSQL_TABLE` 环境变量切换测试表 + `ping_connection` 保活
@@ -84,6 +91,12 @@ git -c credential.helper='!f() { echo "username=babyowen"; echo "password=$(/opt
 - **`config.py`** — 关键词映射、AI提示词（通用+关键词专属）、模型配置、黑名单
 - **`config_grab_rules.py`** — 站点专属抓取规则（`CUSTOM_GRAB_RULES`注册表）
 - **`.env`** — API密钥、MySQL连接、流程开关、管理员认证
+
+### 数据库去重迁移
+
+- 日常运行必须保持 `AUTO_MIGRATE_DEDUP_INDEX=0`：写入脚本使用应用层、主关键词范围内的查重，不修改表结构。
+- 只有维护窗口才可显式设为 `1`，将旧的全局 `title_link` 唯一索引迁移为 `keyword_title_link`。执行前必须检查历史重复数据。
+- `.env` 在 `.gitignore` 中；部署时 `git pull` 不会更新它，需在服务器实际运行目录的 `.env` 手工添加或确认该变量。
 
 ## 术语约定
 
@@ -115,6 +128,9 @@ MYSQL_TABLE=scored_news_test python main.py YYYY-MM-DD
 
 # 验证模块加载
 python -c "from config import SEARCH_KEYWORDS; print(SEARCH_KEYWORDS)"
+
+# Issue #14/#15 相关回归测试
+python -m unittest -v test_bank_news_feature.py test_historical_date_filter.py test_write_to_mysql_dedup.py
 ```
 
 ## 注意事项

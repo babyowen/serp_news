@@ -10,6 +10,7 @@
 - **AI智能评分**：0-5分量化评估，支持关键词专属评分标准，3线程并发
 - **单条500字摘要**：对3分及以上新闻生成精炼摘要
 - **地域标注**：公积金等主题自动标注城市级地域标签
+- **银行新闻监测**：`烟草服务银行`主题覆盖8家指定银行，优先筛选江苏省内重要动态
 - **烟草官网爬取**：中国烟草官网3个栏目定向采集
 - **Bootstrap管理前端**：关键词配置、模型查看、运行监控
 
@@ -51,6 +52,8 @@ MYSQL_DB=serp_news
 # 流程开关（默认全部开启）
 # ENABLE_ITEM_SUMMARIZER=1
 # ENABLE_REGION_ANALYZER=1
+# 日常生产批次默认不执行表结构变更；仅维护窗口显式设为 1
+AUTO_MIGRATE_DEDUP_INDEX=0
 ```
 
 ### 创建数据库表
@@ -99,7 +102,7 @@ CREATE TABLE IF NOT EXISTS `news_websites` (
 
 ### 运行
 
-> `write_to_mysql.py` 会在首次运行时尝试将旧的全局 `title_link` 唯一索引迁移为主关键词级 `keyword_title_link` 唯一索引。若历史表中已有重复记录导致迁移失败，当前批次会继续使用应用层查重入库；历史重复清理需作为独立维护操作处理。相同新闻可分别保留在不同主关键词分组中。
+> `write_to_mysql.py` 日常默认使用应用层查重，不会修改表结构。仅在维护窗口显式设置 `AUTO_MIGRATE_DEDUP_INDEX=1` 时，才会将旧的全局 `title_link` 唯一索引迁移为主关键词级 `keyword_title_link` 唯一索引。迁移前应先确认历史数据不存在冲突；相同新闻可分别保留在不同主关键词分组中。
 
 ```bash
 # 运行完整流水线（默认处理昨天新闻，7步）
@@ -109,6 +112,25 @@ python main.py YYYY-MM-DD --keyword 烟草服务银行  # 仅补跑一个主关�
 
 # 启动Web管理界面（端口5001）
 python app.py
+```
+
+### 烟草服务银行监测
+
+主关键词 `烟草服务银行` 用于前端分类、数据归档和专属评分；实际检索以下8家银行名称：工商银行、农业银行、中国银行、建设银行、交通银行、中信银行、浦发银行、南京银行。
+
+- 银行总行重大事项优先评为5分。
+- 江苏省内重要银行新闻，以及同时涉及银行和烟草的新闻，原则上评为4分。
+- 以这8家银行为主体的品牌宣传、服务纪实或企业形象稿固定评为3分。
+- 新闻主体不是这8家银行时直接评为1分。
+
+该主题会出现在首页的主关键词筛选和管理端关键词列表中。单独补跑时使用 `python main.py YYYY-MM-DD --keyword 烟草服务银行`。
+
+### 生产更新
+
+部署前和每次代码更新后的检查步骤见 [运维手册](docs/operations.md)。其中 `.env` 被 Git 忽略，服务器需要手动保留或添加：
+
+```ini
+AUTO_MIGRATE_DEDUP_INDEX=0
 ```
 
 ## 单独模块执行
@@ -123,7 +145,7 @@ python news_region_analyzer.py --keyword 公积金 --date YYYY-MM-DD         # �
 python tobacco_gov_crawler.py                                             # 烟草爬虫
 python write_to_mysql.py --date YYYY-MM-DD                                # 数据入库
 python write_to_mysql.py --date YYYY-MM-DD --keyword 烟草服务银行          # 仅导入一个主关键词
-AUTO_MIGRATE_DEDUP_INDEX=0 python write_to_mysql.py --date YYYY-MM-DD     # 跳过历史表索引迁移
+AUTO_MIGRATE_DEDUP_INDEX=1 python write_to_mysql.py --date YYYY-MM-DD     # 仅维护窗口执行历史表索引迁移
 ```
 
 ## 架构
@@ -173,6 +195,9 @@ MYSQL_TABLE=scored_news_test python main.py YYYY-MM-DD
 
 # 验证模块加载
 python -c "from config import SEARCH_KEYWORDS; print(SEARCH_KEYWORDS)"
+
+# 回归测试：银行监测、历史日期过滤、应用层查重
+python -m unittest -v test_bank_news_feature.py test_historical_date_filter.py test_write_to_mysql_dedup.py
 ```
 
 ## 注意事项
@@ -186,4 +211,4 @@ python -c "from config import SEARCH_KEYWORDS; print(SEARCH_KEYWORDS)"
 - `output/` 目录已 gitignore
 
 ---
-*该文档最后更新于：2026-05-16*
+*该文档最后更新于：2026-07-17*
