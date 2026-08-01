@@ -10,6 +10,7 @@
 - **AI智能评分**：0-5分量化评估，支持关键词专属评分标准，3线程并发
 - **单条500字摘要**：对3分及以上新闻生成精炼摘要
 - **地域标注**：公积金等主题自动标注城市级地域标签
+- **银行新闻监测**：`烟草服务银行`主题覆盖8家指定银行，优先筛选江苏省内重要动态
 - **烟草官网爬取**：中国烟草官网3个栏目定向采集
 - **Bootstrap管理前端**：关键词配置、模型查看、运行监控
 
@@ -113,6 +114,25 @@ python main.py YYYY-MM-DD --keyword 烟草服务银行  # 仅补跑一个主关�
 python app.py
 ```
 
+### 烟草服务银行监测
+
+主关键词 `烟草服务银行` 用于前端分类、数据归档和专属评分；实际检索以下8家银行名称：工商银行、农业银行、中国银行、建设银行、交通银行、中信银行、浦发银行、南京银行。
+
+- 银行总行重大事项优先评为5分。
+- 江苏省内重要银行新闻，以及同时涉及银行和烟草的新闻，原则上评为4分。
+- 以这8家银行为主体的品牌宣传、服务纪实或企业形象稿固定评为3分。
+- 新闻主体不是这8家银行时直接评为1分。
+
+该主题会出现在首页的主关键词筛选和管理端关键词列表中。单独补跑时使用 `python main.py YYYY-MM-DD --keyword 烟草服务银行`。
+
+### 生产更新
+
+部署前和每次代码更新后的检查步骤见 [运维手册](docs/operations.md)。其中 `.env` 被 Git 忽略，服务器需要手动保留或添加：
+
+```ini
+AUTO_MIGRATE_DEDUP_INDEX=0
+```
+
 ## 单独模块执行
 
 ```bash
@@ -175,6 +195,9 @@ MYSQL_TABLE=scored_news_test python main.py YYYY-MM-DD
 
 # 验证模块加载
 python -c "from config import SEARCH_KEYWORDS; print(SEARCH_KEYWORDS)"
+
+# 回归测试：银行监测、历史日期过滤、应用层查重
+python -m unittest -v test_bank_news_feature.py test_historical_date_filter.py test_write_to_mysql_dedup.py
 ```
 
 ## 注意事项
@@ -188,4 +211,4 @@ python -c "from config import SEARCH_KEYWORDS; print(SEARCH_KEYWORDS)"
 - `output/` 目录已 gitignore
 
 ---
-*该文档最后更新于：2026-05-16*
+*该文档最后更新于：2026-07-17*

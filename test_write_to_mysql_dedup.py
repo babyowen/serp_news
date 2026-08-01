@@ -4,7 +4,9 @@ import json
 import os
 import tempfile
 import unittest
-from unittest.mock import patch
+from unittest.mock import Mock, patch
+
+import pymysql
 
 
 class BootstrapCursor:
@@ -37,9 +39,21 @@ class FakeCursor:
 class FakeConnection:
     def __init__(self):
         self.commits = 0
+        self.rollbacks = 0
+        self.closed = False
+        self.cursor_instance = FakeCursor()
+
+    def cursor(self):
+        return self.cursor_instance
 
     def commit(self):
         self.commits += 1
+
+    def rollback(self):
+        self.rollbacks += 1
+
+    def close(self):
+        self.closed = True
 
 
 class BatchDedupTests(unittest.TestCase):
@@ -70,6 +84,56 @@ class BatchDedupTests(unittest.TestCase):
         self.assertEqual(len(selects), 1)
         self.assertEqual(len(inserts), 1)
         self.assertEqual(fake_connection.commits, 1)
+
+    def test_connection_loss_reconnects_and_retries_keyword_once(self):
+        previous_cursor, previous_connection = write_to_mysql.cursor, write_to_mysql.conn
+        failed_cursor = FakeCursor()
+        failed_connection = FakeConnection()
+        replacement_connection = FakeConnection()
+        error = pymysql.err.OperationalError(2013, "Lost connection to MySQL server during query (timed out)")
+        reconnected_connection = None
+        reconnected_cursor = None
+        try:
+            write_to_mysql.cursor = failed_cursor
+            write_to_mysql.conn = failed_connection
+            with patch.object(write_to_mysql, "insert_scored_news", side_effect=[error, None]) as insert_mock, \
+                    patch.object(write_to_mysql, "get_connection", return_value=replacement_connection) as connection_mock, \
+                    patch.object(write_to_mysql, "write_log"):
+                write_to_mysql.import_scored_news_with_retry("output/date/news.json", "养老")
+                reconnected_connection = write_to_mysql.conn
+                reconnected_cursor = write_to_mysql.cursor
+        finally:
+            write_to_mysql.cursor, write_to_mysql.conn = previous_cursor, previous_connection
+
+        self.assertEqual(insert_mock.call_count, 2)
+        connection_mock.assert_called_once_with(autocommit=False)
+        self.assertTrue(failed_connection.closed)
+        self.assertIs(reconnected_connection, replacement_connection)
+        self.assertIs(reconnected_cursor, replacement_connection.cursor_instance)
+
+    def test_connection_retry_wrapper_can_protect_source_metadata_imports(self):
+        previous_cursor, previous_connection = write_to_mysql.cursor, write_to_mysql.conn
+        failed_connection = FakeConnection()
+        replacement_connection = FakeConnection()
+        error = pymysql.err.OperationalError(2013, "Lost connection to MySQL server during query (timed out)")
+        action_mock = Mock(side_effect=[error, "ok"])
+        result = None
+        try:
+            write_to_mysql.cursor = failed_connection.cursor_instance
+            write_to_mysql.conn = failed_connection
+            with patch.object(write_to_mysql, "get_connection", return_value=replacement_connection), \
+                    patch.object(write_to_mysql, "write_log"):
+                result = write_to_mysql.run_with_connection_retry(
+                    "导入网站源",
+                    action_mock,
+                    "output/news_sources.txt",
+                )
+        finally:
+            write_to_mysql.cursor, write_to_mysql.conn = previous_cursor, previous_connection
+
+        self.assertEqual(result, "ok")
+        self.assertEqual(action_mock.call_count, 2)
+        self.assertTrue(failed_connection.closed)
 
 
 if __name__ == "__main__":

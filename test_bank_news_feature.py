@@ -120,6 +120,7 @@ class BankNewsFeatureTests(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as tmp_dir:
             previous_cwd = os.getcwd()
+            previous_run_log_path = os.environ.get("RUN_LOG_PATH")
             os.chdir(tmp_dir)
             try:
                 with patch.object(main, "log_script_start"), \
@@ -133,6 +134,10 @@ class BankNewsFeatureTests(unittest.TestCase):
                     self.assertTrue(main.main("2099-01-01", keyword="烟草服务银行"))
             finally:
                 os.chdir(previous_cwd)
+                if previous_run_log_path is None:
+                    os.environ.pop("RUN_LOG_PATH", None)
+                else:
+                    os.environ["RUN_LOG_PATH"] = previous_run_log_path
 
         self.assertEqual(fetch.call_args_list[0].args, ("2099-01-01", "烟草服务银行"))
         self.assertEqual(content.call_args_list[0].args, ("2099-01-01", "烟草服务银行"))

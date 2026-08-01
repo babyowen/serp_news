@@ -30,6 +30,7 @@ from news_dedup_schema import ensure_keyword_scoped_dedup_index
 
 LOG_PATH = os.environ.get("RUN_LOG_PATH", os.path.join('output', 'run_log.txt'))
 TABLE_NAME = get_table_name()
+MYSQL_CONNECTION_ERROR_CODES = {0, 2006, 2013}
 
 def write_log(msg):
     with open(LOG_PATH, 'a', encoding='utf-8') as f:
@@ -38,6 +39,67 @@ def write_log(msg):
 # 建立数据库连接
 conn = get_connection(autocommit=False)
 cursor = conn.cursor()
+
+
+def is_mysql_connection_error(error):
+    """判断是否为连接已不可继续复用的 MySQL 错误。"""
+    if not isinstance(error, pymysql.MySQLError):
+        return False
+    code = error.args[0] if error.args else None
+    if code in MYSQL_CONNECTION_ERROR_CODES:
+        return True
+    message = str(error).lower()
+    return "lost connection" in message or "server has gone away" in message
+
+
+def reconnect_database():
+    """重建全局连接和游标，避免后续关键词复用已失效的连接。"""
+    global conn, cursor
+
+    for resource in (cursor, conn):
+        try:
+            resource.close()
+        except Exception:
+            pass
+
+    conn = get_connection(autocommit=False)
+    cursor = conn.cursor()
+
+
+def rollback_or_reconnect_after_error(error):
+    if is_mysql_connection_error(error):
+        reconnect_database()
+        return
+
+    try:
+        conn.rollback()
+    except pymysql.MySQLError:
+        reconnect_database()
+
+
+def run_with_connection_retry(action_name, func, *args, max_attempts=2):
+    for attempt in range(1, max_attempts + 1):
+        try:
+            return func(*args)
+        except Exception as e:
+            rollback_or_reconnect_after_error(e)
+            if attempt < max_attempts and is_mysql_connection_error(e):
+                warning = f"{action_name} 时数据库连接异常，已重连并重试: {e}"
+                now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                write_log(f"[{now}] [WARN] {warning}")
+                print(f"[WARN] {warning}")
+                continue
+            raise
+
+
+def import_scored_news_with_retry(filepath, keyword, max_attempts=2):
+    return run_with_connection_retry(
+        f"导入 {keyword}",
+        insert_scored_news,
+        filepath,
+        keyword,
+        max_attempts=max_attempts,
+    )
 
 # 写入 scored_news 表（新闻正文及评分）
 # 数据获取：从json_path读取新闻列表
@@ -347,13 +409,17 @@ def main():
             print("[INFO] 已通过 AUTO_MIGRATE_DEDUP_INDEX=0 跳过唯一索引迁移，使用应用层查重")
 
         # 新增：先导入 news_websites
-        insert_news_websites(os.path.join("output", "news_sources.txt"))
+        run_with_connection_retry(
+            "导入网站源",
+            insert_news_websites,
+            os.path.join("output", "news_sources.txt"),
+        )
 
         # 新增：导入 news_source_stats
         stats_json_path = os.path.join("output", "news_source_stats.json")
         if os.path.exists(stats_json_path):
             print(f"正在导入: {stats_json_path} 到 news_source_stats ...")
-            insert_news_source_stats(stats_json_path, target_date)
+            run_with_connection_retry("导入来源统计", insert_news_source_stats, stats_json_path, target_date)
         else:
             print(f"文件不存在，跳过: {stats_json_path}")
 
@@ -365,7 +431,7 @@ def main():
                 continue
             try:
                 print(f"正在导入: {filepath} 到 scored_news ...")
-                insert_scored_news(filepath, keyword)
+                import_scored_news_with_retry(filepath, keyword)
             except Exception as e:
                     now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                     log_msg = f"[{now}] 导入数据库\n  关键词: {keyword}\n  文件: {filepath}\n  表: {TABLE_NAME}\n  错误: {e}\n------------------------------"
