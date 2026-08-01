@@ -39,3 +39,6 @@ output/
 
 # macOS
 .DS_Store
+
+# Deploy private (per-server configs, e.g. BaoTa panel auto-generated)
+.htaccess
