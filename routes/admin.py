@@ -201,13 +201,21 @@ def business_type_dashboard():
     table = get_table_name()
     date_from = request.args.get("date_from", "").strip()
     date_to = request.args.get("date_to", "").strip()
-    context = {"table": table, "date_from": date_from, "date_to": date_to, "schema_ready": False}
+    context = {
+        "table": table,
+        "date_from": date_from,
+        "date_to": date_to,
+        "schema_ready": False,
+        "all_label_stats": {},
+    }
     conn = get_connection(dict_cursor=False)
     try:
         cursor = conn.cursor()
         context["schema_ready"] = table_has_business_types_column(cursor, table)
         if context["schema_ready"]:
+            aliases = load_business_type_aliases(cursor, table)
             context["dashboard"] = get_business_type_dashboard(cursor, table, date_from or None, date_to or None)
+            context["all_label_stats"] = get_business_type_label_stats(cursor, table, aliases)
         cursor.close()
     except Exception as exc:
         context["schema_error"] = str(exc)
