@@ -86,6 +86,7 @@ def models():
         NEWS_SCORE_SYSTEM_MSG_ELDER_CARE, NEWS_SCORE_SYSTEM_MSG_TOBACCO_SERVICE_BANK,
         NEWS_ITEM_SUMMARY_SYSTEM_PROMPT_500, NEWS_ITEM_SUMMARY_USER_PROMPT_500,
         NEWS_ITEM_SUMMARY_SYSTEM_PROMPT_500_GJJ_REGION, NEWS_ITEM_SUMMARY_USER_PROMPT_500_GJJ_REGION,
+        NEWS_ITEM_SHORT_CONTENT_SYSTEM_PROMPT_GJJ_REGION, NEWS_ITEM_SHORT_CONTENT_USER_PROMPT_GJJ_REGION,
         NEWS_BUSINESS_TYPE_SYSTEM_PROMPT_GJJ, NEWS_BUSINESS_TYPE_USER_PROMPT_GJJ,
         NEWS_REGION_SYSTEM_PROMPT_GJJ, NEWS_REGION_USER_PROMPT_GJJ,
     )
@@ -114,6 +115,14 @@ def models():
                 {"name": "公积金摘要 System Prompt", "var": "NEWS_ITEM_SUMMARY_SYSTEM_PROMPT_500_GJJ_REGION", "content": NEWS_ITEM_SUMMARY_SYSTEM_PROMPT_500_GJJ_REGION,
                  "note": "news_item_summarizer 中调用"},
                 {"name": "公积金摘要 User Prompt", "var": "NEWS_ITEM_SUMMARY_USER_PROMPT_500_GJJ_REGION", "content": NEWS_ITEM_SUMMARY_USER_PROMPT_500_GJJ_REGION},
+            ],
+        },
+        {
+            "group": "短正文标注（公积金 — 地域+业务类型一步完成）",
+            "prompts": [
+                {"name": "短正文标注 System Prompt", "var": "NEWS_ITEM_SHORT_CONTENT_SYSTEM_PROMPT_GJJ_REGION", "content": NEWS_ITEM_SHORT_CONTENT_SYSTEM_PROMPT_GJJ_REGION,
+                 "note": "正文不超过 500 字时由 news_item_summarizer 调用，不生成摘要"},
+                {"name": "短正文标注 User Prompt", "var": "NEWS_ITEM_SHORT_CONTENT_USER_PROMPT_GJJ_REGION", "content": NEWS_ITEM_SHORT_CONTENT_USER_PROMPT_GJJ_REGION},
             ],
         },
         {

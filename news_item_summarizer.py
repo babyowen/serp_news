@@ -22,6 +22,7 @@ from config import (
     NEWS_ITEM_SUMMARY_USER_PROMPT_500
 )
 from news_region_utils import (
+    call_region_and_business_type_llm,
     call_summary_and_region_llm,
     table_has_region_column,
     validate_region_table_name,
@@ -125,14 +126,15 @@ def main():
         cur = conn.cursor()
 
         has_region_column = table_has_region_column(cur, table_name)
-        if args.keyword in (None, "公积金") and not has_region_column:
+        if args.keyword == "公积金" and not has_region_column:
             raise ValueError(f"Table {table_name} is missing region column")
         has_business_types_column = table_has_business_types_column(cur, table_name)
-        if args.keyword in (None, "公积金") and not has_business_types_column:
+        if args.keyword == "公积金" and not has_business_types_column:
             raise ValueError(f"Table {table_name} is missing business_types column; run news_business_type_schema.py first")
 
-        aliases = load_business_type_aliases(cur, table_name) if args.keyword in (None, "公积金") else {}
-        business_type_catalog = build_business_type_catalog(cur, table_name, aliases) if args.keyword in (None, "公积金") else {}
+        gjj_annotation_ready = has_region_column and has_business_types_column
+        aliases = load_business_type_aliases(cur, table_name) if gjj_annotation_ready else {}
+        business_type_catalog = build_business_type_catalog(cur, table_name, aliases) if gjj_annotation_ready else {}
 
         sql = f"SELECT id, title, content, keyword FROM {table_name} WHERE fetchdate=%s AND score>=3 AND (short_summary IS NULL OR short_summary='')"
         params = [date]
@@ -160,30 +162,32 @@ def main():
                     continue
                 text = str(content).strip()
                 is_gjj = keyword == "公积金"
+                annotate_gjj = is_gjj and gjj_annotation_ready
                 if len(text) <= 500:
                     backoffs = [1, 2, 4]
                     done = False
                     region = None
                     business_types = []
-                    if is_gjj:
-                        result = call_summary_and_region_llm(
+                    if annotate_gjj:
+                        result = call_region_and_business_type_llm(
                             title or '', text, business_type_catalog, aliases
                         )
                         if not result:
                             fail += 1
                             safe_print(f"[标注生成失败] id={rid}")
+                            time.sleep(0.2)
                             continue
                         region = result.get("region")
                         business_types = result.get("business_types", [])
                     for i in range(len(backoffs) + 1):
                         try:
                             conn.ping(reconnect=True)
-                            if is_gjj:
+                            if annotate_gjj:
                                 update_summary_fields(cur, table_name, rid, text, region, business_types)
                             else:
                                 update_summary_only(cur, table_name, rid, text)
                             success += 1
-                            if is_gjj:
+                            if annotate_gjj:
                                 add_business_types_to_catalog(business_type_catalog, business_types)
                             safe_print(f"[直接写原文] id={rid} 字数={len(text)}")
                             done = True
@@ -205,7 +209,7 @@ def main():
                     if not done:
                         fail += 1
                     continue
-                if is_gjj:
+                if annotate_gjj:
                     result = call_summary_and_region_llm(
                         title or '', content or '', business_type_catalog, aliases
                     )
@@ -222,12 +226,12 @@ def main():
                     for i in range(len(backoffs) + 1):
                         try:
                             conn.ping(reconnect=True)
-                            if is_gjj:
+                            if annotate_gjj:
                                 update_summary_fields(cur, table_name, rid, summary, region, business_types)
                             else:
                                 update_summary_only(cur, table_name, rid, summary)
                             success += 1
-                            if is_gjj:
+                            if annotate_gjj:
                                 add_business_types_to_catalog(business_type_catalog, business_types)
                             safe_print(f"[更新成功] id={rid}")
                             done = True

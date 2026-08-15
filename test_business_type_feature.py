@@ -15,7 +15,11 @@ from news_business_type_utils import (
     validate_business_type_table_name,
 )
 from news_business_type_analyzer import build_query
-from news_region_utils import call_business_type_llm, call_summary_and_region_llm
+from news_region_utils import (
+    call_business_type_llm,
+    call_region_and_business_type_llm,
+    call_summary_and_region_llm,
+)
 
 
 class FakeCursor:
@@ -131,6 +135,13 @@ class BusinessTypeUtilsTests(unittest.TestCase):
         ]))
         self.assertIsNone(validate_llm_business_types([{"level1": "投资", "level2": "基金"}]))
 
+    def test_llm_validation_allows_alias_and_duplicate_to_deduplicate(self):
+        result = validate_llm_business_types([
+            {"level1": "贷款", "level2": "首付比例"},
+            {"level1": "贷款", "level2": "贷款首付"},
+        ], {("贷款", "首付比例"): "贷款首付"})
+        self.assertEqual(result, [{"level1": "贷款", "level2": "贷款首付"}])
+
     def test_alias_chain_resolves_to_final_canonical_label(self):
         aliases = {
             ("贷款", "首付比例"): "贷款首付",
@@ -182,6 +193,17 @@ class BusinessTypeUtilsTests(unittest.TestCase):
             {"business_types": []}
         '''):
             self.assertEqual(call_business_type_llm("标题", "正文", catalog), [])
+
+    def test_short_content_helper_does_not_require_summary(self):
+        with mock.patch("news_region_utils._call_llm", return_value='''
+            {"region":"南京市", "business_types":[{"level1":"提取","level2":"物业费"}]}
+        ''') as call:
+            result = call_region_and_business_type_llm("短标题", "短正文", {"提取": ["物业费"]})
+        self.assertEqual(result, {
+            "region": "南京",
+            "business_types": [{"level1": "提取", "level2": "物业费"}],
+        })
+        self.assertIn("不需要生成摘要", call.call_args.args[0])
 
     def test_merge_updates_news_and_rewrites_existing_alias_chain(self):
         conn = MergeConnection()

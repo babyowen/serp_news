@@ -175,10 +175,9 @@ def validate_llm_business_types(raw_types, aliases=None):
         level2 = _clean_label(item.get("level2"))
         if level1 not in BUSINESS_TYPE_LEVEL1 or not level2:
             return None
-    normalized = normalize_business_types(raw_types, aliases)
-    if len(normalized) != len(raw_types):
-        return None
-    return normalized
+    # 别名归并或模型重复输出会让条目数收缩；这是规范化的预期结果，
+    # 不应使原本合法的 payload 连同摘要、地域一起被拒绝。
+    return normalize_business_types(raw_types, aliases)
 
 
 def decode_business_types(value, aliases=None):

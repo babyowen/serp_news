@@ -48,6 +48,8 @@ MYSQL_TABLE=scored_news_test .venv/bin/python news_business_type_analyzer.py --l
 .venv/bin/python news_business_type_schema.py --table scored_news
 ```
 
+**部署顺序不可颠倒：**先完成上述 schema 初始化并确认成功，再部署包含公积金业务类型功能的代码，最后恢复或执行日常流水线。以 `--keyword 公积金` 运行摘要器时，缺少 `business_types` 字段会明确报错；未指定关键词的全量运行会继续处理其它关键词，但会跳过公积金的地域和业务类型标注。
+
 随后可分批执行历史补标；默认仅处理 `business_types IS NULL` 的高分公积金新闻，不会覆盖已有标签：
 
 ```bash
