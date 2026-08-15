@@ -20,6 +20,8 @@ python fetch_content.py "测试" YYYY-MM-DD --url="https://example.com/news"  # 
 python news_scorer.py "养老" YYYY-MM-DD
 python news_item_summarizer.py YYYY-MM-DD
 python news_region_analyzer.py --keyword 公积金 --date YYYY-MM-DD
+python news_business_type_schema.py --table scored_news_test
+python news_business_type_analyzer.py --date-from YYYY-MM-DD --date-to YYYY-MM-DD
 python tobacco_gov_crawler.py
 python tobacco_gov_crawler.py --date YYYY-MM-DD    # 指定日期（默认昨天）
 python tobacco_gov_crawler.py --dry-run             # 仅解析不入库
@@ -54,7 +56,7 @@ git -c credential.helper='!f() { echo "username=babyowen"; echo "password=$(/opt
 | 2 | `fetch_content.py` | 5级兜底正文提取 | - |
 | 3 | `news_scorer.py` | AI评分0-5分，3线程并发 | - |
 | 4 | `write_to_mysql.py` | MySQL持久化 | - |
-| 5 | `news_item_summarizer.py` | 单条500字摘要（同时写地域字段） | `ENABLE_ITEM_SUMMARIZER` |
+| 5 | `news_item_summarizer.py` | 单条500字摘要（公积金同时写地域和业务类型） | `ENABLE_ITEM_SUMMARIZER` |
 | 6 | 地域分析 | 由单条摘要阶段一并处理 | - |
 | 7 | `tobacco_gov_crawler.py` | 烟草官网5板块爬取，支持`--date`指定日期 | 条件触发（含中国烟草时） |
 
@@ -107,8 +109,8 @@ git -c credential.helper='!f() { echo "username=babyowen"; echo "password=$(/opt
 
 ## 数据库表
 
-- **scored_news** — 新闻主表/生产表（含 `short_summary` 和 `region` 字段）
-- **scored_news_test** — 新闻测试表（结构与生产表相同，本地开发用）
+- **scored_news** — 新闻主表/生产表（含 `short_summary`、`region` 和 `business_types` 字段）
+- **scored_news_test** — 新闻测试表（含 `short_summary`、`region` 和 `business_types`，本地开发用）
 - **summary_news** — 日报摘要（已废弃，保留表结构）
 - **news_source_stats** — 源域名统计
 - **news_websites** — 网站元数据
@@ -138,6 +140,8 @@ python -m unittest -v test_bank_news_feature.py test_historical_date_filter.py t
 - 所有 AI 模块（评分/摘要/地域）统一使用 `deepseek-v4-flash` 模型，配置在 `config.py`
 - 日志系统：每次运行生成独立批次日志 `output/{date}/run_{YYYYMMDD_HHMMSS}.log`，通过 `RUN_LOG_PATH` 环境变量传递给子进程；手动运行单个脚本时 fallback 到 `output/run_log.txt`
 - `/admin/models` 页面展示当前启用的 Prompt（按评分/摘要/公积金/地域分组）
+- `/admin/business-type-dashboard` 是公积金业务类型的只读覆盖率看板，支持按 `fetchdate` 筛选，展示待补标、类型分布和最近标注记录
+- `/admin/business-types` 用于查看公积金二级标签、预览并确认同一级标签合并；合并规则按生产/测试表隔离
 - 内容提取含防屏蔽：User-Agent伪装、SSL忽略、同站点1-4秒间隔
 - `msn.cn` 跳过、`tv.cctv.com` 跳过、`people.com.cn` 强制HTTP
 - `tobacco_gov_crawler.py` 独立脚本，固定4分，直接写MySQL不经过JSON，按 `title` 去重

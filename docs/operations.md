@@ -33,6 +33,31 @@ AUTO_MIGRATE_DEDUP_INDEX=0
 
 修改 `.env` 后，重新启动读取该文件的常驻 Web 服务。定时任务每次启动 `main.py` 时会读取 `.env`；无需因为该变量单独重建定时任务。
 
+## 公积金业务类型初始化（Issue #10）
+
+业务类型字段不会由日常流水线自动创建。先在测试表验证：
+
+```bash
+MYSQL_TABLE=scored_news_test .venv/bin/python news_business_type_schema.py --table scored_news_test
+MYSQL_TABLE=scored_news_test .venv/bin/python news_business_type_analyzer.py --limit 20
+```
+
+确认管理端“业务类型管理”页面的标签、合并预览和补标结果后，再在维护窗口执行生产初始化：
+
+```bash
+.venv/bin/python news_business_type_schema.py --table scored_news
+```
+
+**部署顺序不可颠倒：**先完成上述 schema 初始化并确认成功，再部署包含公积金业务类型功能的代码，最后恢复或执行日常流水线。以 `--keyword 公积金` 运行摘要器时，缺少 `business_types` 字段会明确报错；未指定关键词的全量运行会继续处理其它关键词，但会跳过公积金的地域和业务类型标注。
+
+随后可分批执行历史补标；默认仅处理 `business_types IS NULL` 的高分公积金新闻，不会覆盖已有标签：
+
+```bash
+.venv/bin/python news_business_type_analyzer.py --date-from YYYY-MM-DD --date-to YYYY-MM-DD --limit 100
+```
+
+仅在人工核验后需要重标已有结果时，才附加 `--force`。不要在未完成测试表验证前对生产库执行全量补标。
+
 ## 每日任务
 
 定时任务应从项目根目录使用项目虚拟环境执行：

@@ -10,9 +10,10 @@
 - **AI智能评分**：0-5分量化评估，支持关键词专属评分标准，3线程并发
 - **单条500字摘要**：对3分及以上新闻生成精炼摘要
 - **地域标注**：公积金等主题自动标注城市级地域标签
+- **公积金业务类型**：高分公积金新闻支持最多两个可治理的一级/二级业务标签
 - **银行新闻监测**：`烟草服务银行`主题覆盖8家指定银行，优先筛选江苏省内重要动态
 - **烟草官网爬取**：中国烟草官网3个栏目定向采集
-- **Bootstrap管理前端**：关键词配置、模型查看、运行监控
+- **Bootstrap管理前端**：关键词配置、模型查看、运行监控及公积金标注覆盖率看板
 
 ## 快速开始
 
@@ -78,6 +79,7 @@ CREATE TABLE IF NOT EXISTS `scored_news` (
   `search_keyword` varchar(255) DEFAULT NULL,
   `short_summary` text,
   `region` varchar(255) DEFAULT NULL,
+  `business_types` json DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `keyword_title_link` (`keyword`(100),`title`,`link`(255))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -142,6 +144,8 @@ python fetch_content.py "测试" YYYY-MM-DD --url="https://example.com"     # �
 python news_scorer.py "养老" YYYY-MM-DD                                   # AI评分
 python news_item_summarizer.py YYYY-MM-DD                                 # 单条摘要
 python news_region_analyzer.py --keyword 公积金 --date YYYY-MM-DD         # 地域分析
+python news_business_type_schema.py --table scored_news_test               # 初始化业务类型测试表
+python news_business_type_analyzer.py --date-from YYYY-MM-DD --date-to YYYY-MM-DD  # 公积金业务类型补标
 python tobacco_gov_crawler.py                                             # 烟草爬虫
 python write_to_mysql.py --date YYYY-MM-DD                                # 数据入库
 python write_to_mysql.py --date YYYY-MM-DD --keyword 烟草服务银行          # 仅导入一个主关键词
@@ -158,7 +162,7 @@ AUTO_MIGRATE_DEDUP_INDEX=1 python write_to_mysql.py --date YYYY-MM-DD     # 仅�
 | 2 | `fetch_content.py` | 5级兜底正文提取 | - |
 | 3 | `news_scorer.py` | AI评分0-5分，3线程并发 | - |
 | 4 | `write_to_mysql.py` | MySQL持久化 | - |
-| 5 | `news_item_summarizer.py` | 单条500字摘要 | `ENABLE_ITEM_SUMMARIZER` |
+| 5 | `news_item_summarizer.py` | 单条500字摘要；公积金同时标注地域和业务类型 | `ENABLE_ITEM_SUMMARIZER` |
 | 6 | `news_region_analyzer.py` | 公积金地域分析 | 条件触发+`ENABLE_REGION_ANALYZER` |
 | 7 | `tobacco_gov_crawler.py` | 烟草官网3栏目爬取 | 条件触发（含中国烟草时） |
 
@@ -177,10 +181,12 @@ AUTO_MIGRATE_DEDUP_INDEX=1 python write_to_mysql.py --date YYYY-MM-DD     # 仅�
 
 ### 数据库表
 
-- **scored_news** — 新闻主表（含评分、短摘要、地域）
+- **scored_news** — 新闻主表（含评分、短摘要、地域、业务类型）
 - **summary_news** — 日报摘要（已废弃）
 - **news_source_stats** — 源域名统计
 - **news_websites** — 网站元数据
+
+管理端的 `/admin/business-type-dashboard` 提供公积金高分新闻的业务类型标注覆盖率、一级/二级标签分布和最近标注记录；可按 `fetchdate` 筛选，且仅做只读统计。
 
 ### Flask管理前端
 
