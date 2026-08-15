@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}公积金标注看板{% endblock %}
+{% block content %}
+<style>
+    .coverage-hero { background: linear-gradient(132deg, #14332e, #1d5348 62%, #2a7564); color: #f8f5ed; border-radius: 14px; overflow: hidden; position: relative; }
+    .coverage-hero::after { content:""; position:absolute; right:-9%; top:-120%; width:44%; aspect-ratio:1; border:1px solid rgba(255,255,255,.17); border-radius:50%; box-shadow:0 0 0 36px rgba(255,255,255,.05),0 0 0 72px rgba(255,255,255,.04); }
+    .hero-label { font-size:.72rem; letter-spacing:.14em; text-transform:uppercase; color:#b4d6cd; }
+    .hero-number { font-family: Georgia, "Songti SC", serif; font-size:clamp(3.2rem, 9vw, 5rem); letter-spacing:-.055em; line-height:.9; }
+    .coverage-meter { height:9px; background:rgba(255,255,255,.18); border-radius:999px; overflow:hidden; }
+    .coverage-meter > span { display:block; height:100%; width:{{ dashboard.coverage if dashboard else 0 }}%; background:#e6b86b; border-radius:inherit; }
+    .metric-card { border-top:3px solid var(--metric-color); min-height:126px; }
+    .metric-value { font-family: Georgia, "Songti SC", serif; font-size:2rem; font-weight:700; line-height:1; }
+    .type-bar { height:9px; background:#e8eeeb; border-radius:999px; overflow:hidden; }
+    .type-bar span { display:block; height:100%; background:#2a7564; border-radius:inherit; }
+    .recent-title { max-width:520px; }
+    .tag { display:inline-block; color:#245749; background:#edf7f3; border:1px solid #c9e7dc; border-radius:999px; font-size:.72rem; padding:.14rem .45rem; margin:.08rem .12rem .08rem 0; }
+</style>
+
+<div class="d-flex align-items-center mb-4">
+    <div><div class="text-uppercase text-muted small" style="letter-spacing:.12em">Housing Fund / Data Coverage</div><h3 class="mb-0">公积金业务标注看板</h3></div>
+    <a class="btn btn-sm btn-outline-secondary ms-auto" href="{{ url_for('admin.business_types') }}"><i class="bi bi-diagram-3 me-1"></i>管理二级标签</a>
+</div>
+
+{% if not schema_ready %}
+<div class="alert alert-warning">业务类型字段尚未初始化。{% if schema_error %}{{ schema_error }}{% else %}请先运行 schema 初始化脚本。{% endif %}</div>
+{% else %}
+<form class="card mb-4" method="get"><div class="card-body py-3"><div class="row g-2 align-items-end">
+    <div class="col-md-3"><label class="form-label small text-muted mb-1">开始日期</label><input class="form-control form-control-sm" type="date" name="date_from" value="{{ date_from }}"></div>
+    <div class="col-md-3"><label class="form-label small text-muted mb-1">结束日期</label><input class="form-control form-control-sm" type="date" name="date_to" value="{{ date_to }}"></div>
+    <div class="col-md-3"><button class="btn btn-primary btn-sm me-2" type="submit">更新看板</button><a class="btn btn-outline-secondary btn-sm" href="{{ url_for('admin.business_type_dashboard') }}">查看全量</a></div>
+    <div class="col-md-3 text-md-end text-muted small">目标表：<code>{{ table }}</code></div>
+</div></div></form>
+
+<section class="coverage-hero p-4 p-md-5 mb-4">
+    <div class="row align-items-center position-relative" style="z-index:1"><div class="col-md-7"><div class="hero-label mb-3">覆盖率 / Coverage</div><div class="d-flex align-items-end gap-3"><div class="hero-number">{{ dashboard.coverage }}%</div><div class="pb-1 text-white-50">{{ dashboard.labeled }} / {{ dashboard.eligible }}<br>高分公积金新闻已标注</div></div><div class="coverage-meter mt-4"><span></span></div></div><div class="col-md-5 mt-4 mt-md-0"><p class="mb-1 text-white-50 small">当前范围</p><p class="h5 mb-0">{% if date_from or date_to %}{{ date_from or '最早记录' }} — {{ date_to or '最新记录' }}{% else %}全量历史数据{% endif %}</p></div></div>
+</section>
+
+<div class="row g-3 mb-4"><div class="col-md-4"><div class="card metric-card h-100" style="--metric-color:#2a7564"><div class="card-body"><div class="text-muted small">已标注</div><div class="metric-value mt-2">{{ dashboard.labeled }}</div><div class="small text-muted mt-2">含 {{ dashboard.empty }} 条“无法可靠判断”</div></div></div></div><div class="col-md-4"><div class="card metric-card h-100" style="--metric-color:#e6b86b"><div class="card-body"><div class="text-muted small">待补标</div><div class="metric-value mt-2">{{ dashboard.pending }}</div><div class="small text-muted mt-2">默认补跑会处理这些记录</div></div></div></div><div class="col-md-4"><div class="card metric-card h-100" style="--metric-color:#607d74"><div class="card-body"><div class="text-muted small">有效新闻</div><div class="metric-value mt-2">{{ dashboard.eligible }}</div><div class="small text-muted mt-2">公积金 · 评分 3 分及以上</div></div></div></div></div>
+
+<div class="row g-4"><div class="col-lg-5"><div class="card h-100"><div class="card-header">一级业务类型分布</div><div class="card-body">{% set max_count = dashboard.level1_counts | map(attribute='count') | max %}{% for item in dashboard.level1_counts %}<div class="mb-3"><div class="d-flex justify-content-between small mb-1"><span>{{ item.level1 }}</span><strong>{{ item.count }}</strong></div><div class="type-bar"><span style="width:{{ (item.count * 100 / max_count) if max_count else 0 }}%"></span></div></div>{% endfor %}</div></div></div><div class="col-lg-7"><div class="card h-100"><div class="card-header">出现最多的二级标签</div><div class="card-body p-0"><div class="table-responsive"><table class="table table-sm table-hover mb-0"><thead><tr><th>一级</th><th>二级标签</th><th class="text-end">新闻数</th></tr></thead><tbody>{% for item in dashboard.level2_counts %}<tr><td><span class="tag">{{ item.level1 }}</span></td><td>{{ item.level2 }}</td><td class="text-end"><strong>{{ item.count }}</strong></td></tr>{% else %}<tr><td colspan="3" class="text-center text-muted py-4">当前范围内暂无已标注新闻</td></tr>{% endfor %}</tbody></table></div></div></div></div></div>
+
+<div class="card mt-4"><div class="card-header d-flex align-items-center"><span>最近完成标注的新闻</span><span class="badge bg-light text-dark border ms-2">{{ dashboard.recent_items | length }} 条</span></div><div class="card-body p-0"><div class="table-responsive"><table class="table table-hover mb-0 align-middle"><thead><tr><th>新闻</th><th>标签</th><th class="text-center">评分</th><th class="text-center">日期</th></tr></thead><tbody>{% for item in dashboard.recent_items %}<tr><td class="recent-title"><div class="fw-medium">{{ item.title }}</div>{% if item.region %}<small class="text-muted">{{ item.region }}</small>{% endif %}</td><td>{% for tag in item.business_types %}<span class="tag">{{ tag.level1 }} · {{ tag.level2 }}</span>{% else %}<span class="text-muted small">无法可靠判断</span>{% endfor %}</td><td class="text-center">{{ item.score }}</td><td class="text-center text-muted small">{{ item.fetchdate }}</td></tr>{% else %}<tr><td colspan="4" class="text-center text-muted py-4">暂无已标注新闻</td></tr>{% endfor %}</tbody></table></div></div></div>
+{% endif %}
+{% endblock %}

@@ -221,6 +221,82 @@ def format_business_type_catalog(catalog):
     return "\n".join(lines) or "（当前暂无既有二级标签；请仅在确有必要时新建。）"
 
 
+def get_business_type_dashboard(cursor, table_name, date_from=None, date_to=None, recent_limit=8):
+    """Return read-only coverage, distribution and recent labeled-news data for the admin dashboard."""
+    validate_business_type_table_name(table_name)
+    where = ["keyword=%s", "score>=3"]
+    params = ["公积金"]
+    if date_from:
+        where.append("fetchdate >= %s")
+        params.append(date_from)
+    if date_to:
+        where.append("fetchdate <= %s")
+        params.append(date_to)
+    where_sql = " AND ".join(where)
+
+    cursor.execute(
+        f"""
+        SELECT COUNT(*),
+               SUM(business_types IS NOT NULL),
+               SUM(business_types IS NULL),
+               SUM(CASE WHEN business_types IS NOT NULL AND JSON_LENGTH(business_types)=0 THEN 1 ELSE 0 END)
+        FROM {table_name}
+        WHERE {where_sql}
+        """,
+        tuple(params),
+    )
+    eligible, labeled, pending, empty = cursor.fetchone()
+    eligible = eligible or 0
+    labeled = labeled or 0
+    pending = pending or 0
+    empty = empty or 0
+
+    cursor.execute(
+        f"SELECT business_types FROM {table_name} WHERE {where_sql} AND business_types IS NOT NULL",
+        tuple(params),
+    )
+    level1_counts = defaultdict(int)
+    level2_counts = defaultdict(int)
+    for (raw_types,) in cursor.fetchall():
+        for item in decode_business_types(raw_types):
+            level1_counts[item["level1"]] += 1
+            level2_counts[(item["level1"], item["level2"])] += 1
+
+    cursor.execute(
+        f"""
+        SELECT fetchdate, title, score, region, business_types
+        FROM {table_name}
+        WHERE {where_sql} AND business_types IS NOT NULL
+        ORDER BY fetchdate DESC, id DESC
+        LIMIT %s
+        """,
+        tuple(params + [recent_limit]),
+    )
+    recent_items = []
+    for fetchdate, title, score, region, raw_types in cursor.fetchall():
+        recent_items.append({
+            "fetchdate": fetchdate,
+            "title": title,
+            "score": score,
+            "region": region,
+            "business_types": decode_business_types(raw_types),
+        })
+
+    return {
+        "eligible": eligible,
+        "labeled": labeled,
+        "pending": pending,
+        "empty": empty,
+        "coverage": round(labeled * 100 / eligible, 1) if eligible else 0,
+        "level1_counts": [{"level1": level1, "count": level1_counts[level1]} for level1 in BUSINESS_TYPE_LEVEL1],
+        "level2_counts": [
+            {"level1": level1, "level2": level2, "count": count}
+            for (level1, level2), count in sorted(level2_counts.items(), key=lambda item: (-item[1], item[0]))[:12]
+        ],
+        "recent_items": recent_items,
+    }
+
+
 def merge_secondary_labels(conn, table_name, level1, retired_labels, target_label):
     """Merge one or more same-level labels and update all affected news atomically."""
     validate_business_type_table_name(table_name)

@@ -140,6 +140,7 @@ python -m unittest -v test_bank_news_feature.py test_historical_date_filter.py t
 - 所有 AI 模块（评分/摘要/地域）统一使用 `deepseek-v4-flash` 模型，配置在 `config.py`
 - 日志系统：每次运行生成独立批次日志 `output/{date}/run_{YYYYMMDD_HHMMSS}.log`，通过 `RUN_LOG_PATH` 环境变量传递给子进程；手动运行单个脚本时 fallback 到 `output/run_log.txt`
 - `/admin/models` 页面展示当前启用的 Prompt（按评分/摘要/公积金/地域分组）
+- `/admin/business-type-dashboard` 是公积金业务类型的只读覆盖率看板，支持按 `fetchdate` 筛选，展示待补标、类型分布和最近标注记录
 - `/admin/business-types` 用于查看公积金二级标签、预览并确认同一级标签合并；合并规则按生产/测试表隔离
 - 内容提取含防屏蔽：User-Agent伪装、SSL忽略、同站点1-4秒间隔
 - `msn.cn` 跳过、`tv.cctv.com` 跳过、`people.com.cn` 强制HTTP

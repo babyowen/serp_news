@@ -12,6 +12,7 @@ from config import DEFAULT_KEYWORDS
 from news_business_type_utils import (
     count_secondary_label_uses,
     get_business_type_alias_records,
+    get_business_type_dashboard,
     get_business_type_label_stats,
     load_business_type_aliases,
     merge_secondary_labels,
@@ -193,6 +194,26 @@ def business_types():
         except Exception as exc:
             flash(f"业务类型操作失败：{exc}", "danger")
     return render_template("admin/business_types.html", **_business_types_context(table))
+
+
+@admin_bp.route("/business-type-dashboard")
+def business_type_dashboard():
+    table = get_table_name()
+    date_from = request.args.get("date_from", "").strip()
+    date_to = request.args.get("date_to", "").strip()
+    context = {"table": table, "date_from": date_from, "date_to": date_to, "schema_ready": False}
+    conn = get_connection(dict_cursor=False)
+    try:
+        cursor = conn.cursor()
+        context["schema_ready"] = table_has_business_types_column(cursor, table)
+        if context["schema_ready"]:
+            context["dashboard"] = get_business_type_dashboard(cursor, table, date_from or None, date_to or None)
+        cursor.close()
+    except Exception as exc:
+        context["schema_error"] = str(exc)
+    finally:
+        conn.close()
+    return render_template("admin/business_type_dashboard.html", **context)
 
 
 @admin_bp.route("/runs")

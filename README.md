@@ -13,7 +13,7 @@
 - **公积金业务类型**：高分公积金新闻支持最多两个可治理的一级/二级业务标签
 - **银行新闻监测**：`烟草服务银行`主题覆盖8家指定银行，优先筛选江苏省内重要动态
 - **烟草官网爬取**：中国烟草官网3个栏目定向采集
-- **Bootstrap管理前端**：关键词配置、模型查看、运行监控
+- **Bootstrap管理前端**：关键词配置、模型查看、运行监控及公积金标注覆盖率看板
 
 ## 快速开始
 
@@ -185,6 +185,8 @@ AUTO_MIGRATE_DEDUP_INDEX=1 python write_to_mysql.py --date YYYY-MM-DD     # 仅�
 - **summary_news** — 日报摘要（已废弃）
 - **news_source_stats** — 源域名统计
 - **news_websites** — 网站元数据
+
+管理端的 `/admin/business-type-dashboard` 提供公积金高分新闻的业务类型标注覆盖率、一级/二级标签分布和最近标注记录；可按 `fetchdate` 筛选，且仅做只读统计。
 
 ### Flask管理前端
 

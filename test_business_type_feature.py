@@ -7,6 +7,7 @@ from news_business_type_utils import (
     BUSINESS_TYPE_LEVEL1,
     build_business_type_catalog,
     format_business_type_catalog,
+    get_business_type_dashboard,
     merge_secondary_labels,
     normalize_business_types,
     resolve_canonical_level2,
@@ -71,6 +72,32 @@ class MergeConnection:
 
     def rollback(self):
         raise AssertionError("merge should not roll back")
+
+
+class DashboardCursor:
+    def __init__(self):
+        self.responses = [
+            [(10, 7, 3, 1)],
+            [
+                ('[{"level1":"提取","level2":"新增提取情形"}]',),
+                ('[{"level1":"贷款","level2":"贷款额度调整"}]',),
+            ],
+            [
+                ("2026-08-14", "示例新闻", 4, "南京", '[{"level1":"提取","level2":"新增提取情形"}]'),
+            ],
+        ]
+        self.executed = []
+        self.rows = []
+
+    def execute(self, sql, params=None):
+        self.executed.append((" ".join(sql.split()), params))
+        self.rows = self.responses.pop(0)
+
+    def fetchone(self):
+        return self.rows[0]
+
+    def fetchall(self):
+        return self.rows
 
 
 class BusinessTypeUtilsTests(unittest.TestCase):
@@ -177,6 +204,16 @@ class BusinessTypeUtilsTests(unittest.TestCase):
     def test_table_name_validation_rejects_sql_injection(self):
         with self.assertRaises(ValueError):
             validate_business_type_table_name("scored_news_test; DROP TABLE scored_news")
+
+    def test_dashboard_aggregates_coverage_types_and_recent_news(self):
+        cursor = DashboardCursor()
+        dashboard = get_business_type_dashboard(cursor, "scored_news_test", "2026-08-13", "2026-08-14")
+        self.assertEqual(dashboard["coverage"], 70.0)
+        self.assertEqual(dashboard["pending"], 3)
+        self.assertEqual(dashboard["empty"], 1)
+        self.assertEqual(dashboard["level1_counts"][1], {"level1": "提取", "count": 1})
+        self.assertEqual(dashboard["recent_items"][0]["business_types"][0]["level2"], "新增提取情形")
+        self.assertIn("fetchdate >= %s", cursor.executed[0][0])
 
 
 if __name__ == "__main__":
