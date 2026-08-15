@@ -191,7 +191,7 @@ AUTO_MIGRATE_DEDUP_INDEX=1 python write_to_mysql.py --date YYYY-MM-DD     # 仅�
 ### Flask管理前端
 
 - **公开路由**：`/`（新闻看板）、`/date/<date>`（单日浏览）、`/database`（数据库查看）
-- **管理路由**（需Basic Auth）：`/admin/keywords`、`/admin/models`、`/admin/runs`
+- **管理路由**（需Basic Auth）：`/admin/keywords`、`/admin/models`、`/admin/runs`、`/admin/business-type-dashboard`（公积金标注看板）、`/admin/business-types`（二级标签合并）
 
 ## 测试
 
@@ -202,8 +202,8 @@ MYSQL_TABLE=scored_news_test python main.py YYYY-MM-DD
 # 验证模块加载
 python -c "from config import SEARCH_KEYWORDS; print(SEARCH_KEYWORDS)"
 
-# 回归测试：银行监测、历史日期过滤、应用层查重
-python -m unittest -v test_bank_news_feature.py test_historical_date_filter.py test_write_to_mysql_dedup.py
+# 回归测试：银行监测、历史日期过滤、应用层查重、业务类型标注
+python -m unittest -v test_bank_news_feature.py test_historical_date_filter.py test_write_to_mysql_dedup.py test_business_type_feature.py
 ```
 
 ## 注意事项
@@ -217,4 +217,4 @@ python -m unittest -v test_bank_news_feature.py test_historical_date_filter.py t
 - `output/` 目录已 gitignore
 
 ---
-*该文档最后更新于：2026-07-17*
+*该文档最后更新于：2026-08-15*
