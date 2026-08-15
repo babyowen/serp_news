@@ -9,11 +9,14 @@ from config import (
     DEEPSEEK_BASE_URL,
     NEWS_ITEM_SUMMARY_SYSTEM_PROMPT_500_GJJ_REGION,
     NEWS_ITEM_SUMMARY_USER_PROMPT_500_GJJ_REGION,
+    NEWS_BUSINESS_TYPE_SYSTEM_PROMPT_GJJ,
+    NEWS_BUSINESS_TYPE_USER_PROMPT_GJJ,
     NEWS_REGION_SYSTEM_PROMPT_GJJ,
     NEWS_REGION_USER_PROMPT_GJJ,
 )
 from icon_manager import safe_print
 from llm_client_pool import get_pool
+from news_business_type_utils import format_business_type_catalog, validate_llm_business_types
 
 
 ALLOWED_REGION_TABLES = {"scored_news", "scored_news_test"}
@@ -231,10 +234,11 @@ def normalize_region(raw_region):
     return "|".join(normalized_items)
 
 
-def call_summary_and_region_llm(title, content, max_retries=3):
+def call_summary_and_region_llm(title, content, business_type_catalog=None, aliases=None, max_retries=3):
     user_prompt = NEWS_ITEM_SUMMARY_USER_PROMPT_500_GJJ_REGION.format(
         title=(title or "").strip(),
         content=(content or "").strip(),
+        business_type_catalog=format_business_type_catalog(business_type_catalog or {}),
     )
     raw_text = _call_llm(
         NEWS_ITEM_SUMMARY_SYSTEM_PROMPT_500_GJJ_REGION,
@@ -242,17 +246,38 @@ def call_summary_and_region_llm(title, content, max_retries=3):
         max_retries=max_retries,
     )
     payload = _extract_json_payload(raw_text)
-    if not isinstance(payload, dict):
+    if not isinstance(payload, dict) or "business_types" not in payload:
         return None
 
     short_summary = str(payload.get("short_summary", "")).strip()
     if not short_summary:
         return None
 
+    business_types = validate_llm_business_types(payload.get("business_types"), aliases)
+    if business_types is None:
+        return None
     return {
         "short_summary": short_summary,
         "region": normalize_region(payload.get("region")),
+        "business_types": business_types,
     }
+
+
+def call_business_type_llm(title, content, business_type_catalog=None, aliases=None, max_retries=3):
+    user_prompt = NEWS_BUSINESS_TYPE_USER_PROMPT_GJJ.format(
+        title=(title or "").strip(),
+        content=(content or "").strip(),
+        business_type_catalog=format_business_type_catalog(business_type_catalog or {}),
+    )
+    raw_text = _call_llm(
+        NEWS_BUSINESS_TYPE_SYSTEM_PROMPT_GJJ,
+        user_prompt,
+        max_retries=max_retries,
+    )
+    payload = _extract_json_payload(raw_text)
+    if not isinstance(payload, dict) or "business_types" not in payload:
+        return None
+    return validate_llm_business_types(payload.get("business_types"), aliases)
 
 
 def call_region_llm(title, content, max_retries=3):

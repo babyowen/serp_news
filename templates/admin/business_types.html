@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% block title %}业务类型管理{% endblock %}
+{% block content %}
+<h4 class="mb-3"><i class="bi bi-diagram-3 me-1"></i>公积金业务类型管理</h4>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% for category, message in messages %}
+<div class="alert alert-{{ category }}">{{ message }}</div>
+{% endfor %}
+{% endwith %}
+
+{% if not schema_ready %}
+<div class="alert alert-warning">
+    业务类型数据表尚未初始化。请先在目标库执行 <code>python3 news_business_type_schema.py --table {{ table }}</code>。
+    {% if schema_error %}<div class="small mt-1">{{ schema_error }}</div>{% endif %}
+</div>
+{% else %}
+<div class="alert alert-light border small">
+    当前目标表：<code>{{ table }}</code>。仅可在同一一级类型内合并；合并会同步更新所有公积金新闻中的历史标签。
+</div>
+
+{% if preview %}
+<div class="card border-primary mb-4">
+    <div class="card-header text-primary">确认合并</div>
+    <div class="card-body">
+        <p class="mb-2"><strong>{{ preview.level1 }}</strong>：{{ preview.retired_labels | join('、') }} → <strong>{{ preview.target_label }}</strong></p>
+        <p class="text-muted small">预计更新 {{ preview.affected_count }} 条新闻记录；旧标签将被记录为废弃别名，后续 AI 标注会复用目标标签。</p>
+        <form method="post" class="d-inline">
+            <input type="hidden" name="action" value="confirm_merge">
+            <input type="hidden" name="level1" value="{{ preview.level1 }}">
+            <input type="hidden" name="retired_labels" value='{{ preview.retired_labels | tojson }}'>
+            <input type="hidden" name="target_new" value="{{ preview.target_label }}">
+            <button class="btn btn-primary btn-sm" type="submit"><i class="bi bi-check2"></i> 确认合并</button>
+        </form>
+        <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('admin.business_types') }}">取消</a>
+    </div>
+</div>
+{% endif %}
+
+<form method="post" id="merge-form" class="card mb-4">
+    <input type="hidden" name="action" value="preview_merge">
+    <input type="hidden" name="retired_labels" id="retired-labels">
+    <div class="card-header">合并二级标签</div>
+    <div class="card-body">
+        <div class="mb-3">
+            <label class="form-label">一级类型</label>
+            <select name="level1" id="level1" class="form-select form-select-sm" required>
+                <option value="">请选择</option>
+                {% for level1 in ['缴存', '提取', '贷款', '其它'] %}<option value="{{ level1 }}">{{ level1 }}</option>{% endfor %}
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">待合并标签（可多选）</label>
+            {% for level1, labels in stats.items() %}
+            <div class="label-group d-none" data-level1="{{ level1 }}">
+                {% for item in labels %}
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input source-label" type="checkbox" value="{{ item.label }}" id="source-{{ level1 }}-{{ loop.index }}">
+                    <label class="form-check-label small" for="source-{{ level1 }}-{{ loop.index }}">{{ item.label }} <span class="text-muted">({{ item.count }})</span></label>
+                </div>
+                {% else %}<span class="text-muted small">暂无可合并标签</span>{% endfor %}
+            </div>
+            {% endfor %}
+        </div>
+        <div class="row g-2">
+            <div class="col-md-6">
+                <label class="form-label">合并至已有标签</label>
+                <select name="target_existing" id="target-existing" class="form-select form-select-sm"><option value="">请选择</option></select>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">或输入新标签</label>
+                <input name="target_new" class="form-control form-control-sm" maxlength="128" placeholder="例如：购房贷款条件">
+            </div>
+        </div>
+    </div>
+    <div class="card-footer bg-white"><button class="btn btn-outline-primary btn-sm" type="submit">预览合并影响</button></div>
+</form>
+
+<div class="card mb-4">
+    <div class="card-header">当前有效二级标签</div>
+    <div class="card-body">
+        {% for level1, labels in stats.items() %}
+        <div class="mb-3"><strong class="small">{{ level1 }}</strong><div class="mt-1">
+            {% for item in labels %}<span class="badge bg-light text-dark border me-1 mb-1">{{ item.label }} {{ item.count }}</span>{% else %}<span class="text-muted small">暂无</span>{% endfor %}
+        </div></div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">已保存的合并规则</div>
+    <div class="card-body p-0"><div class="table-responsive"><table class="table table-sm mb-0">
+        <thead><tr><th>一级类型</th><th>废弃标签</th><th>标准标签</th><th>更新时间</th></tr></thead>
+        <tbody>{% for item in aliases %}<tr><td>{{ item.level1 }}</td><td>{{ item.retired_level2 }}</td><td>{{ item.canonical_level2 }}</td><td>{{ item.updated_at }}</td></tr>{% else %}<tr><td colspan="4" class="text-muted text-center py-3">暂无合并记录</td></tr>{% endfor %}</tbody>
+    </table></div></div>
+</div>
+
+<script>
+const stats = {{ stats | tojson }};
+const levelSelect = document.getElementById('level1');
+const targetSelect = document.getElementById('target-existing');
+function refreshOptions() {
+    const level1 = levelSelect.value;
+    document.querySelectorAll('.label-group').forEach(el => el.classList.toggle('d-none', el.dataset.level1 !== level1));
+    document.querySelectorAll('.source-label').forEach(el => { el.checked = false; });
+    targetSelect.innerHTML = '<option value="">请选择</option>';
+    (stats[level1] || []).forEach(item => {
+        const option = document.createElement('option'); option.value = item.label; option.textContent = item.label; targetSelect.appendChild(option);
+    });
+}
+levelSelect.addEventListener('change', refreshOptions);
+document.getElementById('merge-form').addEventListener('submit', function (event) {
+    const level1 = levelSelect.value;
+    const values = [...document.querySelectorAll(`.label-group[data-level1="${level1}"] .source-label:checked`)].map(el => el.value);
+    if (!level1 || !values.length) { event.preventDefault(); alert('请选择一级类型和至少一个待合并标签'); return; }
+    document.getElementById('retired-labels').value = JSON.stringify(values);
+});
+</script>
+{% endif %}
+{% endblock %}

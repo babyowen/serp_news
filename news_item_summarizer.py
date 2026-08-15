@@ -3,6 +3,7 @@ import sys
 import time
 import datetime
 import argparse
+import json
 import pymysql
 from dotenv import load_dotenv
 from openai import OpenAI
@@ -21,13 +22,17 @@ from config import (
     NEWS_ITEM_SUMMARY_USER_PROMPT_500
 )
 from news_region_utils import (
-    call_region_llm,
     call_summary_and_region_llm,
     table_has_region_column,
     validate_region_table_name,
 )
 from db_utils import get_connection, get_table_name
 from llm_client_pool import get_pool
+from news_business_type_utils import (
+    build_business_type_catalog,
+    load_business_type_aliases,
+    table_has_business_types_column,
+)
 
 setup_global_exception_handler()
 load_dotenv()
@@ -75,10 +80,10 @@ def log_run(date, table_name, total, success, fail, skip):
         f.write(msg)
 
 
-def update_summary_fields(cur, table_name, rid, summary, region):
+def update_summary_fields(cur, table_name, rid, summary, region, business_types):
     cur.execute(
-        f"UPDATE {table_name} SET short_summary=%s, region=%s WHERE id=%s",
-        (summary, region, rid),
+        f"UPDATE {table_name} SET short_summary=%s, region=%s, business_types=%s WHERE id=%s",
+        (summary, region, json.dumps(business_types, ensure_ascii=False), rid),
     )
 
 
@@ -94,6 +99,14 @@ def update_region_only(cur, table_name, rid, region):
         f"UPDATE {table_name} SET region=%s WHERE id=%s",
         (region, rid),
     )
+
+
+def add_business_types_to_catalog(catalog, business_types):
+    for item in business_types:
+        labels = catalog.setdefault(item["level1"], [])
+        if item["level2"] not in labels:
+            labels.append(item["level2"])
+            labels.sort()
 
 @with_error_handling("news_item_summarizer.py", "main")
 def main():
@@ -114,6 +127,12 @@ def main():
         has_region_column = table_has_region_column(cur, table_name)
         if args.keyword in (None, "公积金") and not has_region_column:
             raise ValueError(f"Table {table_name} is missing region column")
+        has_business_types_column = table_has_business_types_column(cur, table_name)
+        if args.keyword in (None, "公积金") and not has_business_types_column:
+            raise ValueError(f"Table {table_name} is missing business_types column; run news_business_type_schema.py first")
+
+        aliases = load_business_type_aliases(cur, table_name) if args.keyword in (None, "公积金") else {}
+        business_type_catalog = build_business_type_catalog(cur, table_name, aliases) if args.keyword in (None, "公积金") else {}
 
         sql = f"SELECT id, title, content, keyword FROM {table_name} WHERE fetchdate=%s AND score>=3 AND (short_summary IS NULL OR short_summary='')"
         params = [date]
@@ -145,16 +164,27 @@ def main():
                     backoffs = [1, 2, 4]
                     done = False
                     region = None
+                    business_types = []
                     if is_gjj:
-                        region = call_region_llm(title or '', text)
+                        result = call_summary_and_region_llm(
+                            title or '', text, business_type_catalog, aliases
+                        )
+                        if not result:
+                            fail += 1
+                            safe_print(f"[标注生成失败] id={rid}")
+                            continue
+                        region = result.get("region")
+                        business_types = result.get("business_types", [])
                     for i in range(len(backoffs) + 1):
                         try:
                             conn.ping(reconnect=True)
                             if is_gjj:
-                                update_summary_fields(cur, table_name, rid, text, region)
+                                update_summary_fields(cur, table_name, rid, text, region, business_types)
                             else:
                                 update_summary_only(cur, table_name, rid, text)
                             success += 1
+                            if is_gjj:
+                                add_business_types_to_catalog(business_type_catalog, business_types)
                             safe_print(f"[直接写原文] id={rid} 字数={len(text)}")
                             done = True
                             break
@@ -176,12 +206,16 @@ def main():
                         fail += 1
                     continue
                 if is_gjj:
-                    result = call_summary_and_region_llm(title or '', content or '')
+                    result = call_summary_and_region_llm(
+                        title or '', content or '', business_type_catalog, aliases
+                    )
                     summary = result.get("short_summary") if result else None
                     region = result.get("region") if result else None
+                    business_types = result.get("business_types", []) if result else []
                 else:
                     summary = call_llm(title or '', content or '')
                     region = None
+                    business_types = []
                 if summary:
                     backoffs = [1, 2, 4]
                     done = False
@@ -189,10 +223,12 @@ def main():
                         try:
                             conn.ping(reconnect=True)
                             if is_gjj:
-                                update_summary_fields(cur, table_name, rid, summary, region)
+                                update_summary_fields(cur, table_name, rid, summary, region, business_types)
                             else:
                                 update_summary_only(cur, table_name, rid, summary)
                             success += 1
+                            if is_gjj:
+                                add_business_types_to_catalog(business_type_catalog, business_types)
                             safe_print(f"[更新成功] id={rid}")
                             done = True
                             break

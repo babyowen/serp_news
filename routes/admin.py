@@ -1,4 +1,5 @@
 """管理路由 — 关键词配置、模型配置、运行监控、重评（需认证）"""
+import json
 import os
 import sys
 from flask import render_template, request, redirect, url_for, flash, Blueprint
@@ -8,6 +9,14 @@ from config_manager import read_keywords, write_keywords, read_model_config
 from run_manager import RunManager
 from db_utils import get_connection, get_table_name
 from config import DEFAULT_KEYWORDS
+from news_business_type_utils import (
+    count_secondary_label_uses,
+    get_business_type_alias_records,
+    get_business_type_label_stats,
+    load_business_type_aliases,
+    merge_secondary_labels,
+    table_has_business_types_column,
+)
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
 auth = HTTPBasicAuth()
@@ -76,6 +85,7 @@ def models():
         NEWS_SCORE_SYSTEM_MSG_ELDER_CARE, NEWS_SCORE_SYSTEM_MSG_TOBACCO_SERVICE_BANK,
         NEWS_ITEM_SUMMARY_SYSTEM_PROMPT_500, NEWS_ITEM_SUMMARY_USER_PROMPT_500,
         NEWS_ITEM_SUMMARY_SYSTEM_PROMPT_500_GJJ_REGION, NEWS_ITEM_SUMMARY_USER_PROMPT_500_GJJ_REGION,
+        NEWS_BUSINESS_TYPE_SYSTEM_PROMPT_GJJ, NEWS_BUSINESS_TYPE_USER_PROMPT_GJJ,
         NEWS_REGION_SYSTEM_PROMPT_GJJ, NEWS_REGION_USER_PROMPT_GJJ,
     )
     prompt_groups = [
@@ -98,11 +108,19 @@ def models():
             ],
         },
         {
-            "group": "单条摘要（公积金 — 摘要+地域一步完成）",
+            "group": "单条摘要（公积金 — 摘要+地域+业务类型一步完成）",
             "prompts": [
                 {"name": "公积金摘要 System Prompt", "var": "NEWS_ITEM_SUMMARY_SYSTEM_PROMPT_500_GJJ_REGION", "content": NEWS_ITEM_SUMMARY_SYSTEM_PROMPT_500_GJJ_REGION,
                  "note": "news_item_summarizer 中调用"},
                 {"name": "公积金摘要 User Prompt", "var": "NEWS_ITEM_SUMMARY_USER_PROMPT_500_GJJ_REGION", "content": NEWS_ITEM_SUMMARY_USER_PROMPT_500_GJJ_REGION},
+            ],
+        },
+        {
+            "group": "业务类型标注（公积金 — 历史补标）",
+            "prompts": [
+                {"name": "业务类型 System Prompt", "var": "NEWS_BUSINESS_TYPE_SYSTEM_PROMPT_GJJ", "content": NEWS_BUSINESS_TYPE_SYSTEM_PROMPT_GJJ,
+                 "note": "news_business_type_analyzer 中调用"},
+                {"name": "业务类型 User Prompt", "var": "NEWS_BUSINESS_TYPE_USER_PROMPT_GJJ", "content": NEWS_BUSINESS_TYPE_USER_PROMPT_GJJ},
             ],
         },
         {
@@ -115,6 +133,66 @@ def models():
         },
     ]
     return render_template("admin/models.html", config=config, prompt_groups=prompt_groups)
+
+
+def _business_types_context(table, preview=None):
+    context = {"table": table, "schema_ready": False, "stats": {}, "aliases": [], "preview": preview}
+    conn = get_connection(dict_cursor=False)
+    try:
+        cursor = conn.cursor()
+        context["schema_ready"] = table_has_business_types_column(cursor, table)
+        if context["schema_ready"]:
+            aliases = load_business_type_aliases(cursor, table)
+            context["stats"] = get_business_type_label_stats(cursor, table, aliases)
+            context["aliases"] = get_business_type_alias_records(cursor, table)
+        cursor.close()
+    except Exception as exc:
+        context["schema_error"] = str(exc)
+    finally:
+        conn.close()
+    return context
+
+
+@admin_bp.route("/business-types", methods=["GET", "POST"])
+def business_types():
+    table = get_table_name()
+    if request.method == "POST":
+        action = request.form.get("action")
+        level1 = request.form.get("level1", "").strip()
+        try:
+            retired_labels = json.loads(request.form.get("retired_labels", "[]"))
+            if not isinstance(retired_labels, list):
+                raise ValueError("待合并标签格式无效")
+            target_label = request.form.get("target_new", "").strip() or request.form.get("target_existing", "").strip()
+            if action == "preview_merge":
+                conn = get_connection(dict_cursor=False)
+                try:
+                    cursor = conn.cursor()
+                    aliases = load_business_type_aliases(cursor, table)
+                    affected_count = count_secondary_label_uses(cursor, table, level1, retired_labels, aliases)
+                    cursor.close()
+                finally:
+                    conn.close()
+                preview = {
+                    "level1": level1,
+                    "retired_labels": retired_labels,
+                    "target_label": target_label,
+                    "affected_count": affected_count,
+                }
+                return render_template("admin/business_types.html", **_business_types_context(table, preview))
+            if action == "confirm_merge":
+                conn = get_connection(autocommit=False)
+                try:
+                    updated = merge_secondary_labels(conn, table, level1, retired_labels, target_label)
+                finally:
+                    conn.close()
+                flash(f"合并完成，更新了 {updated} 条新闻记录", "success")
+                return redirect(url_for("admin.business_types"))
+        except (ValueError, json.JSONDecodeError) as exc:
+            flash(str(exc), "danger")
+        except Exception as exc:
+            flash(f"业务类型操作失败：{exc}", "danger")
+    return render_template("admin/business_types.html", **_business_types_context(table))
 
 
 @admin_bp.route("/runs")
