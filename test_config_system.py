@@ -424,14 +424,14 @@ def test_18_admin_rescore_finds_project_outputs_from_other_cwd_and_rejects_inval
     ctx.store.save(ctx.document, ctx.first.token, "after original scoring")
     # A failing mocked scorer avoids all business database work while proving dispatch.
     with patch("subprocess.run", return_value=SimpleNamespace(returncode=1)) as run, patch.object(admin, "get_connection") as database:
-        response = web.client.post("/admin/runs/rescore", data={"date": "2099-01-01"}, headers=web.headers)
+        response = web.client.post("/admin/runs/rescore", data={"date": "2099-01-01", "config_csrf": web.csrf}, headers=web.headers)
         assert response.status_code == 200
         run.assert_called_once()
         assert run.call_args.kwargs["cwd"] == str(project)
         assert run.call_args.kwargs["env"]["SERP_CONFIG_REVISION"] == ctx.first.token
         database.assert_not_called()
         run.reset_mock()
-        invalid = web.client.post("/admin/runs/rescore", data={"date": "../bad-output"}, headers=web.headers)
+        invalid = web.client.post("/admin/runs/rescore", data={"date": "../bad-output", "config_csrf": web.csrf}, headers=web.headers)
         assert invalid.status_code == 400
         run.assert_not_called()
     with sqlite3.connect(ctx.store.path) as connection:

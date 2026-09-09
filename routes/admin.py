@@ -1,15 +1,16 @@
 """管理路由 — 关键词配置、模型配置、运行监控、重评（需认证）"""
 import json
 import os
+import secrets
 import sys
 from pathlib import Path
-from flask import render_template, request, redirect, url_for, flash, Blueprint, Response
+from flask import render_template, request, redirect, url_for, flash, Blueprint, Response, session, abort
 from flask_httpauth import HTTPBasicAuth
 from werkzeug.security import check_password_hash, generate_password_hash
 from config_manager import read_keywords, edit_keywords, read_model_config
 from config_schema import ConfigError, ConfigConflict, differences
 from batch_config import validate_date
-from runtime_config import get_snapshot, get_store, value, child_environment
+from runtime_config import get_snapshot, get_store, child_environment
 from run_manager import RunManager
 from db_utils import get_connection, get_table_name
 from news_business_type_utils import (
@@ -40,7 +41,20 @@ def verify_password(username, password):
 @admin_bp.before_request
 @auth.login_required
 def login_required():
-    pass
+    # Authenticate before accepting or issuing a CSRF token. Protect new unsafe
+    # admin endpoints by default instead of maintaining a path allowlist.
+    if request.method not in ("GET", "HEAD", "OPTIONS"):
+        expected = session.get("config_csrf", "")
+        supplied = request.form.get("config_csrf", "")
+        if not expected or not supplied.isascii() or not secrets.compare_digest(supplied, expected):
+            abort(400, "表单已过期，请刷新页面后重新提交")
+    session.setdefault("config_csrf", secrets.token_urlsafe(32))
+
+
+@admin_bp.after_request
+def prevent_admin_caching(response):
+    response.headers["Cache-Control"] = "no-store"
+    return response
 
 
 run_mgr = RunManager()
@@ -334,12 +348,12 @@ def rescore():
     updated_total = 0
     errors = []
     try:
-        snapshot, _ = get_store().pin_batch(project / "output" / date)
+        snapshot, keywords = get_store().pin_batch(project / "output" / date, scored_only=True)
     except ConfigError as exc:
         flash(str(exc), "danger")
         return redirect(url_for("admin.runs"))
 
-    for kw in snapshot.document["settings"]["SEARCH_KEYWORDS"]:
+    for kw in keywords:
         scored_path = str(project / "output" / date / f"{date}_{kw}_scored.json")
         if not os.path.exists(scored_path):
             continue

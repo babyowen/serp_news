@@ -144,8 +144,10 @@ MYSQL_TABLE=scored_news_test python main.py YYYY-MM-DD
 python -c "from config import SEARCH_KEYWORDS; print(SEARCH_KEYWORDS)"
 
 # Issue #10/#14/#15 相关回归测试
-python -m unittest -v test_bank_news_feature.py test_historical_date_filter.py test_write_to_mysql_dedup.py test_business_type_feature.py
+python run_config_tests.py -k 'bank or historical or dedup or business'
 ```
+
+模块加载和开发试跑前须初始化本地配置并设置 `SERP_CONFIG_STORE`；开发试跑会访问所配置的真实服务。离线回归统一通过 `run_config_tests.py` 准备临时配置并隔离外部服务。
 
 ## 注意事项
 

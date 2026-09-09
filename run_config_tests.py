@@ -9,7 +9,7 @@ from config_store import ConfigStore, read_document
 
 ROOT = Path(__file__).resolve().parent
 TESTS = [
-    "test_config_store.py", "test_config_integration.py", "test_config_system.py", "test_config_review.py", "test_bank_news_feature.py",
+    "test_config_store.py", "test_config_integration.py", "test_config_system.py", "test_config_review.py", "test_config_followup.py", "test_bank_news_feature.py",
     "test_historical_date_filter.py", "test_write_to_mysql_dedup.py",
     "test_business_type_feature.py", "test_news_volume_alert.py",
 ]

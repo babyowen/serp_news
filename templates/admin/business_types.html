@@ -20,6 +20,7 @@
         <p class="mb-2"><strong>{{ preview.level1 }}</strong>：{{ preview.retired_labels | join('、') }} → <strong>{{ preview.target_label }}</strong></p>
         <p class="text-muted small">预计更新 {{ preview.affected_count }} 条新闻记录；旧标签将被记录为废弃别名，后续 AI 标注会复用目标标签。</p>
         <form method="post" class="d-inline">
+            <input type="hidden" name="config_csrf" value="{{ session.config_csrf }}">
             <input type="hidden" name="action" value="confirm_merge">
             <input type="hidden" name="level1" value="{{ preview.level1 }}">
             <input type="hidden" name="retired_labels" value='{{ preview.retired_labels | tojson }}'>
@@ -32,6 +33,7 @@
 {% endif %}
 
 <form method="post" id="merge-form" class="card mb-4">
+    <input type="hidden" name="config_csrf" value="{{ session.config_csrf }}">
     <input type="hidden" name="action" value="preview_merge">
     <input type="hidden" name="retired_labels" id="retired-labels">
     <div class="card-header">合并二级标签</div>

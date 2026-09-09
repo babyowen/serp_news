@@ -141,6 +141,8 @@ def main():
         sql = f"SELECT id, title, content, keyword FROM {table_name} WHERE fetchdate=%s AND score>=3 AND (short_summary IS NULL OR short_summary='')"
         # Scope the database work to the same topics whose revision was pinned.
         # Historical rows for removed/unbound topics require an explicit run.
+        # Using another revision in this directory requires per-topic resumes;
+        # use a separate output directory when a full-date rerun is needed.
         sql += " AND keyword IN (" + ",".join(["%s"] * len(batch_keywords)) + ")"
         params = [date, *batch_keywords]
             

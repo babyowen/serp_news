@@ -15,6 +15,14 @@ class ConfigConflict(ConfigError):
     pass
 
 
+class ConfigVersionError(ConfigError):
+    """Invalid user-supplied version, distinct from a damaged store."""
+
+
+class ConfigVersionNotFound(ConfigVersionError):
+    pass
+
+
 USER_FIELDS = {
     "NEWS_SCORE_PROMPT": {"keyword", "title", "content"},
     "NEWS_ITEM_SUMMARY_USER_PROMPT_500": {"title", "content"},
@@ -227,10 +235,12 @@ def _validate(document):
             raise ConfigError("归档模型选择字段不兼容")
     if not isinstance(legacy["models"], dict) or not legacy["models"]:
         raise ConfigError("缺少归档模型配置")
-    for variants in legacy["models"].values():
+    for platform, variants in legacy["models"].items():
+        nonempty(platform, "归档模型平台名称")
         if not isinstance(variants, dict) or not variants:
             raise ConfigError("归档模型列表无效")
-        for profile in variants.values():
+        for name, profile in variants.items():
+            nonempty(name, "归档模型条目名称")
             keys(profile, {"api_key_env", "base_url", "model"}, "归档模型")
             validate_api_env(profile["api_key_env"])
             validate_url(profile["base_url"])

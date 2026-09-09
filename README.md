@@ -225,9 +225,11 @@ MYSQL_TABLE=scored_news_test python main.py YYYY-MM-DD
 # 验证模块加载
 python -c "from config import SEARCH_KEYWORDS; print(SEARCH_KEYWORDS)"
 
-# 回归测试：银行监测、历史日期过滤、应用层查重、业务类型标注
-python -m unittest -v test_bank_news_feature.py test_historical_date_filter.py test_write_to_mysql_dedup.py test_business_type_feature.py
+# 指定业务范围的隔离回归（另会执行日志系统回归）
+python run_config_tests.py -k 'bank or historical or dedup or business'
 ```
+
+上面的模块加载与开发试跑命令需要先按 `docs/configuration.md` 初始化本地配置并设置 `SERP_CONFIG_STORE`；开发试跑会访问所配置的真实服务。离线回归统一使用 `run_config_tests.py`，由它准备临时配置并隔离外部服务。
 
 ## 注意事项
 

@@ -34,6 +34,8 @@ SERP_CONFIG_STORE=/srv/serp-news-state/runtime.sqlite3
 FLASK_SECRET_KEY=replace_with_a_random_private_value
 ```
 
+`FLASK_SECRET_KEY` 未设置或为空时会记录启动告警并使用临时密钥，重启后旧会话/表单失效；独立加载的多个 worker 还会相互无法验证会话。生产必须配置同一个稳定的随机密钥，不要使用示例占位值。
+
 ```bash
 python3 /srv/serp-news-next/config_cli.py --store /srv/serp-news-state/runtime.sqlite3 export --output /srv/serp-news-state/before-upgrade.json
 python3 /srv/serp-news-next/config_cli.py --store /srv/serp-news-state/runtime.sqlite3 backup --output /srv/serp-news-state/before-upgrade.sqlite3
@@ -59,6 +61,7 @@ python3 config_cli.py --store "$SERP_CONFIG_STORE" init --defaults
 - `/admin/models` 展示生效版本、模型信息、现用及归档提示词。
 - `/admin/config-history` 展示最近 100 个版本，支持差异预览、导出及恢复。恢复会创建新版本，后续历史不删除。
 - 管理请求开始时固定一个快照；后续请求读取最新版本。密钥等 `.env` 变更仍需要按原部署方式重启服务。
+- 所有管理写操作（包括启动、重评和标签合并）都需认证及同一会话的 CSRF 令牌；管理响应统一禁止缓存。版本参数格式错误/跨存储返回 400，版本不存在返回 404，真实存储故障继续返回 503。
 
 首次不提供富文本提示词编辑器，可通过配置 JSON 显式导入：
 
@@ -103,6 +106,35 @@ python news_scorer.py 养老 YYYY-MM-DD --adopt-existing-config
 
 不要用该开关绕过未知来源的历史数据。已绑定的批次不能通过此开关换版本；同日期不同主题如已绑定不同版本，应分别按 `--keyword` 续跑。后台重评也沿用已有绑定。
 
+例如，同一输出目录中主题 A 已绑定 v3，之后用 v5 补跑主题 B，就会形成混版本绑定。此后该目录的全量续跑和后台批量重评均会拒绝，必须按主题分别运行。恢复当前生效配置也不会改写这些绑定。补跑已删除主题或新增主题前，应先决定是否接受逐主题续跑；希望仍能全量重跑时，使用独立输出目录。
+
+后台重评会先检查所选版本中确有 `_scored.json` 文件的主题，只处理这些主题；日期不存在、目录为空或只有未评分文件时会提示并退出，不创建绑定。若评分文件缺少历史绑定，后台不会自动承接。核对文件与历史版本一致后，从项目根目录按主题执行下面的命令；将版本、主题和日期替换为已核对的值：
+
+```bash
+SERP_CONFIG_REVISION='STORE_UUID:REVISION' python news_scorer.py 养老 YYYY-MM-DD --rescore --adopt-existing-config
+```
+
+该命令会绑定并重评该主题。所有主题绑定版本一致时，随后可通过后台重评将评分结果更新到数据库；混版本目录则按主题复用后台的缺失评分更新函数，并沿用同一版本。普通 `write_to_mysql.py` 入库命令会跳过已存在记录，不能代替评分更新：
+
+```bash
+SERP_CONFIG_REVISION='STORE_UUID:REVISION' python - 养老 YYYY-MM-DD <<'PY'
+import sys
+from pathlib import Path
+from batch_config import prepare_batch
+keyword, date = sys.argv[1:]
+prepare_batch(date, keyword)
+import write_to_mysql as writer
+try:
+    path = Path('output') / date / f'{date}_{keyword}_scored.json'
+    writer.update_scores_from_json(str(path), keyword)
+finally:
+    writer.cursor.close()
+    writer.conn.close()
+PY
+```
+
+`fetch_and_filter.py`、`fetch_content.py`、`news_fetcher.py`、`write_to_mysql.py` 在主流水线内继承固定版本，但独立执行时不会自行查找输出目录的批次绑定。直接运行可能按当前配置遗漏已删除主题的旧文件；独立处理历史数据必须核对绑定并显式传入对应的 `SERP_CONFIG_REVISION`，对有关键词参数的入口指定主题。统一这些独立入口的绑定行为留待后续改进，不能把独立运行当作自动续跑。
+
 需要对同一日期使用新配置重新分析时，使用**独立且为空的输出工作目录**和明确的配置版本，不在旧输出上隐式混用结果。采集/评分等流水线脚本使用相对输出路径，常规运行仍应从项目根目录启动；如需另一工作目录，应先按项目现有入口和脚本路径约束准备独立运行副本，保留旧结果。
 
 ## 备份与回退
@@ -128,6 +160,6 @@ python run_config_tests.py
 
 测试使用临时配置及工作目录，阻止网络连接，不读写生产配置或业务服务。覆盖生产基线的 22 段原文及模板展开、并发提交、写入中断、进程崩溃、损坏检测、幂等初始化、升级不覆盖、历史恢复、批次绑定、Web 表单和现有业务回归。
 
-补充的 20 个系统案例及代码审查后新增的 15 项回归见 [全局测试记录](configuration-test-report.md)，覆盖迁移边界、事务提交失败、在线备份、鉴权、跨目录启动、整条流水线的版本传递，以及迁移覆盖、规则冲突、摘要范围和配置保留名称。旧日志回归脚本会在独立进程中执行。
+补充的 20 个系统案例、首次代码审查的 15 项回归及独立审查后的回归见 [全局测试记录](configuration-test-report.md)，覆盖迁移边界、事务提交失败、在线备份、鉴权、跨目录启动、整条流水线的版本传递、规则冲突、管理写操作保护和配置保留名称。旧日志回归脚本会在独立进程中执行。
 
 `tests/fixtures/legacy/` 来自改造前已跟踪源码，仅用于 AST 迁移测试；`tests/fixtures/prompt_hashes.json` 固定本次确认的提示词哈希。初次迁移和存储重构不得顺带更新这些原文基线。旧源码夹具有意保留原文件的尾随空白，不应自动格式化；检查新增代码空白时可显式排除 `tests/fixtures/legacy/`。

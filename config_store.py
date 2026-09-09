@@ -9,7 +9,7 @@ import sqlite3
 import tempfile
 import uuid
 
-from config_schema import ConfigConflict, ConfigError, digest, encode, parse_json, validate
+from config_schema import ConfigConflict, ConfigError, ConfigVersionError, ConfigVersionNotFound, digest, encode, parse_json, validate
 
 PROJECT_DIR = Path(__file__).resolve().parent
 
@@ -120,10 +120,20 @@ class ConfigStore:
         else:
             try:
                 store_id, revision = token.split(":")
-                revision = int(revision)
+                number = int(revision)
+                if str(uuid.UUID(store_id)) != store_id or str(number) != revision or not 0 < number <= 2**63 - 1:
+                    raise ValueError()
+                revision = number
             except (ValueError, AttributeError) as exc:
-                raise ConfigError("配置版本必须使用完整的 store_id:revision") from exc
+                raise ConfigVersionError("配置版本必须使用完整的 store_id:revision") from exc
+            metadata = connection.execute("SELECT store_id FROM metadata WHERE id=1").fetchone()
+            if metadata is None:
+                raise ConfigError("配置存储元数据缺失或已损坏")
+            if metadata[0] != store_id:
+                raise ConfigVersionError("指定版本来自其他配置存储")
             row = connection.execute("SELECT m.store_id,r.id,r.document,r.sha256,r.created_at,r.note FROM metadata m JOIN revisions r ON r.id=? WHERE m.id=1 AND m.store_id=?", (revision, store_id)).fetchone()
+            if row is None:
+                raise ConfigVersionNotFound("指定的配置版本不存在")
         return self._decode(row)
 
     def read(self, token=None):
@@ -183,6 +193,9 @@ class ConfigStore:
             connection.execute("BEGIN IMMEDIATE")
             revision = self._insert(connection, document, note, source)
             connection.execute("INSERT INTO metadata VALUES(1,?,?,?,?)", (str(uuid.uuid4()), revision, source_id, digest(document)))
+            # Verify the stored representation before publishing, just as save()
+            # verifies its new revision before committing the active pointer.
+            self._read(connection)
             connection.commit()
             connection.close()
             connection = None
@@ -220,7 +233,7 @@ class ConfigStore:
             rows = connection.execute("SELECT id,sha256,created_at,note FROM revisions WHERE id<=? ORDER BY id DESC LIMIT ?", (current.revision, limit)).fetchall()
             return [{"version": f"{current.store_id}:{r[0]}", "sha256": r[1], "created_at": r[2], "note": r[3], "active": r[0] == current.revision} for r in rows]
 
-    def pin_batch(self, output_directory, keyword=None, requested_version=None, adopt_existing=False):
+    def pin_batch(self, output_directory, keyword=None, requested_version=None, adopt_existing=False, scored_only=False):
         """Pin each output topic once, so automatic file-based resume cannot mix revisions."""
         directory = Path(output_directory).resolve()
         with self._connection(writable=True) as connection:
@@ -240,6 +253,11 @@ class ConfigStore:
                 if keyword not in keywords:
                     raise ConfigError(f"此配置版本没有主关键词: {keyword}")
                 keywords = [keyword]
+            if scored_only:
+                # Admin rescore must find actual work before creating any pins.
+                keywords = [key for key in keywords if (directory / f"{directory.name}_{key}_scored.json").is_file()]
+                if not keywords:
+                    raise ConfigError("没有与所选配置匹配的可重评文件；未创建批次绑定，请核对日期、输出文件及历史配置版本")
             for key in keywords:
                 if key in rows:
                     continue
