@@ -205,6 +205,7 @@
                             <li><a class="dropdown-item" href="/admin/business-type-dashboard"><i class="bi bi-bar-chart-line me-2"></i>标注看板</a></li>
                             <li><a class="dropdown-item" href="/admin/business-types"><i class="bi bi-diagram-3 me-2"></i>业务类型管理</a></li>
                             <li><a class="dropdown-item" href="/admin/models"><i class="bi bi-cpu me-2"></i>模型配置</a></li>
+                            <li><a class="dropdown-item" href="/admin/config-history"><i class="bi bi-clock-history me-2"></i>配置历史与恢复</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -212,6 +213,9 @@
         </div>
     </nav>
     <div class="container content">
+        {% for category, message in get_flashed_messages(with_categories=true) %}
+        <div class="alert alert-{{ category }}" role="alert">{{ message }}</div>
+        {% endfor %}
         {% block content %}{% endblock %}
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

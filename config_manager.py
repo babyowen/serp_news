@@ -1,73 +1,53 @@
-"""配置文件读写工具 — 供前端管理页面调用，直接读写 config.py"""
-import re
+"""Management operations on versioned data; never rewrites Python source files."""
 import os
 
-CONFIG_PATH = os.path.join(os.path.dirname(__file__), "config.py")
+from config_schema import ConfigError
+from runtime_config import get_snapshot, get_store
 
 
 def read_keywords():
-    """读取 config.py 中的 SEARCH_KEYWORDS，返回 {main: [search, ...]}"""
-    with open(CONFIG_PATH, "r", encoding="utf-8") as f:
-        content = f.read()
-    # 提取 SEARCH_KEYWORDS = { ... }
-    match = re.search(r"SEARCH_KEYWORDS\s*=\s*\{", content)
-    if not match:
-        return {}
-    start = match.end()
-    depth = 1
-    i = start
-    while i < len(content) and depth > 0:
-        if content[i] == "{":
-            depth += 1
-        elif content[i] == "}":
-            depth -= 1
-        i += 1
-    dict_str = content[start - 1 : i]
-    try:
-        return eval(dict_str)
-    except Exception:
-        return {}
+    return get_snapshot().document["settings"]["SEARCH_KEYWORDS"]
 
 
-def write_keywords(keywords_dict):
-    """修改 config.py 中的 SEARCH_KEYWORDS 定义"""
-    with open(CONFIG_PATH, "r", encoding="utf-8") as f:
-        content = f.read()
-    # 格式化新字典
-    lines = []
-    for main_kw, search_list in keywords_dict.items():
-        lines.append(f'    "{main_kw}": {search_list},')
-    new_dict = "SEARCH_KEYWORDS = {\n" + "\n".join(lines) + "\n}"
-    pattern = r"SEARCH_KEYWORDS\s*=\s*\{[^}]*\}"
-    content = re.sub(pattern, new_dict, content, count=1)
-    with open(CONFIG_PATH, "w", encoding="utf-8") as f:
-        f.write(content)
+def write_keywords(keywords_dict, expected_version):
+    document = get_store().read(expected_version).document
+    document["settings"]["SEARCH_KEYWORDS"] = keywords_dict
+    return get_store().save(document, expected_version, "更新关键词配置")
+
+
+def edit_keywords(action, main_kw, search_list, expected_version, old_kw=None):
+    document = get_store().read(expected_version).document
+    keywords = document["settings"]["SEARCH_KEYWORDS"]
+    routes = document["keyword_prompt_ids"]
+    if action == "add":
+        if main_kw in keywords:
+            raise ConfigError("主关键词已存在，请使用编辑操作")
+        keywords[main_kw] = search_list
+    elif action == "delete":
+        if main_kw not in keywords:
+            raise ConfigError("主关键词已不存在，请刷新")
+        del keywords[main_kw]
+        # Retain its prompt binding so re-adding a topic never loses its tuned rules.
+    elif action == "edit":
+        if old_kw not in keywords:
+            raise ConfigError("原主关键词不存在，请刷新")
+        retained_rules = document["settings"]["NEWS_RULE_BASED_SCORING"]
+        if main_kw != old_kw and (main_kw in keywords or main_kw in routes or any(rule["main_keyword"] == main_kw for rule in retained_rules)):
+            raise ConfigError("目标主关键词、专用提示词映射或保留的评分规则已存在，请先核对冲突")
+        document["settings"]["SEARCH_KEYWORDS"] = {
+            main_kw if key == old_kw else key: search_list if key == old_kw else value
+            for key, value in keywords.items()
+        }
+        if old_kw in routes:
+            document["keyword_prompt_ids"] = {main_kw if key == old_kw else key: value for key, value in routes.items()}
+        for rule in document["settings"]["NEWS_RULE_BASED_SCORING"]:
+            if rule["main_keyword"] == old_kw:
+                rule["main_keyword"] = main_kw
+    else:
+        raise ConfigError("未知关键词操作")
+    return get_store().save(document, expected_version, f"关键词 {action}: {main_kw}")
 
 
 def read_model_config():
-    """读取模型相关配置，返回结构化数据"""
-    from config import (
-        DEEPSEEK_API_KEY,
-        DEEPSEEK_BASE_URL,
-    )
-
-    return {
-        "scoring": {
-            "platform": "deepseek",
-            "model": "deepseek-v4-flash",
-            "base_url": DEEPSEEK_BASE_URL,
-            "api_key_set": bool(DEEPSEEK_API_KEY),
-        },
-        "item_summarizer": {
-            "platform": "deepseek",
-            "model": "deepseek-v4-flash",
-            "base_url": DEEPSEEK_BASE_URL,
-            "api_key_set": bool(DEEPSEEK_API_KEY),
-        },
-        "region": {
-            "platform": "deepseek",
-            "model": "deepseek-v4-flash",
-            "base_url": DEEPSEEK_BASE_URL,
-            "api_key_set": bool(DEEPSEEK_API_KEY),
-        },
-    }
+    return {stage: {**profile, "api_key_set": bool(os.getenv(profile["api_key_env"]))}
+            for stage, profile in get_snapshot().document["models"].items()}

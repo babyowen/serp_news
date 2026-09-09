@@ -7,6 +7,8 @@ import argparse
 import shlex
 import concurrent.futures
 from config import DEFAULT_KEYWORDS, SEARCH_KEYWORDS
+from runtime_config import value
+from batch_config import prepare_batch
 from error_handler import (
     setup_global_exception_handler,
     safe_subprocess_run,
@@ -108,7 +110,7 @@ def execute_news_fetching(date, main_kw):
     for search_kw in SEARCH_KEYWORDS[main_kw]:
         # 调用采集脚本，采集结果临时存储
         tmp_file = f"output/{date}/tmp_{date}_{main_kw}_{search_kw}.json"
-        cmd = f'{sys.executable} fetch_and_filter.py "{search_kw}" {date} --output "{tmp_file}"'
+        cmd = shlex.join([sys.executable, "fetch_and_filter.py", search_kw, date, "--output", tmp_file])
         
         # 使用安全的subprocess调用
         success = safe_subprocess_run(
@@ -194,7 +196,7 @@ def execute_content_fetching(date, kw):
         return True
     
     print(f"[INFO] [步骤2] 抓正文: {kw}")
-    cmd = f'{sys.executable} fetch_content.py {kw} {date}'
+    cmd = shlex.join([sys.executable, "fetch_content.py", kw, date])
     
     return safe_subprocess_run(cmd, f"抓取正文-{kw}", keyword=kw, check=False)
 
@@ -216,7 +218,7 @@ def execute_scoring(date, kw):
         return True
     
     print(f"[INFO] [步骤3] 评分: {kw}")
-    cmd = f'{sys.executable} news_scorer.py {kw} {date}'
+    cmd = shlex.join([sys.executable, "news_scorer.py", kw, date])
     
     return safe_subprocess_run(cmd, f"AI评分-{kw}", keyword=kw, check=False)
 
@@ -283,16 +285,18 @@ def execute_scoring_concurrent(date, keywords, max_workers=3):
 
 def get_active_keywords(keyword=None):
     """返回本次流水线处理的主关键词，并校验单关键词参数。"""
+    keywords = value("SEARCH_KEYWORDS")
     if keyword is None:
-        return list(DEFAULT_KEYWORDS)
-    if keyword not in SEARCH_KEYWORDS:
+        return list(keywords)
+    if keyword not in keywords:
         raise ValueError(f"未知主关键词: {keyword}")
     return [keyword]
 
 
 @with_error_handling("main.py", "main")
-def main(date=None, keyword=None):
+def main(date=None, keyword=None, adopt_existing_config=False, config_revision=None):
     """主函数，控制整个新闻处理流程"""
+    global DEFAULT_KEYWORDS, SEARCH_KEYWORDS
     # 记录脚本开始执行
     script_args = [arg for arg in (date, "--keyword" if keyword else None, keyword) if arg]
     log_script_start("main.py", script_args)
@@ -303,7 +307,9 @@ def main(date=None, keyword=None):
         # 如果未指定日期，自动赋值为昨天日期
         if not date:
             date = (datetime.datetime.now() - datetime.timedelta(days=1)).strftime("%Y-%m-%d")
-        active_keywords = get_active_keywords(keyword)
+        snapshot, active_keywords = prepare_batch(date, keyword, adopt_existing_config, config_revision)
+        SEARCH_KEYWORDS = snapshot.document["settings"]["SEARCH_KEYWORDS"]
+        DEFAULT_KEYWORDS = list(SEARCH_KEYWORDS)
 
         # 生成批次ID，设置批次日志路径
         run_id = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -311,7 +317,7 @@ def main(date=None, keyword=None):
         os.environ["RUN_LOG_PATH"] = batch_log_path
         os.makedirs(os.path.dirname(batch_log_path), exist_ok=True)
         with open(batch_log_path, "w", encoding="utf-8") as f:
-            pass  # 创建空日志文件，确保子进程首次 open("a") 不因目录不存在而崩溃
+            f.write(f"[CONFIG] version={snapshot.token} sha256={snapshot.sha256}\n")
         print(f"[INFO] 本次运行批次: {run_id}，日志文件: {batch_log_path}")
         print(f"[INFO] 本次批量处理主关键词: {active_keywords}")
         
@@ -362,7 +368,7 @@ def main(date=None, keyword=None):
         keyword_arg = f' --keyword {shlex.quote(keyword)}' if keyword else ''
         print("\n[步骤4] 开始执行步骤4：数据库写入阶段")
         database_success = run_step(
-            f'{sys.executable} write_to_mysql.py {date_arg}{keyword_arg}',
+            f'{shlex.quote(sys.executable)} write_to_mysql.py {date_arg}{keyword_arg}',
             '自动写入数据库',
             'write_to_mysql.py',
             '将scored结果写入数据库'
@@ -373,7 +379,7 @@ def main(date=None, keyword=None):
         if enable_item_summarizer:
             print(f"\n[步骤5] 开始执行步骤5：单条新闻摘要阶段")
             item_summary_success = safe_subprocess_run(
-                f'{sys.executable} news_item_summarizer.py {shlex.quote(date)}{keyword_arg}',
+                f'{shlex.quote(sys.executable)} news_item_summarizer.py {shlex.quote(date)}{keyword_arg}',
                 '单条新闻摘要',
                 keyword='all',
                 check=False
@@ -393,7 +399,7 @@ def main(date=None, keyword=None):
             _update_step("tobacco", "running")
             try:
                 tobacco_success = safe_subprocess_run(
-                    f'{sys.executable} tobacco_gov_crawler.py --date {date}',
+                    f'{shlex.quote(sys.executable)} tobacco_gov_crawler.py --date {date}',
                     '烟草官网爬取',
                     keyword='中国烟草',
                     check=True
@@ -467,11 +473,13 @@ def main(date=None, keyword=None):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="运行新闻处理流水线")
     parser.add_argument("date", nargs="?", default=None, help="目标日期，格式 YYYY-MM-DD")
-    parser.add_argument("--keyword", choices=DEFAULT_KEYWORDS, help="只处理指定主关键词")
+    parser.add_argument("--keyword", help="只处理指定主关键词")
+    parser.add_argument("--adopt-existing-config", action="store_true", help="确认已有输出与所选配置一致后，显式绑定历史输出")
+    parser.add_argument("--config-revision", help="显式使用完整配置版本；不能与已绑定批次不同")
     args = parser.parse_args()
     
     # 执行主函数
-    success = main(args.date, keyword=args.keyword)
+    success = main(args.date, keyword=args.keyword, adopt_existing_config=args.adopt_existing_config, config_revision=args.config_revision)
     _finish_run()
     # 根据执行结果设置退出码
     if success:

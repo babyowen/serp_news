@@ -57,6 +57,19 @@ MYSQL_DB=serp_news
 AUTO_MIGRATE_DEDUP_INDEX=0
 ```
 
+### 初始化提示词与运行配置
+
+首次生产升级请先阅读 [配置迁移与恢复说明](docs/configuration.md)：**在覆盖旧生产文件前，先从旧文件显式迁移。** 已有配置不会自动替换为仓库默认值。
+
+全新本地开发环境可显式初始化：
+
+```bash
+export SERP_CONFIG_STORE="$HOME/.local/share/serp-news-dev/runtime.sqlite3"
+python config_cli.py --store "$SERP_CONFIG_STORE" init --defaults
+```
+
+将该绝对路径写入本地 `.env` 的 `SERP_CONFIG_STORE`。运行配置文件必须在部署目录之外；Web 和定时任务读取同一配置路径。初次未初始化、文件损坏或版本不兼容时程序会明确报错。
+
 ### 创建数据库表
 
 ```sql
@@ -129,7 +142,7 @@ python app.py
 
 ### 生产更新
 
-部署前和每次代码更新后的检查步骤见 [运维手册](docs/operations.md)。其中 `.env` 被 Git 忽略，服务器需要手动保留或添加：
+Issue #18 首次上线须先完成 [旧配置迁移](docs/configuration.md)，再更新生产代码。部署前和每次代码更新后的检查步骤见 [运维手册](docs/operations.md)。其中 `.env` 被 Git 忽略，服务器需要手动保留或添加：
 
 ```ini
 AUTO_MIGRATE_DEDUP_INDEX=0
@@ -170,12 +183,14 @@ AUTO_MIGRATE_DEDUP_INDEX=1 python write_to_mysql.py --date YYYY-MM-DD     # 仅�
 
 - **`db_utils.py`** — 统一数据库连接（含3次重试）+ `MYSQL_TABLE` 环境变量切换测试表
 - **`llm_client_pool.py`** — 统一LLM客户端池，按(api_key, base_url)复用
-- **`config_manager.py`** — 读写关键词和模型配置（供前端调用）
+- **`config_manager.py`** — 对关键词修改做版本检查，供管理页面调用
 - **`run_manager.py`** — 运行状态管理
 
 ### 关键配置文件
 
-- **`config.py`** — 关键词映射、AI提示词、模型配置、黑名单
+- **`config.py`** — 外部配置的兼容读取入口
+- **`config_defaults.json`** — 显式初始化用的默认模板（22 段现用/归档提示词）
+- **`SERP_CONFIG_STORE`** — 部署目录外的配置文件，保存生效版本、完整历史与批次绑定
 - **`config_grab_rules.py`** — 站点专属抓取规则
 - **`.env`** — API密钥、MySQL连接、流程开关
 
@@ -195,6 +210,16 @@ AUTO_MIGRATE_DEDUP_INDEX=1 python write_to_mysql.py --date YYYY-MM-DD     # 仅�
 
 ## 测试
 
+生产上线后的运行、数据和功能检查见 [部署当天及后两天检查方案](docs/post-deployment-verification.md)。请在更新服务器前填写部署记录并保存运行基线。
+
+配置改造及相关业务的离线回归（隔离配置和工作目录、阻止网络连接）：
+
+```bash
+pip install -r requirements-dev.txt
+python run_config_tests.py
+```
+
+
 ```bash
 # 开发测试：用 scored_news_test 表
 MYSQL_TABLE=scored_news_test python main.py YYYY-MM-DD
@@ -202,13 +227,15 @@ MYSQL_TABLE=scored_news_test python main.py YYYY-MM-DD
 # 验证模块加载
 python -c "from config import SEARCH_KEYWORDS; print(SEARCH_KEYWORDS)"
 
-# 回归测试：银行监测、历史日期过滤、应用层查重、业务类型标注
-python -m unittest -v test_bank_news_feature.py test_historical_date_filter.py test_write_to_mysql_dedup.py test_business_type_feature.py
+# 指定业务范围的隔离回归（另会执行日志系统回归）
+python run_config_tests.py -k 'bank or historical or dedup or business'
 ```
+
+上面的模块加载与开发试跑命令需要先按 `docs/configuration.md` 初始化本地配置并设置 `SERP_CONFIG_STORE`；开发试跑会访问所配置的真实服务。离线回归统一使用 `run_config_tests.py`，由它准备临时配置并隔离外部服务。
 
 ## 注意事项
 
-- 所有 AI 模块统一使用 `deepseek-v4-flash` 模型，配置在 `config.py`
+- 现用 AI 阶段初始模型为 `deepseek-v4-flash`，实际模型及请求参数从外部配置的 `models` 读取
 - `tobacco_gov_crawler.py` 通过 macOS launchd 每日凌晨 1:00 自动运行
 - `.env` 中 `MYSQL_TABLE` 会影响定时任务的写入目标表，开发后注意恢复
 - 内容提取含防屏蔽：User-Agent伪装、SSL忽略、同站点1-4秒间隔

@@ -2,6 +2,17 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Issue #18 配置保护约束
+
+- `config.py` 是兼容读取入口，不能改回将用户配置写进 Python 源码；仓库默认模板为 `config_defaults.json`。
+- 运行配置位置由 `SERP_CONFIG_STORE` 指定，必须是部署目录外的绝对路径；启动不自动初始化、不合并默认值、不在配置损坏时回退默认值。
+- 首次生产迁移必须先使用新工具读取旧文件，再覆盖部署代码，详见 `docs/configuration.md`。
+- 管理写入须通过 `ConfigStore.save` 并携带读取时的完整版本号；历史不可改写，恢复也创建新版本。
+- 首轮保持全部 22 段提示词及模型请求参数原样；归档提示词也需保留。纯存储重构不得更新 `tests/fixtures/prompt_hashes.json`。
+- 迁移仅接受已审核的模型调用结构。生产源码检查失败时先核对并完善适配器，不能直接刷新 `config_migration.py` 的结构指纹来跳过检查。
+- 用 `python run_config_tests.py` 跑隔离、禁止网络的回归，依赖见 `requirements-dev.txt`。不要使用本机生产快照作为可写测试目录，也不要修改真实 `.env` 或连接生产数据库。
+- 单批次和续跑保持配置版本。`SERP_CONFIG_REVISION` 为任务级变量，不能写成永久生产默认值。
+
 ## 项目概述
 
 自动化新闻采集与AI分析系统。7步流水线：采集 → 正文提取 → AI评分 → 数据库写入 → 单条摘要 → 地域分析 → 烟草爬虫。Bootstrap管理前端支持关键词配置、模型查看、运行监控。
@@ -64,7 +75,7 @@ git -c credential.helper='!f() { echo "username=babyowen"; echo "password=$(/opt
 
 ## 关键词两层结构
 
-定义在 `config.py:SEARCH_KEYWORDS`，主关键词用于业务分类，搜索关键词用于API调用。`DEFAULT_KEYWORDS` 自动从 `SEARCH_KEYWORDS.keys()` 生成。前端 `/admin/keywords` 可直接管理。
+通过 `config.py:SEARCH_KEYWORDS` 读取外部生效配置，主关键词用于业务分类，搜索关键词用于API调用。`DEFAULT_KEYWORDS` 自动从 `SEARCH_KEYWORDS.keys()` 生成。前端 `/admin/keywords` 可直接管理。
 
 数据流转：
 ```
@@ -85,12 +96,13 @@ git -c credential.helper='!f() { echo "username=babyowen"; echo "password=$(/opt
 
 - **`db_utils.py`** — 统一数据库连接（含3次重试）+ `MYSQL_TABLE` 环境变量切换测试表 + `ping_connection` 保活
 - **`llm_client_pool.py`** — 统一LLM客户端池，按(api_key, base_url)复用，自动回收
-- **`config_manager.py`** — 读写 config.py 中的关键词和模型配置（供前端调用）
+- **`config_manager.py`** — 对外部配置执行安全版本读写（供前端调用）
 - **`run_manager.py`** — 运行状态管理（启动/监控/历史/日志）
 
 ## 关键配置
 
-- **`config.py`** — 关键词映射、AI提示词（通用+关键词专属）、模型配置、黑名单
+- **`config.py`** — 外部生效配置的兼容读取入口
+- **`config_defaults.json`** — 显式初始化模板，不自动覆盖生产配置
 - **`config_grab_rules.py`** — 站点专属抓取规则（`CUSTOM_GRAB_RULES`注册表）
 - **`.env`** — API密钥、MySQL连接、流程开关、管理员认证
 
@@ -132,12 +144,14 @@ MYSQL_TABLE=scored_news_test python main.py YYYY-MM-DD
 python -c "from config import SEARCH_KEYWORDS; print(SEARCH_KEYWORDS)"
 
 # Issue #10/#14/#15 相关回归测试
-python -m unittest -v test_bank_news_feature.py test_historical_date_filter.py test_write_to_mysql_dedup.py test_business_type_feature.py
+python run_config_tests.py -k 'bank or historical or dedup or business'
 ```
+
+模块加载和开发试跑前须初始化本地配置并设置 `SERP_CONFIG_STORE`；开发试跑会访问所配置的真实服务。离线回归统一通过 `run_config_tests.py` 准备临时配置并隔离外部服务。
 
 ## 注意事项
 
-- 所有 AI 模块（评分/摘要/地域）统一使用 `deepseek-v4-flash` 模型，配置在 `config.py`
+- 现用 AI 阶段（评分/摘要/地域）初始模型为 `deepseek-v4-flash`，实际模型及请求参数从外部配置的 `models` 读取
 - 日志系统：每次运行生成独立批次日志 `output/{date}/run_{YYYYMMDD_HHMMSS}.log`，通过 `RUN_LOG_PATH` 环境变量传递给子进程；手动运行单个脚本时 fallback 到 `output/run_log.txt`
 - `/admin/models` 页面展示当前启用的 Prompt（按评分/摘要/公积金/地域分组）
 - `/admin/business-type-dashboard` 是公积金业务类型的只读覆盖率看板，支持按 `fetchdate` 筛选，展示待补标、类型分布和最近标注记录

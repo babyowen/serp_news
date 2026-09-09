@@ -10,6 +10,7 @@
             <div class="card-header"><i class="bi bi-play-circle me-1"></i>触发新运行</div>
             <div class="card-body">
                 <form method="post" action="/admin/runs/start">
+                    <input type="hidden" name="config_csrf" value="{{ session.config_csrf }}">
                     <div class="row g-2 align-items-end">
                         <div class="col-7">
                             <label class="form-label small text-muted mb-0">日期</label>
@@ -23,6 +24,7 @@
                 </form>
                 <hr>
                 <form method="post" action="/admin/runs/rescore">
+                    <input type="hidden" name="config_csrf" value="{{ session.config_csrf }}">
                     <div class="row g-2 align-items-end">
                         <div class="col-7">
                             <input type="date" name="date" class="form-control form-control-sm" id="rescoreDate" value="{{ status.date or '' }}">
@@ -31,7 +33,7 @@
                             <button type="submit" class="btn btn-outline-warning btn-sm w-100"><i class="bi bi-arrow-repeat"></i> 补评缺失分数</button>
                         </div>
                     </div>
-                    <small class="text-muted">只对无分条目调用AI评分</small>
+                    <small class="text-muted">只对无分条目调用AI评分。历史文件若缺少配置绑定，需先按操作文档核对原版本并通过 CLI 显式承接；同日期混用版本时须按关键词分别重评。</small>
                 </form>
             </div>
         </div>
