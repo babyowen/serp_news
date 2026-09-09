@@ -28,8 +28,6 @@ from error_handler import (
 from icon_manager import safe_print, get_icon
 from logger_utils import NewsLogger, get_news_logger
 from llm_client_pool import get_pool
-from runtime_config import value, model_credentials, model_arguments
-from batch_config import prepare_batch
 
 # 全局评分连接池实例
 _scoring_client_pool = get_pool()
@@ -41,7 +39,7 @@ scoring_logger = NewsLogger()
 def get_system_message(main_keyword: str = None, keyword: str = None) -> str:
     """Select the scoring prompt by main business keyword."""
     model_decision_keyword = main_keyword if main_keyword else keyword
-    return value("KEYWORD_SPECIFIC_SYSTEM_PROMPTS").get(model_decision_keyword, value("NEWS_SCORE_SYSTEM_MSG"))
+    return KEYWORD_SPECIFIC_SYSTEM_PROMPTS.get(model_decision_keyword, NEWS_SCORE_SYSTEM_MSG)
 
 # 调用大模型对单条新闻进行评分
 # title: 新闻标题
@@ -50,7 +48,7 @@ def get_system_message(main_keyword: str = None, keyword: str = None) -> str:
 # main_keyword: 用于模型选择判断的主关键词（用于决定使用哪个模型）
 # 返回分数（int）
 def score_news(title: str, content: str, keyword: str, main_keyword: str = None, max_retries: int = 3, retry_interval: int = 5) -> int:
-    prompt = value("NEWS_SCORE_PROMPT").format(keyword=keyword, title=title, content=content)
+    prompt = NEWS_SCORE_PROMPT.format(keyword=keyword, title=title, content=content)
     
     # 根据主关键词选择合适的system prompt
     system_msg = get_system_message(main_keyword, keyword)
@@ -70,23 +68,26 @@ def score_news(title: str, content: str, keyword: str, main_keyword: str = None,
     except Exception:
         pass
 
-    request_parameters = model_arguments("scoring")
+    model_to_use = 'deepseek-v4-flash'
     
     # 智能重试机制
     for attempt in range(1, max_retries + 1):
         # 从连接池获取客户端
-        client = _scoring_client_pool.get_client(*model_credentials("scoring"), max_uses=100)
+        client = _scoring_client_pool.get_client(DEEPSEEK_API_KEY, DEEPSEEK_BASE_URL, max_uses=100)
 
         try:
             # 记录开始时间
             start_time = datetime.now()
 
             response = client.chat.completions.create(
-                **request_parameters,
+                model=model_to_use,
                 messages=[
                     {"role": "system", "content": system_msg},
                     {"role": "user", "content": prompt}
-                ]
+                ],
+                stream=False,
+                temperature=1,
+                timeout=60  # 设置60秒超时
             )
 
             # 计算耗时
@@ -139,7 +140,7 @@ def score_news(title: str, content: str, keyword: str, main_keyword: str = None,
 # 规则打分函数
 # 返回分数（int），未命中规则返回None
 def rule_based_score(title: str, main_keyword: str) -> int:
-    for rule in value("NEWS_RULE_BASED_SCORING"):
+    for rule in NEWS_RULE_BASED_SCORING:
         if rule.get('main_keyword') == main_keyword and rule.get('title_contains') in title:
             return rule.get('score', 0)
     return None
@@ -294,7 +295,6 @@ def main():
         parser.add_argument('date', nargs='?', default=None)
         parser.add_argument('--test_json', type=str, help='测试模式，输入一条json字符串')
         parser.add_argument('--rescore', action='store_true', help='重评模式：只对无分数或0分的条目重新评分')
-        parser.add_argument('--adopt-existing-config', action='store_true')
         args = parser.parse_args()
 
         if args.test_json:
@@ -316,11 +316,10 @@ def main():
             # 批量模式：无参数时遍历 DEFAULT_KEYWORDS
         if args.keyword is None:
             date_str = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
-            _, batch_keywords = prepare_batch(date_str, adopt_existing=args.adopt_existing_config)
             processed_count = 0
-            total_count = len(batch_keywords)
-
-            for keyword in batch_keywords:
+            total_count = len(DEFAULT_KEYWORDS)
+            
+            for keyword in DEFAULT_KEYWORDS:
                 json_path = os.path.join("output", date_str, f"{date_str}_{keyword}.json")
                 scored_json_path = os.path.splitext(json_path)[0] + "_scored.json"
                 safe_print(f"\n=== 开始处理关键词: {keyword} ===")
@@ -377,7 +376,6 @@ def main():
         date_str = args.date
         if not date_str or date_str.lower() == 'none':
             date_str = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
-        prepare_batch(date_str, keyword, args.adopt_existing_config)
         json_path = os.path.join("output", date_str, f"{date_str}_{keyword}.json")
         scored_json_path = os.path.splitext(json_path)[0] + "_scored.json"
 

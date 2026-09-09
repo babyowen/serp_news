@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}配置历史{% endblock %}
+{% block content %}
+<h4 class="mb-3">配置历史与恢复</h4>
+<p>当前版本：<code>{{ current.version }}</code></p>
+<p><a href="{{ url_for('admin.models') }}">查看提示词</a> · <a href="{{ url_for('admin.keywords') }}">管理关键词</a> · <a href="{{ url_for('admin.config_export') }}">导出当前配置</a></p>
+{% if candidate %}
+<div class="card mb-4">
+    <div class="card-header">恢复预览：{{ candidate.version }}</div>
+    <div class="card-body">
+        <p>恢复会创建新版本，保留已有历史；正在运行的批次继续使用原版本。</p>
+        {% if changes %}
+        {% for change in changes %}
+        <details class="mb-2"><summary><code>{{ change.path }}</code></summary>
+            <div class="row mt-2"><div class="col-md-6"><strong>当前</strong><pre class="bg-light p-2 text-break" style="white-space:pre-wrap">{{ change.before | tojson(indent=2) }}</pre></div>
+            <div class="col-md-6"><strong>恢复后</strong><pre class="bg-light p-2 text-break" style="white-space:pre-wrap">{{ change.after | tojson(indent=2) }}</pre></div></div>
+        </details>
+        {% endfor %}
+        {% else %}<p>配置内容一致。</p>{% endif %}
+        <form method="post" action="{{ url_for('admin.config_restore') }}">
+            <input type="hidden" name="config_version" value="{{ current.version }}">
+            <input type="hidden" name="version" value="{{ candidate.version }}">
+            <input type="hidden" name="config_csrf" value="{{ session.config_csrf }}">
+            <label class="form-label" for="restore-note">恢复说明</label>
+            <input id="restore-note" class="form-control mb-2" name="note" required>
+            <button class="btn btn-primary" type="submit">确认恢复为新版本</button>
+        </form>
+    </div>
+</div>
+{% endif %}
+<p class="d-md-none small text-muted">左右滑动表格查看完整历史和操作。</p>
+<div class="table-responsive"><table class="table table-hover" style="min-width:960px">
+    <thead><tr><th>版本</th><th>时间</th><th>说明</th><th>操作</th></tr></thead>
+    <tbody>{% for item in history %}<tr>
+        <td><code>{{ item.version }}</code>{% if item.active %} <span class="badge bg-success">生效中</span>{% endif %}</td>
+        <td>{{ item.created_at }}</td><td>{{ item.note }}</td>
+        <td><a href="{{ url_for('admin.config_history', version=item.version) }}">比较 / 恢复</a> · <a href="{{ url_for('admin.config_export', version=item.version) }}">导出</a></td>
+    </tr>{% endfor %}</tbody>
+</table></div>
+{% endblock %}

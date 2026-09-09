@@ -2,13 +2,16 @@
 import json
 import os
 import sys
-from flask import render_template, request, redirect, url_for, flash, Blueprint
+from pathlib import Path
+from flask import render_template, request, redirect, url_for, flash, Blueprint, Response
 from flask_httpauth import HTTPBasicAuth
 from werkzeug.security import check_password_hash, generate_password_hash
-from config_manager import read_keywords, write_keywords, read_model_config
+from config_manager import read_keywords, edit_keywords, read_model_config
+from config_schema import ConfigError, ConfigConflict, differences
+from batch_config import validate_date
+from runtime_config import get_snapshot, get_store, value, child_environment
 from run_manager import RunManager
 from db_utils import get_connection, get_table_name
-from config import DEFAULT_KEYWORDS
 from news_business_type_utils import (
     count_secondary_label_uses,
     get_business_type_alias_records,
@@ -45,37 +48,19 @@ run_mgr = RunManager()
 
 @admin_bp.route("/keywords", methods=["GET", "POST"])
 def keywords():
+    snapshot = get_snapshot()
     if request.method == "POST":
-        action = request.form.get("action")
-        if action == "add":
+        try:
             main_kw = request.form.get("main_keyword", "").strip()
-            search_kw_str = request.form.get("search_keywords", "").strip()
-            if main_kw and search_kw_str:
-                kw = read_keywords()
-                search_list = [s.strip() for s in search_kw_str.split(",") if s.strip()]
-                kw[main_kw] = search_list
-                write_keywords(kw)
-        elif action == "delete":
-            main_kw = request.form.get("main_keyword", "").strip()
-            if main_kw:
-                kw = read_keywords()
-                kw.pop(main_kw, None)
-                write_keywords(kw)
-        elif action == "edit":
-            old_kw = request.form.get("old_keyword", "").strip()
-            main_kw = request.form.get("main_keyword", "").strip()
-            search_kw_str = request.form.get("search_keywords", "").strip()
-            if main_kw and search_kw_str:
-                kw = read_keywords()
-                if old_kw in kw:
-                    del kw[old_kw]
-                search_list = [s.strip() for s in search_kw_str.split(",") if s.strip()]
-                kw[main_kw] = search_list
-                write_keywords(kw)
-        return redirect(url_for("admin.keywords"))
-
-    kw = read_keywords()
-    return render_template("admin/keywords.html", keywords=kw)
+            terms = [term.strip() for term in request.form.get("search_keywords", "").split(",") if term.strip()]
+            edit_keywords(request.form.get("action"), main_kw, terms,
+                          request.form.get("config_version"), request.form.get("old_keyword"))
+            flash("配置已保存为新版本；新任务使用新配置，已有批次保持原版本。", "success")
+            return redirect(url_for("admin.keywords"))
+        except ConfigError as exc:
+            flash(str(exc), "danger")
+            return render_template("admin/keywords.html", keywords=read_keywords(), config_version=snapshot.token), (409 if isinstance(exc, ConfigConflict) else 400)
+    return render_template("admin/keywords.html", keywords=read_keywords(), config_version=snapshot.token)
 
 
 @admin_bp.route("/models")
@@ -142,7 +127,52 @@ def models():
             ],
         },
     ]
-    return render_template("admin/models.html", config=config, prompt_groups=prompt_groups)
+    snapshot = get_snapshot()
+    document = snapshot.document
+    shown = {item["var"] for group in prompt_groups for item in group["prompts"]}
+    extra = [{"name": name, "var": name, "content": prompt["text"], "note": "归档" if prompt["status"] == "archived" else "现用"}
+             for name, prompt in document["prompts"].items() if name not in shown]
+    if extra:
+        prompt_groups.append({"group": "其他及归档提示词（完整保留）", "prompts": extra})
+    for group in prompt_groups:
+        for item in group["prompts"]:
+            bound = [key for key, prompt_id in document["keyword_prompt_ids"].items() if prompt_id == item["var"]]
+            if bound:
+                item["note"] = "绑定主关键词: " + "、".join(bound)
+    return render_template("admin/models.html", config=config, prompt_groups=prompt_groups, config_version=snapshot.token)
+
+
+@admin_bp.route("/config-history")
+def config_history():
+    snapshot = get_snapshot()
+    selected = request.args.get("version")
+    changes = None
+    candidate = None
+    if selected:
+        candidate = get_store().read(selected)
+        changes = differences(snapshot.document, candidate.document)
+    return render_template("admin/config_history.html", current=snapshot.summary(),
+                           history=get_store().history(at_version=snapshot.token), candidate=candidate.summary() if candidate else None,
+                           changes=changes)
+
+
+@admin_bp.route("/config-export")
+def config_export():
+    bundle = get_store().export(request.args.get("version") or get_snapshot().token)
+    return Response(json.dumps(bundle, ensure_ascii=False, indent=2), mimetype="application/json",
+                    headers={"Content-Disposition": 'attachment; filename="runtime-config.json"', "Cache-Control": "no-store"})
+
+
+@admin_bp.route("/config-restore", methods=["POST"])
+def config_restore():
+    try:
+        get_store().restore(request.form.get("version"), request.form.get("config_version"),
+                            request.form.get("note", "恢复历史配置"))
+        flash("已恢复为一个新版本，原有历史完整保留。", "success")
+        return redirect(url_for("admin.config_history"))
+    except ConfigError as exc:
+        return str(exc), (409 if isinstance(exc, ConfigConflict) else 400)
+
 
 
 def _business_types_context(table, preview=None):
@@ -295,19 +325,29 @@ def rescore():
     if not date:
         return redirect(url_for("admin.runs"))
 
+    try:
+        validate_date(date)
+    except ConfigError as exc:
+        return str(exc), 400
+    project = Path(__file__).resolve().parent.parent
     table = get_table_name()
     updated_total = 0
     errors = []
+    try:
+        snapshot, _ = get_store().pin_batch(project / "output" / date)
+    except ConfigError as exc:
+        flash(str(exc), "danger")
+        return redirect(url_for("admin.runs"))
 
-    for kw in DEFAULT_KEYWORDS:
-        scored_path = os.path.join("output", date, f"{date}_{kw}_scored.json")
+    for kw in snapshot.document["settings"]["SEARCH_KEYWORDS"]:
+        scored_path = str(project / "output" / date / f"{date}_{kw}_scored.json")
         if not os.path.exists(scored_path):
             continue
 
         # 调用 news_scorer.py --rescore
         import subprocess
         cmd = [sys.executable, "news_scorer.py", kw, date, "--rescore"]
-        result = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=300, cwd=str(project), env=child_environment(snapshot))
 
         if result.returncode != 0:
             errors.append(f"{kw}: 评分失败")

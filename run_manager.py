@@ -5,9 +5,13 @@ import subprocess
 import sys
 import datetime
 import signal
+from runtime_config import child_environment, get_store
+from config_schema import ConfigError
+from batch_config import validate_date
 
-STATUS_FILE = os.path.join("output", "run_status.json")
-OUTPUT_DIR = "output"
+PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
+OUTPUT_DIR = os.path.join(PROJECT_DIR, "output")
+STATUS_FILE = os.path.join(OUTPUT_DIR, "run_status.json")
 
 
 def _read_status():
@@ -43,12 +47,18 @@ class RunManager:
         if not date:
             date = (datetime.date.today() - datetime.timedelta(days=1)).strftime("%Y-%m-%d")
 
+        try:
+            validate_date(date)
+            snapshot, _ = get_store().pin_batch(os.path.join(OUTPUT_DIR, date))
+        except (ConfigError, ValueError) as exc:
+            return {"error": str(exc), "status": current}
         cmd = [sys.executable, "main.py", date]
         proc = subprocess.Popen(
             cmd,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            cwd=os.path.dirname(__file__) or ".",
+            cwd=PROJECT_DIR,
+            env=child_environment(snapshot),
         )
 
         steps = {
@@ -63,6 +73,8 @@ class RunManager:
 
         status = {
             "pid": proc.pid,
+            "config_version": snapshot.token,
+            "config_sha256": snapshot.sha256,
             "date": date,
             "started_at": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             "status": "running",

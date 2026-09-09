@@ -1,6 +1,8 @@
 # 运维手册
 
-本文档面向运行生产环境的管理员。代码和环境变量分别管理：代码由 Git 更新，`.env` 由服务器本地维护。
+本文档面向运行生产环境的管理员。代码由 Git 更新，`.env` 由服务器本地维护；提示词和运行配置保存在 `SERP_CONFIG_STORE` 指向的部署目录外文件中。
+
+**Issue #18 首次上线必须先按 [配置迁移说明](configuration.md) 从旧生产文件初始化并验证，再执行下面的代码更新。不能先覆盖旧 `config.py` 再用默认值初始化。**
 
 ## 代码更新
 
@@ -18,7 +20,7 @@ git pull --ff-only origin main
 .venv/bin/python -c "from config import SEARCH_KEYWORDS; print(SEARCH_KEYWORDS['烟草服务银行'])"
 ```
 
-项目的 Web 前端由 Flask 的 `app.py` 提供，不需要额外构建前端静态资源。代码更新后，按服务器现有的 systemd、supervisor 或进程管理方式重启 Flask 服务。
+项目的 Web 前端由 Flask 的 `app.py` 提供，不需要额外构建前端静态资源。代码更新后，按服务器现有的 systemd、supervisor 或进程管理方式重启 Flask 服务。更新代码不会替换生效配置；可用 `python config_cli.py --store /srv/serp-news-state/runtime.sqlite3 status` 核对版本。
 
 ## 环境变量
 
@@ -27,6 +29,7 @@ git pull --ff-only origin main
 ```ini
 MYSQL_TABLE=scored_news
 AUTO_MIGRATE_DEDUP_INDEX=0
+SERP_CONFIG_STORE=/srv/serp-news-state/runtime.sqlite3
 ```
 
 `AUTO_MIGRATE_DEDUP_INDEX=0` 是日常生产批次的安全默认值：数据库写入使用应用层查重，不会执行索引或其他表结构变更。仅在已确认历史数据且安排维护窗口时，才可临时设为 `1` 执行迁移；完成后立即恢复为 `0`。

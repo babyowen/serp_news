@@ -3,12 +3,6 @@
 {% block content %}
 <h4 class="mb-3"><i class="bi bi-diagram-3 me-1"></i>公积金业务类型管理</h4>
 
-{% with messages = get_flashed_messages(with_categories=true) %}
-{% for category, message in messages %}
-<div class="alert alert-{{ category }}">{{ message }}</div>
-{% endfor %}
-{% endwith %}
-
 {% if not schema_ready %}
 <div class="alert alert-warning">
     业务类型数据表尚未初始化。请先在目标库执行 <code>python3 news_business_type_schema.py --table {{ table }}</code>。

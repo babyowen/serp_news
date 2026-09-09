@@ -29,8 +29,6 @@ from news_region_utils import (
 )
 from db_utils import get_connection, get_table_name
 from llm_client_pool import get_pool
-from runtime_config import value, model_credentials, model_arguments
-from batch_config import prepare_batch
 from news_business_type_utils import (
     build_business_type_catalog,
     load_business_type_aliases,
@@ -51,17 +49,19 @@ def parse_date(arg):
     return s
 
 def call_llm(title, content, max_retries=3):
-    user_prompt = value("NEWS_ITEM_SUMMARY_USER_PROMPT_500").format(title=title.strip(), content=content.strip())
+    user_prompt = NEWS_ITEM_SUMMARY_USER_PROMPT_500.format(title=title.strip(), content=content.strip())
     backoffs = [5, 10, 20]
     for i in range(max_retries):
-        client = _pool.get_client(*model_credentials("item_summarizer"))
+        client = _pool.get_client(DEEPSEEK_API_KEY, DEEPSEEK_BASE_URL)
         try:
             resp = client.chat.completions.create(
-                **model_arguments("item_summarizer"),
+                model='deepseek-v4-flash',
                 messages=[
-                    {"role": "system", "content": value("NEWS_ITEM_SUMMARY_SYSTEM_PROMPT_500")},
+                    {"role": "system", "content": NEWS_ITEM_SUMMARY_SYSTEM_PROMPT_500},
                     {"role": "user", "content": user_prompt}
-                ]
+                ],
+                stream=False,
+                timeout=60
             )
             return resp.choices[0].message.content.strip()
         except Exception as e:
@@ -119,10 +119,8 @@ def main():
         parser.add_argument('date', nargs='?', default=None)
         parser.add_argument('--keyword', type=str, default=None, help='Filter by keyword')
         parser.add_argument('--table', type=str, default=None, help='Target table (default: MYSQL_TABLE env var or scored_news)')
-        parser.add_argument('--adopt-existing-config', action='store_true')
         args = parser.parse_args()
         date = parse_date(args.date)
-        _, batch_keywords = prepare_batch(date, args.keyword, args.adopt_existing_config)
         table_name = validate_region_table_name(args.table or get_table_name())
         conn = get_conn()
         cur = conn.cursor()
@@ -139,10 +137,11 @@ def main():
         business_type_catalog = build_business_type_catalog(cur, table_name, aliases) if gjj_annotation_ready else {}
 
         sql = f"SELECT id, title, content, keyword FROM {table_name} WHERE fetchdate=%s AND score>=3 AND (short_summary IS NULL OR short_summary='')"
-        # Scope the database work to the same topics whose revision was pinned.
-        # Historical rows for removed/unbound topics require an explicit run.
-        sql += " AND keyword IN (" + ",".join(["%s"] * len(batch_keywords)) + ")"
-        params = [date, *batch_keywords]
+        params = [date]
+        
+        if args.keyword:
+            sql += " AND keyword=%s"
+            params.append(args.keyword)
             
         cur.execute(sql, tuple(params))
         initial_rows = cur.fetchall()

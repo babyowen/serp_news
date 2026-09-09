@@ -4,7 +4,7 @@ import json
 import datetime
 from flask import render_template, send_from_directory, request, Blueprint
 from db_utils import get_connection, get_table_name
-from config import DEFAULT_KEYWORDS
+from runtime_config import value
 
 views_bp = Blueprint("views", __name__)
 OUTPUT_DIR = "output"
@@ -12,6 +12,7 @@ OUTPUT_DIR = "output"
 
 @views_bp.route("/")
 def index():
+    DEFAULT_KEYWORDS = value("DEFAULT_KEYWORDS")
     # 日期参数：默认昨天到昨天（单日）
     yesterday = (datetime.date.today() - datetime.timedelta(days=1)).strftime("%Y-%m-%d")
     date_from = request.args.get("date_from", yesterday)

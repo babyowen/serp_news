@@ -25,6 +25,7 @@
                         <span class="badge bg-danger"><i class="bi bi-x-circle me-1"></i>未配置</span>
                     {% endif %}
                 </td></tr>
+                <tr><td class="text-muted ps-0">调用参数</td><td><pre class="small mb-0" style="white-space:pre-wrap">{{ info.parameters | tojson(indent=2) }}</pre></td></tr>
             </table>
         </div>
     </div>
@@ -34,12 +35,14 @@
 
 <div class="alert alert-info mb-4 py-2">
     <i class="bi bi-info-circle me-1"></i>
-    模型配置通过 <code>config.py</code> 和 <code>.env</code> 管理，修改后需重启应用。
+    当前配置版本：<code>{{ config_version }}</code>。
+    新任务使用新配置，已有批次保持原版本。
+    <a href="{{ url_for('admin.config_history') }}">查看历史、导出或恢复</a>
 </div>
 
 <!-- Prompt 配置 -->
 <h5 class="section-title"><i class="bi bi-chat-square-text me-1"></i>Prompt 配置</h5>
-<p class="text-muted mb-3">所有 Prompt 定义在 <code>config.py</code> 中，仅展示当前启用的。</p>
+<p class="text-muted mb-3">提示词来自当前生效配置，现用和归档内容均保留。</p>
 
 {% for group in prompt_groups %}
 <div class="card mb-3">
@@ -61,7 +64,7 @@
                     <span class="badge bg-light text-dark border">{{ item.note }}</span>
                     {% endif %}
                 </div>
-                <pre class="bg-light p-3 rounded mb-0" style="font-size:.8em;line-height:1.7;max-height:220px;overflow-y:auto;white-space:pre-wrap;word-break:break-all;">{{ item.content.strip() }}</pre>
+                <pre class="bg-light p-3 rounded mb-0" style="font-size:.8em;line-height:1.7;max-height:220px;overflow-y:auto;white-space:pre-wrap;word-break:break-all;">{{ item.content }}</pre>
             </div>
             {% endfor %}
         </div>
