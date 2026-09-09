@@ -18,6 +18,7 @@
         </a>
     </div>
     <form method="get" action="/">
+        <input type="hidden" name="keyword" value="{{ selected_keyword }}">
         <div class="card-body py-3">
             <div class="row g-3 align-items-end">
                 <div class="col-lg-2 col-md-4 col-6">
@@ -90,18 +91,24 @@
         <!-- 关键词 Tab -->
         <div class="px-3 pt-3 pb-2" style="background:var(--surface-alt);">
             <ul class="nav nav-pills gap-2" id="kwTabs">
-                {% for kw in grouped %}
+                {% for stat in kw_stats %}
+                {% set kw = stat.keyword %}
                 <li class="nav-item">
-                    <a class="nav-link py-1 px-3 {% if loop.first %}active{% endif %}" data-bs-toggle="pill" href="#kw-{{ loop.index }}"
+                    <a class="nav-link py-1 px-3 {% if kw == selected_keyword %}active{% endif %}" href="{{ keyword_urls[kw] }}"
                        style="font-size:.84rem;">
                         {{ kw }}
-                        <span class="badge {% if loop.first %}bg-white text-primary{% else %}bg-secondary{% endif %} ms-1">{{ grouped[kw]|length }}</span>
+                        <span class="badge {% if kw == selected_keyword %}bg-white text-primary{% else %}bg-secondary{% endif %} ms-1">{{ stat.cnt }}</span>
                     </a>
                 </li>
                 {% endfor %}
             </ul>
         </div>
 
+        <div class="d-flex align-items-center gap-3 px-3 py-2" aria-label="新闻分页">
+            <span class="text-muted small">{{ selected_keyword }} 共 {{ selected_total }} 条 · 第 {{ page }} / {{ pages }} 页 · 每页 50 条</span>
+            {% if previous_url %}<a href="{{ previous_url }}" class="btn btn-sm btn-outline-primary">上一页</a>{% endif %}
+            {% if next_url %}<a href="{{ next_url }}" class="btn btn-sm btn-outline-primary">下一页</a>{% endif %}
+        </div>
         <div class="tab-content">
             {% for kw, items in grouped.items() %}
             <div class="tab-pane fade {% if loop.first %}show active{% endif %}" id="kw-{{ loop.index }}">
