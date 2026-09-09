@@ -79,6 +79,8 @@ cd /path/to/serp_news && .venv/bin/python main.py
 
 ## 运行后核验
 
+Issue #18 / PR #21 部署当天及后两天的完整验收，按 [上线检查方案](post-deployment-verification.md) 执行；部署前先填写运行记录并留存基线，明后天可直接让 AI 按该文档只读检查。
+
 1. 检查批次日志 `output/YYYY-MM-DD/run_*.log` 是否显示全部步骤成功。
 2. 在前端按日期和主关键词 `烟草服务银行` 筛选，检查新闻、分数和摘要是否可见。
 3. 数据库核验时确认写入表为 `scored_news`，并以 `fetchdate` 和 `keyword='烟草服务银行'` 过滤。

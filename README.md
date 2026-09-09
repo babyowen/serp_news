@@ -210,6 +210,8 @@ AUTO_MIGRATE_DEDUP_INDEX=1 python write_to_mysql.py --date YYYY-MM-DD     # 仅�
 
 ## 测试
 
+生产上线后的运行、数据和功能检查见 [部署当天及后两天检查方案](docs/post-deployment-verification.md)。请在更新服务器前填写部署记录并保存运行基线。
+
 配置改造及相关业务的离线回归（隔离配置和工作目录、阻止网络连接）：
 
 ```bash
