@@ -133,3 +133,38 @@ def test_cli_preview_without_network(setup):
     with patch('model_switch.probe') as probe:
         assert config_cli.run(args)['current'] == first.token
     probe.assert_not_called()
+
+
+@pytest.mark.parametrize('selection', ['dotenv', 'environment', 'explicit'])
+def test_cli_store_selection_loads_real_dotenv_first(setup, monkeypatch, selection):
+    import os
+    import config_cli
+    store, first, backup = setup
+    project = backup.parent / 'project'
+    project.mkdir()
+    other = ConfigStore(backup.parent / 'other.sqlite3')
+    other_first, _ = other.initialize(first.document, {'kind': 'other'})
+    (project / '.env').write_text(
+        f'SERP_CONFIG_STORE={store.path}\nDEEPSEEK_API_KEY=dotenv-test-key\n')
+    monkeypatch.setattr(config_cli, '__file__', str(project / 'config_cli.py'))
+    monkeypatch.delenv('SERP_CONFIG_STORE', raising=False)
+    monkeypatch.delenv('DEEPSEEK_API_KEY', raising=False)
+    # Invocation from another directory must still read the project's .env.
+    monkeypatch.chdir(backup.parent)
+    argv = ['switch-model']
+    expected = first.token
+    if selection == 'environment':
+        monkeypatch.setenv('SERP_CONFIG_STORE', str(other.path))
+        monkeypatch.setenv('DEEPSEEK_API_KEY', 'environment-test-key')
+        expected = other_first.token
+    elif selection == 'explicit':
+        argv = ['--store', str(other.path), 'switch-model']
+        expected = other_first.token
+    with patch('model_switch.probe') as probe:
+        result = config_cli.run(config_cli.parser().parse_args(argv))
+    assert result['current'] == expected
+    assert os.environ['DEEPSEEK_API_KEY'] == (
+        'environment-test-key' if selection == 'environment' else 'dotenv-test-key')
+    probe.assert_not_called()
+    assert store.read().token == first.token
+    assert other.read().token == other_first.token

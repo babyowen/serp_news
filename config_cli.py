@@ -59,11 +59,12 @@ def parser():
 
 
 def run(args):
-    store = ConfigStore(args.store)
     if args.command == "switch-model":
         from dotenv import load_dotenv
-        from model_switch import switch
         load_dotenv(Path(__file__).with_name(".env"), override=False)
+    store = ConfigStore(args.store)
+    if args.command == "switch-model":
+        from model_switch import switch
         return switch(store, apply=args.apply, expected_version=args.expected_version,
                       backup=args.backup, note=args.note)
     if args.command in ("init", "import", "diff"):
