@@ -189,11 +189,20 @@ class BankNewsFeatureTests(unittest.TestCase):
         with patch.object(views, "get_connection", return_value=FakeConnection()), patch.object(
             views, "get_table_name", return_value="scored_news_test"
         ):
-            response = app.test_client().get("/?date_from=2099-01-01&date_to=2099-01-01")
-
-        self.assertEqual(response.status_code, 200)
-        self.assertIn("烟草服务银行".encode(), response.data)
-        self.assertIn("当前筛选条件下暂无烟草服务银行新闻".encode(), response.data)
+            client = app.test_client()
+            response = client.get("/?date_from=2099-01-01&date_to=2099-01-01")
+            self.assertEqual(response.status_code, 200)
+            self.assertIn("烟草服务银行".encode(), response.data)
+            # Topics now load on navigation instead of rendering hidden panels.
+            import html
+            import re
+            from urllib.parse import parse_qs, urlsplit
+            links = [html.unescape(link) for link in re.findall(r'href="([^"]+)"', response.get_data(as_text=True))]
+            bank_link = next(link for link in links
+                             if parse_qs(urlsplit(link).query).get("keyword") == ["烟草服务银行"])
+            selected = client.get(bank_link)
+            self.assertEqual(selected.status_code, 200)
+            self.assertIn("当前筛选条件下暂无烟草服务银行新闻".encode(), selected.data)
 
 
     def test_legacy_global_index_is_migrated_to_keyword_scoped_index(self):

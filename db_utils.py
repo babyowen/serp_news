@@ -16,13 +16,14 @@ MYSQL_PASSWORD = os.getenv("MYSQL_PASSWORD")
 MYSQL_DB = os.getenv("MYSQL_DB")
 
 
-def get_connection(autocommit=True, dict_cursor=False, retries=3, delay=2):
+def get_connection(autocommit=True, dict_cursor=False, retries=3, delay=2, read_timeout=30):
     """获取MySQL连接，带重试
 
     Args:
         autocommit: 是否自动提交（默认True）
         dict_cursor: 是否使用字典游标（默认False）
         retries: 连接重试次数（默认3次）
+        read_timeout: 单次读取超时秒数，显式索引维护可使用较长时间
         delay: 重试间隔秒数（默认2秒）
     """
     kwargs = dict(
@@ -33,7 +34,7 @@ def get_connection(autocommit=True, dict_cursor=False, retries=3, delay=2):
         database=MYSQL_DB,
         charset="utf8mb4",
         autocommit=autocommit,
-        read_timeout=30,
+        read_timeout=read_timeout,
         write_timeout=30,
     )
     if dict_cursor:

@@ -2,7 +2,7 @@
 import os
 import json
 import datetime
-from flask import render_template, send_from_directory, request, Blueprint
+from flask import render_template, send_from_directory, request, Blueprint, abort, url_for
 from db_utils import get_connection, get_table_name
 from runtime_config import value
 
@@ -21,6 +21,26 @@ def index():
     score_max = request.args.get("score_max", "")
     source = request.args.get("source", "")
     sourceapi = request.args.get("sourceapi", "")
+
+    selected_keyword = request.args.get("keyword", next(iter(DEFAULT_KEYWORDS), ""))
+    if selected_keyword not in DEFAULT_KEYWORDS and DEFAULT_KEYWORDS:
+        abort(400, "无效的新闻主题")
+    try:
+        page = int(request.args.get("page", "1"))
+        if page < 1 or page > 1000000:
+            raise ValueError
+        if any(datetime.date.fromisoformat(d).isoformat() != d for d in (date_from, date_to)):
+            raise ValueError
+        if date_from > date_to:
+            raise ValueError
+        for score in (score_min, score_max):
+            if score != "" and not 0 <= int(score) <= 5:
+                raise ValueError
+        if score_min != "" and score_max != "" and int(score_min) > int(score_max):
+            raise ValueError
+    except ValueError:
+        abort(400, "日期、评分或页码无效")
+    page_size = 50
 
     # 构建查询
     conditions = ["fetchdate BETWEEN %s AND %s"]
@@ -41,7 +61,7 @@ def index():
 
     # 仅显示本地配置的关键词，避免生产库历史数据污染
     placeholders = ",".join(["%s"] * len(DEFAULT_KEYWORDS))
-    conditions.append(f"keyword IN ({placeholders})")
+    conditions.append(f"keyword IN ({placeholders})" if DEFAULT_KEYWORDS else "1=0")
     params.extend(DEFAULT_KEYWORDS)
 
     where = " AND ".join(conditions)
@@ -53,7 +73,7 @@ def index():
         # 统计
         table = get_table_name()
         cursor.execute(
-            f"SELECT keyword, COUNT(*) as cnt FROM {table} WHERE {where} GROUP BY keyword ORDER BY cnt DESC",
+            f"SELECT keyword, COUNT(*) as cnt FROM {table} WHERE {where} GROUP BY keyword",
             params
         )
         stored_kw_stats = cursor.fetchall()
@@ -64,13 +84,19 @@ def index():
         ]
         total = sum(row["cnt"] for row in kw_stats)
 
-        # 数据
-        cursor.execute(
-            f"SELECT keyword, title, link, source, fetchdate, sourceapi, score, short_summary "
-            f"FROM {table} WHERE {where} ORDER BY fetchdate DESC, keyword, score DESC",
-            params
-        )
-        news_list = cursor.fetchall()
+        selected_total = count_by_keyword.get(selected_keyword, 0)
+        pages = max(1, (selected_total + page_size - 1) // page_size)
+        page = min(page, pages)
+        news_list = []
+        if selected_total:
+            cursor.execute(
+                f"SELECT id, keyword, title, link, source, fetchdate, sourceapi, score, "
+                f"LEFT(short_summary, 101) AS short_summary FROM {table} "
+                f"WHERE {where} AND keyword = %s "
+                "ORDER BY fetchdate DESC, score DESC, id DESC LIMIT %s OFFSET %s",
+                [*params, selected_keyword, page_size, (page - 1) * page_size],
+            )
+            news_list = cursor.fetchall()
 
         # 筛选选项：当前日期范围内的所有来源和API
         cursor.execute(
@@ -83,19 +109,21 @@ def index():
     finally:
         conn.close()
 
-    # 按关键词分组
-    # Keep every configured keyword visible, including those awaiting their first news.
-    grouped = {keyword: [] for keyword in DEFAULT_KEYWORDS}
-    for item in news_list:
-        kw = item["keyword"] or "未分类"
-        grouped.setdefault(kw, []).append(item)
+    filters = dict(date_from=date_from, date_to=date_to, score_min=score_min,
+                   score_max=score_max, source=source, sourceapi=sourceapi)
+    keyword_urls = {kw: url_for("views.index", **filters, keyword=kw)
+                    for kw in DEFAULT_KEYWORDS}
+    def page_url(number):
+        return url_for("views.index", **filters, keyword=selected_keyword, page=number)
 
-    return render_template("index.html",
-                           date_from=date_from, date_to=date_to,
-                           score_min=score_min, score_max=score_max,
-                           source=source, sourceapi=sourceapi,
+    return render_template("index.html", **filters,
                            total=total, kw_stats=kw_stats,
-                           grouped=grouped, api_options=api_options)
+                           grouped={selected_keyword: news_list} if DEFAULT_KEYWORDS else {},
+                           api_options=api_options, selected_keyword=selected_keyword,
+                           keyword_urls=keyword_urls, page=page, pages=pages,
+                           selected_total=selected_total,
+                           previous_url=page_url(page - 1) if page > 1 else None,
+                           next_url=page_url(page + 1) if page < pages else None)
 
 
 @views_bp.route("/date/<date>")
