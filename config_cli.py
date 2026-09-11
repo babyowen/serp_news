@@ -34,6 +34,11 @@ def parser():
             command.add_argument("--note", default="首次迁移" if name == "init" else None, required=name == "import")
         if name == "import":
             command.add_argument("--expected-version", required=True, help="编辑时记录的完整配置版本")
+    switch = commands.add_parser("switch-model", help="统一切换为 DeepSeek V4.1 Flash；默认只预览")
+    switch.add_argument("--apply", action="store_true")
+    switch.add_argument("--expected-version")
+    switch.add_argument("--backup", help="部署目录外的新备份文件路径")
+    switch.add_argument("--note")
     commands.add_parser("status")
     history = commands.add_parser("history")
     history.add_argument("--limit", type=int, default=100)
@@ -54,7 +59,14 @@ def parser():
 
 
 def run(args):
+    if args.command == "switch-model":
+        from dotenv import load_dotenv
+        load_dotenv(Path(__file__).with_name(".env"), override=False)
     store = ConfigStore(args.store)
+    if args.command == "switch-model":
+        from model_switch import switch
+        return switch(store, apply=args.apply, expected_version=args.expected_version,
+                      backup=args.backup, note=args.note)
     if args.command in ("init", "import", "diff"):
         document, source = _candidate(args)
         current = store.read() if store.path.exists() else None

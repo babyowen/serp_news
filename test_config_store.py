@@ -50,7 +50,10 @@ class StoreTests(unittest.TestCase):
 
     def test_legacy_migration_keeps_every_prompt_and_rendered_message(self):
         document, source = extract_legacy(self.legacy())
-        self.assertEqual(document, self.document)
+        expected = copy.deepcopy(self.document)
+        for profile in expected["models"].values():
+            profile["model"] = "deepseek-v4-flash"
+        self.assertEqual(document, expected)
         hashes = json.loads((ROOT / "tests/fixtures/prompt_hashes.json").read_text())
         self.assertEqual(len(document["prompts"]), 22)
         self.assertEqual(sum(v["status"] == "archived" for v in document["prompts"].values()), 8)
@@ -63,7 +66,7 @@ class StoreTests(unittest.TestCase):
         self.assertNotIn("temperature", document["models"]["item_summarizer"]["parameters"])
         migrated = ConfigStore(self.root / "migrated.sqlite3")
         revision, _ = migrated.initialize(document, source)
-        self.assertEqual(revision.document, self.document)
+        self.assertEqual(revision.document, expected)
         self.assertEqual(migrated.original_source(), source)
 
     def test_migration_never_executes_source(self):
