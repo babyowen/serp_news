@@ -163,3 +163,47 @@ python run_config_tests.py
 补充的 20 个系统案例、首次代码审查的 15 项回归及独立审查后的回归见 [全局测试记录](configuration-test-report.md)，覆盖迁移边界、事务提交失败、在线备份、鉴权、跨目录启动、整条流水线的版本传递、规则冲突、管理写操作保护和配置保留名称。旧日志回归脚本会在独立进程中执行。
 
 `tests/fixtures/legacy/` 来自改造前已跟踪源码，仅用于 AST 迁移测试；`tests/fixtures/prompt_hashes.json` 固定本次确认的提示词哈希。初次迁移和存储重构不得顺带更新这些原文基线。旧源码夹具有意保留原文件的尾随空白，不应自动格式化；检查新增代码空白时可显式排除 `tests/fixtures/legacy/`。
+
+## 统一切换运行模型（DeepSeek V4.1 Flash）
+
+官方 2026-09-10 公告指定 API 名称为 `deepseek-flash`：
+https://www.deepseek.com/en/news/deepseek-v4-1-flash/
+
+新安装的默认模板使用该名称。Git 更新不会修改已初始化的生产配置。
+迁移旧配置仍忠实保留原模型，不自动升级。归档脚本的模型配置不参与此次切换。
+
+部署包含 `switch-model` 的版本后，在服务器项目目录先预览（不联网、不写入）：
+
+```bash
+cd /www/wwwroot/serp_news
+.venv/bin/python config_cli.py --store /www/serp-news-state/runtime.sqlite3 switch-model
+```
+
+检查只有三个运行阶段的模型名发生变化，将输出的 `current` 完整版本填入下方。
+正式执行会创建不可覆盖的配置备份，并发起三个小型真实请求（每阶段一次，会产生少量费用），
+只发送固定测试文本，不发送生产提示词或新闻。请求沿用各阶段参数，失败不会切换配置。
+成功后使用乐观锁发布一个新版本；如果期间管理员修改了配置，会拒绝覆盖，请重新预览。
+
+```bash
+.venv/bin/python config_cli.py --store /www/serp-news-state/runtime.sqlite3 switch-model \
+  --apply --expected-version '填入预览的完整版本' \
+  --backup "/www/serp-news-backups/before-model-switch-$(date +%Y%m%d-%H%M%S).sqlite3" \
+  --note '统一运行模型为 DeepSeek V4.1 Flash'
+```
+
+命令从项目 `.env` 加载凭据，已存在的环境变量优先。无需更换 API Key。
+仅支持已配置官方 DeepSeek 地址和 `DEEPSEEK_API_KEY` 的运行阶段；遇到其他提供商会停止，
+避免把凭据发送到错误地址。已全部使用目标名称时不产生新版本，也不重复请求或备份。
+
+新日期批次使用新版本。正在运行及已有绑定的历史批次保留原版本，不能通过本命令强行改绑。
+不要删除批次绑定来补跑；旧日期继续使用其历史配置。提示词、关键词、请求参数及归档模型均不变。
+页面下一次请求会读取新版本；定时任务下一次启动会读取新版本，无需为了配置切换重启服务。
+
+回退使用预览记录的旧版本及当前版本，生成一条新的恢复记录（不会重写历史）：
+
+```bash
+.venv/bin/python config_cli.py --store /www/serp-news-state/runtime.sqlite3 restore \
+  --version '切换前的完整版本' --expected-version '当前完整版本' --note '回退模型切换'
+```
+
+恢复的是本地配置；服务商对旧模型别名的路由可能改变，因此不保证恢复旧模型权重。
