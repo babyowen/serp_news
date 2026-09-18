@@ -136,6 +136,9 @@ def main(argv=None):
     try:
         result = run(parser().parse_args(argv))
         print(json.dumps(result, ensure_ascii=False, indent=2))
+        # check-model 用退出码表达检查结论，供 `check-model && 重启` 类部署脚本判断。
+        if isinstance(result, dict) and result and all(isinstance(v, dict) and "ok" in v for v in result.values()):
+            return 0 if all(item["ok"] for item in result.values()) else 1
         return 0
     except (ConfigError, OSError) as exc:
         print(f"配置操作失败: {exc}", file=sys.stderr)

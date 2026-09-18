@@ -84,7 +84,7 @@ set +a
 | C01 | 服务器 `git rev-parse HEAD`、服务启动时间、实际解释器/工作目录/账户、定时任务配置 | 部署内容包含最终合并；Web 和调度使用正确目录与环境。磁盘代码已更新但旧进程未重启，不能判通过 |
 | C02 | CLI `status`、Web 模型/历史页显示的版本、任务日志 `[CONFIG]` | 指向同一配置存储 ID。没有配置缺失/校验失败/默认值回退；正常新批次使用启动时选定版本 |
 | C03 | 部署基线与当前版本的逐段提示词 SHA-256、原始源码归档 | 未主动改动时逐段及全文哈希完全一致；主动调整只允许有说明的差异。归档提示词同样检查 |
-| C04 | 主关键词及顺序、检索词、专用映射、黑名单、规则评分、三阶段模型及请求参数 | 与生效版本及变更记录一致；不能只核对提示词数量或模型名称 |
+| C04 | 主关键词及顺序、检索词、专用映射、黑名单、规则评分、三阶段模型及请求参数 | 提示词/关键词与生效版本及变更记录一致；三阶段模型及参数以 `read_model_config()`（LLM_* 环境变量）输出为准，不核对存储中的历史 models 字段 |
 | C05 | 只读查询 `batch_pins`、各子进程版本日志、上次检查保留的绑定 | 同一主题续跑不换版本；旧绑定无意外增删改；混版本目录按已记录的逐主题方式运行。未操作日期无异常新绑定 |
 | C06 | 原始 `run_*.log`、调度日志、各阶段统计和进程退出信息 | 逐主题确认采集、正文、评分、入库、摘要结果；跳过必须有文件/配置依据，不能仅看“流程完成”、总体状态或退出码 |
 | C07 | `output/业务日期/` 下原始/评分 JSON、修改时间、条数和解析结果 | 已运行主题的文件可解析且结构合理；空数组只有在来源与日志证实无新闻时可接受；历史文件变化有重评/续跑记录 |
@@ -146,9 +146,22 @@ print(json.dumps({
     "keyword_prompt_ids": document["keyword_prompt_ids"],
     "blacklist_count": len(document["settings"]["blacklist_keywords"]),
     "scoring_rule_count": len(document["settings"]["NEWS_RULE_BASED_SCORING"]),
-    "models": document.get("models"),
+    # 历史遗留字段：配置存储中的 models 已退役为惰性数据，仅用于确认历史版本内容，
+    # 不代表实际使用的模型。当前模型证据以下方 llm_env 输出为准。
+    "legacy_models_in_store": document.get("models"),
 }, ensure_ascii=False, indent=2))
 ```
+
+当前实际生效的模型来自 `.env` 的 `LLM_*` 变量，用下面的片段单独取证（输出已脱敏，不含密钥）：
+
+```python
+import json
+from config_manager import read_model_config
+
+print(json.dumps(read_model_config(), ensure_ascii=False, indent=2))
+```
+
+核对 C04 时以 `llm_env` 输出为准；`legacy_models_in_store` 仅说明历史版本内容，不得作为当前模型证据。
 
 上面的 shell/脚本只能证明该次读取的环境。还需通过实际 Web 页面和任务日志核对常驻进程；多个 worker 应反复访问，结合各 worker 日志检查，不能只测一个终端进程。
 

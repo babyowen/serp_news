@@ -27,6 +27,15 @@ def clean_llm_env(monkeypatch):
     return monkeypatch
 
 
+def real_dotenv_load(dotenv_path=None, **kwargs):
+    """运行器把 dotenv.load_dotenv stub 成了空操作；此副本还原真实解析行为。
+
+    只支持测试用到的调用形态（位置参数路径 + override 关键字）。
+    """
+    from dotenv.main import DotEnv
+    return DotEnv(dotenv_path, override=kwargs.get("override", False)).set_as_environment_variables()
+
+
 def setenv_all(monkeypatch, values):
     for key, value in values.items():
         monkeypatch.setenv(key, value)
@@ -106,6 +115,33 @@ def test_empty_values_are_treated_as_unset(clean_llm_env):
     assert "temperature" not in stage_profile("scoring")["parameters"]
 
 
+def test_blank_api_key_is_treated_as_unconfigured(clean_llm_env):
+    setenv_all(clean_llm_env, LLM_TEST_ENV)
+    clean_llm_env.setenv("LLM_SCORING_API_KEY", "   ")
+    assert stage_profile("scoring")["api_key"] is None
+
+
+def test_malformed_url_and_huge_numbers_fail_per_stage_without_interrupting_others(clean_llm_env):
+    setenv_all(clean_llm_env, LLM_TEST_ENV)
+    clean_llm_env.setenv("LLM_SCORING_BASE_URL", "http://[::1/v1")
+    clean_llm_env.setenv("LLM_REGION_MAX_TOKENS", "1" + "0" * 400)
+    results = check_stages()
+    assert list(results) == ["scoring", "item_summarizer", "region"]
+    assert all(not result["ok"] for result in results.values())
+    # 异常类型不得逃逸为 ValueError/OverflowError——必须是脱敏后的检查失败。
+    assert "配置无效" in results["scoring"]["error"]
+    assert "配置无效" in results["region"]["error"]
+
+
+def test_default_timeout_is_sixty_and_stream_is_false(clean_llm_env):
+    setenv_all(clean_llm_env, LLM_TEST_ENV)
+    for stage in ("scoring", "item_summarizer", "region"):
+        parameters = stage_profile(stage)["parameters"]
+        # 直接断言字面值而非引用 DEFAULT_TIMEOUT 常量：默认值本身是行为契约。
+        assert parameters["timeout"] == 60
+        assert parameters["stream"] is False
+
+
 def test_probe_sends_fixed_text_and_exact_parameters(clean_llm_env):
     for key, val in LLM_TEST_ENV.items():
         clean_llm_env.setenv(key, val)
@@ -163,6 +199,10 @@ def test_check_model_cli_loads_dotenv_and_never_opens_store(tmp_path, monkeypatc
         seen["base_url"] = os.environ["LLM_BASE_URL"]
         return {"scoring": {"ok": True, "model": "d-model"}}
 
+    # 本用例专门验证 CLI 会读取 .env；运行器的 dotenv 隔离 stub 掉了 load_dotenv，
+    # 这里用 monkeypatch 临时恢复真实实现（tempfile 路径由 config_cli.__file__ 决定）。
+    import dotenv
+    monkeypatch.setattr(dotenv, "load_dotenv", real_dotenv_load)
     with patch("llm_settings.check_stages", fake_check), \
          patch("config_cli.ConfigStore", side_effect=AssertionError("check-model 不得打开配置存储")):
         result = config_cli.run(config_cli.parser().parse_args(["check-model"]))
@@ -173,8 +213,33 @@ def test_check_model_cli_loads_dotenv_and_never_opens_store(tmp_path, monkeypatc
 
 def test_check_model_cli_single_stage_dispatch(tmp_path, monkeypatch, clean_llm_env):
     import config_cli
+    project = tmp_path / "project-single"
+    project.mkdir()
+    (project / ".env").write_text("LLM_BASE_URL=http://dotenv.invalid/v1\n")
+    monkeypatch.setattr(config_cli, "__file__", str(project / "config_cli.py"))
+    monkeypatch.delenv("SERP_CONFIG_STORE", raising=False)
     seen = {}
     with patch("llm_settings.check_stages", lambda stages=None: seen.setdefault("stages", stages) or {}), \
          patch("config_cli.ConfigStore", side_effect=AssertionError):
         config_cli.run(config_cli.parser().parse_args(["check-model", "--stage", "region"]))
     assert seen["stages"] == ["region"]
+
+
+def test_check_model_cli_exit_code_reflects_check_result(tmp_path, monkeypatch, clean_llm_env):
+    import config_cli
+    project = tmp_path / "project-exit"
+    project.mkdir()
+    (project / ".env").write_text("")
+    monkeypatch.setattr(config_cli, "__file__", str(project / "config_cli.py"))
+    monkeypatch.delenv("SERP_CONFIG_STORE", raising=False)
+    results = {
+        "all-ok": {"scoring": {"ok": True}, "item_summarizer": {"ok": True}, "region": {"ok": True}},
+        "partial": {"scoring": {"ok": True}, "item_summarizer": {"ok": True}, "region": {"ok": False, "error": "x"}},
+        "all-failed": {"scoring": {"ok": False, "error": "x"}, "item_summarizer": {"ok": False, "error": "x"}, "region": {"ok": False, "error": "x"}},
+    }
+    with patch("llm_settings.check_stages", lambda stages=None: results["all-ok"]):
+        assert config_cli.main(["check-model"]) == 0
+    with patch("llm_settings.check_stages", lambda stages=None: results["partial"]):
+        assert config_cli.main(["check-model"]) == 1
+    with patch("llm_settings.check_stages", lambda stages=None: results["all-failed"]):
+        assert config_cli.main(["check-model"]) == 1

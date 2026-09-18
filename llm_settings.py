@@ -24,6 +24,8 @@ def _parse_number(raw, label):
             return float(raw)
         except ValueError:
             raise ConfigError(f"{label} 必须为数值") from None
+    except OverflowError:
+        raise ConfigError(f"{label} 数值超出可表示范围") from None
 
 
 def stage_profile(stage):
@@ -40,7 +42,6 @@ def stage_profile(stage):
     base_url = (os.getenv(full_prefix + "BASE_URL") or os.getenv("LLM_BASE_URL") or "").strip()
     if not base_url:
         raise ConfigError("请设置 LLM_BASE_URL（OpenAI 兼容接入点，例如 http://api.agent-router.cn/v1）")
-    validate_url(base_url)
     model = (os.getenv(full_prefix + "MODEL") or os.getenv("LLM_MODEL") or "").strip()
     if not model:
         raise ConfigError(f"请设置 {full_prefix}MODEL（或全局 LLM_MODEL）")
@@ -52,9 +53,20 @@ def stage_profile(stage):
             continue
         label = full_prefix + name.upper()
         parameters[name] = _parse_number(raw.strip(), label)
-    validate_request_params(parameters, f"LLM_{prefix}")
-    return {"api_key": os.getenv(full_prefix + "API_KEY") or os.getenv("LLM_API_KEY"),
-            "base_url": base_url, "model": model, "parameters": parameters}
+    # 与 config_schema.validate 相同的保证：任何解析异常都收敛为 ConfigError，
+    # 逐阶段失败隔离，不向调用方泄漏 urlsplit/数值转换的原始异常。
+    try:
+        validate_url(base_url)
+        validate_request_params(parameters, f"LLM_{prefix}")
+    except ConfigError:
+        raise
+    except (TypeError, ValueError, OverflowError, RecursionError) as exc:
+        raise ConfigError(f"LLM_{prefix} 配置无效: {type(exc).__name__}") from None
+    # 空白密钥等同于未配置，避免 /admin/models 显示虚假的"已配置"徽标。
+    api_key = os.getenv(full_prefix + "API_KEY") or os.getenv("LLM_API_KEY")
+    if api_key is not None and not api_key.strip():
+        api_key = None
+    return {"api_key": api_key, "base_url": base_url, "model": model, "parameters": parameters}
 
 
 def all_stage_settings():

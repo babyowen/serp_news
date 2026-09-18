@@ -52,7 +52,7 @@ export SERP_CONFIG_STORE="$HOME/.local/share/serp-news-dev/runtime.sqlite3"
 python3 config_cli.py --store "$SERP_CONFIG_STORE" init --defaults
 ```
 
-将该绝对路径写入本地 `.env`，供以后从 IDE、定时任务或其他工作目录启动时使用。业务入口只读取项目根目录的 `.env`，已有进程环境变量优先；CLI 为保持迁移过程无副作用，不自动加载 `.env`，请传 `--store` 或在 shell 中设置 `SERP_CONFIG_STORE`。
+将该绝对路径写入本地 `.env`，供以后从 IDE、定时任务或其他工作目录启动时使用。业务入口只读取项目根目录的 `.env`，已有进程环境变量优先；CLI 为保持迁移过程无副作用，不自动加载 `.env`（`check-model` 是唯一例外，它必须读取 `.env` 中的 LLM_* 变量），请传 `--store` 或在 shell 中设置 `SERP_CONFIG_STORE`。
 
 ## 查看、编辑、比较和恢复
 
@@ -170,8 +170,8 @@ python run_config_tests.py
 
 | 变量 | 必填 | 说明 |
 | --- | --- | --- |
-| `LLM_BASE_URL` | 是 | OpenAI 兼容接入点（当前为 agent-router：`http://api.agent-router.cn/v1`） |
-| `LLM_API_KEY` | 是 | 网关密钥；运行 AI 阶段时缺失会明确报错 |
+| `LLM_BASE_URL` | 未提供阶段覆盖时必填 | OpenAI 兼容接入点（当前为 agent-router：`http://api.agent-router.cn/v1`） |
+| `LLM_API_KEY` | 未提供阶段覆盖时必填 | 网关密钥；运行 AI 阶段时缺失会明确报错 |
 | `LLM_<阶段>_MODEL` | 或设全局 `LLM_MODEL` | 模型 ID，以网关模型列表为准 |
 | `LLM_<阶段>_<参数>` | 否 | `TEMPERATURE`、`TOP_P`、`MAX_TOKENS`、`MAX_COMPLETION_TOKENS`、`PRESENCE_PENALTY`、`FREQUENCY_PENALTY`、`SEED`、`TIMEOUT`；未设的参数不下发，`TIMEOUT` 默认 60 |
 | `LLM_<阶段>_BASE_URL` / `LLM_<阶段>_API_KEY` | 否 | 按阶段覆盖接入点/密钥，未设回退全局 |

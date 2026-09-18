@@ -42,12 +42,19 @@ def blocked(*args, **kwargs):
 socket.socket.connect = blocked
 socket.create_connection = blocked
 """
-        program = network_guard + "\nimport pytest\nraise SystemExit(pytest.main(sys.argv[1:]))\n"
+        # load_dotenv(override=False) would otherwise refill LLM_* (and other)
+        # variables from the developer's real .env; tests must stay hermetic.
+        dotenv_guard = """
+import dotenv
+dotenv.dotenv_values = lambda *a, **k: {}
+dotenv.load_dotenv = lambda *a, **k: False
+"""
+        program = network_guard + dotenv_guard + "\nimport pytest\nraise SystemExit(pytest.main(sys.argv[1:]))\n"
         result = subprocess.run([sys.executable, "-B", "-c", program, "-q", "-p", "no:cacheprovider", *[str(ROOT / name) for name in TESTS], *sys.argv[1:]], cwd=path, env=env)
         if result.returncode:
             return result.returncode
         # This older regression exits at module scope, so run it in its own process.
-        legacy = network_guard + "\nimport runpy\nrunpy.run_path(sys.argv[1], run_name='__main__')\n"
+        legacy = network_guard + dotenv_guard + "\nimport runpy\nrunpy.run_path(sys.argv[1], run_name='__main__')\n"
         return subprocess.run([sys.executable, "-B", "-c", legacy, str(ROOT / "test_log_system.py")], cwd=path, env=env).returncode
 
 
