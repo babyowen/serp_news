@@ -38,7 +38,13 @@ cp .env.example .env   # 填入API密钥和MySQL连接信息
 ```ini
 # API配置
 SERPAPI_KEY=your_serpapi_key
-DEEPSEEK_API_KEY=your_deepseek_api_key
+
+# LLM 配置（agent-router 网关，OpenAI 兼容；模型 ID 以 GET /v1/models 为准）
+LLM_BASE_URL=http://api.agent-router.cn/v1
+LLM_API_KEY=your_agent_router_api_key
+LLM_SCORING_MODEL=your_model_id
+LLM_ITEM_SUMMARIZER_MODEL=your_model_id
+LLM_REGION_MODEL=your_model_id
 
 # 数据库配置
 MYSQL_HOST=localhost
@@ -237,7 +243,7 @@ python run_config_tests.py -k 'bank or historical or dedup or business'
 
 ## 注意事项
 
-- 现用 AI 阶段初始模型为 `deepseek-v4-flash`，实际模型及请求参数从外部配置的 `models` 读取
+- 现用 AI 阶段（评分/摘要/地域）模型及请求参数从 `.env` 的 `LLM_*` 变量读取；换模型 = 改 .env → `python config_cli.py check-model` → 重启常驻服务，详见 `docs/configuration.md`
 - `tobacco_gov_crawler.py` 通过 macOS launchd 每日凌晨 1:00 自动运行
 - `.env` 中 `MYSQL_TABLE` 会影响定时任务的写入目标表，开发后注意恢复
 - 内容提取含防屏蔽：User-Agent伪装、SSL忽略、同站点1-4秒间隔

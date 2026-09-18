@@ -1,7 +1,6 @@
 """Management operations on versioned data; never rewrites Python source files."""
-import os
-
 from config_schema import ConfigError
+from llm_settings import all_stage_settings
 from runtime_config import get_snapshot, get_store
 
 
@@ -49,5 +48,7 @@ def edit_keywords(action, main_kw, search_list, expected_version, old_kw=None):
 
 
 def read_model_config():
-    return {stage: {**profile, "api_key_set": bool(os.getenv(profile["api_key_env"]))}
-            for stage, profile in get_snapshot().document["models"].items()}
+    return {stage: {"model": profile["model"], "base_url": profile["base_url"],
+                    "parameters": profile["parameters"],
+                    "api_key_set": bool(profile["api_key"])}
+            for stage, profile in all_stage_settings().items()}

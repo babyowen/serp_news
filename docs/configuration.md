@@ -1,6 +1,6 @@
 # 提示词与运行配置（Issue #18）
 
-提示词、关键词、专用评分映射、黑名单、规则及模型调用参数保存在部署目录之外的 SQLite 文件中。`config.py` 只提供兼容读取入口；`config_defaults.json` 只用于显式初始化，不参与运行时合并或错误兜底。
+提示词、关键词、专用评分映射、黑名单及规则保存在部署目录之外的 SQLite 文件中；模型接入点、密钥与请求参数来自项目 `.env` 的 `LLM_*` 变量。`config.py` 只提供兼容读取入口；`config_defaults.json` 只用于显式初始化，不参与运行时合并或错误兜底。
 
 选择 SQLite 是为了让新版本写入和生效指针切换在同一事务中完成，并处理多进程并发。没有引入外部配置服务，不涉及业务 MySQL 数据或腾讯云数据库备份。
 
@@ -52,13 +52,13 @@ export SERP_CONFIG_STORE="$HOME/.local/share/serp-news-dev/runtime.sqlite3"
 python3 config_cli.py --store "$SERP_CONFIG_STORE" init --defaults
 ```
 
-将该绝对路径写入本地 `.env`，供以后从 IDE、定时任务或其他工作目录启动时使用。业务入口只读取项目根目录的 `.env`，已有进程环境变量优先；CLI 为保持迁移过程无副作用，不自动加载 `.env`，请传 `--store` 或在 shell 中设置 `SERP_CONFIG_STORE`。
+将该绝对路径写入本地 `.env`，供以后从 IDE、定时任务或其他工作目录启动时使用。业务入口只读取项目根目录的 `.env`，已有进程环境变量优先；CLI 为保持迁移过程无副作用，不自动加载 `.env`（`check-model` 是唯一例外，它必须读取 `.env` 中的 LLM_* 变量），请传 `--store` 或在 shell 中设置 `SERP_CONFIG_STORE`。
 
 ## 查看、编辑、比较和恢复
 
 - `/admin/keywords` 保存为新版本。每张表单带读取时的版本号，过期提交返回 409；格式错误返回 400。编辑不再重写 Python 文件。
 - 关键词重命名保留原位置、专用提示词绑定及规则评分；删除主题保留其专用绑定和规则，重新添加时仍可使用已调好的配置。重命名目标若已有专用绑定或保留的评分规则，会拒绝保存，避免将不同主题的规则合并。至少保留一个主关键词。
-- `/admin/models` 展示生效版本、模型信息、现用及归档提示词。
+- `/admin/models` 展示配置版本（提示词/关键词）、来自 `.env` 的模型信息、现用及归档提示词。
 - `/admin/config-history` 展示最近 100 个版本，支持差异预览、导出及恢复。恢复会创建新版本，后续历史不删除。
 - 管理请求开始时固定一个快照；后续请求读取最新版本。密钥等 `.env` 变更仍需要按原部署方式重启服务。
 - 所有管理写操作（包括启动、重评和标签合并）都需认证及同一会话的 CSRF 令牌；管理响应统一禁止缓存。版本参数格式错误/跨存储返回 400，版本不存在返回 404，真实存储故障继续返回 503。
@@ -75,7 +75,7 @@ python3 config_cli.py --store "$SERP_CONFIG_STORE" import --file /tmp/config-can
 python3 config_cli.py --store "$SERP_CONFIG_STORE" import --file /tmp/config-candidate.json --expected-version 'STORE_UUID:REVISION' --note '调整说明'
 ```
 
-现用模型请求参数在 `models.scoring`、`models.item_summarizer`、`models.region`；`settings.DEEPSEEK_MODEL` 等字段只为旧导入兼容保留，不决定这三个调用的实际模型。通用摘要未指定 temperature，迁移不会自行补值。
+模型接入点、密钥与请求参数来自 `.env` 的 `LLM_*` 变量（见下方「模型接入与切换」），配置存储只管提示词、关键词与映射；`settings.DEEPSEEK_MODEL` 等字段只为旧导入兼容保留，不决定实际调用。
 
 `STORE_UUID:REVISION` 必须替换为编辑前记录的完整版本；若期间有其他保存，应重新比较后提交。跨环境版本号不能混用。字段、模板输入协议或未知配置项不兼容时会报错，不自动补默认值或删除未知项。新功能需要新配置时，应创建候选版本并显式启用。
 
@@ -164,47 +164,34 @@ python run_config_tests.py
 
 `tests/fixtures/legacy/` 来自改造前已跟踪源码，仅用于 AST 迁移测试；`tests/fixtures/prompt_hashes.json` 固定本次确认的提示词哈希。初次迁移和存储重构不得顺带更新这些原文基线。旧源码夹具有意保留原文件的尾随空白，不应自动格式化；检查新增代码空白时可显式排除 `tests/fixtures/legacy/`。
 
-## 统一切换运行模型（DeepSeek V4.1 Flash）
+## 模型接入与切换（LLM_* 环境变量）
 
-官方 2026-09-10 公告指定 API 名称为 `deepseek-flash`：
-https://www.deepseek.com/en/news/deepseek-v4-1-flash/
+三个 AI 阶段（评分 `scoring`、单条摘要 `item_summarizer`、地域 `region`）的接入点、密钥、模型与请求参数全部来自项目 `.env` 的 `LLM_*` 变量，由 `llm_settings.py` 读取。配置存储中的 `models` 段已退役：历史版本中的 models 仅作为惰性数据保留，运行时不再读取，恢复旧版本也不会改变实际使用的模型。
 
-新安装的默认模板使用该名称。Git 更新不会修改已初始化的生产配置。
-迁移旧配置仍忠实保留原模型，不自动升级。归档脚本的模型配置不参与此次切换。
+| 变量 | 必填 | 说明 |
+| --- | --- | --- |
+| `LLM_BASE_URL` | 未提供阶段覆盖时必填 | OpenAI 兼容接入点（当前为 agent-router：`http://api.agent-router.cn/v1`） |
+| `LLM_API_KEY` | 未提供阶段覆盖时必填 | 网关密钥；运行 AI 阶段时缺失会明确报错 |
+| `LLM_<阶段>_MODEL` | 或设全局 `LLM_MODEL` | 模型 ID，以网关模型列表为准 |
+| `LLM_<阶段>_<参数>` | 否 | `TEMPERATURE`、`TOP_P`、`MAX_TOKENS`、`MAX_COMPLETION_TOKENS`、`PRESENCE_PENALTY`、`FREQUENCY_PENALTY`、`SEED`、`TIMEOUT`；未设的参数不下发，`TIMEOUT` 默认 60 |
+| `LLM_<阶段>_BASE_URL` / `LLM_<阶段>_API_KEY` | 否 | 按阶段覆盖接入点/密钥，未设回退全局 |
 
-部署包含 `switch-model` 的版本后，在服务器项目目录先预览（不联网、不写入）：
+`<阶段>` 为 `SCORING`、`ITEM_SUMMARIZER`、`REGION`。请求固定非流式（不支持 `STREAM`）；拼写错误的 `LLM_<阶段>_*` 变量会在读取时直接报错，不会被静默忽略。取值约束与原配置一致：`temperature` 0–2、`top_p` 0–1、`seed`/`max_tokens` 必须为整数、`timeout` 必须为正数。
 
-```bash
-cd /www/wwwroot/serp_news
-.venv/bin/python config_cli.py --store /www/serp-news-state/runtime.sqlite3 switch-model
-```
+`agent-router` 当前为明文 HTTP，密钥与新闻内容在传输中不加密，请勿在不可信网络使用；确认服务商提供 HTTPS 入口后应将 `LLM_BASE_URL` 换成 https 地址。
 
-检查只有三个运行阶段的模型名发生变化，将输出的 `current` 完整版本填入下方。
-正式执行会创建不可覆盖的配置备份，并发起三个小型真实请求（每阶段一次，会产生少量费用），
-只发送固定测试文本，不发送生产提示词或新闻。请求沿用各阶段参数，失败不会切换配置。
-成功后使用乐观锁发布一个新版本；如果期间管理员修改了配置，会拒绝覆盖，请重新预览。
+修改流程（`.env` 每个进程只加载一次，常驻 Web 服务必须重启才会生效）：
 
 ```bash
-.venv/bin/python config_cli.py --store /www/serp-news-state/runtime.sqlite3 switch-model \
-  --apply --expected-version '填入预览的完整版本' \
-  --backup "/www/serp-news-backups/before-model-switch-$(date +%Y%m%d-%H%M%S).sqlite3" \
-  --note '统一运行模型为 DeepSeek V4.1 Flash'
+cp .env .env.bak-YYYYMMDD
+# 在 .env 末尾追加或修改 LLM_* 变量；不要改动既有变量
+diff .env.bak-YYYYMMDD .env            # 确认只有预期变更
+python config_cli.py check-model       # 逐阶段发送一次固定测试文本（产生少量费用）；可 --stage scoring 单测
+# 全部 OK 后重启常驻 Web 服务；定时任务下次启动自动生效
 ```
 
-命令先从项目 `.env` 加载配置路径和凭据，再打开配置存储；从其他目录调用也读取项目内的 `.env`。
-存储路径优先级为 `--store`、已有环境变量、项目 `.env`。已有凭据环境变量优先，无需更换 API Key。
-仅支持已配置官方 DeepSeek 地址和 `DEEPSEEK_API_KEY` 的运行阶段；遇到其他提供商会停止，
-避免把凭据发送到错误地址。已全部使用目标名称时不产生新版本，也不重复请求或备份。
+`check-model` 只发送固定文本 "Reply with OK."，不发送生产提示词或新闻内容；错误信息已脱敏，不包含密钥或服务端原文。它不依赖 `SERP_CONFIG_STORE`，可在任意目录直接运行。
 
-新日期批次使用新版本。正在运行及已有绑定的历史批次保留原版本，不能通过本命令强行改绑。
-不要删除批次绑定来补跑；旧日期继续使用其历史配置。提示词、关键词、请求参数及归档模型均不变。
-页面下一次请求会读取新版本；定时任务下一次启动会读取新版本，无需为了配置切换重启服务。
+切换语义：`SERP_CONFIG_REVISION` 与批次绑定只钉提示词、关键词等配置存储内容；模型始终取当前进程环境的 `LLM_*`。正在运行的批次不受影响；**历史批次重评会使用当前 `.env` 的模型，而不是当年批次使用的模型**——需要完全复现历史时，先手工把 `.env` 还原为当年的模型再重评。
 
-回退使用预览记录的旧版本及当前版本，生成一条新的恢复记录（不会重写历史）：
-
-```bash
-.venv/bin/python config_cli.py --store /www/serp-news-state/runtime.sqlite3 restore \
-  --version '切换前的完整版本' --expected-version '当前完整版本' --note '回退模型切换'
-```
-
-恢复的是本地配置；服务商对旧模型别名的路由可能改变，因此不保证恢复旧模型权重。
+defaults 变更后不要对既有存储重跑 `init --defaults`，会因来源不同报冲突；如需调整提示词，请使用带版本检查的 `export`/`import` 流程。

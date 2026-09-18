@@ -1,4 +1,4 @@
-"""Explicit initialization, migration, diff, revision restore and configuration backup."""
+"""Explicit initialization, migration, diff, revision restore, configuration backup and model connectivity check."""
 import argparse
 import base64
 import hashlib
@@ -34,11 +34,8 @@ def parser():
             command.add_argument("--note", default="首次迁移" if name == "init" else None, required=name == "import")
         if name == "import":
             command.add_argument("--expected-version", required=True, help="编辑时记录的完整配置版本")
-    switch = commands.add_parser("switch-model", help="统一切换为 DeepSeek V4.1 Flash；默认只预览")
-    switch.add_argument("--apply", action="store_true")
-    switch.add_argument("--expected-version")
-    switch.add_argument("--backup", help="部署目录外的新备份文件路径")
-    switch.add_argument("--note")
+    check = commands.add_parser("check-model", help="检查 .env 中 LLM_* 配置的模型连通性；每阶段发送一次固定测试文本（产生少量费用）")
+    check.add_argument("--stage", choices=("scoring", "item_summarizer", "region"), help="只检查指定阶段；默认全部")
     commands.add_parser("status")
     history = commands.add_parser("history")
     history.add_argument("--limit", type=int, default=100)
@@ -59,14 +56,13 @@ def parser():
 
 
 def run(args):
-    if args.command == "switch-model":
+    if args.command == "check-model":
+        # 连通性检查不依赖配置存储，必须在打开 ConfigStore 之前返回。
         from dotenv import load_dotenv
         load_dotenv(Path(__file__).with_name(".env"), override=False)
+        from llm_settings import check_stages
+        return check_stages([args.stage] if args.stage else None)
     store = ConfigStore(args.store)
-    if args.command == "switch-model":
-        from model_switch import switch
-        return switch(store, apply=args.apply, expected_version=args.expected_version,
-                      backup=args.backup, note=args.note)
     if args.command in ("init", "import", "diff"):
         document, source = _candidate(args)
         current = store.read() if store.path.exists() else None
@@ -138,8 +134,12 @@ def run(args):
 
 def main(argv=None):
     try:
-        result = run(parser().parse_args(argv))
+        args = parser().parse_args(argv)
+        result = run(args)
         print(json.dumps(result, ensure_ascii=False, indent=2))
+        # check-model 用退出码表达检查结论，供 `check-model && 重启` 类部署脚本判断。
+        if args.command == "check-model":
+            return 0 if all(item["ok"] for item in result.values()) else 1
         return 0
     except (ConfigError, OSError) as exc:
         print(f"配置操作失败: {exc}", file=sys.stderr)

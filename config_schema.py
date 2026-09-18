@@ -124,8 +124,31 @@ def validate_api_env(value):
         raise ConfigError("密钥必须通过 *_API_KEY 环境变量引用")
 
 
+def validate_request_params(params, label):
+    """Numeric/range contract shared by store model profiles and env-based LLM settings."""
+    for name, value in params.items():
+        if name == "stream":
+            continue
+        if type(value) not in (int, float) or not math.isfinite(value):
+            raise ConfigError(f"{label}.{name} 必须为有限数值")
+        if name in ("timeout", "max_tokens", "max_completion_tokens") and value <= 0:
+            raise ConfigError(f"{label}.{name} 必须为正数")
+        if name in ("seed", "max_tokens", "max_completion_tokens") and type(value) is not int:
+            raise ConfigError(f"{label}.{name} 必须为整数")
+        if name == "temperature" and not 0 <= value <= 2:
+            raise ConfigError(f"{label}.temperature 必须在 0–2 之间")
+        if name == "top_p" and not 0 <= value <= 1:
+            raise ConfigError(f"{label}.top_p 必须在 0–1 之间")
+
+
+# The versioned store keeps prompts/keywords/settings; model access moved to
+# LLM_* environment variables, so "models" is now an optional legacy section.
+_DOCUMENT_KEYS = {"schema_version", "prompts", "settings", "keyword_prompt_ids", "legacy"}
+
+
 def _validate(document):
-    keys(document, {"schema_version", "prompts", "settings", "keyword_prompt_ids", "models", "legacy"}, "配置")
+    if not isinstance(document, dict) or not _DOCUMENT_KEYS <= set(document) or set(document) - _DOCUMENT_KEYS - {"models"}:
+        raise ConfigError(f"配置字段不兼容，必须包含: {', '.join(sorted(_DOCUMENT_KEYS))}；仅可附加可选 models")
     if type(document["schema_version"]) is not int or document["schema_version"] != 1:
         raise ConfigError("不支持的配置结构版本")
     prompts = document["prompts"]
@@ -196,31 +219,20 @@ def _validate(document):
             raise ConfigError(f"{keyword} 引用了不存在或归档的提示词")
         if name in USER_FIELDS or "USER_PROMPT" in name:
             raise ConfigError(f"{keyword} 的专用评分映射必须引用 System 提示词，不能引用 User 模板")
-    keys(document["models"], STAGES, "模型阶段")
-    for stage, model in document["models"].items():
-        keys(model, {"platform", "model", "base_url", "api_key_env", "parameters"}, stage)
-        nonempty(model["platform"], "模型平台")
-        nonempty(model["model"], "模型名称")
-        validate_url(model["base_url"])
-        validate_api_env(model["api_key_env"])
-        params = model["parameters"]
-        if not isinstance(params, dict) or set(params) - REQUEST_FIELDS:
-            raise ConfigError(f"{stage} 存在不支持的请求参数")
-        if params.get("stream", False) is not False:
-            raise ConfigError("当前调用方不支持流式响应")
-        for name, value in params.items():
-            if name == "stream":
-                continue
-            if type(value) not in (int, float) or not math.isfinite(value):
-                raise ConfigError(f"{stage}.{name} 必须为有限数值")
-            if name in ("timeout", "max_tokens", "max_completion_tokens") and value <= 0:
-                raise ConfigError(f"{name} 必须为正数")
-            if name in ("seed", "max_tokens", "max_completion_tokens") and type(value) is not int:
-                raise ConfigError(f"{name} 必须为整数")
-            if name == "temperature" and not 0 <= value <= 2:
-                raise ConfigError("temperature 必须在 0–2 之间")
-            if name == "top_p" and not 0 <= value <= 1:
-                raise ConfigError("top_p 必须在 0–1 之间")
+    if "models" in document:
+        keys(document["models"], STAGES, "模型阶段")
+        for stage, model in document["models"].items():
+            keys(model, {"platform", "model", "base_url", "api_key_env", "parameters"}, stage)
+            nonempty(model["platform"], "模型平台")
+            nonempty(model["model"], "模型名称")
+            validate_url(model["base_url"])
+            validate_api_env(model["api_key_env"])
+            params = model["parameters"]
+            if not isinstance(params, dict) or set(params) - REQUEST_FIELDS:
+                raise ConfigError(f"{stage} 存在不支持的请求参数")
+            if params.get("stream", False) is not False:
+                raise ConfigError("当前调用方不支持流式响应")
+            validate_request_params(params, stage)
     legacy = document["legacy"]
     keys(legacy, {"selection", "models"}, "归档模型配置")
     keys(legacy["selection"], {"platform", "model"}, "归档模型选择")

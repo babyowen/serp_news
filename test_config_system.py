@@ -20,6 +20,7 @@ import config_migration
 from config_schema import ConfigConflict, ConfigError, digest
 from config_store import ConfigStore, read_document, write_export
 from runtime_config import bind_process, get_snapshot, value
+from test_config_store import LLM_TEST_ENV, VALID_MODELS
 
 ROOT = Path(__file__).resolve().parent
 
@@ -32,6 +33,10 @@ def ctx(tmp_path, monkeypatch):
     monkeypatch.setenv("SERP_CONFIG_STORE", str(store.path))
     monkeypatch.delenv("SERP_CONFIG_REVISION", raising=False)
     monkeypatch.setenv("RUN_LOG_PATH", str(tmp_path / "test.log"))
+    # A stray stage-level temperature would break item_summarizer expectations.
+    monkeypatch.delenv("LLM_ITEM_SUMMARIZER_TEMPERATURE", raising=False)
+    for key, env_value in LLM_TEST_ENV.items():
+        monkeypatch.setenv(key, env_value)
     monkeypatch.chdir(tmp_path)
     source = tmp_path / "legacy"
     source.mkdir()
@@ -119,6 +124,7 @@ def test_04_invalid_prompt_routes_templates_and_request_contracts_keep_old_versi
     ]
     for change in mutations:
         candidate = copy.deepcopy(ctx.document)
+        candidate["models"] = copy.deepcopy(VALID_MODELS)
         change(candidate)
         with pytest.raises(ConfigError):
             ctx.store.save(candidate, ctx.first.token, "invalid contract")
@@ -170,7 +176,7 @@ def test_06_online_backup_is_consistent_and_preserves_sources_and_batch_pins(ctx
 
 
 def test_07_editable_export_diff_import_and_restore_round_trip_without_secrets(ctx, monkeypatch):
-    monkeypatch.setenv("DEEPSEEK_API_KEY", "case-seven-private-key")
+    monkeypatch.setenv("LLM_API_KEY", "case-seven-private-key")
     candidate = ctx.root / "editable.json"
     exported = ctx.cli("export", "--editable", "--output", candidate)
     assert exported.returncode == 0, exported.stderr
@@ -271,7 +277,7 @@ def test_12_admin_renders_stored_markup_as_text_and_exports_no_environment_secre
     candidate["settings"]["SEARCH_KEYWORDS"][payload] = [payload]
     candidate["prompts"]["NEWS_SCORE_SYSTEM_MSG"]["text"] += payload
     second = ctx.store.save(candidate, ctx.first.token, payload)
-    monkeypatch.setenv("DEEPSEEK_API_KEY", "private-export-sentinel")
+    monkeypatch.setenv("LLM_API_KEY", "private-export-sentinel")
     for route in ("/admin/keywords", "/admin/models", "/admin/config-history?version=" + ctx.first.token):
         response = web.client.get(route, headers=web.headers)
         assert response.status_code == 200
@@ -451,16 +457,15 @@ def test_19_unusable_configuration_stops_pipeline_before_any_service_or_output(c
     assert not (ctx.root / "output" / "2099-01-01").exists()
 
 
-def test_20_all_summary_and_annotation_templates_use_pinned_model_and_messages(ctx):
+def test_20_prompts_stay_pinned_while_models_come_from_environment(ctx):
     import news_region_utils as region
     import news_item_summarizer as summary
     document = copy.deepcopy(ctx.document)
-    for stage in document["models"].values():
-        stage["model"] = "pinned-test-model"
-    pinned = ctx.store.save(document, ctx.first.token, "model candidate")
+    document["prompts"]["NEWS_REGION_SYSTEM_PROMPT_GJJ"]["text"] += "\n钉住版本提示词"
+    pinned = ctx.store.save(document, ctx.first.token, "prompt candidate")
     bind_process(pinned)
     candidate = copy.deepcopy(document)
-    candidate["models"]["region"]["model"] = "later-test-model"
+    candidate["prompts"]["NEWS_REGION_SYSTEM_PROMPT_GJJ"]["text"] += "\n后续版本提示词"
     ctx.store.save(candidate, pinned.token, "next active version")
     client = Mock()
     client.chat.completions.create.return_value = SimpleNamespace(choices=[SimpleNamespace(message=SimpleNamespace(
@@ -477,8 +482,9 @@ def test_20_all_summary_and_annotation_templates_use_pinned_model_and_messages(c
             call("固定标题", "固定正文")
             arguments = client.chat.completions.create.call_args.kwargs
             expected_user = document["prompts"][user_id]["text"].format(title="固定标题", content="固定正文", business_type_catalog=region.format_business_type_catalog({}))
+            # 提示词来自钉住的配置版本；模型与请求参数来自当前环境的 LLM_* 变量。
             assert arguments["messages"] == [{"role": "system", "content": document["prompts"][system_id]["text"]}, {"role": "user", "content": expected_user}]
-            assert arguments["model"] == "pinned-test-model"
+            assert arguments["model"] == LLM_TEST_ENV["LLM_SCORING_MODEL"]
             assert arguments["timeout"] == 60 and arguments["stream"] is False
             assert ("temperature" not in arguments) if call is summary.call_llm else arguments["temperature"] == 0.2
     assert get_snapshot().token == pinned.token
