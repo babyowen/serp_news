@@ -133,7 +133,8 @@ class IntegrationTests(unittest.TestCase):
         kwargs = client.chat.completions.create.call_args.kwargs
         self.assertEqual(kwargs["messages"][0]["content"], self.document["prompts"]["NEWS_SCORE_SYSTEM_MSG_TOBACCO_SERVICE_BANK"]["text"])
         self.assertEqual(kwargs["messages"][1]["content"], self.document["prompts"]["NEWS_SCORE_PROMPT"]["text"].format(title="标题", content="正文", keyword="工商银行"))
-        self.assertEqual(kwargs["model"], "deepseek-flash")
+        # 模型来自 .env 的 LLM_*（LLM_TEST_ENV），提示词仍来自钉住的配置存储。
+        self.assertEqual(kwargs["model"], "offline-test-model")
         self.assertEqual(kwargs["temperature"], 1)
         with patch.object(news_item_summarizer._pool, "get_client", return_value=client):
             news_item_summarizer.call_llm("标题", "正文")

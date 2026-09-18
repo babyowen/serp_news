@@ -15,7 +15,6 @@
         </div>
         <div class="card-body">
             <table class="table table-sm table-borderless mb-0">
-                <tr><td class="text-muted ps-0">平台</td><td>{{ info.platform }}</td></tr>
                 <tr><td class="text-muted ps-0">模型</td><td><code>{{ info.model }}</code></td></tr>
                 <tr><td class="text-muted ps-0">API</td><td><small class="text-break">{{ info.base_url }}</small></td></tr>
                 <tr><td class="text-muted ps-0">密钥</td><td>
@@ -35,8 +34,8 @@
 
 <div class="alert alert-info mb-4 py-2">
     <i class="bi bi-info-circle me-1"></i>
-    当前配置版本：<code>{{ config_version }}</code>。
-    新任务使用新配置，已有批次保持原版本。
+    模型与接入点来自项目 <code>.env</code>（LLM_* 变量），修改后需重启 Web 服务生效。
+    当前配置版本：<code>{{ config_version }}</code>（仅覆盖提示词/关键词），新任务使用新版本，已有批次保持原版本。
     <a href="{{ url_for('admin.config_history') }}">查看历史、导出或恢复</a>
 </div>
 

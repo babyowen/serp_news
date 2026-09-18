@@ -206,40 +206,6 @@
     "养老": "NEWS_SCORE_SYSTEM_MSG_ELDER_CARE",
     "烟草服务银行": "NEWS_SCORE_SYSTEM_MSG_TOBACCO_SERVICE_BANK"
   },
-  "models": {
-    "scoring": {
-      "platform": "deepseek",
-      "model": "deepseek-flash",
-      "base_url": "https://api.deepseek.com",
-      "api_key_env": "DEEPSEEK_API_KEY",
-      "parameters": {
-        "stream": false,
-        "temperature": 1,
-        "timeout": 60
-      }
-    },
-    "item_summarizer": {
-      "platform": "deepseek",
-      "model": "deepseek-flash",
-      "base_url": "https://api.deepseek.com",
-      "api_key_env": "DEEPSEEK_API_KEY",
-      "parameters": {
-        "stream": false,
-        "timeout": 60
-      }
-    },
-    "region": {
-      "platform": "deepseek",
-      "model": "deepseek-flash",
-      "base_url": "https://api.deepseek.com",
-      "api_key_env": "DEEPSEEK_API_KEY",
-      "parameters": {
-        "stream": false,
-        "temperature": 0.2,
-        "timeout": 60
-      }
-    }
-  },
   "legacy": {
     "models": {
       "deepseek": {

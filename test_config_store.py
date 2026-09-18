@@ -19,6 +19,31 @@ from config_store import ConfigStore, read_document, write_export
 
 ROOT = Path(__file__).resolve().parent
 
+# Shared offline LLM_* environment for every test that reads model settings.
+LLM_TEST_ENV = {
+    "LLM_BASE_URL": "http://llm-test.invalid/v1",
+    "LLM_API_KEY": "offline-test-key",
+    "LLM_SCORING_MODEL": "offline-test-model",
+    "LLM_ITEM_SUMMARIZER_MODEL": "offline-test-model",
+    "LLM_REGION_MODEL": "offline-test-model",
+    "LLM_SCORING_TEMPERATURE": "1",
+    "LLM_REGION_TEMPERATURE": "0.2",
+}
+
+# A schema-valid legacy models section; defaults no longer carry one, but
+# historical documents must keep validating and saving.
+VALID_MODELS = {
+    "scoring": {"platform": "deepseek", "model": "deepseek-v4-flash", "base_url": "https://api.deepseek.com",
+                "api_key_env": "DEEPSEEK_API_KEY",
+                "parameters": {"stream": False, "temperature": 1, "timeout": 60}},
+    "item_summarizer": {"platform": "deepseek", "model": "deepseek-v4-flash", "base_url": "https://api.deepseek.com",
+                        "api_key_env": "DEEPSEEK_API_KEY",
+                        "parameters": {"stream": False, "timeout": 60}},
+    "region": {"platform": "deepseek", "model": "deepseek-v4-flash", "base_url": "https://api.deepseek.com",
+               "api_key_env": "DEEPSEEK_API_KEY",
+               "parameters": {"stream": False, "temperature": 0.2, "timeout": 60}},
+}
+
 
 class StoreTests(unittest.TestCase):
     def setUp(self):
@@ -28,7 +53,9 @@ class StoreTests(unittest.TestCase):
         self.store = ConfigStore(self.root / "runtime.sqlite3")
         self.source = {"kind": "test", "sha256": digest(self.document)}
         self.first, _ = self.store.initialize(self.document, self.source)
-        self.environment = patch.dict(os.environ, {"SERP_CONFIG_STORE": str(self.store.path)})
+        # A stray stage-level temperature would break item_summarizer expectations.
+        os.environ.pop("LLM_ITEM_SUMMARIZER_TEMPERATURE", None)
+        self.environment = patch.dict(os.environ, {"SERP_CONFIG_STORE": str(self.store.path), **LLM_TEST_ENV})
         self.environment.start()
         os.environ.pop("SERP_CONFIG_REVISION", None)
 
@@ -51,8 +78,7 @@ class StoreTests(unittest.TestCase):
     def test_legacy_migration_keeps_every_prompt_and_rendered_message(self):
         document, source = extract_legacy(self.legacy())
         expected = copy.deepcopy(self.document)
-        for profile in expected["models"].values():
-            profile["model"] = "deepseek-v4-flash"
+        expected["models"] = copy.deepcopy(VALID_MODELS)
         self.assertEqual(document, expected)
         hashes = json.loads((ROOT / "tests/fixtures/prompt_hashes.json").read_text())
         self.assertEqual(len(document["prompts"]), 22)
@@ -182,6 +208,7 @@ os._exit(17)
             lambda d: d["models"]["scoring"].update(api_key="secret"),
         ):
             candidate = copy.deepcopy(self.document)
+            candidate["models"] = copy.deepcopy(VALID_MODELS)
             mutate(candidate)
             with self.assertRaises(ConfigError):
                 self.store.save(candidate, self.first.token, "invalid")
@@ -196,6 +223,7 @@ os._exit(17)
             lambda d: d["prompts"]["NEWS_SCORE_SYSTEM_MSG"].update(text="\ud800"),
         ):
             candidate = copy.deepcopy(self.document)
+            candidate["models"] = copy.deepcopy(VALID_MODELS)
             mutate(candidate)
             with self.assertRaises(ConfigError):
                 self.store.save(candidate, self.first.token, "invalid input")

@@ -32,6 +32,8 @@ AUTO_MIGRATE_DEDUP_INDEX=0
 SERP_CONFIG_STORE=/srv/serp-news-state/runtime.sqlite3
 ```
 
+AI 阶段模型来自 `.env` 的 `LLM_*` 变量（必填：`LLM_BASE_URL`、`LLM_API_KEY`、各阶段 `LLM_<阶段>_MODEL`；可选参数如 `LLM_SCORING_TEMPERATURE=1`、`LLM_REGION_TEMPERATURE=0.2`）。修改这些变量后先 `python config_cli.py check-model` 验证连通，再重启常驻 Web 服务；只改动 LLM_* 不需要动 `SERP_CONFIG_STORE` 或恢复配置存储。
+
 `AUTO_MIGRATE_DEDUP_INDEX=0` 是日常生产批次的安全默认值：数据库写入使用应用层查重，不会执行索引或其他表结构变更。仅在已确认历史数据且安排维护窗口时，才可临时设为 `1` 执行迁移；完成后立即恢复为 `0`。
 
 修改 `.env` 后，重新启动读取该文件的常驻 Web 服务。定时任务每次启动 `main.py` 时会读取 `.env`；无需因为该变量单独重建定时任务。

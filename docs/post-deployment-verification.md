@@ -146,7 +146,7 @@ print(json.dumps({
     "keyword_prompt_ids": document["keyword_prompt_ids"],
     "blacklist_count": len(document["settings"]["blacklist_keywords"]),
     "scoring_rule_count": len(document["settings"]["NEWS_RULE_BASED_SCORING"]),
-    "models": document["models"],
+    "models": document.get("models"),
 }, ensure_ascii=False, indent=2))
 ```
 

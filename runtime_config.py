@@ -4,6 +4,8 @@ import os
 from pathlib import Path
 import sys
 
+import llm_settings
+from config_schema import ConfigError
 from config_store import ConfigStore
 
 _request_snapshot = ContextVar("configuration_snapshot", default=None)
@@ -87,15 +89,16 @@ def value(name):
     raise AttributeError(name)
 
 
-def model_profile(stage):
-    return get_snapshot().document["models"][stage]
-
-
 def model_credentials(stage):
-    profile = model_profile(stage)
-    return os.getenv(profile["api_key_env"]), profile["base_url"]
+    # 旧实现经 get_snapshot 触发 .env 加载；独立调用本函数时必须保留该保证。
+    load_environment()
+    profile = llm_settings.stage_profile(stage)
+    if not profile["api_key"]:
+        raise ConfigError("请设置 LLM_API_KEY（或按阶段 LLM_<阶段>_API_KEY）后再运行 AI 阶段")
+    return profile["api_key"], profile["base_url"]
 
 
 def model_arguments(stage):
-    profile = model_profile(stage)
+    load_environment()
+    profile = llm_settings.stage_profile(stage)
     return {"model": profile["model"], **profile["parameters"]}

@@ -16,8 +16,6 @@ from error_handler import (
 )
 from icon_manager import safe_print
 from config import (
-    DEEPSEEK_API_KEY,
-    DEEPSEEK_BASE_URL,
     NEWS_ITEM_SUMMARY_SYSTEM_PROMPT_500,
     NEWS_ITEM_SUMMARY_USER_PROMPT_500
 )

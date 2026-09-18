@@ -9,7 +9,6 @@ from runtime_config import load_environment, value
 load_environment()
 SERPAPI_KEY = os.getenv("SERPAPI_KEY")
 GNEWS_API_KEY = os.getenv("GNEWS_API_KEY")
-DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY")
 API_KEY = SERPAPI_KEY
 
 

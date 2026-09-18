@@ -10,6 +10,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - 管理写入须通过 `ConfigStore.save` 并携带读取时的完整版本号；历史不可改写，恢复也创建新版本。
 - 首轮保持全部 22 段提示词及模型请求参数原样；归档提示词也需保留。纯存储重构不得更新 `tests/fixtures/prompt_hashes.json`。
 - 迁移仅接受已审核的模型调用结构。生产源码检查失败时先核对并完善适配器，不能直接刷新 `config_migration.py` 的结构指纹来跳过检查。
+- 模型配置已迁至 `.env` 的 `LLM_*` 变量；配置存储的 `models` 段退役为惰性历史数据，运行时不再读取，恢复旧版本不会改变实际模型。
 - 用 `python run_config_tests.py` 跑隔离、禁止网络的回归，依赖见 `requirements-dev.txt`。不要使用本机生产快照作为可写测试目录，也不要修改真实 `.env` 或连接生产数据库。
 - 单批次和续跑保持配置版本。`SERP_CONFIG_REVISION` 为任务级变量，不能写成永久生产默认值。
 
@@ -40,6 +41,10 @@ python write_to_mysql.py --date YYYY-MM-DD
 
 # 启动Web管理界面
 python app.py
+
+# 检查 .env 中 LLM_* 模型配置的连通性（每阶段一次固定小请求，产生少量费用）
+python config_cli.py check-model
+python config_cli.py check-model --stage scoring   # 只检查单阶段
 
 # 环境设置
 cp .env.example .env   # 填入API密钥和MySQL连接信息
@@ -96,6 +101,7 @@ git -c credential.helper='!f() { echo "username=babyowen"; echo "password=$(/opt
 
 - **`db_utils.py`** — 统一数据库连接（含3次重试）+ `MYSQL_TABLE` 环境变量切换测试表 + `ping_connection` 保活
 - **`llm_client_pool.py`** — 统一LLM客户端池，按(api_key, base_url)复用，自动回收
+- **`llm_settings.py`** — LLM 接入配置：从 `.env` 的 `LLM_*` 变量解析三阶段模型与请求参数，含连通性检查
 - **`config_manager.py`** — 对外部配置执行安全版本读写（供前端调用）
 - **`run_manager.py`** — 运行状态管理（启动/监控/历史/日志）
 
@@ -104,7 +110,7 @@ git -c credential.helper='!f() { echo "username=babyowen"; echo "password=$(/opt
 - **`config.py`** — 外部生效配置的兼容读取入口
 - **`config_defaults.json`** — 显式初始化模板，不自动覆盖生产配置
 - **`config_grab_rules.py`** — 站点专属抓取规则（`CUSTOM_GRAB_RULES`注册表）
-- **`.env`** — API密钥、MySQL连接、流程开关、管理员认证
+- **`.env`** — API密钥、LLM 接入（`LLM_*`：接入点/密钥/各阶段模型与参数）、MySQL连接、流程开关、管理员认证；**只增不改**，调整前先备份
 
 ### 数据库去重迁移
 
@@ -151,7 +157,7 @@ python run_config_tests.py -k 'bank or historical or dedup or business'
 
 ## 注意事项
 
-- 现用 AI 阶段（评分/摘要/地域）初始模型为 `deepseek-v4-flash`，实际模型及请求参数从外部配置的 `models` 读取
+- 现用 AI 阶段（评分/摘要/地域）模型及请求参数从 `.env` 的 `LLM_*` 变量读取（`llm_settings.py`）；换模型 = 改 .env → `python config_cli.py check-model` → 重启常驻服务。批次钉版本只覆盖提示词/关键词，历史批次重评使用当前 .env 模型
 - 日志系统：每次运行生成独立批次日志 `output/{date}/run_{YYYYMMDD_HHMMSS}.log`，通过 `RUN_LOG_PATH` 环境变量传递给子进程；手动运行单个脚本时 fallback 到 `output/run_log.txt`
 - `/admin/models` 页面展示当前启用的 Prompt（按评分/摘要/公积金/地域分组）
 - `/admin/business-type-dashboard` 是公积金业务类型的只读覆盖率看板，支持按 `fetchdate` 筛选，展示待补标、类型分布和最近标注记录
