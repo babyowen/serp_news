@@ -7,16 +7,7 @@ import pytest
 
 from config_schema import ConfigError
 from llm_settings import DEFAULT_TIMEOUT, all_stage_settings, check_stages, stage_profile
-
-LLM_TEST_ENV = {
-    "LLM_BASE_URL": "http://llm-test.invalid/v1",
-    "LLM_API_KEY": "offline-test-key",
-    "LLM_SCORING_MODEL": "offline-test-model",
-    "LLM_ITEM_SUMMARIZER_MODEL": "offline-test-model",
-    "LLM_REGION_MODEL": "offline-test-model",
-    "LLM_SCORING_TEMPERATURE": "1",
-    "LLM_REGION_TEMPERATURE": "0.2",
-}
+from test_config_store import LLM_TEST_ENV
 
 
 @pytest.fixture
@@ -115,9 +106,14 @@ def test_empty_values_are_treated_as_unset(clean_llm_env):
     assert "temperature" not in stage_profile("scoring")["parameters"]
 
 
-def test_blank_api_key_is_treated_as_unconfigured(clean_llm_env):
+def test_blank_api_key_falls_back_to_global(clean_llm_env):
+    # 空白与空串语义一致：都是"清除阶段覆盖"，回退全局（与旧行为的矛盾已修复）。
     setenv_all(clean_llm_env, LLM_TEST_ENV)
     clean_llm_env.setenv("LLM_SCORING_API_KEY", "   ")
+    assert stage_profile("scoring")["api_key"] == LLM_TEST_ENV["LLM_API_KEY"]
+    clean_llm_env.setenv("LLM_SCORING_API_KEY", "")
+    assert stage_profile("scoring")["api_key"] == LLM_TEST_ENV["LLM_API_KEY"]
+    clean_llm_env.delenv("LLM_API_KEY", raising=False)
     assert stage_profile("scoring")["api_key"] is None
 
 

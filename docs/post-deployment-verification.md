@@ -147,12 +147,12 @@ print(json.dumps({
     "blacklist_count": len(document["settings"]["blacklist_keywords"]),
     "scoring_rule_count": len(document["settings"]["NEWS_RULE_BASED_SCORING"]),
     # 历史遗留字段：配置存储中的 models 已退役为惰性数据，仅用于确认历史版本内容，
-    # 不代表实际使用的模型。当前模型证据以下方 llm_env 输出为准。
+    # 不代表实际使用的模型。当前模型证据以下方 read_model_config() 片段输出为准。
     "legacy_models_in_store": document.get("models"),
 }, ensure_ascii=False, indent=2))
 ```
 
-当前实际生效的模型来自 `.env` 的 `LLM_*` 变量，用下面的片段单独取证（输出已脱敏，不含密钥）。`load_environment()` 负责读取项目根目录 `.env`，单独执行时不可省略：
+当前实际生效的模型来自 `.env` 的 `LLM_*` 变量，用下面的片段单独取证（输出已脱敏，不含密钥）。`load_environment()` 负责读取项目根目录 `.env`，单独执行时不可省略；这段输出的顶层键就是 `scoring`/`item_summarizer`/`region`，C04 核对以它为准：
 
 ```python
 import json
@@ -162,8 +162,6 @@ from config_manager import read_model_config
 
 print(json.dumps(read_model_config(), ensure_ascii=False, indent=2))
 ```
-
-核对 C04 时以 `llm_env` 输出为准；`legacy_models_in_store` 仅说明历史版本内容，不得作为当前模型证据。
 
 上面的 shell/脚本只能证明该次读取的环境。还需通过实际 Web 页面和任务日志核对常驻进程；多个 worker 应反复访问，结合各 worker 日志检查，不能只测一个终端进程。
 

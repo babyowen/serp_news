@@ -40,13 +40,13 @@ def main():
         path = Path(directory)
         store = ConfigStore(path / "runtime.sqlite3")
         store.initialize(read_document(ROOT / "config_defaults.json"), {"kind": "test-suite"})
-        # sitecustomize.py on PYTHONPATH applies the guards to every Python
-        # process the suite spawns (config_cli children, version-inheritance
-        # checks), not just the pytest process itself.
+        # sitecustomize.py is found via PYTHONPATH (cwd is NOT searched at
+        # interpreter startup), so the temp dir must be on PYTHONPATH for the
+        # guards to reach every Python process the suite spawns.
         sitecustomize = path / "sitecustomize.py"
         sitecustomize.write_text(GUARDS, encoding="utf-8")
         env = {**os.environ, "SERP_CONFIG_STORE": str(store.path), "SERP_CONFIG_REVISION": "",
-               "PYTHONPATH": str(ROOT), "PYTHONDONTWRITEBYTECODE": "1",
+               "PYTHONPATH": str(path) + os.pathsep + str(ROOT), "PYTHONDONTWRITEBYTECODE": "1",
                "MYSQL_HOST": "127.0.0.1", "MYSQL_PORT": "1", "MYSQL_USER": "offline_test",
                "MYSQL_PASSWORD": "offline_test", "MYSQL_DB": "offline_test", "MYSQL_TABLE": "scored_news_test",
                "SERPAPI_KEY": "offline-test-key", "GNEWS_API_KEY": "offline-test-key",
