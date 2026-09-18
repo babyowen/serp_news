@@ -125,12 +125,22 @@ def test_malformed_url_and_huge_numbers_fail_per_stage_without_interrupting_othe
     setenv_all(clean_llm_env, LLM_TEST_ENV)
     clean_llm_env.setenv("LLM_SCORING_BASE_URL", "http://[::1/v1")
     clean_llm_env.setenv("LLM_REGION_MAX_TOKENS", "1" + "0" * 400)
-    results = check_stages()
+    # 显式 mock SDK 成功：隔离必须由配置解析保证，不能依赖网络失败让正常阶段"碰巧"也失败。
+    client = MagicMock()
+    client.chat.completions.create.return_value = SimpleNamespace(
+        choices=[SimpleNamespace(message=SimpleNamespace(content="OK"))])
+    import llm_settings
+    with patch("openai.OpenAI") as factory:
+        factory.return_value.__enter__.return_value = client
+        results = check_stages()
     assert list(results) == ["scoring", "item_summarizer", "region"]
-    assert all(not result["ok"] for result in results.values())
+    assert results["item_summarizer"]["ok"] is True
+    assert results["scoring"]["ok"] is False and results["region"]["ok"] is False
     # 异常类型不得逃逸为 ValueError/OverflowError——必须是脱敏后的检查失败。
     assert "配置无效" in results["scoring"]["error"]
     assert "配置无效" in results["region"]["error"]
+    # 只有配置合法的摘要阶段真正发出了请求。
+    assert client.chat.completions.create.call_count == 1
 
 
 def test_default_timeout_is_sixty_and_stream_is_false(clean_llm_env):

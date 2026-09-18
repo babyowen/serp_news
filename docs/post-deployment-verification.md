@@ -152,10 +152,12 @@ print(json.dumps({
 }, ensure_ascii=False, indent=2))
 ```
 
-当前实际生效的模型来自 `.env` 的 `LLM_*` 变量，用下面的片段单独取证（输出已脱敏，不含密钥）：
+当前实际生效的模型来自 `.env` 的 `LLM_*` 变量，用下面的片段单独取证（输出已脱敏，不含密钥）。`load_environment()` 负责读取项目根目录 `.env`，单独执行时不可省略：
 
 ```python
 import json
+from runtime_config import load_environment
+load_environment()
 from config_manager import read_model_config
 
 print(json.dumps(read_model_config(), ensure_ascii=False, indent=2))

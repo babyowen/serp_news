@@ -16,12 +16,35 @@ TESTS = [
     "test_business_type_feature.py", "test_news_volume_alert.py",
 ]
 
+# Applied in the runner process and, via sitecustomize.py on PYTHONPATH, in
+# every Python child process the suite spawns.
+GUARDS = """
+# Block accidental network access even if a test forgets to mock an SDK.
+import socket
+import sys
+def _blocked(*args, **kwargs):
+    raise AssertionError('Offline test attempted network access; mock the service')
+socket.socket.connect = _blocked
+socket.create_connection = _blocked
+
+# load_dotenv(override=False) would otherwise refill LLM_* (and other)
+# variables from the developer's real .env; tests must stay hermetic.
+import dotenv
+dotenv.dotenv_values = lambda *a, **k: {}
+dotenv.load_dotenv = lambda *a, **k: False
+"""
+
 
 def main():
     with tempfile.TemporaryDirectory(prefix="serp-offline-tests-") as directory:
         path = Path(directory)
         store = ConfigStore(path / "runtime.sqlite3")
         store.initialize(read_document(ROOT / "config_defaults.json"), {"kind": "test-suite"})
+        # sitecustomize.py on PYTHONPATH applies the guards to every Python
+        # process the suite spawns (config_cli children, version-inheritance
+        # checks), not just the pytest process itself.
+        sitecustomize = path / "sitecustomize.py"
+        sitecustomize.write_text(GUARDS, encoding="utf-8")
         env = {**os.environ, "SERP_CONFIG_STORE": str(store.path), "SERP_CONFIG_REVISION": "",
                "PYTHONPATH": str(ROOT), "PYTHONDONTWRITEBYTECODE": "1",
                "MYSQL_HOST": "127.0.0.1", "MYSQL_PORT": "1", "MYSQL_USER": "offline_test",
@@ -34,27 +57,12 @@ def main():
         # Stray developer-shell LLM_* variables must not leak into the suite.
         for name in [key for key in list(env) if key.startswith("LLM_") and key not in LLM_TEST_ENV]:
             env.pop(name, None)
-        # Block accidental network access even if a test forgets to mock an SDK.
-        network_guard = """
-import socket, sys
-def blocked(*args, **kwargs):
-    raise AssertionError('Offline test attempted network access; mock the service')
-socket.socket.connect = blocked
-socket.create_connection = blocked
-"""
-        # load_dotenv(override=False) would otherwise refill LLM_* (and other)
-        # variables from the developer's real .env; tests must stay hermetic.
-        dotenv_guard = """
-import dotenv
-dotenv.dotenv_values = lambda *a, **k: {}
-dotenv.load_dotenv = lambda *a, **k: False
-"""
-        program = network_guard + dotenv_guard + "\nimport pytest\nraise SystemExit(pytest.main(sys.argv[1:]))\n"
+        program = GUARDS + "\nimport pytest\nraise SystemExit(pytest.main(sys.argv[1:]))\n"
         result = subprocess.run([sys.executable, "-B", "-c", program, "-q", "-p", "no:cacheprovider", *[str(ROOT / name) for name in TESTS], *sys.argv[1:]], cwd=path, env=env)
         if result.returncode:
             return result.returncode
         # This older regression exits at module scope, so run it in its own process.
-        legacy = network_guard + dotenv_guard + "\nimport runpy\nrunpy.run_path(sys.argv[1], run_name='__main__')\n"
+        legacy = GUARDS + "\nimport runpy\nrunpy.run_path(sys.argv[1], run_name='__main__')\n"
         return subprocess.run([sys.executable, "-B", "-c", legacy, str(ROOT / "test_log_system.py")], cwd=path, env=env).returncode
 
 
