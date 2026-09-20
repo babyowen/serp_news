@@ -10,6 +10,7 @@ from test_config_store import LLM_TEST_ENV
 
 ROOT = Path(__file__).resolve().parent
 TESTS = [
+    "test_pipeline_failures.py",
     "test_home_performance.py", "test_llm_settings.py",
     "test_config_store.py", "test_config_integration.py", "test_config_system.py", "test_config_review.py", "test_config_followup.py", "test_bank_news_feature.py",
     "test_historical_date_filter.py", "test_write_to_mysql_dedup.py",

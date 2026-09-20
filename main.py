@@ -428,6 +428,7 @@ def main(date=None, keyword=None, adopt_existing_config=False, config_revision=N
         ])
 
         success_rate = successful_steps / total_steps * 100
+        main_success = successful_steps == total_steps
 
         completion_message = (
             f"总体完成情况：{successful_steps}/{total_steps} 步骤成功 ({success_rate:.1f}%)\n"
@@ -437,14 +438,14 @@ def main(date=None, keyword=None, adopt_existing_config=False, config_revision=N
             f"数据库写入：{'成功' if database_success else '失败'}\n"
             f"单条摘要：{'成功' if item_summary_success else '失败'}\n"
             f"地域分析：{'成功' if region_success else '跳过'}\n"
-            f"烟草爬取：{'成功' if tobacco_success else '跳过'}"
+            f"烟草爬取：{'成功' if tobacco_success else '失败'}"
         )
         
-        print(f"\n[完成] 全部流程执行完成！")
+        print("\n[完成] 全部流程执行完成！" if main_success else "\n[失败] 流程结束，存在失败步骤。")
         print(f"[统计] {completion_message}")
         
         # 记录脚本完成
-        log_script_complete("main.py", success=True, message=completion_message)
+        log_script_complete("main.py", success=main_success, message=completion_message)
 
     except KeyboardInterrupt:
         print(f"\n[INFO] 用户中断程序执行")
