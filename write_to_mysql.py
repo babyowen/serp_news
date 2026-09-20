@@ -475,7 +475,7 @@ def main():
 
 # 命令行入口
 def __main__():
-    main()
+    return 0 if main() else 1
 
 if __name__ == '__main__':
-    main()
+    sys.exit(__main__())

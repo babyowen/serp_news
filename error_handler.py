@@ -154,7 +154,7 @@ def with_error_handling(script_name: str, stage: str = "main"):
 
 def safe_subprocess_run(cmd: str, step_name: str, keyword: str = None,
                        check: bool = True, retries: int = 2) -> bool:
-    """安全执行子进程，失败时自动重试"""
+    """安全执行子进程；check 控制最终失败是否抛出，不影响失败检测。"""
     error_handler = ErrorHandler()
     import time
 
@@ -171,6 +171,7 @@ def safe_subprocess_run(cmd: str, step_name: str, keyword: str = None,
                                       capture_output=True, text=True, encoding='utf-8',
                                       env=os.environ)
 
+            result.check_returncode()
             print(f"[完成] {step_name}")
             if result and result.stdout:
                 for line in result.stdout.strip().split('\n')[-5:]:
