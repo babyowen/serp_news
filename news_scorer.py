@@ -54,8 +54,8 @@ def get_system_message(main_keyword: str = None, keyword: str = None) -> str:
 # content: 新闻正文  
 # keyword: 用于AI评分的关键词（通常是search_keyword）
 # main_keyword: 用于模型选择判断的主关键词（用于决定使用哪个模型）
-# 返回分数（int）
-def score_news(title: str, content: str, keyword: str, main_keyword: str = None, max_retries: int = 3, retry_interval: int = 5) -> int:
+# 返回分数；江苏机关事务评分失败时返回 None
+def score_news(title: str, content: str, keyword: str, main_keyword: str = None, max_retries: int = 3, retry_interval: int = 5) -> int | None:
     if (main_keyword or keyword) == TOPIC:
         return score_news_result(title, content, keyword, TOPIC, max_retries, retry_interval).score
     prompt = value("NEWS_SCORE_PROMPT").format(keyword=keyword, title=title, content=content)

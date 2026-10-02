@@ -31,6 +31,8 @@ python evaluate_government_affairs.py --store /actual/state/runtime.sqlite3
 
 两者均不调用模型、不启用专题。evaluate 预览列出实际评分接入点、模型、请求参数（不含密钥）和配置/样本/实现指纹。工具从自身代码根目录加载 .env，已有进程环境变量优先；明确传入 --store。
 
+evaluate 预览仍需要合法的评分模型接入地址、模型名和请求参数，以计算模型配置指纹；可使用全局 LLM_BASE_URL / LLM_MODEL 或评分阶段的对应覆盖变量。预览不会验证密钥或发起模型请求，实际评测才需要可用的 API 密钥。
+
 2. 获得本次模型费用授权后执行固定集评测。输出必须是已存在目录中的新文件：
 
 ```bash

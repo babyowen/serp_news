@@ -12,6 +12,7 @@ from datetime import datetime, timedelta
 import re
 from dateutil import parser
 from news_fetcher import fetch_serpapi_google_news, fetch_serpapi_baidu_news, fetch_serpapi_bing_news, fetch_serpapi_duckduckgo_news
+from news_fetcher import has_serpapi_error
 from config import DEFAULT_KEYWORDS, SEARCH_KEYWORDS, blacklist_keywords
 from error_handler import (
     setup_global_exception_handler,
@@ -274,7 +275,7 @@ def main():
         duck_data = fetch_serpapi_duckduckgo_news(keyword, fetch_date=fetch_date)
 
         if main_keyword == "江苏机关事务" and any(
-                data.get("_fetch_failed") or data.get("error")
+                data.get("_fetch_failed") or has_serpapi_error(data)
                 for data in (google_data, baidu_data, bing_data, duck_data)):
             success = False
             print("[ERROR] 江苏机关事务有搜索引擎失败；保留部分结果，批次未完成")
