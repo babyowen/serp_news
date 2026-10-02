@@ -400,6 +400,8 @@ def run(target_date, keywords, query_fn=None, send_fn=None, counts_fn=None):
         try:
             today = query_fn(kw, target_date)
             baseline = collect_history(kw, target_date, query_fn=query_fn)
+            if baseline is None:
+                print(f"[INFO] [预警] {kw} 暂无历史基线，跳过涨跌判断")
             a, n = detect(kw, today, baseline)
             anomalies.extend(a)
             normals.extend(n)

@@ -36,6 +36,11 @@ def parser():
             command.add_argument("--expected-version", required=True, help="编辑时记录的完整配置版本")
     check = commands.add_parser("check-model", help="检查 .env 中 LLM_* 配置的模型连通性；每阶段发送一次固定测试文本（产生少量费用）")
     check.add_argument("--stage", choices=("scoring", "item_summarizer", "region"), help="只检查指定阶段；默认全部")
+    enable = commands.add_parser("enable-topic", help="预览专题增量安装；仅 --apply 发布，不在启动时自动执行")
+    enable.add_argument("--topic", required=True, choices=("government-affairs",))
+    enable.add_argument("--apply", action="store_true")
+    for flag in ("expected-version", "expected-candidate-sha256", "backup", "note", "evaluation-report"):
+        enable.add_argument("--" + flag)
     commands.add_parser("status")
     history = commands.add_parser("history")
     history.add_argument("--limit", type=int, default=100)
@@ -56,6 +61,9 @@ def parser():
 
 
 def run(args):
+    if args.command == "enable-topic":
+        from topic_config import enable_topic
+        return enable_topic(args)
     if args.command == "check-model":
         # 连通性检查不依赖配置存储，必须在打开 ConfigStore 之前返回。
         from dotenv import load_dotenv

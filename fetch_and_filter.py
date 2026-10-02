@@ -273,6 +273,12 @@ def main():
         print("[INFO] 正在采集 DuckDuckGo News ...")
         duck_data = fetch_serpapi_duckduckgo_news(keyword, fetch_date=fetch_date)
 
+        if main_keyword == "江苏机关事务" and any(
+                data.get("_fetch_failed") or data.get("error")
+                for data in (google_data, baidu_data, bing_data, duck_data)):
+            success = False
+            print("[ERROR] 江苏机关事务有搜索引擎失败；保留部分结果，批次未完成")
+
         # 处理各个搜索引擎的数据
         baidu_news = []
         for item in baidu_data.get('organic_results', []):
@@ -399,4 +405,4 @@ def main():
 
 # 命令行入口
 if __name__ == "__main__":
-    main()
+    sys.exit(0 if main() else 1)

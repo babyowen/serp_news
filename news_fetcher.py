@@ -62,6 +62,7 @@ def fetch_serpapi_google_news(keyword, fetch_date=None, max_pages=2):
                         time.sleep(3)
                         continue
                     log_error(f"google_news", keyword, data['error'])
+                    return {"news_results": all_results, "_fetch_failed": True}
 
                 results = data.get("news_results", [])
                 if not results:
@@ -75,7 +76,7 @@ def fetch_serpapi_google_news(keyword, fetch_date=None, max_pages=2):
                     time.sleep(3)
         else:
             # 3次都失败
-            return {"news_results": []}
+            return {"news_results": all_results, "_fetch_failed": True}
     return {"news_results": all_results}
 
 def fetch_serpapi_baidu_news(keyword):
@@ -99,6 +100,7 @@ def fetch_serpapi_baidu_news(keyword):
                     time.sleep(3)
                     continue
                 log_error(f"baidu_news", keyword, data['error'])
+                data["_fetch_failed"] = True
             return data
         except Exception as e:
             if attempt == 2:
@@ -106,7 +108,7 @@ def fetch_serpapi_baidu_news(keyword):
             else:
                 time.sleep(3)
     # 3次都失败
-    return {"organic_results": []}
+    return {"organic_results": [], "_fetch_failed": True}
 
 def fetch_baidu_news_web(keyword="养老", max_pages=3):
     """
@@ -172,6 +174,7 @@ def fetch_serpapi_bing_news(keyword, max_pages=1):
                     time.sleep(3)
                     continue
                 log_error(f"bing_news", keyword, search_results['error'])
+                return {"organic_results": results, "_fetch_failed": True}
 
             if "organic_results" in search_results:
                 for result in search_results["organic_results"]:
@@ -189,6 +192,7 @@ def fetch_serpapi_bing_news(keyword, max_pages=1):
             if attempt == 2:
                 print(f"获取Bing新闻时出错: {e}")
                 log_error(f"bing_news", keyword, str(e))
+                return {"organic_results": results, "_fetch_failed": True}
             else:
                 time.sleep(3)
 
@@ -226,6 +230,7 @@ def fetch_serpapi_duckduckgo_news(keyword, fetch_date=None, max_pages=1):
                         time.sleep(3)
                         continue
                     log_error(f"duckduckgo_news", keyword, data['error'])
+                    return {"news_results": all_results, "_fetch_failed": True}
 
                 results = data.get("news_results", [])
                 if not results:
@@ -238,7 +243,7 @@ def fetch_serpapi_duckduckgo_news(keyword, fetch_date=None, max_pages=1):
                 else:
                     time.sleep(3)
         else:
-            return {"news_results": []}
+            return {"news_results": all_results, "_fetch_failed": True}
     return {"news_results": all_results}
 
 def log_error(source, keyword, error_msg):

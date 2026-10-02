@@ -2,7 +2,7 @@
 import os
 import json
 import datetime
-from flask import render_template, send_from_directory, request, Blueprint, abort, url_for
+from flask import jsonify, render_template, send_from_directory, request, Blueprint, abort, url_for
 from db_utils import get_connection, get_table_name
 from runtime_config import value
 
@@ -125,6 +125,33 @@ def index():
                            previous_url=page_url(page - 1) if page > 1 else None,
                            next_url=page_url(page + 1) if page < pages else None)
 
+
+
+@views_bp.route("/api/news/<int:news_id>/summary")
+def news_summary(news_id):
+    keywords = value("DEFAULT_KEYWORDS")
+    if not keywords:
+        abort(404)
+    table = get_table_name()
+    conn = get_connection(dict_cursor=True)
+    try:
+        cursor = conn.cursor()
+        try:
+            placeholders = ",".join(["%s"] * len(keywords))
+            cursor.execute(
+                f"SELECT id, keyword, title, search_keyword, short_summary, link FROM {table} "
+                f"WHERE id=%s AND keyword IN ({placeholders})",
+                [news_id, *keywords])
+            row = cursor.fetchone()
+        finally:
+            cursor.close()
+    finally:
+        conn.close()
+    if row is None:
+        abort(404)
+    response = jsonify(row)
+    response.headers["Cache-Control"] = "no-store"
+    return response
 
 @views_bp.route("/date/<date>")
 def show_date(date):

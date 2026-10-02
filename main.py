@@ -9,6 +9,8 @@ import concurrent.futures
 from config import DEFAULT_KEYWORDS, SEARCH_KEYWORDS
 from runtime_config import value
 from batch_config import prepare_batch
+from topic_config import TOPIC
+from government_affairs_scoring import scored_file_complete
 from error_handler import (
     setup_global_exception_handler,
     safe_subprocess_run,
@@ -98,6 +100,12 @@ def write_skip_log(keyword, reason, file_path):
 @with_error_handling("main.py", "新闻采集阶段")
 def execute_news_fetching(date, main_kw):
     """执行新闻采集阶段"""
+    if main_kw == TOPIC:
+        from government_affairs_pipeline import collect
+        def run_search(term, output):
+            cmd = shlex.join([sys.executable, "fetch_and_filter.py", term, date, "--main_keyword", TOPIC, "--search_keyword", term, "--output", output])
+            return safe_subprocess_run(cmd, f"采集新闻-{term}", keyword=term, check=False)
+        return collect(date, SEARCH_KEYWORDS[main_kw], run_search)
     merged_file = f"output/{date}/{date}_{main_kw}.json"
     if os.path.exists(merged_file):
         print(f"[INFO] {merged_file} 已存在，跳过 {main_kw}")
@@ -212,6 +220,9 @@ def execute_scoring(date, kw):
         write_skip_log(kw, "新闻列表文件不存在，无法评分", merged_file)
         return False
     
+    if kw == TOPIC and os.path.exists(scored_file) and not scored_file_complete(scored_file, kw):
+        print(f"[ERROR] {kw} 已有评分包含失败项，请显式 --rescore 后再续跑")
+        return False
     if os.path.exists(scored_file):
         print(f"[INFO] {scored_file} 已存在，跳过 {kw}")
         write_skip_log(kw, "已存在，已完成打分", scored_file)
