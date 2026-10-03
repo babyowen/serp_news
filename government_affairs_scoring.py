@@ -7,6 +7,7 @@ import time
 from config_schema import ConfigError
 from runtime_config import value, model_arguments, model_credentials
 from topic_config import TOPIC
+from news_freshness import eligible
 
 @dataclass(frozen=True)
 class ScoreResult:
@@ -94,7 +95,7 @@ def scored_file_complete(path, keyword):
     try:
         rows = json.loads(Path(path).read_text(encoding="utf-8"))
         return isinstance(rows, list) and all(
-            isinstance(row, dict) and type(row.get("score")) is int and 0 <= row["score"] <= 5
+            isinstance(row, dict) and eligible(row) and type(row.get("score")) is int and 0 <= row["score"] <= 5
             and (row.get("score_status") == "ok" or
                  (row.get("score_status") == "empty_content" and row["score"] == 0))
             for row in rows)

@@ -36,6 +36,9 @@ from error_handler import (
 # 导入图标管理系统
 from icon_manager import safe_print, get_icon
 from logger_utils import NewsLogger
+from topic_config import TOPIC
+from news_freshness import assess_html, check_current, write_diagnostic
+from pathlib import Path
 
 # 设置全局异常处理器
 setup_global_exception_handler()
@@ -425,6 +428,41 @@ def get_domain(url):
     except Exception:
         return ''
 
+def fetch_publication_page(url):
+    """One bounded page fetch supplies explicit publication evidence and text."""
+    html = ''
+    try:
+        response = requests.get(url, timeout=(5, 15))
+        response.raise_for_status()
+        response.encoding = response.apparent_encoding
+        html = response.text
+        extracted = trafilatura.extract(html, output_format='json')
+        text = json.loads(extracted).get('text', '') if extracted else ''
+        return text if not is_garbled(text) else '', html
+    except Exception:
+        return '', html
+
+
+def check_topic_dates(news_list, date_str):
+    """Keep rejected rows for collection fingerprints and forensic inspection."""
+    for item in news_list:
+        if check_current(item, date_str):
+            continue
+        text, html = fetch_publication_page(item['link']) if item.get('link') else ('', '')
+        check = assess_html(html, date_str)
+        check['link'] = item.get('link')
+        item['publication_check'] = check
+        item['fetchdate'] = date_str
+        # Rejected/uncertain pages need no costly browser extraction or scoring.
+        if 'content' not in item and (text or check['status'] != 'accepted'):
+            item.update(content=text, wordcount=len(text), custom_grab=False)
+    path = Path('output') / date_str / 'diagnostics' / 'government_affairs_dates.json'
+    write_diagnostic(news_list, date_str, path)
+    counts = {status: sum(item['publication_check']['status'] == status for item in news_list)
+              for status in ('accepted', 'old', 'pending')}
+    print(f"[GOV_DATE] 当日通过={counts['accepted']} 旧文排除={counts['old']} 待核验={counts['pending']} 清单={path}")
+
+
 # 处理指定关键词和日期的json，抓取正文并写入，统计日志
 @with_error_handling("fetch_content.py", "正文抓取处理")
 def process_json(keyword, date_str=None, mode='正式'):
@@ -435,6 +473,14 @@ def process_json(keyword, date_str=None, mode='正式'):
         return False  # 文件不存在算失败
     with open(json_path, 'r', encoding='utf-8') as f:
         news_list = json.load(f)
+    if keyword == TOPIC:
+        for item in news_list:
+            link = item.get('link') or ''
+            if link.startswith('https://') and '.people.com.cn' in link:
+                item['link'] = 'http://' + link[len('https://'):]
+        check_topic_dates(news_list, date_str)
+        from government_affairs_pipeline import atomic_json
+        atomic_json(json_path, news_list)
     # 跳过机制：如所有新闻条目都已包含content字段（不论内容是否为空），说明已跑过正文抓取，无需重复处理
     # 但是如果新闻列表为空，则不应该跳过
     all_has_content_field = len(news_list) > 0 and all('content' in item for item in news_list)
@@ -456,6 +502,9 @@ def process_json(keyword, date_str=None, mode='正式'):
     prev_domain = None
     filtered_news_list = []
     for item in news_list:
+        if keyword == TOPIC and 'content' in item:
+            filtered_news_list.append(item)
+            continue
         url = item.get('link')
         curr_domain = get_domain(url) if url else None
         # 只在抓取正文时加间隔

@@ -198,7 +198,7 @@ def execute_content_fetching(date, kw):
         write_skip_log(kw, "新闻列表文件不存在，无法抓正文", merged_file)
         return False
     
-    if all_news_has_content(merged_file):
+    if kw != TOPIC and all_news_has_content(merged_file):
         print(f"[INFO] {merged_file} 所有新闻正文已抓取，跳过 {kw}")
         write_skip_log(kw, "所有新闻正文已抓取", merged_file)
         return True
@@ -405,7 +405,9 @@ def main(date=None, keyword=None, adopt_existing_config=False, config_revision=N
 
         # 步骤7：烟草官网爬取（仅中国烟草关键词，条件触发）
         has_tobacco = "中国烟草" in active_keywords
-        if has_tobacco:
+        tobacco_enabled = os.environ.get("ENABLE_TOBACCO_CRAWLER", "1").strip().lower() not in {"0", "false", "no", "off"}
+        tobacco_active = has_tobacco and tobacco_enabled
+        if tobacco_active:
             print(f"\n[步骤7] 开始执行步骤7：烟草官网爬取阶段")
             _update_step("tobacco", "running")
             try:
@@ -420,14 +422,16 @@ def main(date=None, keyword=None, adopt_existing_config=False, config_revision=N
                 tobacco_success = False
             _update_step("tobacco", "success" if tobacco_success else "failed")
         else:
-            print(f"\n[步骤7] 关键词不含'中国烟草'，跳过")
+            print("\n[步骤7] 烟草官网爬取已停用（ENABLE_TOBACCO_CRAWLER=0），由本地 Mac 负责" if not tobacco_enabled
+                  else "\n[步骤7] 关键词不含'中国烟草'，跳过")
+            _update_step("tobacco", "skipped")
             tobacco_success = True
 
         # 步骤8：新闻量波动预警已挪到 main() 末尾的收尾路径，
         # 确保前置步骤任一异常仍能触发预警（issue #11 验收第 1 条）
 
         # 统计整体执行情况
-        total_steps = 7
+        total_steps = 7 if tobacco_active else 6
         successful_steps = sum([
             1 if fetch_failed == 0 else 0,
             1 if content_failed == 0 else 0,
@@ -435,7 +439,7 @@ def main(date=None, keyword=None, adopt_existing_config=False, config_revision=N
             1 if database_success else 0,
             1 if item_summary_success else 0,
             1 if region_success else 0,
-            1 if tobacco_success else 0,
+            1 if tobacco_active and tobacco_success else 0,
         ])
 
         success_rate = successful_steps / total_steps * 100
@@ -449,7 +453,7 @@ def main(date=None, keyword=None, adopt_existing_config=False, config_revision=N
             f"数据库写入：{'成功' if database_success else '失败'}\n"
             f"单条摘要：{'成功' if item_summary_success else '失败'}\n"
             f"地域分析：{'成功' if region_success else '跳过'}\n"
-            f"烟草爬取：{'成功' if tobacco_success else '失败'}"
+            f"烟草爬取：{'已停用/跳过' if not tobacco_active else ('成功' if tobacco_success else '失败')}"
         )
         
         print("\n[完成] 全部流程执行完成！" if main_success else "\n[失败] 流程结束，存在失败步骤。")

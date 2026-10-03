@@ -10,6 +10,7 @@ from test_config_store import LLM_TEST_ENV
 
 ROOT = Path(__file__).resolve().parent
 TESTS = [
+    "test_news_freshness.py",
     "test_pr27_comprehensive.py",
     "test_government_affairs_evaluation.py",
     "test_news_summary_view.py",

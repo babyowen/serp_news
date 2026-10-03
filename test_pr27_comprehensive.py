@@ -54,6 +54,13 @@ def news(title="资产调剂", link="https://example.test/a", date=DATE, **extra
     return {"title": title, "link": link, "date": date, "source": "测试来源", **extra}
 
 
+def dated(row):
+    row["fetchdate"] = DATE
+    row["publication_check"] = {"version":1,"target_date":DATE,"link":row["link"],
+        "status":"accepted","published_date":DATE,"evidence":[{"source":"meta:pubdate","date":DATE}]}
+    return row
+
+
 def results_response(name, rows):
     key = "organic_results" if name in ("baidu", "bing") else "news_results"
     return {"search_metadata": {"status": "Success"}, key: rows}
@@ -430,11 +437,11 @@ def test_14_batch_score_distinguishes_zero_empty_failure_and_rescores_only_failu
     folder = Path("output") / DATE
     folder.mkdir()
     path = folder / f"{DATE}_{TOPIC}.json"
-    path.write_text(json.dumps([
+    path.write_text(json.dumps([dated(row) for row in [
         news("通知-无关", "https://example.test/zero", content="居民积分", wordcount=0),
         news("空正文", "https://example.test/empty", content=" ", wordcount=999),
         news("待恢复", "https://example.test/failed", content="资产管理"),
-        news("有效高分", "https://example.test/high", content="公物仓调剂")]))
+        news("有效高分", "https://example.test/high", content="公物仓调剂")]]))
     calls, _ = install_model(monkeypatch, ["0", "5分", "10", "bad", "4"])
     rows, counts, total, rules = scorer.batch_score_news(path, TOPIC)
     assert [(row["score"], row["score_status"]) for row in rows] == [
@@ -519,7 +526,7 @@ def test_19_score_backfill_matches_topic_title_link_and_preserves_valid_zero(dat
                news("已有高分", "https://example.test/已有高分", keyword=TOPIC, score=1, score_status="ok"),
                news("评分失败", "https://example.test/评分失败", keyword=TOPIC, score=None, score_status="failed")]
     path = tmp_path / "rescore.json"
-    path.write_text(json.dumps(payload))
+    path.write_text(json.dumps([dated(row) for row in payload]))
     assert database.writer.update_scores_from_json(path, TOPIC) == 1
     scores = dict(database.db.execute("SELECT id,score FROM scored_news_test"))
     assert scores == {target: 0, other_link: None, other_topic: None, zero: 0, high: 4, invalid: None}
@@ -533,6 +540,7 @@ def test_20_collection_scoring_import_summary_and_page_form_one_workflow(databas
     path, rows, _ = collection()
     assert len(rows) == 1
     rows[0].update(content="资产管理正文" * 100, wordcount=600)
+    dated(rows[0])
     path.write_text(json.dumps(rows))
     score_calls, _ = install_model(monkeypatch, ["4"])
     scored, _, _, _ = scorer.batch_score_news(path, TOPIC)

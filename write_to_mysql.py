@@ -12,6 +12,7 @@ import argparse
 import datetime
 from config import DEFAULT_KEYWORDS
 from topic_config import TOPIC
+from news_freshness import eligible
 from error_handler import (
     setup_global_exception_handler,
     with_error_handling,
@@ -122,6 +123,9 @@ def insert_scored_news(json_path, keyword):
     # existing keys once per main keyword and keep newly inserted keys in memory.
     candidate_items = []
     for item in data:
+        if keyword == TOPIC and not eligible(item):
+            skip += 1
+            continue
         content = item.get('content', '')
         if not content or content.strip() == '':
             empty_content_skip += 1
@@ -208,7 +212,7 @@ def update_scores_from_json(json_path, keyword):
         score = item.get('score')
         title = item.get('title', '')
         if keyword == TOPIC:
-            if (item.get("keyword") != TOPIC or item.get("score_status") != "ok"
+            if (not eligible(item) or item.get("keyword") != TOPIC or item.get("score_status") != "ok"
                     or type(score) is not int or not 0 <= score <= 5 or not title or not item.get("link")):
                 continue
             cursor.execute(

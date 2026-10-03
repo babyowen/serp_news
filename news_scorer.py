@@ -18,6 +18,7 @@ from config import (
 import argparse
 from config_schema import ConfigError
 from topic_config import TOPIC
+from news_freshness import eligible, check_current
 from government_affairs_scoring import (ScoreResult, parse_government_affairs_score,
     score_result, score_fields, scored_file_complete)
 from error_handler import (
@@ -166,10 +167,14 @@ def rule_based_score(title: str, main_keyword: str) -> int:
 def batch_score_news(json_path, keyword):
     with open(json_path, "r", encoding="utf-8") as f:
         news_list = json.load(f)
+    if keyword == TOPIC and any(not check_current(row) for row in news_list):
+        raise ValueError("publication date check missing or stale; run content stage first")
     # 按link去重，保留第一条
     seen_links = set()
     unique_news_list = []
     for news in news_list:
+        if keyword == TOPIC and not eligible(news):
+            continue
         link = news.get("link", None)
         if link and link not in seen_links:
             unique_news_list.append(news)
@@ -424,6 +429,8 @@ def main():
                     results = json.load(f)
                 rescored_count = 0
                 for news in results:
+                    if keyword == TOPIC and not eligible(news):
+                        continue
                     score = news.get("score")
                     # 只重评真正缺失分数的（score为None），不重评score=0（有效评分）
                     if score is not None:

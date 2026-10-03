@@ -12,6 +12,12 @@ import news_scorer as scorer
 from config_store import read_document
 from topic_config import build_topic_candidate, TOPIC
 
+def dated(row, day="2099-01-01"):
+    row["fetchdate"] = day
+    row["publication_check"] = {"version":1,"target_date":day,"link":row["link"],
+        "status":"accepted","published_date":day,"evidence":[{"source":"meta:pubdate","date":day}]}
+    return row
+
 @pytest.fixture(autouse=True)
 def topic_runtime(monkeypatch, tmp_path):
     doc = build_topic_candidate(read_document(Path(__file__).with_name("config_defaults.json")))["document"]
@@ -69,9 +75,9 @@ def test_success_after_retry_and_dedicated_prompt(monkeypatch):
 def test_batch_ignores_title_rules_and_bad_wordcount(monkeypatch, tmp_path):
     calls = fake_client(monkeypatch, ["1"])
     path = tmp_path / "news.json"
-    path.write_text(json.dumps([
+    path.write_text(json.dumps([dated(row) for row in [
         {"title":"通知", "content":"居民积分活动", "wordcount":0, "link":"https://a.test/1"},
-        {"title":"政策", "content":"  ", "wordcount":123, "link":"https://a.test/2"}]))
+        {"title":"政策", "content":"  ", "wordcount":123, "link":"https://a.test/2"}]]))
     results, counts, _, rules = scorer.batch_score_news(path, TOPIC)
     assert [n["score"] for n in results] == [1, 0]
     assert [n["score_status"] for n in results] == ["ok", "empty_content"]
@@ -80,7 +86,7 @@ def test_batch_ignores_title_rules_and_bad_wordcount(monkeypatch, tmp_path):
 def test_failed_json_sorts_last_and_is_not_complete(monkeypatch, tmp_path):
     fake_client(monkeypatch, ["bad"] * 3)
     path = tmp_path / "news.json"
-    path.write_text(json.dumps([{"title":"x","content":"正文","link":"https://a.test"}]))
+    path.write_text(json.dumps([dated(row) for row in [{"title":"x","content":"正文","link":"https://a.test"}]]))
     results, counts, _, _ = scorer.batch_score_news(path, TOPIC)
     assert results[0]["score"] is None
     assert sum(counts.values()) == 0
@@ -103,9 +109,9 @@ def test_rescore_updates_only_failed_and_keeps_valid_zero(tmp_path, monkeypatch)
     monkeypatch.chdir(tmp_path)
     folder = Path("output/2099-01-01"); folder.mkdir(parents=True)
     path = folder / f"2099-01-01_{TOPIC}_scored.json"
-    path.write_text(json.dumps([
+    path.write_text(json.dumps([dated(row) for row in [
         {"title":"failed", "content":"有效正文", "link":"a", "score":None, "score_status":"failed"},
-        {"title":"zero", "content":"无关正文", "link":"b", "score":0, "score_status":"ok"}]))
+        {"title":"zero", "content":"无关正文", "link":"b", "score":0, "score_status":"ok"}]]))
     calls = fake_client(monkeypatch, ["0"])
     monkeypatch.setattr(scorer, "prepare_batch", lambda *a, **k: (None,[TOPIC]))
     monkeypatch.setattr(sys, "argv", ["news_scorer.py", TOPIC, "2099-01-01", "--rescore"])
@@ -129,8 +135,8 @@ def test_db_import_path_updates_null_to_valid_zero(tmp_path, monkeypatch):
         db=importlib.import_module("write_to_mysql")
     monkeypatch.setattr(db,"write_log",lambda _:None)
     path=tmp_path/"rows.json"
-    path.write_text(json.dumps([{"keyword":TOPIC,"title":"x","link":"https://a.test",
-        "content":"正文","score":0,"score_status":"ok"}]))
+    path.write_text(json.dumps([dated(row) for row in [{"keyword":TOPIC,"title":"x","link":"https://a.test",
+        "content":"正文","score":0,"score_status":"ok"}]]))
     db.import_scored_news_with_retry(str(path),TOPIC)
     updates=[c for c in conn.cursor.return_value.execute.call_args_list if "UPDATE" in c.args[0]]
     assert len(updates)==1

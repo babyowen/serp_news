@@ -286,6 +286,7 @@ def main():
             date_str = item.get('date', '')
             if is_baidu_news_on_date(date_str, fetch_date):
                 item = item.copy()
+                item['search_date_raw'] = date_str
                 item['date'] = parse_baidu_news_date(date_str)
                 item['fetchdate'] = fetch_date
                 item['sourceapi'] = 'serp_baidunews'
@@ -296,6 +297,7 @@ def main():
             date_str = item.get('date', '')
             if is_bing_news_on_date(date_str, fetch_date):
                 item = item.copy()
+                item['search_date_raw'] = date_str
                 item['date'] = parse_bing_news_date(date_str)
                 item['fetchdate'] = fetch_date
                 item['sourceapi'] = 'serp_bingnews'
@@ -306,6 +308,7 @@ def main():
             date_str = item.get('date', '')
             if is_duckduckgo_news_on_date(date_str, fetch_date):
                 item = item.copy()
+                item['search_date_raw'] = date_str
                 item['date'] = parse_duckduckgo_news_date(date_str)
                 item['fetchdate'] = fetch_date
                 item['sourceapi'] = 'serp_duckduckgo_news'
@@ -316,6 +319,7 @@ def main():
             date_str = item.get('date', '')
             if is_google_news_on_date(date_str, fetch_date):
                 item = item.copy()
+                item['search_date_raw'] = date_str
                 item['date'] = parse_google_news_date(date_str)
                 item['fetchdate'] = fetch_date
                 item['sourceapi'] = 'serp_googlenews'
