@@ -69,6 +69,12 @@ def assess_html(html, target_date):
         text = tag.get_text(' ', strip=True)
         if len(text) <= 100 and re.match(r'^(?:发布时间|发布日期|刊发时间)\s*[:：]', text):
             add('publication_label', text)
+    return assess_publication_evidence(evidence, target_date)
+
+
+def assess_publication_evidence(evidence, target_date):
+    """Apply the same date gate to explicit HTML or validated service evidence."""
+    date.fromisoformat(target_date)
     days = sorted({row['date'] for row in evidence})
     status, reason, published = 'pending', 'missing_publication_date', None
     if len(days) > 1:

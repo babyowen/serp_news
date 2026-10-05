@@ -163,7 +163,9 @@ python run_config_tests.py -k 'bank or historical or dedup or business'
 - `/admin/business-type-dashboard` 是公积金业务类型的只读覆盖率看板，支持按 `fetchdate` 筛选，展示待补标、类型分布和最近标注记录
 - `/admin/business-types` 用于查看公积金二级标签、预览并确认同一级标签合并；合并规则按生产/测试表隔离
 - 内容提取含防屏蔽：User-Agent伪装、SSL忽略、同站点1-4秒间隔
-- `msn.cn` 跳过、`tv.cctv.com` 跳过、`people.com.cn` 强制HTTP
+- `msn.cn`/`msn.com` 通过 `msn_news_content.py` 读取公开正文与发布时间，通用于全部关键词；`tv.cctv.com` 跳过、`people.com.cn` 强制HTTP
+- 上观新闻通过 `jfdaily_news_content.py` 读取公开正文，所有关键词共享；只使用 `publishtime` 核验发表日期，非文字/会员文章、模板及错误页不算有效正文。
+- 正文提取某一方法失败或产生乱码时继续尝试后续方法；通用渲染前先进行轻量 HTTP 提取，并释放定制 Selenium/Playwright 浏览器。
 - `tobacco_gov_crawler.py` 独立脚本，固定4分，直接写MySQL不经过JSON，按 `title` 去重
 - `tobacco_gov_crawler.py` 爬取5个板块：行业要闻、各地新闻、基层工作、数字化转型、专卖管理
 - `tobacco_gov_crawler.py` 支持 `--date YYYY-MM-DD` 指定日期，不传则默认抓取昨天

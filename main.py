@@ -10,6 +10,9 @@ from config import DEFAULT_KEYWORDS, SEARCH_KEYWORDS
 from runtime_config import value
 from batch_config import prepare_batch
 from topic_config import TOPIC
+from jfdaily_news_content import is_jfdaily_news_url
+from msn_news_content import is_msn_news_url
+from tencent_news_content import is_tencent_news_url, usable_article_text
 from government_affairs_scoring import scored_file_complete
 from error_handler import (
     setup_global_exception_handler,
@@ -63,7 +66,7 @@ def run_step(cmd, step_name, script_name=None, desc=None, keyword=None):
         raise
 
 def all_news_has_content(json_path):
-    """判断json文件中所有新闻条目都已存在非空content字段"""
+    """检查正文缓存；腾讯、MSN 和上观的标题/模板仍需进入修复阶段。"""
     if not os.path.exists(json_path):
         return False
     try:
@@ -71,7 +74,10 @@ def all_news_has_content(json_path):
             news_list = json.load(f)
         if not isinstance(news_list, list) or not news_list:
             return False
-        return all(item.get('content') and len(str(item.get('content')).strip()) > 0 for item in news_list)
+        return all(usable_article_text(item.get('content'), item.get('title'))
+                   if is_tencent_news_url(item.get('link')) or is_msn_news_url(item.get('link')) or is_jfdaily_news_url(item.get('link'))
+                   else bool(str(item.get('content') or '').strip())
+                   for item in news_list)
     except Exception as e:
         error_handler = ErrorHandler()
         error_handler.log_error(

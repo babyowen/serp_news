@@ -10,6 +10,7 @@ from datetime import datetime, timedelta
 import trafilatura
 import time
 import random
+import logging
 from newspaper import Article
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -37,8 +38,13 @@ from error_handler import (
 from icon_manager import safe_print, get_icon
 from logger_utils import NewsLogger
 from topic_config import TOPIC
-from news_freshness import assess_html, check_current, write_diagnostic
+from news_freshness import (assess_html, assess_publication_evidence,
+                            parse_publication_date, check_current, write_diagnostic)
 from pathlib import Path
+from jfdaily_news_content import CHECK_VERSION as JFDAILY_CHECK_VERSION, fetch_jfdaily_article, is_jfdaily_news_url
+from msn_news_content import CHECK_VERSION as MSN_CHECK_VERSION, fetch_msn_article, is_msn_news_url
+from tencent_news_content import (extract_tencent_content, html_title,
+                                  is_tencent_news_url, usable_article_text, article_text_is_placeholder)
 
 # 设置全局异常处理器
 setup_global_exception_handler()
@@ -227,6 +233,8 @@ def fetch_article_content_with_selenium(url):
                 t = elem.text.strip()
                 if len(t) > len(text):
                     text = t
+        if is_tencent_news_url(url) and not usable_article_text(text, driver.title):
+            return '', 0, False
         return text, len(text), False
     except Exception as e:
         return '', 0, custom_grab
@@ -238,8 +246,33 @@ def fetch_article_content_with_selenium(url):
 
 # 用requests+trafilatura/newspaper3k抓取正文，适合特殊编码站点
 def fetch_article_content_with_requests(url):
+    if is_jfdaily_news_url(url):
+        article = fetch_jfdaily_article(url)
+        text = article['content'] if article else ''
+        return (text, len(text), True) if text and not is_garbled(text) else ('', 0, False)
+    if is_msn_news_url(url):
+        article = fetch_msn_article(url)
+        text = article['content'] if article else ''
+        return (text, len(text), True) if text and not is_garbled(text) else ('', 0, False)
+    if is_tencent_news_url(url):
+        text, html = fetch_publication_page(url)
+        if text:
+            return text, len(text), True
+        # Reuse the same HTML for the lightweight fallback.
+        if html:
+            try:
+                article = Article(url, language='zh')
+                article.set_html(html)
+                article.parse()
+                text = article.text
+                if usable_article_text(text, article.title) and not is_garbled(text):
+                    return text, len(text), False
+            except Exception:
+                pass
+        return '', 0, False
     try:
-        resp = requests.get(url, timeout=10)
+        resp = requests.get(url, timeout=10, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36'})
+        resp.raise_for_status()
         encoding = resp.apparent_encoding
         html = resp.content.decode(encoding, errors='replace')
         # 先用trafilatura
@@ -247,7 +280,7 @@ def fetch_article_content_with_requests(url):
         if result:
             data = json.loads(result)
             text = data.get('text', '')
-            if text and len(text) > 50:
+            if usable_article_text(text, data.get('title', '')) and not is_garbled(text):
                 return text, len(text), True
         # 再用newspaper3k
         try:
@@ -255,12 +288,12 @@ def fetch_article_content_with_requests(url):
             article.set_html(html)
             article.parse()
             text = article.text
-            if text and len(text) > 50:
+            if usable_article_text(text, article.title) and not is_garbled(text):
                 return text, len(text), True
         except Exception:
             pass
-    except Exception:
-        pass
+    except Exception as exc:
+        _record_extraction_failure('requests', url, exc)
     return '', 0, False
 
 # 用Playwright渲染页面并抓取正文，支持定制化规则
@@ -288,99 +321,106 @@ def fetch_article_content_with_playwright(url):
         return '', 0, False
 
 # 综合抓取正文的核心实现（不包含重试逻辑）
+def _record_extraction_failure(method, url, error):
+    response = getattr(error, 'response', None)
+    logging.getLogger(__name__).warning(
+        '正文提取兜底 source=%s method=%s error=%s http_status=%s',
+        get_domain(url).rsplit('@', 1)[-1], method, type(error).__name__, getattr(response, 'status_code', None))
+
+
+def _valid_extracted_body(text, title='', custom=False):
+    return (isinstance(text, str) and bool(text.strip()) and not is_garbled(text)
+            and not article_text_is_placeholder(text)
+            and (custom or usable_article_text(text, title)))
+
+
 def _fetch_article_content_core(url):
-    # 1. msn.cn 直接跳过抓取
-    if 'msn.cn' in url:
-        return '', 0, False
-    # 2. 其它站点走原有流程
+    # Public data readers bind the body to the requested article ID. They never
+    # fall back to the site's template or restricted/non-article shell.
+    if is_msn_news_url(url) or is_jfdaily_news_url(url):
+        return fetch_article_content_with_requests(url)
+    if is_tencent_news_url(url):
+        text, wc, custom = fetch_article_content_with_requests(url)
+        if _valid_extracted_body(text):
+            return text, wc, custom
+    # Retain existing custom-site behavior, including valid short bodies.
     for match_func, grab_func in CUSTOM_GRAB_RULES:
-        if match_func(url.lower()):
-            try:
-                text, grab_type = grab_func(fetch_article_content_with_selenium_driver(url))
-                if is_garbled(text):
-                    return '', 0, False
-                if text and len(text) > 0:
-                    return text, len(text), True
-            except Exception:
-                raise
-    # 针对GBK/GB2312等特殊站点优先用requests自动编码识别
-    if any(domain in url for domain in ['jxnews.com.cn']):
-        text, wc, used_custom = fetch_article_content_with_requests(url)
-        if is_garbled(text):
-            return '', 0, False
-        if text and wc > 50:
-            return text, wc, used_custom
-    # 2. trafilatura
+        if not match_func(url.lower()):
+            continue
+        driver = None
+        try:
+            driver = fetch_article_content_with_selenium_driver(url)
+            text, grab_type = grab_func(driver)
+            if _valid_extracted_body(text, custom=True):
+                return text, len(text), True
+        except Exception as exc:
+            _record_extraction_failure('custom', url, exc)
+        finally:
+            if driver is not None:
+                try:
+                    driver.quit()
+                except Exception:
+                    pass
+    # Try a normal bounded request before generic renderers. A failed method
+    # proceeds to the next one rather than retrying only the first failure.
+    text, wc, custom = fetch_article_content_with_requests(url)
+    if _valid_extracted_body(text):
+        return text, wc, custom
     try:
         downloaded = trafilatura.fetch_url(url)
         if downloaded:
             result = trafilatura.extract(downloaded, output_format='json')
-            if result:
-                data = json.loads(result)
-                text = data.get('text', '')
-                if is_garbled(text):
-                    return '', 0, False
-                if text and len(text) > 50:
-                    return text, len(text), False
-    except Exception:
-        raise
-    # 3. newspaper3k
+            data = json.loads(result) if result else {}
+            text = data.get('text', '')
+            if _valid_extracted_body(text, data.get('title', '')):
+                return text, len(text), False
+    except Exception as exc:
+        _record_extraction_failure('trafilatura', url, exc)
     try:
         article = Article(url, language='zh')
         article.download()
         article.parse()
-        text = article.text
-        if is_garbled(text):
-            return '', 0, False
-        if text and len(text) > 50:
-            return text, len(text), False
-    except Exception:
-        raise
-    # 4. Playwright渲染+正文提取
+        if _valid_extracted_body(article.text, getattr(article, 'title', '')):
+            return article.text, len(article.text), False
+    except Exception as exc:
+        _record_extraction_failure('newspaper', url, exc)
+    html_content = ''
     try:
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=True)
-            page = browser.new_page()
-            page.goto(url, timeout=30000)
-            page.wait_for_load_state('networkidle')
-            html_content = page.content()
-            browser.close()
-        # 4.1 Newspaper3k 提取
+            try:
+                page = browser.new_page()
+                page.goto(url, timeout=30000)
+                page.wait_for_load_state('networkidle')
+                html_content = page.content()
+            finally:
+                browser.close()
+    except Exception as exc:
+        _record_extraction_failure('playwright', url, exc)
+    if html_content:
         try:
-            article = Article(url="dummy_url_for_newspaper", language='zh')
+            article = Article(url='dummy_url_for_newspaper', language='zh')
             article.download(input_html=html_content)
             article.parse()
-            text = article.text
-            if is_garbled(text):
-                return '', 0, False
-            if text and len(text) > 50:
-                return text, len(text), False
-        except Exception:
-            pass
-        # 4.2 Readability 提取
+            if _valid_extracted_body(article.text, getattr(article, 'title', '')):
+                return article.text, len(article.text), False
+        except Exception as exc:
+            _record_extraction_failure('rendered_newspaper', url, exc)
         try:
             doc = Document(html_content)
-            text = doc.summary()
-            soup = BeautifulSoup(text, 'html.parser')
-            pure_text = soup.get_text(separator='\n').strip()
-            if is_garbled(pure_text):
-                return '', 0, False
-            if pure_text and len(pure_text) > 50:
-                return pure_text, len(pure_text), False
-        except Exception:
-            pass
-    except Exception:
-        raise
-    # 5. Selenium定制化兜底
+            text = BeautifulSoup(doc.summary(), 'html.parser').get_text(separator='\n').strip()
+            if _valid_extracted_body(text, html_title(html_content)):
+                return text, len(text), False
+        except Exception as exc:
+            _record_extraction_failure('readability', url, exc)
     try:
-        text, wc, custom_grab = fetch_article_content_with_selenium(url)
-        if is_garbled(text):
-            return '', 0, False
-        if custom_grab or (text and wc > 50):
-            return text, wc, custom_grab
-    except Exception:
-        raise
+        text, wc, custom = fetch_article_content_with_selenium(url)
+        if _valid_extracted_body(text, custom=custom):
+            return text, wc, custom
+    except Exception as exc:
+        _record_extraction_failure('selenium', url, exc)
     return '', 0, False
+
 
 # 带重试机制的正文抓取包装函数
 def fetch_article_content(url, max_retries=3, retry_interval=10):
@@ -429,38 +469,155 @@ def get_domain(url):
         return ''
 
 def fetch_publication_page(url):
-    """One bounded page fetch supplies explicit publication evidence and text."""
+    """One bounded fetch supplies text; MSN dates use the explicit JSON record."""
+    if is_jfdaily_news_url(url):
+        try:
+            article = fetch_jfdaily_article(url)
+            return article['content'] if article else '', ''
+        except Exception:
+            return '', ''
+    if is_msn_news_url(url):
+        try:
+            article = fetch_msn_article(url)
+            text = article["content"] if article else ""
+            return text if not is_garbled(text) else "", ""
+        except Exception:
+            return "", ""
     html = ''
     try:
         response = requests.get(url, timeout=(5, 15))
         response.raise_for_status()
         response.encoding = response.apparent_encoding
         html = response.text
-        extracted = trafilatura.extract(html, output_format='json')
-        text = json.loads(extracted).get('text', '') if extracted else ''
+        text = extract_tencent_content(url, html)
+        if not text:
+            extracted = trafilatura.extract(html, output_format='json')
+            data = json.loads(extracted) if extracted else {}
+            text = data.get('text', '')
+            if (is_tencent_news_url(url)
+                    and not usable_article_text(text, data.get('title') or html_title(html))):
+                text = ''
         return text if not is_garbled(text) else '', html
     except Exception:
         return '', html
 
 
+def msn_publication_check(article, date_str):
+    evidence = []
+    if article:
+        stamp = article['published_time']
+        parsed = parse_publication_date(stamp)
+        if parsed:
+            evidence.append({'source': 'msn:publishedDateTime', 'raw': stamp[:200],
+                             'date': parsed, 'url': article['endpoint']})
+    check = assess_publication_evidence(evidence, date_str)
+    check['msn_check_version'] = MSN_CHECK_VERSION
+    if article:
+        check['article_id'] = article['id']
+        check['source_url'] = article['source_url']
+    return check
+
+
+def record_msn_source(item, article):
+    if article:
+        item['content_source'] = {'method': 'msn_public_detail',
+                                 **{key: article[key] for key in
+                                    ('id', 'locale', 'endpoint', 'source_url', 'provider', 'published_time')}}
+
+
+def jfdaily_publication_check(article, date_str):
+    evidence = []
+    if article:
+        parsed = parse_publication_date(article['published_time'])
+        if parsed:
+            evidence.append({'source': 'jfdaily:publishtime', 'raw': str(article['raw_published_time']),
+                             'date': parsed, 'url': article['endpoint']})
+    check = assess_publication_evidence(evidence, date_str)
+    check['jfdaily_check_version'] = JFDAILY_CHECK_VERSION
+    if article:
+        check['article_id'] = article['id']
+        check['source_url'] = article['source_url']
+    return check
+
+
+def record_jfdaily_source(item, article):
+    if article:
+        item['content_source'] = {'method': 'jfdaily_public_detail', **{key: article[key] for key in
+            ('id', 'endpoint', 'source_url', 'published_time', 'raw_published_time')}}
+
+
 def check_topic_dates(news_list, date_str):
     """Keep rejected rows for collection fingerprints and forensic inspection."""
     for item in news_list:
+        msn = is_msn_news_url(item.get('link'))
+        jfdaily = is_jfdaily_news_url(item.get('link'))
+        repair_body = ((is_tencent_news_url(item.get('link')) or msn or jfdaily)
+                       and not usable_article_text(item.get('content'), item.get('title')))
         if check_current(item, date_str):
-            continue
-        text, html = fetch_publication_page(item['link']) if item.get('link') else ('', '')
-        check = assess_html(html, date_str)
+            current = item['publication_check']
+            recheck_msn = msn and (current.get('msn_check_version') != MSN_CHECK_VERSION
+                                   or current['status'] == 'pending')
+            recheck_jfdaily = jfdaily and (current.get('jfdaily_check_version') != JFDAILY_CHECK_VERSION
+                                           or current['status'] == 'pending')
+            if not recheck_msn and not recheck_jfdaily and (current['status'] != 'accepted' or not repair_body):
+                continue
+        if jfdaily:
+            try:
+                article = fetch_jfdaily_article(item['link'], max_retries=3)
+            except Exception:
+                article = None
+            text = article['content'] if article else ''
+            check = jfdaily_publication_check(article, date_str)
+            record_jfdaily_source(item, article)
+        elif msn:
+            try:
+                article = fetch_msn_article(item['link'], max_retries=3)
+            except Exception:
+                article = None
+            text = article['content'] if article else ''
+            check = msn_publication_check(article, date_str)
+            record_msn_source(item, article)
+        else:
+            text, html = fetch_publication_page(item['link']) if item.get('link') else ('', '')
+            check = assess_html(html, date_str)
         check['link'] = item.get('link')
         item['publication_check'] = check
         item['fetchdate'] = date_str
         # Rejected/uncertain pages need no costly browser extraction or scoring.
-        if 'content' not in item and (text or check['status'] != 'accepted'):
-            item.update(content=text, wordcount=len(text), custom_grab=False)
+        if (not usable_article_text(item.get('content'), item.get('title'))
+                and not cached_custom_body_complete(item)
+                and (text or check['status'] != 'accepted')):
+            if not usable_article_text(text, item.get('title')) or is_garbled(text):
+                text = ''
+            item.update(content=text, wordcount=len(text),
+                        custom_grab=bool(text) and (is_tencent_news_url(item.get('link')) or msn or jfdaily))
     path = Path('output') / date_str / 'diagnostics' / 'government_affairs_dates.json'
     write_diagnostic(news_list, date_str, path)
     counts = {status: sum(item['publication_check']['status'] == status for item in news_list)
               for status in ('accepted', 'old', 'pending')}
     print(f"[GOV_DATE] 当日通过={counts['accepted']} 旧文排除={counts['old']} 待核验={counts['pending']} 清单={path}")
+
+
+def cached_custom_body_complete(item):
+    """Keep valid bodies accepted by other custom extractors, including short text."""
+    link = item.get('link')
+    return (item.get('custom_grab') is True
+            and not (is_tencent_news_url(link) or is_msn_news_url(link) or is_jfdaily_news_url(link))
+            and _valid_extracted_body(item.get('content'), custom=True))
+
+
+def content_fetch_complete(item, keyword):
+    # Date quarantine remains terminal for this topic's content stage.
+    if (keyword == TOPIC and check_current(item)
+            and item['publication_check']['status'] != 'accepted'):
+        return True
+    if cached_custom_body_complete(item):
+        return True
+    if keyword == TOPIC or is_tencent_news_url(item.get('link')) or is_msn_news_url(item.get('link')) or is_jfdaily_news_url(item.get('link')):
+        text = item.get('content')
+        return usable_article_text(text, item.get('title')) and not is_garbled(text)
+    # Preserve the legacy resume contract for other sites and topics.
+    return 'content' in item
 
 
 # 处理指定关键词和日期的json，抓取正文并写入，统计日志
@@ -481,11 +638,10 @@ def process_json(keyword, date_str=None, mode='正式'):
         check_topic_dates(news_list, date_str)
         from government_affairs_pipeline import atomic_json
         atomic_json(json_path, news_list)
-    # 跳过机制：如所有新闻条目都已包含content字段（不论内容是否为空），说明已跑过正文抓取，无需重复处理
-    # 但是如果新闻列表为空，则不应该跳过
-    all_has_content_field = len(news_list) > 0 and all('content' in item for item in news_list)
-    if all_has_content_field:
-        print(f"[SKIP] {json_path} 所有新闻已包含content字段，跳过")
+    # Tencent, MSN and Shangguan headline-only/empty content must be repairable for every keyword.
+    all_complete = bool(news_list) and all(content_fetch_complete(item, keyword) for item in news_list)
+    if all_complete:
+        print(f"[SKIP] {json_path} 所有新闻正文已处理，跳过")
         now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         skip_log = f"[{now}] [SKIP] 正文抓取: {keyword} 已完成\n"
         with open(log_path, "a", encoding="utf-8") as f:
@@ -502,7 +658,15 @@ def process_json(keyword, date_str=None, mode='正式'):
     prev_domain = None
     filtered_news_list = []
     for item in news_list:
-        if keyword == TOPIC and 'content' in item:
+        # Other custom site rules accept short bodies as successful extraction.
+        if cached_custom_body_complete(item):
+            filtered_news_list.append(item)
+            continue
+        if (((keyword == TOPIC or is_tencent_news_url(item.get('link'))
+                or is_msn_news_url(item.get('link')) or is_jfdaily_news_url(item.get('link')))
+                and content_fetch_complete(item, keyword))
+                or (usable_article_text(item.get('content'), item.get('title'))
+                    and not is_garbled(item.get('content')))):
             filtered_news_list.append(item)
             continue
         url = item.get('link')
@@ -526,7 +690,29 @@ def process_json(keyword, date_str=None, mode='正式'):
         news_logger.content_fetch_start(keyword, title, url)
         
         try:
-            content, wordcount, custom_grab = fetch_article_content(url)
+            if is_jfdaily_news_url(url):
+                article = fetch_jfdaily_article(url, max_retries=3)
+                content = article['content'] if article else ''
+                wordcount, custom_grab = len(content), bool(content)
+                record_jfdaily_source(item, article)
+                if keyword == TOPIC:
+                    check = jfdaily_publication_check(article, date_str)
+                    check['link'] = url
+                    item['publication_check'] = check
+            elif is_msn_news_url(url):
+                article = fetch_msn_article(url, max_retries=3)
+                content = article['content'] if article else ''
+                wordcount, custom_grab = len(content), bool(content)
+                record_msn_source(item, article)
+                if keyword == TOPIC:
+                    check = msn_publication_check(article, date_str)
+                    check['link'] = url
+                    item['publication_check'] = check
+            else:
+                content, wordcount, custom_grab = fetch_article_content(url)
+            if ((is_tencent_news_url(url) or is_msn_news_url(url) or is_jfdaily_news_url(url))
+                    and (not usable_article_text(content, title) or is_garbled(content))):
+                content, wordcount, custom_grab = '', 0, False
             item['content'] = content
             item['wordcount'] = wordcount
             item['custom_grab'] = custom_grab
@@ -562,6 +748,10 @@ def process_json(keyword, date_str=None, mode='正式'):
     # 2. 写回json（只写入非tv.cctv.com）
     with open(json_path, 'w', encoding='utf-8') as f:
         json.dump(filtered_news_list, f, ensure_ascii=False, indent=2)
+    if keyword == TOPIC:
+        # A public-body retry may also refresh its publication evidence.
+        write_diagnostic(filtered_news_list, date_str,
+                         Path('output') / date_str / 'diagnostics' / 'government_affairs_dates.json')
     # 3. 重新统计，确保日志和json一致
     success_count = 0
     fail_items = []
