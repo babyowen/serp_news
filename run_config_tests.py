@@ -10,6 +10,19 @@ from test_config_store import LLM_TEST_ENV
 
 ROOT = Path(__file__).resolve().parent
 TESTS = [
+    "test_jfdaily_content.py",
+    "test_content_fallback.py",
+    "test_msn_content.py",
+    "test_tencent_content.py",
+    "test_news_freshness.py",
+    "test_pr27_comprehensive.py",
+    "test_government_affairs_evaluation.py",
+    "test_news_summary_view.py",
+    "test_government_affairs_feature.py",
+    "test_government_affairs_fetch_recovery.py",
+    "test_government_affairs_scoring.py",
+    "test_government_affairs_log_failure.py",
+    "test_government_affairs_config.py",
     "test_pipeline_failures.py",
     "test_home_performance.py", "test_llm_settings.py",
     "test_config_store.py", "test_config_integration.py", "test_config_system.py", "test_config_review.py", "test_config_followup.py", "test_bank_news_feature.py",

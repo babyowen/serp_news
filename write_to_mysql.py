@@ -11,6 +11,8 @@ from dotenv import load_dotenv
 import argparse
 import datetime
 from config import DEFAULT_KEYWORDS
+from topic_config import TOPIC
+from news_freshness import eligible
 from error_handler import (
     setup_global_exception_handler,
     with_error_handling,
@@ -93,13 +95,17 @@ def run_with_connection_retry(action_name, func, *args, max_attempts=2):
 
 
 def import_scored_news_with_retry(filepath, keyword, max_attempts=2):
-    return run_with_connection_retry(
+    result = run_with_connection_retry(
         f"导入 {keyword}",
         insert_scored_news,
         filepath,
         keyword,
         max_attempts=max_attempts,
     )
+    if keyword == TOPIC:
+        run_with_connection_retry("同步机关事务空分", update_scores_from_json, filepath, keyword,
+                                  max_attempts=max_attempts)
+    return result
 
 # 写入 scored_news 表（新闻正文及评分）
 # 数据获取：从json_path读取新闻列表
@@ -117,6 +123,9 @@ def insert_scored_news(json_path, keyword):
     # existing keys once per main keyword and keep newly inserted keys in memory.
     candidate_items = []
     for item in data:
+        if keyword == TOPIC and not eligible(item):
+            skip += 1
+            continue
         content = item.get('content', '')
         if not content or content.strip() == '':
             empty_content_skip += 1
@@ -202,6 +211,16 @@ def update_scores_from_json(json_path, keyword):
     for item in data:
         score = item.get('score')
         title = item.get('title', '')
+        if keyword == TOPIC:
+            if (not eligible(item) or item.get("keyword") != TOPIC or item.get("score_status") != "ok"
+                    or type(score) is not int or not 0 <= score <= 5 or not title or not item.get("link")):
+                continue
+            cursor.execute(
+                f"UPDATE {TABLE_NAME} SET score=%s WHERE title=%s AND keyword=%s AND link=%s AND score IS NULL",
+                (score, title, TOPIC, item["link"]))
+            if cursor.rowcount > 0:
+                updated += cursor.rowcount
+            continue
         if not score or not title:
             continue
         cursor.execute(

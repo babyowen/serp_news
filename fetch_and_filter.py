@@ -12,6 +12,7 @@ from datetime import datetime, timedelta
 import re
 from dateutil import parser
 from news_fetcher import fetch_serpapi_google_news, fetch_serpapi_baidu_news, fetch_serpapi_bing_news, fetch_serpapi_duckduckgo_news
+from news_fetcher import has_serpapi_error
 from config import DEFAULT_KEYWORDS, SEARCH_KEYWORDS, blacklist_keywords
 from error_handler import (
     setup_global_exception_handler,
@@ -273,12 +274,19 @@ def main():
         print("[INFO] 正在采集 DuckDuckGo News ...")
         duck_data = fetch_serpapi_duckduckgo_news(keyword, fetch_date=fetch_date)
 
+        if main_keyword == "江苏机关事务" and any(
+                data.get("_fetch_failed") or has_serpapi_error(data)
+                for data in (google_data, baidu_data, bing_data, duck_data)):
+            success = False
+            print("[ERROR] 江苏机关事务有搜索引擎失败；保留部分结果，批次未完成")
+
         # 处理各个搜索引擎的数据
         baidu_news = []
         for item in baidu_data.get('organic_results', []):
             date_str = item.get('date', '')
             if is_baidu_news_on_date(date_str, fetch_date):
                 item = item.copy()
+                item['search_date_raw'] = date_str
                 item['date'] = parse_baidu_news_date(date_str)
                 item['fetchdate'] = fetch_date
                 item['sourceapi'] = 'serp_baidunews'
@@ -289,6 +297,7 @@ def main():
             date_str = item.get('date', '')
             if is_bing_news_on_date(date_str, fetch_date):
                 item = item.copy()
+                item['search_date_raw'] = date_str
                 item['date'] = parse_bing_news_date(date_str)
                 item['fetchdate'] = fetch_date
                 item['sourceapi'] = 'serp_bingnews'
@@ -299,6 +308,7 @@ def main():
             date_str = item.get('date', '')
             if is_duckduckgo_news_on_date(date_str, fetch_date):
                 item = item.copy()
+                item['search_date_raw'] = date_str
                 item['date'] = parse_duckduckgo_news_date(date_str)
                 item['fetchdate'] = fetch_date
                 item['sourceapi'] = 'serp_duckduckgo_news'
@@ -309,6 +319,7 @@ def main():
             date_str = item.get('date', '')
             if is_google_news_on_date(date_str, fetch_date):
                 item = item.copy()
+                item['search_date_raw'] = date_str
                 item['date'] = parse_google_news_date(date_str)
                 item['fetchdate'] = fetch_date
                 item['sourceapi'] = 'serp_googlenews'
@@ -399,4 +410,4 @@ def main():
 
 # 命令行入口
 if __name__ == "__main__":
-    main()
+    sys.exit(0 if main() else 1)

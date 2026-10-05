@@ -63,6 +63,10 @@ MYSQL_TABLE=scored_news_test .venv/bin/python news_business_type_analyzer.py --l
 
 仅在人工核验后需要重标已有结果时，才附加 `--force`。不要在未完成测试表验证前对生产库执行全量补标。
 
+## 江苏机关事务首次上线
+
+按[专题验收与启用说明](government-affairs-acceptance.md)完成候选评测、业务复核和一次性增量启用。通用部署及服务启动不自动补默认配置，不覆盖生产修改；后续部署不重复安装。该专题无需新增数据库字段。
+
 ## 每日任务
 
 定时任务应从项目根目录使用项目虚拟环境执行：

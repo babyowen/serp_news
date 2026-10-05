@@ -52,7 +52,7 @@ export SERP_CONFIG_STORE="$HOME/.local/share/serp-news-dev/runtime.sqlite3"
 python3 config_cli.py --store "$SERP_CONFIG_STORE" init --defaults
 ```
 
-将该绝对路径写入本地 `.env`，供以后从 IDE、定时任务或其他工作目录启动时使用。业务入口只读取项目根目录的 `.env`，已有进程环境变量优先；CLI 为保持迁移过程无副作用，不自动加载 `.env`（`check-model` 是唯一例外，它必须读取 `.env` 中的 LLM_* 变量），请传 `--store` 或在 shell 中设置 `SERP_CONFIG_STORE`。
+将该绝对路径写入本地 `.env`，供以后从 IDE、定时任务或其他工作目录启动时使用。业务入口只读取项目根目录的 `.env`，已有进程环境变量优先；CLI 为保持迁移过程无副作用，不自动加载 `.env`（`check-model` 和 `enable-topic` 例外：需要读取 `.env` 中的 LLM_* 变量核对有效模型），请传 `--store` 或在 shell 中设置 `SERP_CONFIG_STORE`。
 
 ## 查看、编辑、比较和恢复
 

@@ -130,6 +130,7 @@
                                 {% if item.short_summary %}
                                 <div class="text-muted mt-1" style="font-size:.8em;line-height:1.5;">{{ item.short_summary[:100] }}{% if item.short_summary|length > 100 %}<span class="opacity-50">...</span>{% endif %}</div>
                                 {% endif %}
+                                <details class="news-summary" data-summary-url="{{ url_for('views.news_summary', news_id=item.id) }}"><summary class="small text-primary mt-1">查看摘要/检索来源</summary></details>
                             </td>
                             <td class="text-center"><small class="text-muted">{{ item.source or '' }}</small></td>
                             <td class="text-center">
@@ -140,7 +141,7 @@
                                     {% else %}<span class="badge rounded-pill bg-secondary">{{ item.score }}</span>
                                     {% endif %}
                                 {% else %}
-                                    <span class="text-muted">-</span>
+                                    <span class="text-muted">未完成评分</span>
                                 {% endif %}
                             </td>
                             <td class="text-center"><span class="badge bg-light text-dark border" style="font-size:.72em;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;">{{ item.sourceapi or '' }}</span></td>
@@ -164,4 +165,5 @@
 {% else %}
 <div class="alert alert-info"><i class="bi bi-info-circle me-1"></i>该日期范围内无数据</div>
 {% endif %}
+<script src="{{ url_for('static', filename='news-summary.js') }}" defer></script>
 {% endblock %}

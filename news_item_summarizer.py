@@ -29,6 +29,7 @@ from db_utils import get_connection, get_table_name
 from llm_client_pool import get_pool
 from runtime_config import value, model_credentials, model_arguments
 from batch_config import prepare_batch
+from topic_config import TOPIC
 from news_business_type_utils import (
     build_business_type_catalog,
     load_business_type_aliases,
@@ -146,6 +147,9 @@ def main():
             
         cur.execute(sql, tuple(params))
         initial_rows = cur.fetchall()
+        gov_pending = {rid for rid, title, content, keyword in initial_rows
+                       if keyword == TOPIC and content and str(content).strip()}
+        gov_total = len(gov_pending)
         total = len(initial_rows)
         success = 0
         fail = 0
@@ -187,6 +191,7 @@ def main():
                                 update_summary_fields(cur, table_name, rid, text, region, business_types)
                             else:
                                 update_summary_only(cur, table_name, rid, text)
+                            gov_pending.discard(rid)
                             success += 1
                             if annotate_gjj:
                                 add_business_types_to_catalog(business_type_catalog, business_types)
@@ -231,6 +236,7 @@ def main():
                                 update_summary_fields(cur, table_name, rid, summary, region, business_types)
                             else:
                                 update_summary_only(cur, table_name, rid, summary)
+                            gov_pending.discard(rid)
                             success += 1
                             if annotate_gjj:
                                 add_business_types_to_catalog(business_type_catalog, business_types)
@@ -261,8 +267,11 @@ def main():
             if cycles >= 3:
                 break
         log_run(date, table_name, total, success, fail, skip)
-        log_script_complete("news_item_summarizer.py", success=True, message=f"抓取日期 {date} 完成: 成功{success} 失败{fail} 跳过{skip}")
-        return True
+        if TOPIC in batch_keywords:
+            safe_print(f"[GOV_SUMMARY] 最终成功 {gov_total-len(gov_pending)} 最终失败 {len(gov_pending)}")
+        complete = not gov_pending
+        log_script_complete("news_item_summarizer.py", success=complete, message=f"抓取日期 {date} 完成: 成功{success} 失败尝试{fail} 跳过{skip}；机关事务最终失败{len(gov_pending)}")
+        return complete
     except Exception as e:
         success_all = False
         err.log_error(
