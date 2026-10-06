@@ -80,13 +80,16 @@ class HistoricalDateFilterTests(unittest.TestCase):
     def test_google_query_uses_exact_custom_date_range(self, mock_get):
         fetch_serpapi_google_news("工商银行", fetch_date=HISTORICAL_DATE, max_pages=1)
         params = mock_get.call_args.kwargs["params"]
-        self.assertEqual(params["tbs"], "cdr:1,cd_min:7/12/2026,cd_max:7/12/2026")
+        self.assertEqual(params["tbs"], "cdr:1,cd_min:7/12/2026,cd_max:7/12/2026,sbd:1")
 
     @patch("news_fetcher.requests.get", return_value=FakeResponse())
-    def test_duckduckgo_query_uses_exact_custom_date_range(self, mock_get):
-        fetch_serpapi_duckduckgo_news("工商银行", fetch_date=HISTORICAL_DATE, max_pages=1)
+    def test_duckduckgo_old_backfill_uses_no_unsupported_custom_range(self, mock_get):
+        with patch("news_fetcher.datetime") as clock:
+            clock.strptime = datetime.strptime
+            clock.now.return_value = datetime.fromisoformat("2026-10-06T00:45:00+08:00")
+            fetch_serpapi_duckduckgo_news("工商银行", fetch_date=HISTORICAL_DATE, max_pages=1)
         params = mock_get.call_args.kwargs["params"]
-        self.assertEqual(params["df"], "2026-07-12..2026-07-12")
+        self.assertNotIn("df", params)
 
     def test_fetch_entrypoint_keeps_only_the_requested_historical_date(self):
         import fetch_and_filter

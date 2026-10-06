@@ -47,6 +47,7 @@ def _article(data, locale, article_id, endpoint):
     provider = data.get('provider')
     return {'id': article_id, 'locale': locale, 'title': title, 'content': text,
             'published_time': data.get('publishedDateTime') if isinstance(data.get('publishedDateTime'), str) else '',
+            'raw_published_time': data.get('publishedDateTime'),
             'source_url': data.get('sourceHref') if isinstance(data.get('sourceHref'), str) else '',
             'provider': provider.get('name', '') if isinstance(provider, dict) else '',
             'endpoint': endpoint}

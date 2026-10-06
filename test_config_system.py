@@ -413,7 +413,7 @@ print(json.dumps(get_snapshot().summary()))
         return True
     with patch.object(main, "safe_subprocess_run", side_effect=stage), patch.object(main, "run_volume_alert") as alert:
         assert main.main("2099-01-01", keyword="养老") is True
-    assert seen == ["fetch_and_filter", "fetch_content", "news_scorer", "write_to_mysql", "news_item_summarizer"]
+    assert seen == ["fetch_and_filter", "fetch_content", "news_scorer", "write_to_mysql", "news_item_summarizer", "date_review"]
     alert.assert_called_once_with(target_date="2099-01-01", keywords=["养老"])
     log = next((ctx.root / "output" / "2099-01-01").glob("run_*.log")).read_text()
     assert ctx.first.token in log and ctx.first.sha256 in log

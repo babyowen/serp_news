@@ -17,7 +17,6 @@ from config import (
 )
 import argparse
 from config_schema import ConfigError
-from topic_config import TOPIC
 from news_freshness import eligible, check_current
 from government_affairs_scoring import (ScoreResult, parse_government_affairs_score,
     score_result, score_fields, scored_file_complete)
@@ -46,8 +45,6 @@ def get_system_message(main_keyword: str = None, keyword: str = None) -> str:
     """Select the scoring prompt by main business keyword."""
     model_decision_keyword = main_keyword if main_keyword else keyword
     prompts = value("KEYWORD_SPECIFIC_SYSTEM_PROMPTS")
-    if model_decision_keyword == TOPIC and not prompts.get(TOPIC):
-        raise ConfigError("江苏机关事务缺少专属评分提示词映射")
     return prompts.get(model_decision_keyword, value("NEWS_SCORE_SYSTEM_MSG"))
 
 # 调用大模型对单条新闻进行评分
@@ -55,106 +52,19 @@ def get_system_message(main_keyword: str = None, keyword: str = None) -> str:
 # content: 新闻正文  
 # keyword: 用于AI评分的关键词（通常是search_keyword）
 # main_keyword: 用于模型选择判断的主关键词（用于决定使用哪个模型）
-# 返回分数；江苏机关事务评分失败时返回 None
-def score_news(title: str, content: str, keyword: str, main_keyword: str = None, max_retries: int = 3, retry_interval: int = 5) -> int | None:
-    if (main_keyword or keyword) == TOPIC:
-        return score_news_result(title, content, keyword, TOPIC, max_retries, retry_interval).score
-    prompt = value("NEWS_SCORE_PROMPT").format(keyword=keyword, title=title, content=content)
-    
-    # 根据主关键词选择合适的system prompt
-    system_msg = get_system_message(main_keyword, keyword)
+# 返回分数；任何关键词评分失败时返回 None
+def score_news(title: str, content: str, keyword: str, main_keyword: str = None, max_retries: int = 3, retry_interval: int = 5, context=None) -> int | None:
+    return score_news_result(title, content, keyword, main_keyword or keyword,
+                             max_retries, retry_interval, context=context).score
 
-    # 新增：token超限主动监控
-    try:
-        import tiktoken
-        enc = tiktoken.get_encoding('cl100k_base')
-        token_count = len(enc.encode(prompt))
-        if token_count > 61000:
-            content_len = len(content) if content else 0
-            msg = f"[WARN] 评分token超限 | token数: {token_count} | 正文字数: {content_len} | 标题: {title[:40]}"
-            safe_print(msg)
-            with open(os.environ.get("RUN_LOG_PATH", "output/run_log.txt"), "a", encoding="utf-8") as f:
-                f.write(msg + "\n")
-            return 0
-    except Exception:
-        pass
 
-    request_parameters = model_arguments("scoring")
-    
-    # 智能重试机制
-    for attempt in range(1, max_retries + 1):
-        # 从连接池获取客户端
-        client = _scoring_client_pool.get_client(*model_credentials("scoring"), max_uses=100)
-
-        try:
-            # 记录开始时间
-            start_time = datetime.now()
-
-            response = client.chat.completions.create(
-                **request_parameters,
-                messages=[
-                    {"role": "system", "content": system_msg},
-                    {"role": "user", "content": prompt}
-                ]
-            )
-
-            # 计算耗时
-            end_time = datetime.now()
-            duration = (end_time - start_time).total_seconds()
-
-            score_str = response.choices[0].message.content.strip()
-            score = int(score_str[0])  # 只取第一个数字
-
-            return score
-
-        except Exception as e:
-            # 计算失败耗时
-            end_time = datetime.now()
-            duration = (end_time - start_time).total_seconds()
-
-            err_str = str(e)
-            # 分类错误类型
-            is_ssl_error = any(x in err_str.lower() for x in ["ssl", "connection", "socket", "handshake", "certificate"])
-            is_timeout = any(x in err_str.lower() for x in ["timeout", "timed out", "time out"])
-            is_token_limit = any(x in err_str.lower() for x in ["token", "context length", "input length", "max input limit", "too long"])
-            is_network_error = any(x in err_str.lower() for x in ["network", "dns", "resolve", "unreachable", "connection refused"])
-
-            if is_token_limit:
-                content_len = len(content) if content else 0
-                msg = f"[WARN] 评分API token超限 | 正文字数: {content_len} | 标题: {title[:40]}"
-                safe_print(msg)
-                with open(os.environ.get("RUN_LOG_PATH", "output/run_log.txt"), "a", encoding="utf-8") as f:
-                    f.write(msg + "\n")
-                # Token超限是不可重试的错误，直接返回0分
-                return 0
-
-            err_type = "SSL" if is_ssl_error else "超时" if is_timeout else "网络" if is_network_error else "其他"
-            safe_print(f"[评分失败] 第{attempt}次({err_type}): {str(e)[:100]}")
-
-            # 重试逻辑
-            if attempt < max_retries:
-                actual_retry_interval = retry_interval * 2 if (is_ssl_error or is_network_error) else retry_interval
-                time.sleep(actual_retry_interval)
-            else:
-                content_len = len(content) if content else 0
-                msg = f"[ERROR] 评分连续{max_retries}次失败({err_type}) | 关键词: {keyword} | 正文字数: {content_len} | 标题: {title[:40]} | 错误: {str(e)[:80]}"
-                safe_print(msg)
-                with open(os.environ.get("RUN_LOG_PATH", "output/run_log.txt"), "a", encoding="utf-8") as f:
-                    f.write(msg + "\n")
-
-    # 所有重试都失败后返回0分
-    return 0
-
-def score_news_result(title, content, keyword, main_keyword, max_retries=3, retry_interval=5):
+def score_news_result(title, content, keyword, main_keyword, max_retries=3, retry_interval=5, context=None):
     return score_result(title, content, keyword, main_keyword, _scoring_client_pool,
-                        max_retries=max_retries, retry_interval=retry_interval)
-
+                        max_retries=max_retries, retry_interval=retry_interval, context=context)
 
 # 规则打分函数
 # 返回分数（int），未命中规则返回None
 def rule_based_score(title: str, main_keyword: str) -> int:
-    if main_keyword == TOPIC:
-        return None
     for rule in value("NEWS_RULE_BASED_SCORING"):
         if rule.get('main_keyword') == main_keyword and rule.get('title_contains') in title:
             return rule.get('score', 0)
@@ -167,13 +77,13 @@ def rule_based_score(title: str, main_keyword: str) -> int:
 def batch_score_news(json_path, keyword):
     with open(json_path, "r", encoding="utf-8") as f:
         news_list = json.load(f)
-    if keyword == TOPIC and any(not check_current(row) for row in news_list):
+    if any(not check_current(row) for row in news_list):
         raise ValueError("publication date check missing or stale; run content stage first")
     # 按link去重，保留第一条
     seen_links = set()
     unique_news_list = []
     for news in news_list:
-        if keyword == TOPIC and not eligible(news):
+        if not eligible(news):
             continue
         link = news.get("link", None)
         if link and link not in seen_links:
@@ -189,29 +99,50 @@ def batch_score_news(json_path, keyword):
         # 新增：优先使用更精确的搜索关键词进行AI评分
         search_keyword = news.get("search_keyword", keyword)  # 如果没有search_keyword则回退到主关键词
         
-        # 新增：如果 wordcount 为 0，直接打 0 分
-        if keyword == TOPIC:
-            result = score_news_result(title, content, search_keyword, keyword)
-            score = result.score
-        elif wordcount == 0:
-            score = 0
-        else:
-            # 先规则打分（规则打分仍使用主关键词）
-            rule_score = rule_based_score(title, keyword)
-            if rule_score is not None:
-                score = rule_score
-                rule_based_titles.append(title)  # 记录规则打分的标题
-            else:
-                # AI评分使用更精确的搜索关键词，但模型选择基于主关键词
-                score = score_news(title, content, search_keyword, keyword)
+        # Every keyword gets the same evidence-aware model path. Title-only rules
+        # cannot decide whether an event is stale or has substantive new progress.
+        result = score_news_result(title, content, search_keyword, keyword, context=news)
+        score = result.score
         news_with_score = dict(news)
-        news_with_score["score"] = score  # 用英文key
-        if keyword == TOPIC:
-            news_with_score.update(score_fields(result))
+        news_with_score.update(score_fields(result))
+        from scoring_policy import VERSION
+        news_with_score["scoring_policy_version"] = VERSION
         results.append(news_with_score)
         if score is not None:
             score_counter[score] = score_counter.get(score, 0) + 1
     return results, score_counter, len(unique_news_list), rule_based_titles
+
+def refresh_review_scores(json_path, keyword, links):
+    """Score newly admitted rows, keeping already successful results across retries."""
+    from pathlib import Path
+    from government_affairs_pipeline import atomic_json
+    from scoring_policy import VERSION
+    path = Path(json_path)
+    saved = path.with_name(path.stem + "_scored.json")
+    rows = json.loads(path.read_text(encoding="utf-8"))
+    previous = json.loads(saved.read_text(encoding="utf-8")) if saved.exists() else []
+    by_link = {n.get("link"): n for n in previous}
+    selected = []
+    for row in rows:
+        if row.get("link") not in links or not eligible(row):
+            continue
+        cached = by_link.get(row["link"], {})
+        valid = (type(cached.get("score")) is int and 0 <= cached["score"] <= 5
+                 and cached.get("score_status") == "ok"
+                 and cached.get("title") == row.get("title")
+                 and cached.get("content") == row.get("content"))
+        if valid:
+            result = {**cached, **row, **{k:v for k,v in cached.items() if k.startswith("score")}}
+        else:
+            scored = score_news_result(row.get("title", ""), row.get("content", ""),
+                                       row.get("search_keyword", keyword), keyword, context=row)
+            result = {**row, **score_fields(scored), "scoring_policy_version":VERSION}
+        by_link[row["link"]] = result
+        # Persist each paid success before the next request or a DB operation.
+        atomic_json(saved, list(by_link.values()))
+        selected.append(result)
+    return selected
+
 
 # 保存带分数的新闻到新json文件，按分数降序排列
 # results: 新闻列表
@@ -239,7 +170,7 @@ def append_log(keyword, json_path, total, score_counter, scored_count, scored_js
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     log_path = os.environ.get("RUN_LOG_PATH", os.path.join("output", "run_log.txt"))
     score_line = " ".join([f"{i}分: {score_counter.get(i,0)}" for i in range(6)])
-    if keyword == TOPIC and results is not None:
+    if results is not None:
         failures = sum(n.get("score") is None for n in results)
         empty = sum(n.get("score_status") == "empty_content" for n in results)
         scored_count = sum(n.get("score_status") == "ok" for n in results)
@@ -336,7 +267,7 @@ def main():
                 content = news.get("content", "")
                 keyword = news.get("keyword", DEFAULT_KEYWORD)
                 safe_print(f"测试模式：\n新闻标题: {title}\n新闻正文: {content}\n关键词: {keyword}")
-                score = score_news(title, content, news.get("search_keyword", keyword), news.get("main_keyword", keyword))
+                score = score_news(title, content, news.get("search_keyword", keyword), news.get("main_keyword", keyword), context=news)
                 success = score is not None
                 safe_print(f"评分结果: {score}")
             except Exception as e:
@@ -383,11 +314,6 @@ def main():
                             keyword=keyword
                         )
                         continue
-                    if already_scored and keyword != TOPIC:
-                        safe_print(f"已检测到 {json_path} 已经打分，跳过。")
-                        processed_count += 1
-                        continue
-                    
                     results, score_counter, total, rule_based_titles = batch_score_news(json_path, keyword)
                     scored_json_path = write_scored_json(results, json_path)
                     append_log(keyword, json_path, total, score_counter, len(results), scored_json_path, results, rule_based_titles)
@@ -429,7 +355,7 @@ def main():
                     results = json.load(f)
                 rescored_count = 0
                 for news in results:
-                    if keyword == TOPIC and not eligible(news):
+                    if not eligible(news):
                         continue
                     score = news.get("score")
                     # 只重评真正缺失分数的（score为None），不重评score=0（有效评分）
@@ -440,13 +366,9 @@ def main():
                     search_keyword = news.get("search_keyword", keyword)
                     if not content or content.strip() == "":
                         continue
-                    if keyword == TOPIC:
-                        result = score_news_result(title, content, search_keyword, keyword)
-                        news.update(score_fields(result))
-                        new_score = result.score
-                    else:
-                        new_score = score_news(title, content, search_keyword, keyword)
-                        news["score"] = new_score
+                    result = score_news_result(title, content, search_keyword, keyword, context=news)
+                    news.update(score_fields(result))
+                    new_score = result.score
                     rescored_count += 1
                     safe_print(f"[RESCORE] {title[:40]}... → {new_score}分")
                 # 写回

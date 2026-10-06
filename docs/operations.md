@@ -92,3 +92,8 @@ Issue #18 / PR #21 部署当天及后两天的完整验收，按 [上线检查�
 3. 数据库核验时确认写入表为 `scored_news`，并以 `fetchdate` 和 `keyword='烟草服务银行'` 过滤。
 
 本机 macOS 的 `tobacco_gov_crawler.py` 另有 launchd 配置；不要将该本机路径或 launchd 命令直接套用于 Linux 服务器。
+
+
+## 平台日期自动复核
+
+每日 `main.py` 收尾执行到期日期复核，无需新增定时任务。复核保持原采集日期和配置绑定，成功后增量评分入库；达到次数上限后保留证据归档，不要求每日人工核查。查看 `output/date_reviews/last_run.report`、批次原始 JSON 的 `date_review` 及 `DATE_REVIEW` 日志。详情与手动命令见 [平台日期复核与评分时效](platform-date-review.md)。

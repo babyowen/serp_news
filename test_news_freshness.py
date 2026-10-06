@@ -37,7 +37,7 @@ def test_score_batch_quarantines_without_paid_requests(tmp_path, monkeypatch):
     from topic_config import TOPIC
     from government_affairs_scoring import ScoreResult
     calls = []
-    def score(*args):
+    def score(*args, **kwargs):
         calls.append(args[0])
         return ScoreResult(4, 'ok')
     monkeypatch.setattr(news_scorer, 'score_news_result', score)

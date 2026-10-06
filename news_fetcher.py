@@ -1,6 +1,7 @@
 import requests
 from config import GNEWS_API_KEY, SERPAPI_KEY, DEFAULT_KEYWORDS
 from datetime import datetime, timedelta
+from news_dates import BEIJING, absolute_time, reference_time
 import json
 from bs4 import BeautifulSoup
 import re
@@ -14,6 +15,12 @@ def has_serpapi_error(data):
     return bool(data.get("error")) and (
         (data.get("search_metadata") or {}).get("status") != "Success"
     )
+
+
+def dated_results(data, key):
+    """Keep the provider's observation time so cached relative ages stay fixed."""
+    stamp = absolute_time((data.get('search_metadata') or {}).get('created_at')) or reference_time()
+    return [{**row, 'search_fetched_at':stamp.isoformat()} for row in data.get(key, [])]
 
 
 def fetch_gnews(keyword, date=None, sortby="publishedAt"):
@@ -42,18 +49,18 @@ def fetch_gnews(keyword, date=None, sortby="publishedAt"):
 def fetch_serpapi_google_news(keyword, fetch_date=None, max_pages=2):
     url = "https://serpapi.com/search.json"
     params = {
-        "engine": "google_news",
+        "engine": "google",
+        "tbm": "nws",
         "q": keyword,
         "api_key": SERPAPI_KEY,
         "gl": "cn",
         "hl": "zh-CN",
-        "tbs": "qdr:d",  # 默认只看过去一天的新闻
-        "num": "100"      # 新增：每页返回100条结果
+        "tbs": "qdr:d,sbd:1",  # Google 搜索新闻页支持时间范围及排序
     }
     if fetch_date:
         target_date = datetime.strptime(fetch_date, "%Y-%m-%d")
         date_value = f"{target_date.month}/{target_date.day}/{target_date.year}"
-        params["tbs"] = f"cdr:1,cd_min:{date_value},cd_max:{date_value}"
+        params["tbs"] = f"cdr:1,cd_min:{date_value},cd_max:{date_value},sbd:1"
     all_results = []
     for page in range(max_pages):
         if page > 0:
@@ -73,7 +80,7 @@ def fetch_serpapi_google_news(keyword, fetch_date=None, max_pages=2):
                     log_error(f"google_news", keyword, data['error'])
                     return {"news_results": all_results, "_fetch_failed": True}
 
-                results = data.get("news_results", [])
+                results = dated_results(data, "news_results")
                 if not results:
                     return {"news_results": all_results}
                 all_results.extend(results)
@@ -110,6 +117,7 @@ def fetch_serpapi_baidu_news(keyword):
                     continue
                 log_error(f"baidu_news", keyword, data['error'])
                 data["_fetch_failed"] = True
+            data["organic_results"] = dated_results(data, "organic_results")
             return data
         except Exception as e:
             if attempt == 2:
@@ -157,7 +165,7 @@ def fetch_baidu_news_web(keyword="养老", max_pages=3):
             })
     return results
 
-def fetch_serpapi_bing_news(keyword, max_pages=1):
+def fetch_serpapi_bing_news(keyword, max_pages=1, fetch_date=None):
     """使用SerpApi获取Bing新闻"""
     results = []
 
@@ -167,8 +175,13 @@ def fetch_serpapi_bing_news(keyword, max_pages=1):
         "q": keyword,
         "api_key": SERPAPI_KEY,
         "device": "desktop",
-        "qft": 'interval="7"'
+        "qft": 'interval="7" sortbydate="1"'
     }
+    if fetch_date:
+        start = datetime.strptime(fetch_date, "%Y-%m-%d").replace(tzinfo=BEIJING)
+        age = (datetime.now(BEIJING) - start).total_seconds() / 86400
+        interval = "7" if age <= 1 else "8" if age <= 7 else "9" if age <= 30 else None
+        params["qft"] = (f'interval="{interval}" ' if interval else '') + 'sortbydate="1"'
 
     for attempt in range(3):
         try:
@@ -186,8 +199,9 @@ def fetch_serpapi_bing_news(keyword, max_pages=1):
                 return {"organic_results": results, "_fetch_failed": True}
 
             if "organic_results" in search_results:
-                for result in search_results["organic_results"]:
+                for result in dated_results(search_results, "organic_results"):
                     news_item = {
+                        **result,
                         "title": result.get("title", ""),
                         "link": result.get("link", ""),
                         "date": result.get("date", ""),
@@ -221,7 +235,20 @@ def fetch_serpapi_duckduckgo_news(keyword, fetch_date=None, max_pages=1):
         "df": "d"  # 默认过去一天
     }
     if fetch_date:
-        params["df"] = f"{fetch_date}..{fetch_date}"
+        start = datetime.strptime(fetch_date, "%Y-%m-%d").replace(tzinfo=BEIJING)
+        # Cover the beginning of the calendar day: at 00:30 yesterday starts
+        # 24.5 hours ago, so a rolling one-day filter would miss its first half hour.
+        age = (datetime.now(BEIJING) - start).total_seconds() / 86400
+        # News supports d/w/m, not the web engine's custom date-range syntax.
+        # The local filter still requires the exact requested calendar day.
+        if age <= 1:
+            params["df"] = "d"
+        elif age <= 7:
+            params["df"] = "w"
+        elif age <= 28:
+            params["df"] = "m"
+        else:
+            params.pop("df")
     all_results = []
     for page in range(max_pages):
         if page > 0:
@@ -241,7 +268,7 @@ def fetch_serpapi_duckduckgo_news(keyword, fetch_date=None, max_pages=1):
                     log_error(f"duckduckgo_news", keyword, data['error'])
                     return {"news_results": all_results, "_fetch_failed": True}
 
-                results = data.get("news_results", [])
+                results = dated_results(data, "news_results")
                 if not results:
                     return {"news_results": all_results}
                 all_results.extend(results)

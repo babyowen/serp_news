@@ -202,9 +202,13 @@ def test_unavailable_date_is_quarantined_and_can_recover_on_resume(tmp_path, mon
     assert fetch_content.process_json('江苏机关事务', DATE)
     assert json.loads(path.read_text())[0]['publication_check']['status'] == 'pending'
     assert len(calls) == 3
-    http(monkeypatch)
+    recovered_calls = http(monkeypatch)
     assert fetch_content.process_json('江苏机关事务', DATE)
-    assert json.loads(path.read_text())[0]['publication_check']['status'] == 'accepted'
+    assert json.loads(path.read_text())[0]['publication_check']['status'] == 'pending'
+    assert recovered_calls == []  # normal resume must not bypass the bounded queue
+    rows = json.loads(path.read_text())
+    fetch_content.check_topic_dates(rows, DATE, '江苏机关事务', force=True)
+    assert rows[0]['publication_check']['status'] == 'accepted'
 
 
 def test_msn_retry_keeps_other_sites_existing_body(tmp_path, monkeypatch):
@@ -288,5 +292,6 @@ def test_msn_resume_preserves_other_sites_short_successful_custom_body(tmp_path,
     monkeypatch.setattr(fetch_content, 'fetch_article_content', lambda _: ('', 0, False))
     assert fetch_content.process_json('新关键词', DATE)
     rows = json.loads(path.read_text())
-    assert rows[0] == existing
+    assert {key:rows[0][key] for key in existing} == existing
+    assert rows[0]['publication_check']['status'] == 'pending'
     assert rows[1]['content'] == BODY

@@ -105,7 +105,8 @@ def test_successful_empty_later_page_preserves_prior_results(monkeypatch, name):
     result = getattr(fetcher, f"fetch_serpapi_{name}_news")("term", max_pages=3)
 
     assert not result.get("_fetch_failed")
-    assert result["news_results"] == rows
+    assert [{k:v for k,v in item.items() if k != "search_fetched_at"}
+            for item in result["news_results"]] == rows
     assert request.call_count == 2
     sleep.assert_not_called()
     log_error.assert_not_called()

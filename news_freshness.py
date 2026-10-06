@@ -1,7 +1,7 @@
-"""Conservative publication-date checks for daily government-affairs news.
+"""Conservative publication-date checks for daily platform news.
 
-Search result dates, URL years, modified times and dates mentioned in prose are
-not publication evidence. Unverified rows remain in collection diagnostics.
+Explicit publication evidence takes precedence. A captured search date may
+fill a missing publication date; it never overrides old or conflicting evidence.
 """
 import json
 import re
@@ -9,6 +9,7 @@ from datetime import date, datetime
 from zoneinfo import ZoneInfo
 
 from bs4 import BeautifulSoup
+from news_dates import absolute_time, parse_search_date
 
 VERSION = 1
 META_NAMES = {'article:published_time', 'og:published_time', 'pubdate',
@@ -24,22 +25,25 @@ def parse_publication_date(raw):
             if stamp.tzinfo:
                 stamp = stamp.astimezone(ZoneInfo('Asia/Shanghai'))
             return stamp.date().isoformat()
-        match = re.search(r'(?<!\d)(\d{4})[-/年](\d{1,2})[-/月](\d{1,2})(?:日)?(?!\d)', text)
+        match = re.search(r'(?<!\d)(\d{4})[-/.年](\d{1,2})[-/.月](\d{1,2})(?:日)?(?!\d)', text)
         if match:
             return date(*map(int, match.groups())).isoformat()
     except (ValueError, TypeError):
         pass
-    return None
+    stamp = absolute_time(text)
+    return stamp.date().isoformat() if stamp else None
 
 
 def assess_html(html, target_date):
     date.fromisoformat(target_date)
     soup = BeautifulSoup(html or '', 'html.parser')
-    evidence = []
+    evidence, unparsed = [], []
     def add(source, raw):
         parsed = parse_publication_date(raw)
         if parsed:
             evidence.append({'source':source, 'raw':str(raw)[:200], 'date':parsed})
+        elif str(raw or '').strip():
+            unparsed.append({'source':source, 'raw':str(raw)[:200]})
     for tag in soup.find_all('meta'):
         name = str(tag.get('property') or tag.get('name') or tag.get('itemprop') or '').lower()
         if name in META_NAMES:
@@ -69,7 +73,12 @@ def assess_html(html, target_date):
         text = tag.get_text(' ', strip=True)
         if len(text) <= 100 and re.match(r'^(?:发布时间|发布日期|刊发时间)\s*[:：]', text):
             add('publication_label', text)
-    return assess_publication_evidence(evidence, target_date)
+    check = assess_publication_evidence(evidence, target_date)
+    if unparsed:
+        check['unparsed_evidence'] = unparsed
+        if check['status'] == 'accepted' or check['reason'] == 'missing_publication_date':
+            check.update(status='pending', reason='unparseable_publication_date')
+    return check
 
 
 def assess_publication_evidence(evidence, target_date):
@@ -91,9 +100,43 @@ def assess_publication_evidence(evidence, target_date):
             'reason':reason, 'published_date':published, 'evidence':evidence}
 
 
+SEARCH_SOURCES = {'serp_baidunews', 'serp_googlenews', 'serp_bingnews', 'serp_duckduckgo_news'}
+
+
+def search_date_evidence(row, target_date):
+    observed = absolute_time(row.get('search_fetched_at'))
+    raw = row.get('search_date_raw')
+    if (row.get('sourceapi') not in SEARCH_SOURCES or not observed or not raw
+            or row.get('date') != target_date
+            or parse_search_date(raw, observed) != target_date):
+        return None
+    return {'source':'search:'+row['sourceapi'], 'raw':raw, 'date':target_date,
+            'observed_at':observed.isoformat(), 'field':row.get('search_date_field', 'date')}
+
+
+def apply_search_fallback(check, row, target_date):
+    """Only absent publication evidence can use a saved search timestamp."""
+    if (check.get('status') != 'pending' or check.get('reason') != 'missing_publication_date'
+            or check.get('evidence') or check.get('unparsed_evidence')):
+        return check
+    evidence = search_date_evidence(row, target_date)
+    if not evidence:
+        return check
+    return {**check, 'status':'accepted', 'reason':'search_date_fallback',
+            'date_basis':'search_result', 'estimated_date':target_date,
+            'published_date':None, 'evidence':[evidence]}
+
+
 def check_current(row, target_date=None):
     check = row.get('publication_check')
     target = target_date or row.get('fetchdate')
+    if isinstance(check, dict) and check.get('reason') == 'search_date_fallback':
+        expected = search_date_evidence(row, target)
+        if not (expected and check.get('status') == 'accepted'
+                and check.get('estimated_date') == target
+                and check.get('published_date') is None
+                and check.get('evidence') == [expected]):
+            return False
     return (isinstance(check, dict) and check.get('version') == VERSION
             and bool(target) and check.get('target_date') == target
             and check.get('link') == row.get('link')
@@ -105,6 +148,8 @@ def eligible(row):
         return False
     check = row['publication_check']
     evidence = check.get('evidence')
+    if check.get('reason') == 'search_date_fallback':
+        return True  # check_current already revalidated its saved search evidence.
     return (check['status'] == 'accepted' and check.get('published_date') == row.get('fetchdate')
             and isinstance(evidence, list) and bool(evidence)
             and all(isinstance(item, dict) and item.get('date') == row.get('fetchdate') for item in evidence))
@@ -118,5 +163,7 @@ def write_diagnostic(rows, target_date, path):
         check = row.get('publication_check', {})
         status = check.get('status', 'pending') if check_current(row, target_date) else 'pending'
         counts[status] += 1
-        records.append({key:row.get(key) for key in ('title','link','search_keyword','search_date_raw','date','fetchdate','publication_check')})
-    atomic_json(path, {'version':VERSION, 'target_date':target_date, 'counts':counts, 'articles':records})
+        records.append({key:row.get(key) for key in ('title','link','search_keyword','search_date_raw','search_fetched_at','search_date_field','date','fetchdate','publication_check','date_review')})
+    atomic_json(path, {'version':VERSION, 'target_date':target_date, 'counts':counts,
+                       'search_fallback_count':sum(eligible(row) and row['publication_check'].get('reason') == 'search_date_fallback' for row in rows),
+                       'articles':records})

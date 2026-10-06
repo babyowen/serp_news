@@ -119,12 +119,11 @@ def test_rescore_updates_only_failed_and_keeps_valid_zero(tmp_path, monkeypatch)
     rows=json.loads(path.read_text())
     assert len(calls)==1 and all(n["score"]==0 and n["score_status"]=="ok" for n in rows)
 
-def test_missing_dedicated_mapping_fails_closed(topic_runtime, monkeypatch):
+def test_missing_dedicated_mapping_uses_platform_default(topic_runtime, monkeypatch):
     topic_runtime["keyword_prompt_ids"].pop(TOPIC)
     calls = fake_client(monkeypatch, ["5"])
     from config_schema import ConfigError
-    with pytest.raises(ConfigError):
-        scorer.get_system_message(TOPIC, "碳普惠")
+    assert scorer.get_system_message(TOPIC, "碳普惠") == topic_runtime["prompts"]["NEWS_SCORE_SYSTEM_MSG"]["text"]
     assert calls == []
 
 def test_db_import_path_updates_null_to_valid_zero(tmp_path, monkeypatch):

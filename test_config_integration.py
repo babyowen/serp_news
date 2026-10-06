@@ -126,13 +126,15 @@ class IntegrationTests(unittest.TestCase):
         import news_item_summarizer
         import news_region_utils
         client = Mock()
+        client.with_options.return_value = client
         client.chat.completions.create.return_value = SimpleNamespace(choices=[SimpleNamespace(message=SimpleNamespace(content="4"))])
         tokenizer = SimpleNamespace(get_encoding=lambda _: SimpleNamespace(encode=lambda text: []))
         with patch.dict(sys.modules, {"tiktoken": tokenizer}), patch.object(news_scorer._scoring_client_pool, "get_client", return_value=client):
             self.assertEqual(news_scorer.score_news("标题", "正文", "工商银行", "烟草服务银行"), 4)
         kwargs = client.chat.completions.create.call_args.kwargs
-        self.assertEqual(kwargs["messages"][0]["content"], self.document["prompts"]["NEWS_SCORE_SYSTEM_MSG_TOBACCO_SERVICE_BANK"]["text"])
-        self.assertEqual(kwargs["messages"][1]["content"], self.document["prompts"]["NEWS_SCORE_PROMPT"]["text"].format(title="标题", content="正文", keyword="工商银行"))
+        self.assertTrue(kwargs["messages"][0]["content"].startswith(self.document["prompts"]["NEWS_SCORE_SYSTEM_MSG_TOBACCO_SERVICE_BANK"]["text"]))
+        self.assertIn("七天", kwargs["messages"][0]["content"])
+        self.assertIn(self.document["prompts"]["NEWS_SCORE_PROMPT"]["text"].format(title="标题", content="正文", keyword="工商银行"), kwargs["messages"][1]["content"])
         # 模型来自 .env 的 LLM_*（LLM_TEST_ENV），提示词仍来自钉住的配置存储。
         self.assertEqual(kwargs["model"], "offline-test-model")
         self.assertEqual(kwargs["temperature"], 1)
@@ -146,7 +148,7 @@ class IntegrationTests(unittest.TestCase):
     def test_main_quotes_keyword_arguments_before_shell_execution(self):
         import main
         malicious_looking_keyword = '主题"; echo forbidden #'
-        with patch.object(main, "safe_subprocess_run", return_value=True) as run, patch.object(main.os.path, "exists", side_effect=[True, False]):
+        with patch.object(main, "safe_subprocess_run", return_value=True) as run, patch.object(main.os.path, "exists", side_effect=[True, False, False]):
             main.execute_scoring("2099-01-01", malicious_looking_keyword)
         self.assertEqual(shlex.split(run.call_args.args[0]), [sys.executable, "news_scorer.py", malicious_looking_keyword, "2099-01-01"])
 

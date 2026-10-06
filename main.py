@@ -74,6 +74,9 @@ def all_news_has_content(json_path):
             news_list = json.load(f)
         if not isinstance(news_list, list) or not news_list:
             return False
+        from news_freshness import check_current
+        if any(not check_current(item) for item in news_list):
+            return False
         return all(usable_article_text(item.get('content'), item.get('title'))
                    if is_tencent_news_url(item.get('link')) or is_msn_news_url(item.get('link')) or is_jfdaily_news_url(item.get('link'))
                    else bool(str(item.get('content') or '').strip())
@@ -204,7 +207,7 @@ def execute_content_fetching(date, kw):
         write_skip_log(kw, "新闻列表文件不存在，无法抓正文", merged_file)
         return False
     
-    if kw != TOPIC and all_news_has_content(merged_file):
+    if all_news_has_content(merged_file):
         print(f"[INFO] {merged_file} 所有新闻正文已抓取，跳过 {kw}")
         write_skip_log(kw, "所有新闻正文已抓取", merged_file)
         return True
@@ -226,7 +229,7 @@ def execute_scoring(date, kw):
         write_skip_log(kw, "新闻列表文件不存在，无法评分", merged_file)
         return False
     
-    if kw == TOPIC and os.path.exists(scored_file) and not scored_file_complete(scored_file, kw):
+    if os.path.exists(scored_file) and not scored_file_complete(scored_file, kw):
         print(f"[ERROR] {kw} 已有评分包含失败项，请显式 --rescore 后再续跑")
         return False
     if os.path.exists(scored_file):
@@ -489,6 +492,15 @@ def main(date=None, keyword=None, adopt_existing_config=False, config_revision=N
             print(f"[WARN] 新闻量波动预警失败: {e}")
     else:
         print("\n[步骤8] 未确定有效主关键词，跳过新闻量波动预警")
+
+    # Review work has its own outcome and must not invalidate today's completed batch.
+    if active_keywords:
+        try:
+            review_cmd = shlex.join([sys.executable, "date_review.py", "--keywords", *active_keywords])
+            if not safe_subprocess_run(review_cmd, "日期自动复核", check=False):
+                print("[WARN] 日期复核任务异常，详情见 DATE_REVIEW 日志")
+        except Exception as exc:
+            print(f"[WARN] 日期复核启动失败: {type(exc).__name__}")
 
     return main_success
 
