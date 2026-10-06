@@ -19,7 +19,7 @@ import argparse
 from config_schema import ConfigError
 from news_freshness import eligible, check_current
 from government_affairs_scoring import (ScoreResult, parse_government_affairs_score,
-    score_result, score_fields, scored_file_complete)
+    score_result, score_fields, scored_file_complete, context_limit_skipped)
 from error_handler import (
     setup_global_exception_handler,
     with_error_handling,
@@ -62,7 +62,7 @@ def score_news_result(title, content, keyword, main_keyword, max_retries=3, retr
     return score_result(title, content, keyword, main_keyword, _scoring_client_pool,
                         max_retries=max_retries, retry_interval=retry_interval, context=context)
 
-# 规则打分函数
+# 规则打分函数（仅兼容配置及测试；生产评分必须经过公共时效规则）
 # 返回分数（int），未命中规则返回None
 def rule_based_score(title: str, main_keyword: str) -> int:
     for rule in value("NEWS_RULE_BASED_SCORING"):
@@ -112,6 +112,41 @@ def batch_score_news(json_path, keyword):
             score_counter[score] = score_counter.get(score, 0) + 1
     return results, score_counter, len(unique_news_list), rule_based_titles
 
+
+def migrate_legacy_scores(results, json_path, date_str):
+    """Attach verified batch evidence to unchanged legacy scores without rescoring."""
+    if not os.path.exists(json_path):
+        return
+    with open(json_path, encoding="utf-8") as handle:
+        rows = json.load(handle)
+    by_link = {}
+    for row in rows:
+        by_link.setdefault(row.get("link"), []).append(row)
+    evidence_fields = ("fetchdate", "publication_check", "date", "sourceapi",
+                       "search_date_raw", "search_fetched_at", "search_date_field")
+    for news in results:
+        score = news.get("score")
+        if ("score_status" in news or type(score) is not int or not 0 <= score <= 5
+                or not news.get("link") or news.get("fetchdate") not in (None, date_str)):
+            continue
+        matches = by_link.get(news["link"], [])
+        if len(matches) != 1:
+            continue
+        source = matches[0]
+        if (source.get("fetchdate") != date_str or not eligible(source)
+                or any(source.get(key) != news.get(key)
+                       for key in ("title", "content"))):
+            continue
+        candidate = dict(news)
+        for key in evidence_fields:
+            candidate.pop(key, None)
+            if key in source:
+                candidate[key] = source[key]
+        if eligible(candidate):
+            candidate["score_status"] = "ok"
+            news.update(candidate)
+
+
 def refresh_review_scores(json_path, keyword, links):
     """Score newly admitted rows, keeping already successful results across retries."""
     from pathlib import Path
@@ -127,8 +162,9 @@ def refresh_review_scores(json_path, keyword, links):
         if row.get("link") not in links or not eligible(row):
             continue
         cached = by_link.get(row["link"], {})
-        valid = (type(cached.get("score")) is int and 0 <= cached["score"] <= 5
-                 and cached.get("score_status") == "ok"
+        valid = ((context_limit_skipped(cached) or
+                  (type(cached.get("score")) is int and 0 <= cached["score"] <= 5
+                   and cached.get("score_status") == "ok"))
                  and cached.get("title") == row.get("title")
                  and cached.get("content") == row.get("content"))
         if valid:
@@ -171,10 +207,11 @@ def append_log(keyword, json_path, total, score_counter, scored_count, scored_js
     log_path = os.environ.get("RUN_LOG_PATH", os.path.join("output", "run_log.txt"))
     score_line = " ".join([f"{i}分: {score_counter.get(i,0)}" for i in range(6)])
     if results is not None:
-        failures = sum(n.get("score") is None for n in results)
+        failures = sum(n.get("score") is None and not context_limit_skipped(n) for n in results)
+        skipped = sum(context_limit_skipped(n) for n in results)
         empty = sum(n.get("score_status") == "empty_content" for n in results)
         scored_count = sum(n.get("score_status") == "ok" for n in results)
-        score_line += f" | 有效评分: {scored_count} 空正文: {empty} 失败: {failures}"
+        score_line += f" | 有效评分: {scored_count} 空正文: {empty} 失败: {failures} 上下文超限跳过: {skipped}"
 
     log = (
         f"\n[{now}]\n"
@@ -353,6 +390,7 @@ def main():
                 safe_print(f"[RESCORE] 开始重评: {keyword} {date_str}")
                 with open(scored_json_path, "r", encoding="utf-8") as f:
                     results = json.load(f)
+                migrate_legacy_scores(results, json_path, date_str)
                 rescored_count = 0
                 for news in results:
                     if not eligible(news):

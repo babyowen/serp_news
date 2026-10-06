@@ -7,7 +7,7 @@ from dateutil.relativedelta import relativedelta
 
 BEIJING = ZoneInfo("Asia/Shanghai")
 RELATIVE = re.compile(
-    r"^(\d+)\s*(seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|weeks?|w|months?|years?|y|秒钟?|分鐘|分钟|小時|小时|天|周|週|个月|個月|月|年)\s*(?:ago|前)?$", re.I)
+    r"^(\d+)\s*(seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|weeks?|w|months?|years?|y|秒钟?|分鐘|分钟|小時|小时|天|周|週|个月|個月|月(?=\s*前$)|年)\s*(?:ago|前)?$", re.I)
 
 
 def reference_time(value=None):

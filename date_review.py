@@ -125,25 +125,34 @@ def review_batch(day, keyword, today=None, deliver=None):
         state["last_delivery"] = today
     atomic_json(path, rows)
     if ready:
+        delivery_error = None
         try:
             outcome = (deliver or deliver_rows)(path, keyword, {r["link"] for r in ready})
             delivered = {r["link"] for r in ready} if outcome is True else (outcome if isinstance(outcome, set) else set())
         except Exception as exc:
             delivered = set()
-            for row in ready:
-                row["date_review"]["last_error"] = type(exc).__name__
+            delivery_error = type(exc).__name__
         # Body/scoring helpers may have enriched the raw file; don't overwrite them.
-        enriched = {r.get("link"):r for r in json.loads(path.read_text(encoding="utf-8"))}
-        for row in rows:
-            if row in ready:
-                state = row["date_review"]
-                row.update({k:v for k,v in enriched.get(row.get("link"),{}).items() if k != "date_review"})
-                if row.get("publication_check",{}).get("status") == "old":
-                    state["status"] = "excluded"
-                else:
-                    state["status"] = "delivered" if row["link"] in delivered else ("delivery_failed" if state["delivery_attempts"] >= 3 else "ready")
-                if state["status"] in {"excluded", "delivered", "delivery_failed"}:
-                    state["next_date"] = None
+        ready_links = {r["link"] for r in ready}
+        rows = json.loads(path.read_text(encoding="utf-8"))
+        ready = [r for r in rows if r.get("link") in ready_links]
+        all_ok = all_ok and {r["link"] for r in ready} == ready_links
+        from government_affairs_scoring import context_limit_skipped
+        scored_path = path.with_name(path.stem + "_scored.json")
+        scores = {r.get("link"):r for r in json.loads(scored_path.read_text(encoding="utf-8"))} if scored_path.exists() else {}
+        for row in ready:
+            state = row["date_review"]
+            if delivery_error:
+                state["last_error"] = delivery_error
+            if row.get("publication_check",{}).get("status") == "old":
+                state["status"] = "excluded"
+            elif (context_limit_skipped(scores.get(row["link"], {}))
+                  and all(scores[row["link"]].get(k) == row.get(k) for k in ("title", "content"))):
+                state.update(status="delivery_failed", last_error="context_limit")
+            else:
+                state["status"] = "delivered" if row["link"] in delivered else ("delivery_failed" if state["delivery_attempts"] >= 3 else "ready")
+            if state["status"] in {"excluded", "delivered", "delivery_failed"}:
+                state["next_date"] = None
         all_ok = all_ok and all(r["date_review"]["status"] in {"delivered", "excluded"} for r in ready)
     atomic_json(path, rows)
     sync_job(rows, day, keyword)
@@ -164,6 +173,8 @@ def run_due(today=None, keywords=None):
     import sys
     import fcntl
     today = today or today_beijing()
+    from runtime_config import get_store
+    configured_keywords = get_store().read().document["settings"]["SEARCH_KEYWORDS"]
     folder = Path("output/date_reviews")
     folder.mkdir(parents=True, exist_ok=True)
     outcomes = []
@@ -176,6 +187,19 @@ def run_due(today=None, keywords=None):
         for path in sorted(folder.glob("*.json")):
             try:
                 job = json.loads(path.read_text(encoding="utf-8"))
+                if job["keyword"] not in configured_keywords:
+                    # Preserve the final state but stop scheduling a removed keyword.
+                    date.fromisoformat(job["date"])
+                    raw = Path("output") / job["date"] / f"{job['date']}_{job['keyword']}.json"
+                    rows = json.loads(raw.read_text(encoding="utf-8"))
+                    for row in rows:
+                        state = row.get("date_review", {})
+                        if state.get("status") in {"pending", "ready"}:
+                            state.update(status="archived", next_date=None, reason="keyword_removed")
+                    atomic_json(raw, rows)
+                    path.unlink()
+                    outcomes.append({"date":job["date"], "keyword":job["keyword"], "ok":True, "status":"archived"})
+                    continue
                 if (keywords is not None and job["keyword"] not in keywords) or job["next_date"] > today:
                     continue
                 date.fromisoformat(job["date"])

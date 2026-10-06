@@ -563,6 +563,18 @@ def date_diagnostic_path(day, keyword=None):
     return Path('output') / day / 'diagnostics' / ('dates_' + name + '.json')
 
 
+def preserve_publication_evidence(check, item, date_str):
+    previous = item.get('publication_check', {})
+    if (check.get('reason') == 'missing_publication_date'
+            and check_current(item, date_str)
+            and previous.get('status') in {'pending', 'old', 'accepted'}
+            and (previous.get('unparsed_evidence') or
+                 (previous.get('evidence') and previous.get('reason') != 'search_date_fallback'))):
+        # Missing data on a retry cannot erase stronger previous evidence.
+        check = dict(previous)
+    return check
+
+
 def check_topic_dates(news_list, date_str, keyword=None, force=False, today=None):
     today = today or today_beijing()
     """Keep rejected rows for collection fingerprints and forensic inspection."""
@@ -604,14 +616,7 @@ def check_topic_dates(news_list, date_str, keyword=None, force=False, today=None
         else:
             text, html = fetch_publication_page(item['link']) if item.get('link') else ('', '')
             check = assess_html(html, date_str)
-        previous = item.get('publication_check', {})
-        if (check.get('reason') == 'missing_publication_date'
-                and check_current(item, date_str)
-                and previous.get('status') in {'pending', 'old'}
-                and (previous.get('unparsed_evidence') or
-                     (previous.get('evidence') and previous.get('reason') != 'search_date_fallback'))):
-            # Missing data on a retry cannot erase stronger previous evidence.
-            check = dict(previous)
+        check = preserve_publication_evidence(check, item, date_str)
         check = apply_search_fallback(check, item, date_str)
         check['link'] = item.get('link')
         item['publication_check'] = check
@@ -732,6 +737,7 @@ def process_json(keyword, date_str=None, mode='正式'):
                 record_jfdaily_source(item, article)
                 if check_current(item):
                     check = jfdaily_publication_check(article, date_str)
+                    check = preserve_publication_evidence(check, item, date_str)
                     check = apply_search_fallback(check, item, date_str)
                     check['link'] = url
                     item['publication_check'] = check
@@ -742,6 +748,7 @@ def process_json(keyword, date_str=None, mode='正式'):
                 record_msn_source(item, article)
                 if check_current(item):
                     check = msn_publication_check(article, date_str)
+                    check = preserve_publication_evidence(check, item, date_str)
                     check = apply_search_fallback(check, item, date_str)
                     check['link'] = url
                     item['publication_check'] = check

@@ -31,7 +31,7 @@ def error_code(exc):
         return "authentication"
     if status == 402 or any(s in text for s in ("insufficient_quota", "insufficient balance", "余额不足")):
         return "quota"
-    if any(s in text for s in ("context_length", "context length", "token limit", "maximum context")):
+    if any(s in text for s in ("context_length", "context length", "token limit", "maximum context", "max input limit", "context window")):
         return "context_limit"
     if isinstance(exc, (ValueError, IndexError, AttributeError, TypeError)):
         return "invalid_output"
@@ -74,7 +74,7 @@ def score_result(title, content, keyword, main_keyword, pool, max_retries=3, ret
         except Exception as exc:
             code = error_code(exc)
             if code in {"authentication", "quota", "context_limit"} or attempt == max_retries:
-                return record_result(ScoreResult(None, "failed", code, attempt, raw))
+                return record_result(ScoreResult(None, "skipped_context_limit" if code == "context_limit" else "failed", code, attempt, raw))
             time.sleep(retry_interval)
             continue
         # Log I/O failures must not repeat a successful paid request.
@@ -85,13 +85,20 @@ def score_fields(result):
     return {"score": result.score, "score_status": result.status,
             "score_error": result.error_code, "score_attempts": result.attempts}
 
+def context_limit_skipped(row):
+    return (row.get("score") is None and row.get("score_status") == "skipped_context_limit"
+            and row.get("score_error") == "context_limit")
+
+
 def scored_file_complete(path, keyword):
+    """All eligible rows have a score or an explicit terminal context-limit outcome."""
     try:
         rows = json.loads(Path(path).read_text(encoding="utf-8"))
         return isinstance(rows, list) and all(
-            isinstance(row, dict) and eligible(row) and type(row.get("score")) is int and 0 <= row["score"] <= 5
-            and (row.get("score_status") == "ok" or
-                 (row.get("score_status") == "empty_content" and row["score"] == 0))
+            isinstance(row, dict) and eligible(row) and (context_limit_skipped(row) or
+            (type(row.get("score")) is int and 0 <= row["score"] <= 5
+             and (row.get("score_status") == "ok" or
+                  (row.get("score_status") == "empty_content" and row["score"] == 0))))
             for row in rows)
     except (OSError, ValueError):
         return False

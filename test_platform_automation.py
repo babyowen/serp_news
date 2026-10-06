@@ -438,3 +438,113 @@ def test_transaction_error_never_reports_uncommitted_rows(tmp_path,monkeypatch,s
     with pytest.raises(pymysql.err.OperationalError):
         db.import_scored_news_with_retry(str(path),"公积金",report=True)
     assert committed==[] and rollbacks
+
+
+def test_review_preserves_nonready_enrichment_and_new_review_state(tmp_path, monkeypatch):
+    import date_review as dr
+    import batch_config
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(batch_config, "prepare_batch", lambda *a: None)
+    ready = row()
+    dr.track_review(ready, "2026-10-06")
+    ready["publication_check"] = row("accepted")["publication_check"]
+    dr.track_review(ready, "2026-10-07")
+    other = row("accepted")
+    other["link"] = "https://example.test/other"
+    other["publication_check"]["link"] = other["link"]
+    path = Path("output") / DAY / f"{DAY}_公积金.json"
+    path.parent.mkdir(parents=True)
+    path.write_text(json.dumps([ready, other]))
+    def deliver(path, *args):
+        saved = json.loads(path.read_text())
+        saved[1]["content"] = "修复后的正文"
+        saved[1]["publication_check"]["status"] = "pending"
+        dr.track_review(saved[1], "2026-10-07")
+        path.write_text(json.dumps(saved))
+        return {ready["link"]}
+    assert dr.review_batch(DAY, "公积金", "2026-10-07", deliver=deliver)
+    saved = json.loads(path.read_text())
+    assert saved[1]["content"] == "修复后的正文"
+    assert saved[1]["date_review"]["status"] == "pending"
+    assert dr.job_path(DAY, "公积金").exists()
+
+
+def test_accepted_evidence_survives_empty_refetch(tmp_path, monkeypatch):
+    import fetch_content as fc
+    monkeypatch.chdir(tmp_path)
+    item = row("accepted")
+    item["content"] = ""
+    previous = json.loads(json.dumps(item["publication_check"]))
+    monkeypatch.setattr(fc, "fetch_publication_page", lambda _: ("", ""))
+    fc.check_topic_dates([item], DAY, "公积金", force=True, today="2026-10-07")
+    assert item["publication_check"] == previous
+    assert "date_review" not in item
+
+
+@pytest.mark.parametrize("value", ["3月", "12月"])
+def test_bare_calendar_month_is_not_relative_age(value):
+    from news_dates import parse_search_date
+    from datetime import datetime
+    assert parse_search_date(value, datetime(2026, 10, 6)) is None
+
+
+def test_removed_keyword_job_is_archived_without_running_child(tmp_path, monkeypatch):
+    import date_review as dr
+    import runtime_config
+    import subprocess
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(runtime_config, "get_store", lambda: SimpleNamespace(read=lambda: SimpleNamespace(document={"settings":{"SEARCH_KEYWORDS":{"公积金":["住房"]}}})))
+    item = row()
+    dr.track_review(item, "2026-10-06")
+    path = Path("output") / DAY / f"{DAY}_已移除关键词.json"
+    path.parent.mkdir(parents=True)
+    path.write_text(json.dumps([item]))
+    dr.sync_job([item], DAY, "已移除关键词")
+    monkeypatch.setattr(subprocess, "run", lambda *a, **kw: pytest.fail("removed keyword must not perform work"))
+    dr.run_due("2026-10-07", ["公积金"])
+    assert not dr.job_path(DAY, "已移除关键词").exists()
+    state = json.loads(path.read_text())[0]["date_review"]
+    assert state["status"] == "archived" and state["reason"] == "keyword_removed"
+
+
+def test_review_context_limit_stops_delivery_without_marking_delivered(tmp_path, monkeypatch):
+    import date_review as dr
+    import batch_config
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(batch_config, "prepare_batch", lambda *a: None)
+    item = row()
+    dr.track_review(item, "2026-10-06")
+    item["publication_check"] = row("accepted")["publication_check"]
+    dr.track_review(item, "2026-10-07")
+    path = Path("output") / DAY / f"{DAY}_公积金.json"
+    path.parent.mkdir(parents=True)
+    path.write_text(json.dumps([item]))
+    def deliver(path, *args):
+        path.with_name(path.stem + "_scored.json").write_text(json.dumps([
+            {**item, "score":None, "score_status":"skipped_context_limit", "score_error":"context_limit"}]))
+        return set()
+    assert not dr.review_batch(DAY, "公积金", "2026-10-07", deliver=deliver)
+    state = json.loads(path.read_text())[0]["date_review"]
+    assert state["status"] == "delivery_failed"
+    assert state["last_error"] == "context_limit"
+    assert not dr.job_path(DAY, "公积金").exists()
+
+
+def test_body_retry_keeps_msn_accepted_publication_evidence(tmp_path, monkeypatch):
+    import fetch_content as fc
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("RUN_LOG_PATH", str(tmp_path / "log"))
+    item = row("accepted")
+    item.update(link="https://www.msn.com/zh-cn/news/other/ar-AA1test", content="")
+    item["publication_check"]["link"] = item["link"]
+    item["publication_check"]["msn_check_version"] = fc.MSN_CHECK_VERSION
+    previous = json.loads(json.dumps(item["publication_check"]))
+    path = Path("output") / DAY / f"{DAY}_公积金.json"
+    path.parent.mkdir(parents=True)
+    path.write_text(json.dumps([item]))
+    monkeypatch.setattr(fc, "is_msn_news_url", lambda _: True)
+    monkeypatch.setattr(fc, "fetch_msn_article", lambda *a, **kw: None)
+    assert fc.process_json("公积金", DAY)
+    saved = json.loads(path.read_text())[0]
+    assert saved["publication_check"] == previous
+    assert saved["content"] == ""
