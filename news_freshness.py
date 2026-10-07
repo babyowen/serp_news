@@ -20,6 +20,8 @@ META_NAMES = {'article:published_time', 'og:published_time', 'pubdate',
 def parse_publication_date(raw):
     text = str(raw or '').strip()
     try:
+        if re.fullmatch(r'[0-9]{8}', text):
+            return date(int(text[:4]), int(text[4:6]), int(text[6:8])).isoformat()
         if re.fullmatch(r'\d{4}-\d{2}-\d{2}T.+', text):
             stamp = datetime.fromisoformat(text.replace('Z', '+00:00'))
             if stamp.tzinfo:

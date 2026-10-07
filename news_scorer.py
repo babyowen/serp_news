@@ -18,6 +18,7 @@ from config import (
 import argparse
 from config_schema import ConfigError
 from news_freshness import eligible, check_current
+from content_quality import content_skipped, body_rejection_reason
 from government_affairs_scoring import (ScoreResult, parse_government_affairs_score,
     score_result, score_fields, scored_file_complete, context_limit_skipped)
 from error_handler import (
@@ -165,6 +166,7 @@ def refresh_review_scores(json_path, keyword, links):
         valid = ((context_limit_skipped(cached) or
                   (type(cached.get("score")) is int and 0 <= cached["score"] <= 5
                    and cached.get("score_status") == "ok"))
+                 and not body_rejection_reason(row.get("content"), row.get("title"))
                  and cached.get("title") == row.get("title")
                  and cached.get("content") == row.get("content"))
         if valid:
@@ -207,10 +209,11 @@ def append_log(keyword, json_path, total, score_counter, scored_count, scored_js
     log_path = os.environ.get("RUN_LOG_PATH", os.path.join("output", "run_log.txt"))
     score_line = " ".join([f"{i}分: {score_counter.get(i,0)}" for i in range(6)])
     if results is not None:
-        failures = sum(n.get("score") is None and not context_limit_skipped(n) for n in results)
+        failures = sum(n.get("score") is None and not context_limit_skipped(n) and not content_skipped(n) for n in results)
         skipped = sum(context_limit_skipped(n) for n in results)
         empty = sum(n.get("score_status") == "empty_content" for n in results)
         scored_count = sum(n.get("score_status") == "ok" for n in results)
+        score_line += f" | 正文质量跳过: {sum(content_skipped(n) for n in results)}"
         score_line += f" | 有效评分: {scored_count} 空正文: {empty} 失败: {failures} 上下文超限跳过: {skipped}"
 
     log = (

@@ -647,6 +647,10 @@ def cached_custom_body_complete(item):
 
 
 def content_fetch_complete(item, keyword):
+    from content_quality import body_rejection_reason
+    # A known rejected body is handled, not a successful article. Retain it for audit.
+    if body_rejection_reason(item.get("content"), item.get("title")) in {"feedback_only", "error_page", "paywall_excerpt", "navigation_only"}:
+        return True
     # Date quarantine remains terminal for this topic's content stage.
     if (check_current(item)
             and item['publication_check']['status'] != 'accepted'):
@@ -676,6 +680,9 @@ def process_json(keyword, date_str=None, mode='正式'):
             item['link'] = 'http://' + link[len('https://'):]
     check_topic_dates(news_list, date_str, keyword)
     from government_affairs_pipeline import atomic_json
+    from content_quality import annotate_content_quality
+    for item in news_list:
+        annotate_content_quality(item)
     atomic_json(json_path, news_list)
     sync_job(news_list, date_str, keyword)
     # Tencent, MSN and Shangguan headline-only/empty content must be repairable for every keyword.
@@ -761,8 +768,9 @@ def process_json(keyword, date_str=None, mode='正式'):
             item['wordcount'] = wordcount
             item['custom_grab'] = custom_grab
             
-            # 记录抓取结果
-            if wordcount > 0:
+            # Nonempty rejected text remains auditable but is not a successful body.
+            annotate_content_quality(item)
+            if wordcount > 0 and not item.get('content_quality'):
                 grab_type = "定制化" if custom_grab else "通用"
                 news_logger.content_fetch(keyword, wordcount, grab_type, "success")
             else:
@@ -791,6 +799,7 @@ def process_json(keyword, date_str=None, mode='正式'):
         filtered_news_list.append(item)
     # Persist the batch and review state with one atomic replacement.
     for item in filtered_news_list:
+        annotate_content_quality(item)
         track_review(item, today_beijing())
     from government_affairs_pipeline import atomic_json
     atomic_json(json_path, filtered_news_list)
@@ -808,12 +817,12 @@ def process_json(keyword, date_str=None, mode='正式'):
         url = item.get('link')
         curr_domain = get_domain(url) if url else None
         # 只统计成功抓取正文的新闻源
-        if curr_domain and item.get('wordcount', 0) > 0:
+        if curr_domain and item.get('wordcount', 0) > 0 and not item.get('content_quality'):
             current_domains.add(curr_domain)
             if curr_domain not in domain_news_count:
                 domain_news_count[curr_domain] = 0
             domain_news_count[curr_domain] += 1
-        if not url or item.get('wordcount', 0) == 0:
+        if not url or item.get('wordcount', 0) == 0 or item.get('content_quality'):
             fail_items.append({'title': item.get('title', ''), 'link': url, 'custom': item.get('custom_grab', False)})
             continue
         success_count += 1

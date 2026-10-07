@@ -483,7 +483,14 @@ def test_20_prompts_stay_pinned_while_models_come_from_environment(ctx):
             arguments = client.chat.completions.create.call_args.kwargs
             expected_user = document["prompts"][user_id]["text"].format(title="固定标题", content="固定正文", business_type_catalog=region.format_business_type_catalog({}))
             # 提示词来自钉住的配置版本；模型与请求参数来自当前环境的 LLM_* 变量。
-            assert arguments["messages"] == [{"role": "system", "content": document["prompts"][system_id]["text"]}, {"role": "user", "content": expected_user}]
+            assert arguments["messages"][1] == {"role": "user", "content": expected_user}
+            original_system = document["prompts"][system_id]["text"]
+            if call in (region.call_summary_and_region_llm, summary.call_llm):
+                # Common grounding policy must preserve the complete pinned business prompt.
+                assert arguments["messages"][0]["role"] == "system"
+                assert arguments["messages"][0]["content"].startswith(original_system + "\n\n")
+            else:
+                assert arguments["messages"][0] == {"role": "system", "content": original_system}
             assert arguments["model"] == LLM_TEST_ENV["LLM_SCORING_MODEL"]
             assert arguments["timeout"] == 60 and arguments["stream"] is False
             assert ("temperature" not in arguments) if call is summary.call_llm else arguments["temperature"] == 0.2

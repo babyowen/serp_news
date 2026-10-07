@@ -9,6 +9,7 @@ from runtime_config import value, model_arguments, model_credentials
 from topic_config import TOPIC
 from news_freshness import eligible
 from scoring_policy import messages, cap_score
+from content_quality import body_rejection_reason, quality_status, content_skipped
 
 @dataclass(frozen=True)
 class ScoreResult:
@@ -55,6 +56,9 @@ def record_result(result):
 def score_result(title, content, keyword, main_keyword, pool, max_retries=3, retry_interval=5, context=None):
     if type(max_retries) is not int or not 1 <= max_retries <= 3:
         raise ValueError("max_retries must be between 1 and 3")
+    reason = body_rejection_reason(content, title)
+    if reason:
+        return record_result(ScoreResult(None, quality_status(reason) + "_content", reason))
     prompts = value("KEYWORD_SPECIFIC_SYSTEM_PROMPTS")
     system = prompts.get(main_keyword or keyword) or value("NEWS_SCORE_SYSTEM_MSG")
     if content is None or not str(content).strip():
@@ -91,13 +95,13 @@ def context_limit_skipped(row):
 
 
 def scored_file_complete(path, keyword):
-    """All eligible rows have a score or an explicit terminal context-limit outcome."""
+    """All eligible rows have a score or a validated terminal skip outcome."""
     try:
         rows = json.loads(Path(path).read_text(encoding="utf-8"))
         return isinstance(rows, list) and all(
-            isinstance(row, dict) and eligible(row) and (context_limit_skipped(row) or
+            isinstance(row, dict) and eligible(row) and (content_skipped(row) or context_limit_skipped(row) or
             (type(row.get("score")) is int and 0 <= row["score"] <= 5
-             and (row.get("score_status") == "ok" or
+             and ((row.get("score_status") == "ok" and not body_rejection_reason(row.get("content"), row.get("title"))) or
                   (row.get("score_status") == "empty_content" and row["score"] == 0))))
             for row in rows)
     except (OSError, ValueError):

@@ -12,6 +12,7 @@ import argparse
 import datetime
 from config import DEFAULT_KEYWORDS
 from news_freshness import eligible
+from content_quality import body_rejection_reason
 from error_handler import (
     setup_global_exception_handler,
     with_error_handling,
@@ -127,6 +128,9 @@ def insert_scored_news(json_path, keyword, report=False):
             skip += 1
             continue
         content = item.get('content', '')
+        if body_rejection_reason(content, item.get("title")):
+            skip += 1
+            continue
         if not content or content.strip() == '':
             empty_content_skip += 1
             continue
@@ -224,7 +228,8 @@ def update_scores_from_json(json_path, keyword, report=False):
     for item in data:
         score = item.get('score')
         title = item.get('title', '')
-        if (not eligible(item) or item.get("keyword", keyword) != keyword or item.get("score_status") != "ok"
+        if (not eligible(item) or body_rejection_reason(item.get("content"), title)
+                or item.get("keyword", keyword) != keyword or item.get("score_status") != "ok"
                 or type(score) is not int or not 0 <= score <= 5 or not title or not item.get("link")):
             continue
         try:

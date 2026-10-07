@@ -30,6 +30,8 @@ from llm_client_pool import get_pool
 from runtime_config import value, model_credentials, model_arguments
 from batch_config import prepare_batch
 from topic_config import TOPIC
+from content_quality import body_rejection_reason
+from summary_grounding import grounded_system_prompt, attribution_supported
 from news_business_type_utils import (
     build_business_type_catalog,
     load_business_type_aliases,
@@ -50,6 +52,8 @@ def parse_date(arg):
     return s
 
 def call_llm(title, content, max_retries=3):
+    if body_rejection_reason(content, title):
+        return None
     user_prompt = value("NEWS_ITEM_SUMMARY_USER_PROMPT_500").format(title=title.strip(), content=content.strip())
     backoffs = [5, 10, 20]
     for i in range(max_retries):
@@ -58,11 +62,14 @@ def call_llm(title, content, max_retries=3):
             resp = client.chat.completions.create(
                 **model_arguments("item_summarizer"),
                 messages=[
-                    {"role": "system", "content": value("NEWS_ITEM_SUMMARY_SYSTEM_PROMPT_500")},
+                    {"role": "system", "content": grounded_system_prompt(value("NEWS_ITEM_SUMMARY_SYSTEM_PROMPT_500"))},
                     {"role": "user", "content": user_prompt}
                 ]
             )
-            return resp.choices[0].message.content.strip()
+            summary = resp.choices[0].message.content.strip()
+            if not attribution_supported(summary, content):
+                raise ValueError("unsupported_summary_attribution")
+            return summary
         except Exception as e:
             safe_print(f"[LLM错误] {str(e)}")
             if i < max_retries - 1:
@@ -162,7 +169,7 @@ def main():
             if not rows:
                 break
             for rid, title, content, keyword in rows:
-                if not content or not str(content).strip():
+                if not content or not str(content).strip() or body_rejection_reason(content, title):
                     skip += 1
                     continue
                 text = str(content).strip()
