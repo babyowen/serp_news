@@ -10,6 +10,7 @@ from test_config_store import LLM_TEST_ENV
 
 ROOT = Path(__file__).resolve().parent
 TESTS = [
+    "test_bing_source_recovery.py",
     "test_pr28_quality.py",
     "test_platform_automation.py",
     "test_search_date_fallback.py",

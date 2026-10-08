@@ -175,13 +175,21 @@ def fetch_serpapi_bing_news(keyword, max_pages=1, fetch_date=None):
         "q": keyword,
         "api_key": SERPAPI_KEY,
         "device": "desktop",
-        "qft": 'interval="7" sortbydate="1"'
+        # Bing News does not support zh-CN. Keep dates in a supported locale;
+        # the Chinese query itself is unchanged.
+        "mkt": "en-US",
+        # Combining interval and sortbydate currently makes the provider stall.
+        # Keep the window; fetch_and_filter still enforces the exact target day.
+        "qft": 'interval="7"'
     }
     if fetch_date:
         start = datetime.strptime(fetch_date, "%Y-%m-%d").replace(tzinfo=BEIJING)
         age = (datetime.now(BEIJING) - start).total_seconds() / 86400
         interval = "7" if age <= 1 else "8" if age <= 7 else "9" if age <= 30 else None
-        params["qft"] = (f'interval="{interval}" ' if interval else '') + 'sortbydate="1"'
+        if interval:
+            params["qft"] = f'interval="{interval}"'
+        else:
+            params.pop("qft")
 
     for attempt in range(3):
         try:
@@ -206,15 +214,20 @@ def fetch_serpapi_bing_news(keyword, max_pages=1, fetch_date=None):
                         "link": result.get("link", ""),
                         "date": result.get("date", ""),
                         "snippet": result.get("snippet", ""),
-                        "source": "Bing News"
+                        "source": result.get("source") or "Bing News"
                     }
                     results.append(news_item)
             break  # 成功则跳出重试
 
         except Exception as e:
+            # HTTPError includes the authenticated URL; never log that URL.
+            error_msg = type(e).__name__
+            response = getattr(e, "response", None)
+            if response is not None:
+                error_msg += f" HTTP {response.status_code}"
             if attempt == 2:
-                print(f"获取Bing新闻时出错: {e}")
-                log_error(f"bing_news", keyword, str(e))
+                print(f"获取Bing新闻时出错: {error_msg}")
+                log_error(f"bing_news", keyword, error_msg)
                 return {"organic_results": results, "_fetch_failed": True}
             else:
                 time.sleep(3)

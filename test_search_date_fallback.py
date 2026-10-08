@@ -138,12 +138,12 @@ def test_duckduckgo_uses_supported_window_for_requested_day(monkeypatch,target,w
     assert calls[0].get('df')==window
 
 
-def test_bing_filters_recent_results_and_sorts_newest(monkeypatch):
+def test_bing_filters_recent_results_without_combined_sort(monkeypatch):
     import news_fetcher as f
     request=Mock();request.return_value.json.return_value={'organic_results':[]}
     monkeypatch.setattr(f.requests,'get',request)
     f.fetch_serpapi_bing_news('公物仓')
-    assert request.call_args.kwargs['params']['qft']=='interval="7" sortbydate="1"'
+    assert request.call_args.kwargs['params']['qft']=='interval="7"'
 
 
 def test_collection_retains_capture_clock_and_prefers_absolute_api_timestamp():
@@ -200,9 +200,8 @@ def test_bing_window_covers_the_start_of_requested_calendar_day(monkeypatch,targ
     request=Mock();request.return_value.json.return_value={'organic_results':[]}
     monkeypatch.setattr(f.requests,'get',request)
     f.fetch_serpapi_bing_news('公物仓',fetch_date=target)
-    qft=request.call_args.kwargs['params']['qft']
-    assert 'sortbydate="1"' in qft
-    assert (f'interval="{interval}"' in qft) if interval else 'interval=' not in qft
+    qft=request.call_args.kwargs['params'].get('qft')
+    assert qft == f'interval="{interval}"' if interval else qft is None
 
 
 @pytest.mark.parametrize('raw',['2021.10.05','October 5, 2021','20211005','旧版日期格式'])

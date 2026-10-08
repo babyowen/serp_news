@@ -119,6 +119,13 @@ def filter_search_rows(rows, sourceapi, fetch_date, request_time):
     return result
 
 
+def source_status(data, result_key):
+    """Do not mistake a provider timeout for a successful empty search."""
+    if data.get('_fetch_failed') or has_serpapi_error(data):
+        return 'failed'
+    return 'ok' if data.get(result_key) else 'empty'
+
+
 # 主流程入口，采集四大新闻API，按日期过滤、去重、黑名单过滤、保存结果并写日志
 @with_error_handling("fetch_and_filter.py", "main")
 def main():
@@ -152,6 +159,9 @@ def main():
         if not keyword:
             print("[ERROR] 必须指定搜索用关键词")
             return False
+        if not main_keyword:
+            main_keyword = next((mk for mk, terms in SEARCH_KEYWORDS.items()
+                                 if keyword in terms), keyword)
         os.makedirs(os.path.join("output", fetch_date), exist_ok=True)
         log_lines = []
         run_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -171,9 +181,20 @@ def main():
         duck_requested_at = reference_time()
         duck_data = fetch_serpapi_duckduckgo_news(keyword, fetch_date=fetch_date)
 
-        if main_keyword == "江苏机关事务" and any(
-                data.get("_fetch_failed") or has_serpapi_error(data)
-                for data in (google_data, baidu_data, bing_data, duck_data)):
+        states = {
+            name: source_status(data, key) for name, data, key in (
+                ('Google', google_data, 'news_results'),
+                ('Baidu', baidu_data, 'organic_results'),
+                ('Bing', bing_data, 'organic_results'),
+                ('DDG', duck_data, 'news_results'),
+            )
+        }
+        source_status_line = '[来源状态] ' + ' '.join(f'{name}:{state}' for name, state in states.items())
+        print(source_status_line)
+        failed_sources = [name for name, state in states.items() if state == 'failed']
+        if failed_sources:
+            print(f"[WARN] {main_keyword}/{search_keyword or keyword} 来源失败: {', '.join(failed_sources)}；保留其它来源结果")
+        if main_keyword == "江苏机关事务" and failed_sources:
             success = False
             print("[ERROR] 江苏机关事务有搜索引擎失败；保留部分结果，批次未完成")
 
@@ -215,15 +236,6 @@ def main():
             if not any(bad in title for bad in blacklist_keywords):
                 filtered_news.append(item)
 
-        # 自动推断主关键词（如果未传--main_keyword）
-        if not main_keyword:
-            for mk, sk_list in SEARCH_KEYWORDS.items():
-                if keyword in sk_list:
-                    main_keyword = mk
-                    break
-            else:
-                main_keyword = keyword  # fallback
-
         # 写入
         if output_path:
             with open(output_path, 'w', encoding='utf-8') as f:
@@ -237,6 +249,7 @@ def main():
                 f"执行程序: 新闻采集\n"
                 f"[关键词] {main_keyword} / {search_keyword or keyword}\n"
                 f"[来源] Google:{len(google_news)} Baidu:{len(baidu_news)} Bing:{len(bing_news)} DDG:{len(duck_news)}\n"
+                f"{source_status_line}\n"
                 f"[保存] 去重后: {len(filtered_news)}条\n"
                 f"==============================\n"
             )
@@ -250,6 +263,8 @@ def main():
             status_msg = f"采集完成，保存{len(filtered_news)}条新闻到{output_path}"
         else:
             status_msg = "采集完成"
+        if failed_sources:
+            status_msg += f"；来源不完整: {', '.join(failed_sources)}"
         log_script_complete("fetch_and_filter.py", success=success, message=status_msg)
         return success
         
