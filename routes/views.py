@@ -90,7 +90,7 @@ def index():
         news_list = []
         if selected_total:
             cursor.execute(
-                f"SELECT id, keyword, title, link, source, fetchdate, sourceapi, score, "
+                f"SELECT id, keyword, title, link, source, fetchdate, sourceapi, score, search_keyword, "
                 f"LEFT(short_summary, 101) AS short_summary FROM {table} "
                 f"WHERE {where} AND keyword = %s "
                 "ORDER BY fetchdate DESC, score DESC, id DESC LIMIT %s OFFSET %s",
@@ -202,6 +202,7 @@ def show_date(date):
                         "sourceapi": item.get("sourceapi", ""),
                         "thumbnail": item.get("thumbnail", None),
                         "keyword": item.get("keyword", ""),
+                        "search_keyword": item.get("search_keyword", ""),
                         "score": item.get("score", ""),
                     })
                 news_data.append({"file": fname, "items": filtered_items})

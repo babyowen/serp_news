@@ -35,6 +35,8 @@ def home():
                    (i, '主题甲', f'新闻-{i:03}', 'https://example.com', '来源甲', '2026-09-08', 'api-a', 5, '摘' * 10000))
     db.execute("INSERT INTO news VALUES (200, '主题乙', '乙新闻', '', '来源乙', '2026-09-08', 'api-b', 3, NULL)")
     db.execute("INSERT INTO news VALUES (201, '已删除', '不应显示', '', '', '2026-09-08', 'legacy-api', 1, '')")
+    db.execute('ALTER TABLE news ADD COLUMN search_keyword TEXT')
+    db.execute("UPDATE news SET search_keyword = '实际检索词甲' WHERE keyword = '主题甲'")
     statements = []
     class Connection:
         def cursor(self):
@@ -76,6 +78,7 @@ def test_statistics_and_tabs_cover_all_topics(home):
     assert 'legacy-api' in text  # Preserve date-wide API options.
     assert '摘' * 101 not in text
     assert '摘' * 100 in text
+    assert '搜索关键词' in text and '实际检索词甲' in text
     assert len(text.encode()) < 120000
 
 
@@ -84,6 +87,7 @@ def test_topic_switch_and_page_clamping(home):
     text = get(client, '&keyword=主题乙&page=999').get_data(as_text=True)
     assert '乙新闻' in text and '新闻-121' not in text
     assert '第 1 / 1 页' in text
+    assert '未记录' in text
 
 
 def test_empty_topic_skips_list_query(home):

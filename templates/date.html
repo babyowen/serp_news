@@ -24,11 +24,12 @@
             <div class="card-body">
                 <div class="table-responsive">
                     <table class="table table-sm table-hover">
-                        <thead><tr><th>标题</th><th>来源</th><th>分数</th><th>API</th></tr></thead>
+                        <thead><tr><th>标题</th><th>搜索关键词</th><th>来源</th><th>分数</th><th>API</th></tr></thead>
                         <tbody>
                         {% for item in group['items'] %}
                             <tr>
                                 <td><a href="{{ item.link }}" target="_blank">{{ item.title }}</a></td>
+                                <td style="overflow-wrap:anywhere;">{{ (item.search_keyword or '')|trim or '未记录' }}</td>
                                 <td>{{ item.source or '' }}</td>
                                 <td>{{ item.score or '' }}</td>
                                 <td><span class="badge bg-info">{{ item.sourceapi }}</span></td>
