@@ -11,8 +11,8 @@ from dotenv import load_dotenv
 import argparse
 import datetime
 from config import DEFAULT_KEYWORDS
-from topic_config import TOPIC
 from news_freshness import eligible
+from content_quality import body_rejection_reason
 from error_handler import (
     setup_global_exception_handler,
     with_error_handling,
@@ -94,27 +94,28 @@ def run_with_connection_retry(action_name, func, *args, max_attempts=2):
             raise
 
 
-def import_scored_news_with_retry(filepath, keyword, max_attempts=2):
-    result = run_with_connection_retry(
-        f"导入 {keyword}",
-        insert_scored_news,
-        filepath,
-        keyword,
-        max_attempts=max_attempts,
-    )
-    if keyword == TOPIC:
-        run_with_connection_retry("同步机关事务空分", update_scores_from_json, filepath, keyword,
-                                  max_attempts=max_attempts)
+def import_scored_news_with_retry(filepath, keyword, max_attempts=2, report=False):
+    args = (filepath, keyword, True) if report else (filepath, keyword)
+    result = run_with_connection_retry(f"导入 {keyword}", insert_scored_news, *args,
+                                       max_attempts=max_attempts)
+    updates = run_with_connection_retry("同步评分空值", update_scores_from_json, *args,
+                                        max_attempts=max_attempts)
+    if report:
+        failed = set(result["failed_links"]) | set(updates["failed_links"])
+        result["completed_links"] = sorted(set(result["completed_links"]) - failed)
+        result["failed_links"] = sorted(failed)
+        result["ok"] = not failed
     return result
 
 # 写入 scored_news 表（新闻正文及评分）
 # 数据获取：从json_path读取新闻列表
 # 执行：同一主关键词内查重（title+link），过滤空内容，不存在则插入scored_news表
 # 结果：成功/跳过/失败数统计，写入日志
-def insert_scored_news(json_path, keyword):
+def insert_scored_news(json_path, keyword, report=False):
     with open(json_path, 'r', encoding='utf-8') as f:
         data = json.load(f)
     success, fail, skip = 0, 0, 0
+    completed_links, failed_links = set(), set()
     empty_content_skip = 0
     dup_title_skip = 0
 
@@ -123,10 +124,13 @@ def insert_scored_news(json_path, keyword):
     # existing keys once per main keyword and keep newly inserted keys in memory.
     candidate_items = []
     for item in data:
-        if keyword == TOPIC and not eligible(item):
+        if not eligible(item) or item.get("keyword", keyword) != keyword:
             skip += 1
             continue
         content = item.get('content', '')
+        if body_rejection_reason(content, item.get("title")):
+            skip += 1
+            continue
         if not content or content.strip() == '':
             empty_content_skip += 1
             continue
@@ -152,11 +156,13 @@ def insert_scored_news(json_path, keyword):
         # 查重：同一主关键词内 title+link。不同业务关键词允许各保留一条。
         if title is not None and link is not None and (title, link) in existing_title_links:
             skip += 1
+            completed_links.add(link)
             continue
 
         # 兜底查重：同一关键词下 title 完全相同（URL可能不同）
         if title is not None and title in existing_titles:
             dup_title_skip += 1
+            completed_links.add(link)
             continue
 
         sql = f'''
@@ -178,7 +184,7 @@ def insert_scored_news(json_path, keyword):
                 fetchdate,
                 item.get('sourceapi'),
                 item.get('thumbnail'),
-                item.get('keyword'),
+                keyword,
                 content,  # 使用已验证的content变量
                 item.get('wordcount'),
                 int(custom_grab),
@@ -186,12 +192,19 @@ def insert_scored_news(json_path, keyword):
                 item.get('search_keyword')
             ))
             success += 1
+            completed_links.add(link)
             if title is not None:
                 existing_titles.add(title)
                 if link is not None:
                     existing_title_links.add((title, link))
         except Exception as e:
+            # Only statement-local constraint/data failures permit partial commit.
+            # Deadlocks, disconnects and other operational errors can invalidate
+            # all earlier successes in this transaction; let the outer layer roll back.
+            if not isinstance(e, (pymysql.IntegrityError, pymysql.DataError)):
+                raise
             fail += 1
+            failed_links.add(link)
             write_log(f"[导入异常] {item.get('title', '')[:30]}... 错误: {e}")
     conn.commit()
     now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -201,39 +214,39 @@ def insert_scored_news(json_path, keyword):
     if fail:
         parts.append(f"失败: {fail}")
     write_log(f"[{now}] 导入数据库 {keyword}: {', '.join(parts)}")
+    if report:
+        return {"ok":fail == 0, "completed_links":sorted(completed_links), "failed_links":sorted(failed_links)}
+    return fail == 0
 
 
-def update_scores_from_json(json_path, keyword):
+def update_scores_from_json(json_path, keyword, report=False):
     """重评后更新数据库中已有记录的分数"""
     with open(json_path, 'r', encoding='utf-8') as f:
         data = json.load(f)
     updated = 0
+    failed_links = set()
     for item in data:
         score = item.get('score')
         title = item.get('title', '')
-        if keyword == TOPIC:
-            if (not eligible(item) or item.get("keyword") != TOPIC or item.get("score_status") != "ok"
-                    or type(score) is not int or not 0 <= score <= 5 or not title or not item.get("link")):
-                continue
+        if (not eligible(item) or body_rejection_reason(item.get("content"), title)
+                or item.get("keyword", keyword) != keyword or item.get("score_status") != "ok"
+                or type(score) is not int or not 0 <= score <= 5 or not title or not item.get("link")):
+            continue
+        try:
             cursor.execute(
                 f"UPDATE {TABLE_NAME} SET score=%s WHERE title=%s AND keyword=%s AND link=%s AND score IS NULL",
-                (score, title, TOPIC, item["link"]))
+                (score, title, keyword, item["link"]))
             if cursor.rowcount > 0:
                 updated += cursor.rowcount
-            continue
-        if not score or not title:
-            continue
-        cursor.execute(
-            f"UPDATE {TABLE_NAME} SET score=%s WHERE title=%s AND keyword=%s AND score IS NULL",
-            (score, title, item.get('keyword', keyword))
-        )
-        if cursor.rowcount > 0:
-            updated += cursor.rowcount
+        except Exception as exc:
+            if not report or not isinstance(exc, (pymysql.IntegrityError, pymysql.DataError)):
+                raise
+            failed_links.add(item["link"])
     conn.commit()
     now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     write_log(f"[{now}] 更新评分 {keyword}: 更新{updated}条")
     print(f"[更新评分] {keyword}: 更新了 {updated} 条记录的分数")
-    return updated
+    return {"updated":updated, "failed_links":sorted(failed_links)} if report else updated
 
 # 写入 summary_news 表（新闻摘要）
 # 数据获取：从json_path读取摘要数据

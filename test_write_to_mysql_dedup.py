@@ -67,6 +67,11 @@ class BatchDedupTests(unittest.TestCase):
             {"title": "空正文", "link": "https://example.test/empty", "content": ""},
         ]
 
+        for item in items:
+            item.update(fetchdate="2026-10-05", keyword="烟草服务银行", publication_check={
+                "version":1,"target_date":"2026-10-05","link":item["link"],"status":"accepted",
+                "published_date":"2026-10-05","evidence":[{"date":"2026-10-05"}]})
+
         with tempfile.NamedTemporaryFile(mode="w", suffix=".json", encoding="utf-8", delete=False) as file:
             json.dump(items, file, ensure_ascii=False)
             path = file.name
@@ -98,7 +103,8 @@ class BatchDedupTests(unittest.TestCase):
             write_to_mysql.conn = failed_connection
             with patch.object(write_to_mysql, "insert_scored_news", side_effect=[error, None]) as insert_mock, \
                     patch.object(write_to_mysql, "get_connection", return_value=replacement_connection) as connection_mock, \
-                    patch.object(write_to_mysql, "write_log"):
+                    patch.object(write_to_mysql, "write_log"), \
+                    patch.object(write_to_mysql, "update_scores_from_json", return_value=0):
                 write_to_mysql.import_scored_news_with_retry("output/date/news.json", "养老")
                 reconnected_connection = write_to_mysql.conn
                 reconnected_cursor = write_to_mysql.cursor

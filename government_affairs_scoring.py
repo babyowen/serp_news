@@ -1,4 +1,4 @@
-"""Strict topic scoring: model failures are nullable, never business zeroes."""
+"""Shared strict scoring. The historical module name remains for compatibility."""
 from dataclasses import dataclass
 import json
 import os
@@ -8,6 +8,8 @@ from config_schema import ConfigError
 from runtime_config import value, model_arguments, model_credentials
 from topic_config import TOPIC
 from news_freshness import eligible
+from scoring_policy import messages, cap_score
+from content_quality import body_rejection_reason, quality_status, content_skipped
 
 @dataclass(frozen=True)
 class ScoreResult:
@@ -30,7 +32,7 @@ def error_code(exc):
         return "authentication"
     if status == 402 or any(s in text for s in ("insufficient_quota", "insufficient balance", "余额不足")):
         return "quota"
-    if any(s in text for s in ("context_length", "context length", "token limit", "maximum context")):
+    if any(s in text for s in ("context_length", "context length", "token limit", "maximum context", "max input limit", "context window")):
         return "context_limit"
     if isinstance(exc, (ValueError, IndexError, AttributeError, TypeError)):
         return "invalid_output"
@@ -51,34 +53,32 @@ def record_result(result):
                      f"error={result.error_code} attempts={result.attempts}\n")
     return result
 
-def score_result(title, content, keyword, main_keyword, pool, max_retries=3, retry_interval=5):
-    if main_keyword != TOPIC:
-        raise ConfigError("结构化评分入口仅用于江苏机关事务")
+def score_result(title, content, keyword, main_keyword, pool, max_retries=3, retry_interval=5, context=None):
     if type(max_retries) is not int or not 1 <= max_retries <= 3:
         raise ValueError("max_retries must be between 1 and 3")
+    reason = body_rejection_reason(content, title)
+    if reason:
+        return record_result(ScoreResult(None, quality_status(reason) + "_content", reason))
     prompts = value("KEYWORD_SPECIFIC_SYSTEM_PROMPTS")
-    if not prompts.get(TOPIC):
-        raise ConfigError("江苏机关事务缺少专属评分提示词映射")
+    system = prompts.get(main_keyword or keyword) or value("NEWS_SCORE_SYSTEM_MSG")
     if content is None or not str(content).strip():
         return record_result(ScoreResult(0, "empty_content"))
-    prompt = value("NEWS_SCORE_PROMPT").format(keyword=keyword, title=title, content=content)
+    request_messages = messages(system, value("NEWS_SCORE_PROMPT"), title, content, keyword, context)
     params, credentials = model_arguments("scoring"), model_credentials("scoring")
     for attempt in range(1, max_retries + 1):
         raw = None
         try:
             client = pool.get_client(*credentials, max_uses=100).with_options(max_retries=0)
-            response = client.chat.completions.create(**params, messages=[
-                {"role": "system", "content": prompts[TOPIC]},
-                {"role": "user", "content": prompt}])
+            response = client.chat.completions.create(**params, messages=request_messages)
             raw = response.choices[0].message.content
-            score = parse_government_affairs_score(raw)
+            score = cap_score(parse_government_affairs_score(raw), context)
             usage = getattr(response, "usage", None)
             tokens = {k: getattr(usage, k, None) for k in ("prompt_tokens", "completion_tokens", "total_tokens")} if usage else None
             result = ScoreResult(score, "ok", attempts=attempt, raw_response=raw, token_usage=tokens)
         except Exception as exc:
             code = error_code(exc)
             if code in {"authentication", "quota", "context_limit"} or attempt == max_retries:
-                return record_result(ScoreResult(None, "failed", code, attempt, raw))
+                return record_result(ScoreResult(None, "skipped_context_limit" if code == "context_limit" else "failed", code, attempt, raw))
             time.sleep(retry_interval)
             continue
         # Log I/O failures must not repeat a successful paid request.
@@ -89,15 +89,20 @@ def score_fields(result):
     return {"score": result.score, "score_status": result.status,
             "score_error": result.error_code, "score_attempts": result.attempts}
 
+def context_limit_skipped(row):
+    return (row.get("score") is None and row.get("score_status") == "skipped_context_limit"
+            and row.get("score_error") == "context_limit")
+
+
 def scored_file_complete(path, keyword):
-    if keyword != TOPIC:
-        return True
+    """All eligible rows have a score or a validated terminal skip outcome."""
     try:
         rows = json.loads(Path(path).read_text(encoding="utf-8"))
         return isinstance(rows, list) and all(
-            isinstance(row, dict) and eligible(row) and type(row.get("score")) is int and 0 <= row["score"] <= 5
-            and (row.get("score_status") == "ok" or
-                 (row.get("score_status") == "empty_content" and row["score"] == 0))
+            isinstance(row, dict) and eligible(row) and (content_skipped(row) or context_limit_skipped(row) or
+            (type(row.get("score")) is int and 0 <= row["score"] <= 5
+             and ((row.get("score_status") == "ok" and not body_rejection_reason(row.get("content"), row.get("title"))) or
+                  (row.get("score_status") == "empty_content" and row["score"] == 0))))
             for row in rows)
     except (OSError, ValueError):
         return False

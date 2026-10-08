@@ -1,3 +1,7 @@
+## 平台关键词统一原则
+
+江苏机关事务不是特殊专题；所有现有及以后新增关键词共享日期准入、有限自动复核、评分时效和入库规则，只保留关键词自己的业务提示词和配置。历史模块名不代表特殊待遇。见 `docs/platform-date-review.md`。新增日期或评分行为须用多个关键词及一个未来关键词验证。
+
 # CLAUDE.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.

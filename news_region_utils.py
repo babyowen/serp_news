@@ -233,13 +233,17 @@ def normalize_region(raw_region):
 
 
 def call_summary_and_region_llm(title, content, business_type_catalog=None, aliases=None, max_retries=3):
+    from content_quality import body_rejection_reason
+    from summary_grounding import grounded_system_prompt, attribution_supported
+    if body_rejection_reason(content, title):
+        return None
     user_prompt = value("NEWS_ITEM_SUMMARY_USER_PROMPT_500_GJJ_REGION").format(
         title=(title or "").strip(),
         content=(content or "").strip(),
         business_type_catalog=format_business_type_catalog(business_type_catalog or {}),
     )
     raw_text = _call_llm(
-        value("NEWS_ITEM_SUMMARY_SYSTEM_PROMPT_500_GJJ_REGION"),
+        grounded_system_prompt(value("NEWS_ITEM_SUMMARY_SYSTEM_PROMPT_500_GJJ_REGION")),
         user_prompt,
         max_retries=max_retries,
     )
@@ -248,7 +252,7 @@ def call_summary_and_region_llm(title, content, business_type_catalog=None, alia
         return None
 
     short_summary = str(payload.get("short_summary", "")).strip()
-    if not short_summary:
+    if not short_summary or not attribution_supported(short_summary, content):
         return None
 
     business_types = validate_llm_business_types(payload.get("business_types"), aliases)

@@ -119,12 +119,11 @@ def test_rescore_updates_only_failed_and_keeps_valid_zero(tmp_path, monkeypatch)
     rows=json.loads(path.read_text())
     assert len(calls)==1 and all(n["score"]==0 and n["score_status"]=="ok" for n in rows)
 
-def test_missing_dedicated_mapping_fails_closed(topic_runtime, monkeypatch):
+def test_missing_dedicated_mapping_uses_platform_default(topic_runtime, monkeypatch):
     topic_runtime["keyword_prompt_ids"].pop(TOPIC)
     calls = fake_client(monkeypatch, ["5"])
     from config_schema import ConfigError
-    with pytest.raises(ConfigError):
-        scorer.get_system_message(TOPIC, "碳普惠")
+    assert scorer.get_system_message(TOPIC, "碳普惠") == topic_runtime["prompts"]["NEWS_SCORE_SYSTEM_MSG"]["text"]
     assert calls == []
 
 def test_db_import_path_updates_null_to_valid_zero(tmp_path, monkeypatch):
@@ -142,3 +141,77 @@ def test_db_import_path_updates_null_to_valid_zero(tmp_path, monkeypatch):
     assert len(updates)==1
     assert "score IS NULL" in updates[0].args[0] and "link=%s" in updates[0].args[0]
     assert updates[0].args[1] == (0,"x",TOPIC,"https://a.test")
+
+@pytest.mark.parametrize("score", [0, 5])
+def test_rescore_migrates_verified_legacy_score_without_model(tmp_path, monkeypatch, score):
+    import main
+    monkeypatch.chdir(tmp_path)
+    folder = Path("output/2099-01-01")
+    folder.mkdir(parents=True)
+    raw = folder / "2099-01-01_碳普惠.json"
+    saved = folder / "2099-01-01_碳普惠_scored.json"
+    legacy = {"title":"政策", "content":"原有正文", "link":"https://a.test/1", "score":score}
+    raw.write_text(json.dumps([dated({k:v for k,v in legacy.items() if k != "score"})]))
+    saved.write_text(json.dumps([legacy]))
+    calls = fake_client(monkeypatch, [])
+    monkeypatch.setattr(scorer, "prepare_batch", lambda *a, **k: (None,["碳普惠"]))
+    monkeypatch.setattr(sys, "argv", ["news_scorer.py", "碳普惠", "2099-01-01", "--rescore"])
+    assert scorer.main() is True
+    row = json.loads(saved.read_text())[0]
+    assert row["score"] == score and row["score_status"] == "ok"
+    assert row["publication_check"]["published_date"] == "2099-01-01"
+    assert "scoring_policy_version" not in row
+    assert calls == []
+    assert main.execute_scoring("2099-01-01", "碳普惠") is True
+
+@pytest.mark.parametrize("change", ["link", "title", "content", "date", "pending", "failed", "invalid"])
+def test_rescore_does_not_certify_unverified_legacy_score(tmp_path, monkeypatch, change):
+    monkeypatch.chdir(tmp_path)
+    folder = Path("output/2099-01-01")
+    folder.mkdir(parents=True)
+    legacy = {"title":"政策", "content":"原有正文", "link":"https://a.test/1", "score":3}
+    verified = dated({k:v for k,v in legacy.items() if k != "score"})
+    if change in {"link", "title", "content"}:
+        verified[change] += "changed"
+    elif change == "date":
+        dated(verified, "2099-01-02")
+    elif change == "pending":
+        verified["publication_check"]["status"] = "pending"
+    elif change == "failed":
+        legacy["score_status"] = "failed"
+    else:
+        legacy["score"] = 6
+    (folder / "2099-01-01_碳普惠.json").write_text(json.dumps([verified]))
+    saved = folder / "2099-01-01_碳普惠_scored.json"
+    saved.write_text(json.dumps([legacy]))
+    calls = fake_client(monkeypatch, [])
+    monkeypatch.setattr(scorer, "prepare_batch", lambda *a, **k: (None,["碳普惠"]))
+    monkeypatch.setattr(sys, "argv", ["news_scorer.py", "碳普惠", "2099-01-01", "--rescore"])
+    assert scorer.main() is False
+    assert json.loads(saved.read_text()) == [legacy]
+    assert calls == []
+
+
+def test_context_limit_is_explicit_terminal_without_fake_score(tmp_path, monkeypatch):
+    calls = fake_client(monkeypatch, [RuntimeError("maximum context length exceeded")])
+    result = scorer.score_news_result("新闻", "超长正文", "住房", "公积金")
+    assert result.status == "skipped_context_limit"
+    assert result.score is None and result.error_code == "context_limit"
+    assert len(calls) == 1
+    path = tmp_path / "scored.json"
+    path.write_text(json.dumps([dated({"link":"a", **scorer.score_fields(result)})]))
+    assert scorer.scored_file_complete(path, "公积金")
+    path.write_text(json.dumps([dated({"link":"a", "score":None, "score_status":"failed", "score_error":"quota"})]))
+    assert not scorer.scored_file_complete(path, "公积金")
+
+
+def test_review_does_not_repeat_terminal_context_failure(tmp_path, monkeypatch):
+    path = tmp_path / "raw.json"
+    item = dated({"link":"a", "title":"标题", "content":"超长正文"})
+    path.write_text(json.dumps([item]))
+    saved = tmp_path / "raw_scored.json"
+    saved.write_text(json.dumps([{**item, "score":None, "score_status":"skipped_context_limit", "score_error":"context_limit"}]))
+    calls = fake_client(monkeypatch, [])
+    result = scorer.refresh_review_scores(path, "公积金", {"a"})
+    assert result[0]["score_status"] == "skipped_context_limit"
+    assert calls == []

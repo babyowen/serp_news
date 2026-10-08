@@ -69,7 +69,7 @@ def _article(data, article_id, endpoint, source_url):
             text = ''
     return {'id': article_id, 'title': title, 'content': text,
             'published_time': _publication_time(obj.get('publishtime')),
-            'raw_published_time': obj.get('publishtime') if isinstance(obj.get('publishtime'), int) else None,
+            'raw_published_time': obj.get('publishtime'),
             'endpoint': endpoint, 'source_url': source_url}
 
 

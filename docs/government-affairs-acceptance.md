@@ -100,16 +100,32 @@ SERP_CONFIG_REVISION='STORE_UUID:REVISION' python main.py YYYY-MM-DD --keyword �
 回退时分别处理代码和运行配置。使用配置历史恢复会创建新版本；应比较从启用以来的其他人工调整，避免整版本恢复误撤销无关修改。不要用开发库替换生产配置。
 
 
-## 每日新闻发布日期核验（2026-10-03）
+## 每日新闻日期核验（2026-10-06）
 
-江苏机关事务在正文阶段核验原文发布日期。仅日期与批次目标日相同、证据无冲突的文章进入评分和入库；搜索源原始日期保留为 `search_date_raw`，但不作为原文发布日期。
+四个搜索引擎共用严格日期解析：支持完整日期、中英文相对时间以及北京时间换算；几年前、几个月前等不会再误读成本月某日。每条新结果保留 `search_date_raw`、`search_date_field` 和带时区的 `search_fetched_at`，优先使用 API 返回的搜索创建时刻，以便缓存结果、重试和历史复查使用同一时间基准。
 
-- 可用证据：明确的发布元数据、Article/NewsArticle 的 JSON-LD `datePublished`、明确的发布日期元素与报纸版面日期。
-- 更新日期、正文引用的旧政策日期、版权年份和 URL 日期不单独作为判据。日期冲突、缺失、访问失败及晚于目标日期均为待核验。
-- `output/<日期>/diagnostics/government_affairs_dates.json` 记录 `accepted`、`old`、`pending` 计数及逐条证据。原始采集文件保留全部记录及 `publication_check`，保持采集指纹可续跑；评分文件只含通过核验的文章。
-- 正文已有内容仍需补日期核验；同一版本、日期、链接已完成核验时不重复请求。人工复核后如需重新取证，先备份采集文件，再移除相应条目的 `publication_check`，单独运行正文阶段。不要删除整批文件后盲目补跑。
-- 旧版本评分文件不会自动变成可信日期结果。不要直接重评、导入来绕过日期核验；历史清理必须先核对清单、备份，单独执行。
-- `pending` 是需要人工核验的业务待办，不等于评分失败，也不会被填成零分。零条通过时需要检查日期诊断，不能只凭批次退出码断言业务结果达标。
+所有平台关键词在正文阶段执行以下规则：
+
+- 原文明确发布于目标日、证据无冲突：进入评分及入库。
+- 原文存在发布日期但格式无法解析：保留原始证据、继续待核验；不能把解析失败当作日期缺失。原文明确早于目标日：标记 `old`，排除；晚于目标日或日期冲突：继续 `pending`。
+- 原文发布时间缺失或页面访问失败，但保存的搜索时间可严格换算到目标日：允许进入评分、入库。`publication_check.reason=search_date_fallback`，`date_basis=search_result`，`estimated_date` 为推定日期，`published_date` 保持空值。搜索推定不冒充原文已核验。
+- 两种日期证据都不足：继续待核验。历史记录没有保存采集时刻时，不用今天的时间重新解释“7h”，也不批量按旧 `date` 字段放行。
+- 原文更新日期、正文引用的政策年份、版权年份和 URL 日期不单独作为发布日期。搜索日期不能覆盖明确旧文和日期冲突。
+
+`output/<日期>/diagnostics/government_affairs_dates.json` 保留 `accepted`、`old`、`pending` 计数、`search_fallback_count` 及逐条依据。原始和评分 JSON 保留来源标记；现有 MySQL 表和首页没有新增日期依据字段。原始采集记录继续保留，保持采集指纹可续跑。
+
+缓存的缺失日期记录若已经保存了可靠搜索时间，可在正文阶段续跑时直接采用该依据；无需再次请求原文日期。新登记的待核验记录由自动队列有限复核，通过后增量补齐评分与入库；此前未登记的历史记录不自动补跑。不要删除整批文件后盲目补跑。
+
+所有关键词在各自业务提示词后追加公共时效规则：主要事件明确超过采集基准日期七天且无近期实质进展，最高 2 分；原本 0–1 分不抬高。自动复核与重试终点见 [平台日期复核与评分时效](platform-date-review.md)。
+
+### 搜索接口时间参数
+
+- Google 使用 `engine=google&tbm=nws` 新闻搜索页，`tbs=cdr:1,...,sbd:1` 指定目标日期及最新优先；页数上限保持不变。
+- 百度保留 `rtt=4` 按时间排序。
+- Bing 按目标日选择近 24 小时／7 天／30 天窗口，并使用 `sortbydate="1"`；更早日期仅按时间排序。
+- DuckDuckGo News 使用官方支持的 `d`、`w`、`m` 窗口；窗口必须覆盖目标日零点，因此凌晨采集昨天时使用周窗口，避免漏掉昨天零点附近的新闻。更早历史日期不发送不受支持的自定义范围。窗口中的结果仍由本地精确筛选目标日，历史范围的完整召回无法由此保证。
+
+接口依据：[Google 新闻接口和时间参数](https://serpapi.com/blog/scraping-google-news-using-python-tutorial/)、[日期排序](https://serpapi.com/blog/filtering-google-search-and-google-news-results/)、[Bing News](https://serpapi.com/bing-news-api)、[DuckDuckGo News](https://serpapi.com/duckduckgo-news-api)。离线参数测试不代表真实搜索引擎的召回效果，需上线后的批次验证。
 
 ## 服务器与 Mac 的烟草任务分工
 

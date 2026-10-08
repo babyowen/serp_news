@@ -231,7 +231,7 @@ def test_missing_embedded_data_uses_successful_generic_html_fallback(monkeypatch
     assert fetch_content.fetch_article_content(URL, max_retries=1) == (BODY, len(BODY), True)
 
 
-def test_http_failure_during_cached_title_date_recheck_stays_quarantined(tmp_path, monkeypatch):
+def test_http_failure_during_cached_title_recheck_keeps_date_but_not_bad_body(tmp_path, monkeypatch):
     import fetch_content
     import news_freshness
     path = input_file(tmp_path, monkeypatch, '江苏机关事务', [{'title': TITLE, 'link': URL,
@@ -241,9 +241,10 @@ def test_http_failure_during_cached_title_date_recheck_stays_quarantined(tmp_pat
     def unavailable(*args, **kwargs):
         raise fetch_content.requests.HTTPError('HTTP 503')
     monkeypatch.setattr(fetch_content.requests, 'get', unavailable)
-    monkeypatch.setattr(fetch_content, 'fetch_article_content', lambda _: pytest.fail('unverified date reached fallback'))
+    monkeypatch.setattr(fetch_content, 'fetch_article_content', lambda _: ('', 0, False))
     assert fetch_content.process_json('江苏机关事务', DATE)
     row = json.loads(path.read_text())[0]
-    assert row['publication_check']['status'] == 'pending'
-    assert row['publication_check']['reason'] == 'missing_publication_date'
-    assert not news_freshness.eligible(row)
+    assert row['publication_check']['status'] == 'accepted'
+    assert row['publication_check']['published_date'] == DATE
+    assert news_freshness.eligible(row)
+    assert row['content'] == '' and row['wordcount'] == 0

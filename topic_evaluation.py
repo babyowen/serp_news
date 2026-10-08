@@ -14,7 +14,7 @@ from topic_config import PROMPT_ID
 
 ROOT = Path(__file__).resolve().parent
 DATASET = ROOT / "tests/fixtures/government_affairs_eval.jsonl"
-IMPLEMENTATION_FILES = ("government_affairs_scoring.py", "news_scorer.py",
+IMPLEMENTATION_FILES = ("scoring_policy.py", "government_affairs_scoring.py", "news_scorer.py",
     "runtime_config.py", "llm_settings.py", "llm_client_pool.py", "topic_config.py",
     "topic_evaluation.py", "evaluate_government_affairs.py")
 FORMAT = "government-affairs-evaluation-v1"

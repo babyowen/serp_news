@@ -39,8 +39,9 @@ from icon_manager import safe_print, get_icon
 from logger_utils import NewsLogger
 from topic_config import TOPIC
 from news_freshness import (assess_html, assess_publication_evidence,
-                            parse_publication_date, check_current, write_diagnostic)
+                            parse_publication_date, check_current, write_diagnostic, apply_search_fallback)
 from pathlib import Path
+from date_review import track_review, today_beijing, sync_job
 from jfdaily_news_content import CHECK_VERSION as JFDAILY_CHECK_VERSION, fetch_jfdaily_article, is_jfdaily_news_url
 from msn_news_content import CHECK_VERSION as MSN_CHECK_VERSION, fetch_msn_article, is_msn_news_url
 from tencent_news_content import (extract_tencent_content, html_title,
@@ -511,6 +512,10 @@ def msn_publication_check(article, date_str):
             evidence.append({'source': 'msn:publishedDateTime', 'raw': stamp[:200],
                              'date': parsed, 'url': article['endpoint']})
     check = assess_publication_evidence(evidence, date_str)
+    raw_stamp = article.get('raw_published_time', article.get('published_time')) if article else None
+    if raw_stamp is not None and str(raw_stamp).strip() and not evidence:
+        check.update(reason='unparseable_publication_date',
+                     unparsed_evidence=[{'source':'article_service', 'raw':str(raw_stamp)[:200]}])
     check['msn_check_version'] = MSN_CHECK_VERSION
     if article:
         check['article_id'] = article['id']
@@ -533,6 +538,10 @@ def jfdaily_publication_check(article, date_str):
             evidence.append({'source': 'jfdaily:publishtime', 'raw': str(article['raw_published_time']),
                              'date': parsed, 'url': article['endpoint']})
     check = assess_publication_evidence(evidence, date_str)
+    raw_stamp = article.get('raw_published_time', article.get('published_time')) if article else None
+    if raw_stamp is not None and str(raw_stamp).strip() and not evidence:
+        check.update(reason='unparseable_publication_date',
+                     unparsed_evidence=[{'source':'article_service', 'raw':str(raw_stamp)[:200]}])
     check['jfdaily_check_version'] = JFDAILY_CHECK_VERSION
     if article:
         check['article_id'] = article['id']
@@ -546,20 +555,47 @@ def record_jfdaily_source(item, article):
             ('id', 'endpoint', 'source_url', 'published_time', 'raw_published_time')}}
 
 
-def check_topic_dates(news_list, date_str):
+def date_diagnostic_path(day, keyword=None):
+    if keyword is None or keyword == TOPIC:  # historical diagnostic filename compatibility only
+        return Path('output') / day / 'diagnostics' / 'government_affairs_dates.json'
+    import hashlib
+    name = hashlib.sha256(keyword.encode()).hexdigest()[:16]
+    return Path('output') / day / 'diagnostics' / ('dates_' + name + '.json')
+
+
+def preserve_publication_evidence(check, item, date_str):
+    previous = item.get('publication_check', {})
+    if (check.get('reason') == 'missing_publication_date'
+            and check_current(item, date_str)
+            and previous.get('status') in {'pending', 'old', 'accepted'}
+            and (previous.get('unparsed_evidence') or
+                 (previous.get('evidence') and previous.get('reason') != 'search_date_fallback'))):
+        # Missing data on a retry cannot erase stronger previous evidence.
+        check = dict(previous)
+    return check
+
+
+def check_topic_dates(news_list, date_str, keyword=None, force=False, today=None):
+    today = today or today_beijing()
     """Keep rejected rows for collection fingerprints and forensic inspection."""
     for item in news_list:
         msn = is_msn_news_url(item.get('link'))
         jfdaily = is_jfdaily_news_url(item.get('link'))
         repair_body = ((is_tencent_news_url(item.get('link')) or msn or jfdaily)
                        and not usable_article_text(item.get('content'), item.get('title')))
-        if check_current(item, date_str):
-            current = item['publication_check']
+        if not force and check_current(item, date_str):
+            current = apply_search_fallback(item['publication_check'], item, date_str)
+            item['publication_check'] = current
+            if current['status'] == 'pending' and item.get('date_review'):
+                # Only the bounded worker may force another publication request.
+                track_review(item, today)
+                continue
             recheck_msn = msn and (current.get('msn_check_version') != MSN_CHECK_VERSION
                                    or current['status'] == 'pending')
             recheck_jfdaily = jfdaily and (current.get('jfdaily_check_version') != JFDAILY_CHECK_VERSION
                                            or current['status'] == 'pending')
             if not recheck_msn and not recheck_jfdaily and (current['status'] != 'accepted' or not repair_body):
+                track_review(item, today)
                 continue
         if jfdaily:
             try:
@@ -580,9 +616,12 @@ def check_topic_dates(news_list, date_str):
         else:
             text, html = fetch_publication_page(item['link']) if item.get('link') else ('', '')
             check = assess_html(html, date_str)
+        check = preserve_publication_evidence(check, item, date_str)
+        check = apply_search_fallback(check, item, date_str)
         check['link'] = item.get('link')
         item['publication_check'] = check
         item['fetchdate'] = date_str
+        track_review(item, today)
         # Rejected/uncertain pages need no costly browser extraction or scoring.
         if (not usable_article_text(item.get('content'), item.get('title'))
                 and not cached_custom_body_complete(item)
@@ -591,11 +630,12 @@ def check_topic_dates(news_list, date_str):
                 text = ''
             item.update(content=text, wordcount=len(text),
                         custom_grab=bool(text) and (is_tencent_news_url(item.get('link')) or msn or jfdaily))
-    path = Path('output') / date_str / 'diagnostics' / 'government_affairs_dates.json'
+    path = date_diagnostic_path(date_str, keyword)
     write_diagnostic(news_list, date_str, path)
     counts = {status: sum(item['publication_check']['status'] == status for item in news_list)
               for status in ('accepted', 'old', 'pending')}
-    print(f"[GOV_DATE] 当日通过={counts['accepted']} 旧文排除={counts['old']} 待核验={counts['pending']} 清单={path}")
+    search_count = sum(item['publication_check'].get('reason') == 'search_date_fallback' for item in news_list)
+    print(f"[GOV_DATE] 搜索日期兜底={search_count} 当日通过={counts['accepted']} 旧文排除={counts['old']} 待核验={counts['pending']} 清单={path}")
 
 
 def cached_custom_body_complete(item):
@@ -607,13 +647,17 @@ def cached_custom_body_complete(item):
 
 
 def content_fetch_complete(item, keyword):
+    from content_quality import body_rejection_reason
+    # A known rejected body is handled, not a successful article. Retain it for audit.
+    if body_rejection_reason(item.get("content"), item.get("title")) in {"feedback_only", "error_page", "paywall_excerpt", "navigation_only"}:
+        return True
     # Date quarantine remains terminal for this topic's content stage.
-    if (keyword == TOPIC and check_current(item)
+    if (check_current(item)
             and item['publication_check']['status'] != 'accepted'):
         return True
     if cached_custom_body_complete(item):
         return True
-    if keyword == TOPIC or is_tencent_news_url(item.get('link')) or is_msn_news_url(item.get('link')) or is_jfdaily_news_url(item.get('link')):
+    if check_current(item) or is_tencent_news_url(item.get('link')) or is_msn_news_url(item.get('link')) or is_jfdaily_news_url(item.get('link')):
         text = item.get('content')
         return usable_article_text(text, item.get('title')) and not is_garbled(text)
     # Preserve the legacy resume contract for other sites and topics.
@@ -630,14 +674,17 @@ def process_json(keyword, date_str=None, mode='正式'):
         return False  # 文件不存在算失败
     with open(json_path, 'r', encoding='utf-8') as f:
         news_list = json.load(f)
-    if keyword == TOPIC:
-        for item in news_list:
-            link = item.get('link') or ''
-            if link.startswith('https://') and '.people.com.cn' in link:
-                item['link'] = 'http://' + link[len('https://'):]
-        check_topic_dates(news_list, date_str)
-        from government_affairs_pipeline import atomic_json
-        atomic_json(json_path, news_list)
+    for item in news_list:
+        link = item.get('link') or ''
+        if link.startswith('https://') and '.people.com.cn' in link:
+            item['link'] = 'http://' + link[len('https://'):]
+    check_topic_dates(news_list, date_str, keyword)
+    from government_affairs_pipeline import atomic_json
+    from content_quality import annotate_content_quality
+    for item in news_list:
+        annotate_content_quality(item)
+    atomic_json(json_path, news_list)
+    sync_job(news_list, date_str, keyword)
     # Tencent, MSN and Shangguan headline-only/empty content must be repairable for every keyword.
     all_complete = bool(news_list) and all(content_fetch_complete(item, keyword) for item in news_list)
     if all_complete:
@@ -662,7 +709,7 @@ def process_json(keyword, date_str=None, mode='正式'):
         if cached_custom_body_complete(item):
             filtered_news_list.append(item)
             continue
-        if (((keyword == TOPIC or is_tencent_news_url(item.get('link'))
+        if (((check_current(item) or is_tencent_news_url(item.get('link'))
                 or is_msn_news_url(item.get('link')) or is_jfdaily_news_url(item.get('link')))
                 and content_fetch_complete(item, keyword))
                 or (usable_article_text(item.get('content'), item.get('title'))
@@ -695,8 +742,10 @@ def process_json(keyword, date_str=None, mode='正式'):
                 content = article['content'] if article else ''
                 wordcount, custom_grab = len(content), bool(content)
                 record_jfdaily_source(item, article)
-                if keyword == TOPIC:
+                if check_current(item):
                     check = jfdaily_publication_check(article, date_str)
+                    check = preserve_publication_evidence(check, item, date_str)
+                    check = apply_search_fallback(check, item, date_str)
                     check['link'] = url
                     item['publication_check'] = check
             elif is_msn_news_url(url):
@@ -704,8 +753,10 @@ def process_json(keyword, date_str=None, mode='正式'):
                 content = article['content'] if article else ''
                 wordcount, custom_grab = len(content), bool(content)
                 record_msn_source(item, article)
-                if keyword == TOPIC:
+                if check_current(item):
                     check = msn_publication_check(article, date_str)
+                    check = preserve_publication_evidence(check, item, date_str)
+                    check = apply_search_fallback(check, item, date_str)
                     check['link'] = url
                     item['publication_check'] = check
             else:
@@ -717,8 +768,9 @@ def process_json(keyword, date_str=None, mode='正式'):
             item['wordcount'] = wordcount
             item['custom_grab'] = custom_grab
             
-            # 记录抓取结果
-            if wordcount > 0:
+            # Nonempty rejected text remains auditable but is not a successful body.
+            annotate_content_quality(item)
+            if wordcount > 0 and not item.get('content_quality'):
                 grab_type = "定制化" if custom_grab else "通用"
                 news_logger.content_fetch(keyword, wordcount, grab_type, "success")
             else:
@@ -745,13 +797,14 @@ def process_json(keyword, date_str=None, mode='正式'):
             item['custom_grab'] = False
             
         filtered_news_list.append(item)
-    # 2. 写回json（只写入非tv.cctv.com）
-    with open(json_path, 'w', encoding='utf-8') as f:
-        json.dump(filtered_news_list, f, ensure_ascii=False, indent=2)
-    if keyword == TOPIC:
-        # A public-body retry may also refresh its publication evidence.
-        write_diagnostic(filtered_news_list, date_str,
-                         Path('output') / date_str / 'diagnostics' / 'government_affairs_dates.json')
+    # Persist the batch and review state with one atomic replacement.
+    for item in filtered_news_list:
+        annotate_content_quality(item)
+        track_review(item, today_beijing())
+    from government_affairs_pipeline import atomic_json
+    atomic_json(json_path, filtered_news_list)
+    sync_job(filtered_news_list, date_str, keyword)
+    write_diagnostic(filtered_news_list, date_str, date_diagnostic_path(date_str, keyword))
     # 3. 重新统计，确保日志和json一致
     success_count = 0
     fail_items = []
@@ -764,12 +817,12 @@ def process_json(keyword, date_str=None, mode='正式'):
         url = item.get('link')
         curr_domain = get_domain(url) if url else None
         # 只统计成功抓取正文的新闻源
-        if curr_domain and item.get('wordcount', 0) > 0:
+        if curr_domain and item.get('wordcount', 0) > 0 and not item.get('content_quality'):
             current_domains.add(curr_domain)
             if curr_domain not in domain_news_count:
                 domain_news_count[curr_domain] = 0
             domain_news_count[curr_domain] += 1
-        if not url or item.get('wordcount', 0) == 0:
+        if not url or item.get('wordcount', 0) == 0 or item.get('content_quality'):
             fail_items.append({'title': item.get('title', ''), 'link': url, 'custom': item.get('custom_grab', False)})
             continue
         success_count += 1
