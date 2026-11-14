@@ -358,15 +358,45 @@ def test_wechat_journals_successful_body_before_next_paid_call(tmp_path):
     assert resumed.calls == [("http", second["url"])]
 
 
-def test_wechat_direct_conflicting_date_evidence_requires_a_verified_fallback(tmp_path):
+def test_wechat_direct_conflicting_date_evidence_survives_a_verified_fallback(tmp_path):
     entry = article(100)
     client = Provider({(GOV, ""): [page(entry)]},
                       bodies={entry["url"]: '<meta property="article:published_time" content="2026-11-12">'
                                             '<div id="js_content">不能入库的错误正文</div>'},
                       details={entry["url"]: [detail(entry)]})
     report = collect(tmp_path, client)
-    assert report["complete"] and report["api_cost"] == 0.17
-    assert report["articles"][0]["content"] == BODY and eligible(report["articles"][0])
+    assert not report["complete"] and report["api_cost"] == 0.17
+    row = report["articles"][0]
+    assert row["wechat_content_status"] == "failed" and row["content"] == "" and not eligible(row)
+    check = row["publication_check"]
+    assert check["reason"] == "conflicting_publication_dates"
+    assert {(item["source"], item["date"]) for item in check["evidence"]} == {
+        ("wechat_history:post_time", DAY), ("wechat_history:post_time_str", DAY),
+        ("meta:article:published_time", "2026-11-12"), ("wechat_detail:pubtime", DAY),
+    }
+    client.bodies[entry["url"]] = "<title>环境异常</title>"
+    client.details[entry["url"]] = [detail(entry)]
+    resumed = collect(tmp_path, client)
+    assert not resumed["complete"] and resumed["articles"][0]["publication_check"] == check
+
+
+@pytest.mark.parametrize(("published", "beijing_day"), [
+    ("2026-11-12 16:00:00+00:00", DAY),
+    ("2026-11-13 00:10:00+10:00", "2026-11-12"),
+])
+def test_wechat_normalizes_space_separated_html_timestamps_with_offsets(tmp_path, published, beijing_day):
+    entry = article(100)
+    client = Provider({(GOV, ""): [page(entry)]},
+                      bodies={entry["url"]: f'<meta property="article:published_time" content="{published}">'
+                                            f'<div id="js_content">{BODY}</div>'},
+                      details={entry["url"]: [detail(entry)]})
+    report = collect(tmp_path, client)
+    row = report["articles"][0]
+    assert report["complete"] == eligible(row) == (beijing_day == DAY)
+    assert report["api_cost"] == (0.14 if beijing_day == DAY else 0.17)
+    assert {"source": "meta:article:published_time", "raw": published, "date": beijing_day} in (
+        row["publication_check"]["evidence"]
+    )
 
 
 def test_wechat_optional_verifycode_is_sent_blank_and_detail_uses_get(tmp_path, monkeypatch):
@@ -477,3 +507,35 @@ def test_wechat_migrated_disabled_account_is_never_called(tmp_path):
     assert report["complete"]
     assert [summary["ghid"] for summary in report["accounts"]] == [GOV]
     assert client.calls == [("history", GOV, "")]
+
+
+@pytest.mark.parametrize(("responses", "status", "cost", "attempts"), [
+    ([(429, {"code": 20001, "cost_money": 0.02})], "failed", 0.02, 1),
+    ([(503, {"cost_money": 0.02}), (502, {"code": 0, "cost_money": 0.03}),
+      (200, page())], "empty", 0.19, 3),
+])
+def test_wechat_accounts_for_billable_http_errors_before_retry_decision(
+        tmp_path, monkeypatch, no_retry_wait, responses, status, cost, attempts):
+    monkeypatch.setenv("WECHAT_API_KEY", "test-key")
+    queued = iter(responses)
+    calls = []
+
+    class Response:
+        def __init__(self, status_code, body):
+            self.status_code = status_code
+            self.body = body
+
+        def json(self):
+            return self.body
+
+    def wire(self, method, url, **kwargs):
+        calls.append((method, url))
+        return Response(*next(queued))
+
+    monkeypatch.setattr("requests.Session.request", wire)
+    report = collect(tmp_path, None)
+    assert len(calls) == attempts
+    assert report["accounts"][0]["status"] == status
+    assert report["api_cost"] == report["total_api_cost"] == cost
+    if status == "failed":
+        assert "20001" in report["accounts"][0]["error"]

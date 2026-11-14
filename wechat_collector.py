@@ -49,9 +49,10 @@ RETRY_DELAY_BY_CODE = {-1: 5, 103: 2, 105: 2, 106: 2, 107: 2, 2003: 2, 2005: 2, 
 class CollectionError(Exception):
     """A fixed diagnostic safe to persist in the collection report."""
 
-    def __init__(self, message, *, retry_after=None):
+    def __init__(self, message, *, retry_after=None, cost_money=None):
         super().__init__(message)
         self.retry_after = retry_after
+        self.cost_money = cost_money
 
 
 def _registry_bytes(path):
@@ -115,13 +116,21 @@ class _WechatClient:
                 method, self.base_url + API_PREFIX + endpoint, timeout=TIMEOUT, allow_redirects=False,
                 **({"json": payload} if method == "POST" else {"params": payload}),
             )
-            if response.status_code != 200:
-                retry_after = 2 if response.status_code in {408, 425, 429, 500, 502, 503, 504} else None
-                raise CollectionError(f"极致了 HTTP {response.status_code}", retry_after=retry_after)
-            return response.json()
         except requests.RequestException:
             # Exception text can contain the entire request URL, including credentials.
-            raise CollectionError("极致了网络请求失败或响应无法解析", retry_after=2) from None
+            raise CollectionError("极致了网络请求失败", retry_after=2) from None
+        try:
+            data = response.json()
+        except ValueError:
+            data = None
+        if response.status_code == 200:
+            return data
+        data = data if isinstance(data, dict) else {}
+        cost, code = data.get("cost_money"), data.get("code")
+        if type(code) is int and code != 0:
+            raise _provider_code_error(code, cost_money=cost)
+        retry_after = 2 if response.status_code in {408, 425, 429, 500, 502, 503, 504} else None
+        raise CollectionError(f"极致了 HTTP {response.status_code}", retry_after=retry_after, cost_money=cost)
 
     def post_history(self, ghid, offset):
         return self._provider("POST", "/post_history", fields={
@@ -160,8 +169,12 @@ def _check_provider_response(response):
     if type(code) is not int:
         raise CollectionError("极致了响应缺少有效状态码", retry_after=2)
     if code != 0:
-        message = PROVIDER_ERRORS.get(code, "极致了请求失败")
-        raise CollectionError(f"{message}（{code}）", retry_after=RETRY_DELAY_BY_CODE.get(code))
+        raise _provider_code_error(code)
+
+
+def _provider_code_error(code, *, cost_money=None):
+    message = PROVIDER_ERRORS.get(code, "极致了请求失败")
+    return CollectionError(f"{message}（{code}）", retry_after=RETRY_DELAY_BY_CODE.get(code), cost_money=cost_money)
 
 
 def _article_identity(url):
@@ -296,7 +309,7 @@ def _blocked_body(text):
     ))
 
 
-def _direct_body(html, row, evidence):
+def _direct_body(html, row):
     soup = BeautifulSoup(html, "html.parser")
     body = soup.select_one("#js_content")
     if (body is None or soup.select_one("#js_verify, #js_verify_page")
@@ -306,18 +319,21 @@ def _direct_body(html, row, evidence):
     if _blocked_body(text) or body_rejection_reason(text, row["title"]) == "error_page":
         raise CollectionError("微信正文遇到验证或错误页面")
     check = assess_html(html, row["fetchdate"])
-    if check.get("unparsed_evidence"):
-        raise CollectionError("微信正文发布时间无法解析")
-    direct = check["evidence"]
+    direct, unparsed = [], False
+    for observation in check["evidence"] + check.get("unparsed_evidence", []):
+        instant = _published_at(observation["raw"])
+        if instant is not None:
+            direct.append({**observation, "date": instant.date().isoformat()})
+        elif observation.get("date"):
+            direct.append(observation)
+        else:
+            unparsed = True
     # WeChat article pages also expose their publication epoch in an inline variable.
     epochs = re.findall(r'\b(?:var |window\.)ct\s*=\s*["\']?(\d{10,13})\b', html)
     for value in dict.fromkeys(epochs):
         parsed, _ = _publication({"ct": value}, ("ct",), "wechat_http")
         direct.extend(parsed)
-    check = _check(evidence + direct, row["fetchdate"], row["link"])
-    if check["status"] != "accepted":
-        raise CollectionError("微信正文发布时间与列表不符")
-    return text, check
+    return (None if unparsed else text), direct
 
 
 def _detail_body(response, row, evidence):
@@ -390,15 +406,20 @@ class _CollectionState:
             try:
                 response = fetch(*args)
                 if isinstance(response, dict):
-                    total = _cost(account_state["total_api_cost"]) + _cost(response.get("cost_money"))
-                    account_state["total_api_cost"] = str(total)
+                    self._record_cost(account_state, response.get("cost_money"))
                 _check_provider_response(response)
                 return response
             except CollectionError as exc:
+                self._record_cost(account_state, exc.cost_money)
                 if exc.retry_after is None or attempt == MAX_PROVIDER_ATTEMPTS - 1:
                     raise
                 self.save()
                 time.sleep(exc.retry_after)
+
+    @staticmethod
+    def _record_cost(account_state, amount):
+        total = _cost(account_state["total_api_cost"]) + _cost(amount)
+        account_state["total_api_cost"] = str(total)
 
 
 def _collect_account(client, journal, account):
@@ -423,15 +444,26 @@ def _collect_account(client, journal, account):
         row = article["row"]
         if row["wechat_content_status"] in BODY_DONE:
             continue
-        evidence = article["history_evidence"]
+        direct = article.get("direct_evidence", []).copy()
         link = row["link"]
-        row["publication_check"] = _check(evidence, journal.target_date, link)
+        text = None
         try:
-            try:
-                html = client.fetch_body_html(link)
-                text, check = _direct_body(html, row, evidence)
-                method = "http"
-            except CollectionError:
+            html = client.fetch_body_html(link)
+            text, observed = _direct_body(html, row)
+        except CollectionError:
+            observed = []
+        new_evidence = [item for item in observed if item not in direct]
+        direct.extend(new_evidence)
+        evidence = article["history_evidence"] + direct
+        check = _check(evidence, journal.target_date, link)
+        row["publication_check"] = check
+        if new_evidence:
+            article["direct_evidence"] = direct
+            # Persist new direct evidence before spending on fallback.
+            journal.save()
+        try:
+            method = "http"
+            if text is None or check["status"] != "accepted":
                 detail = journal.request(state, client.article_detail, link)
                 text, check = _detail_body(detail, row, evidence)
                 method = "article_detail"
