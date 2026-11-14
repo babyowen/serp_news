@@ -9,9 +9,28 @@ import sys
 import json
 import traceback
 import functools
+from contextlib import contextmanager
+from contextvars import ContextVar
 from datetime import datetime
 from typing import Any, Callable, Optional, Dict, List
 import subprocess
+
+_subprocess_lock_fds = ContextVar("subprocess_lock_fds", default=())
+
+
+@contextmanager
+def subprocess_lock_fds(*fds):
+    """Keep only these run locks alive in active stage children, even after SIGKILL.
+
+    Callers own the descriptors and must keep them open until this scope exits.
+    Worker threads must explicitly copy this context when submitting stages.
+    """
+    token = _subprocess_lock_fds.set(tuple(fds))
+    try:
+        yield
+    finally:
+        _subprocess_lock_fds.reset(token)
+
 
 class ErrorHandler:
     """统一的错误处理类"""
@@ -167,9 +186,12 @@ def safe_subprocess_run(cmd: str, step_name: str, keyword: str = None,
                                       capture_output=True, text=True, encoding='gbk', errors='ignore',
                                       env=os.environ)
             else:
+                # pass_fds keeps close_fds enabled: unrelated descriptors are not
+                # inherited, and no process-wide inheritable flags are changed.
+                options = {"pass_fds": _subprocess_lock_fds.get()} if _subprocess_lock_fds.get() else {}
                 result = subprocess.run(cmd, shell=True, check=check,
                                       capture_output=True, text=True, encoding='utf-8',
-                                      env=os.environ)
+                                      env=os.environ, **options)
 
             result.check_returncode()
             print(f"[完成] {step_name}")

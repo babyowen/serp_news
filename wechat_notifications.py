@@ -136,6 +136,11 @@ def release_run(run, *, output_root="output"):
         lease.close()
 
 
+def run_lease_fd(run, *, output_root="output"):
+    """Return this parent's live lease for explicit inheritance by business stages."""
+    return _leases[_record_path(run, output_root)].fileno()
+
+
 def _is_running(path):
     with _lease_path(path).open("a") as lease:
         try:

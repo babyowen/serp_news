@@ -30,6 +30,7 @@ TESTS = [
     "test_wechat_collector.py",
     "test_wechat_notifications.py",
     "test_wechat_pipeline.py",
+    "test_wechat_process_lifetime.py",
     "test_pipeline_failures.py",
     "test_home_performance.py", "test_llm_settings.py",
     "test_config_store.py", "test_config_integration.py", "test_config_system.py", "test_config_review.py", "test_config_followup.py", "test_bank_news_feature.py",

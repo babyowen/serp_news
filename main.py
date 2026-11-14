@@ -7,6 +7,7 @@ import argparse
 import shlex
 import concurrent.futures
 from contextlib import ExitStack
+from contextvars import copy_context
 from news_dates import reference_time
 from config import DEFAULT_KEYWORDS, SEARCH_KEYWORDS
 from runtime_config import value
@@ -19,6 +20,7 @@ from government_affairs_scoring import scored_file_complete
 from error_handler import (
     setup_global_exception_handler,
     safe_subprocess_run,
+    subprocess_lock_fds,
     with_error_handling,
     log_script_start,
     log_script_complete,
@@ -263,7 +265,7 @@ def execute_scoring_concurrent(date, keywords, max_workers=3):
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
         # 提交所有任务
         future_to_keyword = {
-            executor.submit(execute_scoring, date, kw): kw 
+            executor.submit(copy_context().run, execute_scoring, date, kw): kw
             for kw in keywords
         }
         
@@ -342,12 +344,15 @@ def main(date=None, keyword=None, adopt_existing_config=False, config_revision=N
         DEFAULT_KEYWORDS = list(SEARCH_KEYWORDS)
 
         if os.environ.get("ENABLE_GOVERNMENT_WECHAT") == "1" and TOPIC in active_keywords:
-            from wechat_notifications import start_run, release_run
+            from wechat_notifications import start_run, release_run, run_lease_fd
             from wechat_pipeline_run import pipeline_lock, stage_environment, read_stage, write_stage
 
-            resources.enter_context(pipeline_lock(date))
+            day_lock_fd = resources.enter_context(pipeline_lock(date))
             run = start_run(date)
             resources.callback(release_run, run)
+            # All active business stages (including parallel scoring) share
+            # the locks. Exit this scope before releasing locks/postlude work.
+            resources.enter_context(subprocess_lock_fds(day_lock_fd, run_lease_fd(run)))
 
         def collect_wechat(day):
             from wechat_collector import collect_wechat as collect_source

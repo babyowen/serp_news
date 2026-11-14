@@ -15,7 +15,9 @@ def pipeline_lock(day):
     directory.mkdir(parents=True, exist_ok=True)
     with (directory / ".wechat_pipeline.lock").open("a") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
-        yield
+        # Close this process's copy on exit; LOCK_UN would also unlock copies
+        # retained by surviving business children after parent interruption.
+        yield lock.fileno()
 
 
 @contextmanager
