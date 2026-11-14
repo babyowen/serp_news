@@ -145,15 +145,30 @@ class WechatSummaryEvidence:
             if item["status"] not in {"inserted", "duplicate"} or len(matches) != 1:
                 self.unmapped.append(dict(candidate, status="pending"))
                 continue
-            rid, title, _, stored_day, score, summary, content = matches[0]
+            rid, title, stored_link, stored_day, score, summary, content = matches[0]
+            reason = None
+            method = None
             if summary and str(summary).strip():
                 status = "already_done"
+                method = "existing"
             elif (str(stored_day) != run["date"] or not content or not str(content).strip()
                     or body_rejection_reason(content, title) or score is not None and score < 3):
                 status = "not_needed"
+                if str(stored_day) != run["date"]:
+                    reason = "historical"
+                elif not content or not str(content).strip() or body_rejection_reason(content, title):
+                    reason = "body_unusable"
+                else:
+                    reason = "low_score"
             else:
                 status = "pending"
-            row = self.rows.setdefault(rid, {"status": status, "candidates": []})
+                reason = "score_missing" if score is None else "awaiting_summary"
+            safe_score = score if type(score) in (int, float) and 0 <= score <= 5 else None
+            row = self.rows.setdefault(rid, {
+                "status": status, "candidates": [], "stored_link": stored_link,
+                "stored_date": str(stored_day), "score": safe_score,
+                "summary_method": method, "reason": reason,
+            })
             row["candidates"].append(candidate)
         self.save("pending")
 
@@ -170,14 +185,16 @@ class WechatSummaryEvidence:
         write_stage(self.run, "summary", status, counts, articles)
         return complete
 
-    def update_summary(self, cur, table, rid, summary):
+    def update_summary(self, cur, table, rid, summary, *, method):
         cur.execute(f"UPDATE {table} SET short_summary=%s WHERE id=%s "
                     "AND (short_summary IS NULL OR short_summary='')", (summary, rid))
-        self.record(rid, "succeeded" if cur.rowcount == 1 else "pending")
+        self.record(rid, "succeeded" if cur.rowcount == 1 else "pending", method=method)
 
-    def record(self, rid, status):
+    def record(self, rid, status, *, method=None):
         if rid in self.rows and self.rows[rid]["status"] in {"pending", "failed"}:
             self.rows[rid]["status"] = status
+            self.rows[rid]["summary_method"] = method if status == "succeeded" else None
+            self.rows[rid]["reason"] = "summary_failed" if status == "failed" else None
             self.save("pending")
 
 
@@ -272,7 +289,7 @@ def main():
                             if annotate_gjj:
                                 update_summary_fields(cur, table_name, rid, text, region, business_types)
                             elif evidence and rid in evidence.rows:
-                                evidence.update_summary(cur, table_name, rid, text)
+                                evidence.update_summary(cur, table_name, rid, text, method="direct")
                             else:
                                 update_summary_only(cur, table_name, rid, text)
                             gov_pending.discard(rid)
@@ -322,7 +339,7 @@ def main():
                             if annotate_gjj:
                                 update_summary_fields(cur, table_name, rid, summary, region, business_types)
                             elif evidence and rid in evidence.rows:
-                                evidence.update_summary(cur, table_name, rid, summary)
+                                evidence.update_summary(cur, table_name, rid, summary, method="generated")
                             else:
                                 update_summary_only(cur, table_name, rid, summary)
                             gov_pending.discard(rid)

@@ -7,6 +7,8 @@ finish_run outcome contract (all counters describe WeChat articles only):
 * scoring: candidates, succeeded, failed, skipped, already_done.
 * database: inserted (committed new rows), duplicate, failed, skipped.
 * summary: succeeded, failed, already_done, not_needed, pending.
+* reader_overview: optional, validated new-row summary/verified publisher counts.
+  Frozen once; missing legacy evidence is never inferred from stage totals.
 * error: optional allowlisted reason code (ERROR_REASONS). Any other error
   is represented by a generic reason. Never pass an exception into the card.
 
@@ -29,6 +31,7 @@ from uuid import NAMESPACE_URL, uuid4, uuid5
 from zoneinfo import ZoneInfo
 
 from government_affairs_pipeline import atomic_json
+from wechat_reader_outcome import freeze_reader_overview, valid_reader_overview
 
 
 BEIJING = ZoneInfo("Asia/Shanghai")
@@ -238,11 +241,15 @@ def _outcome_summary(outcome, target_date):
     error = outcome.get("error")
     if error and (not isinstance(error, str) or error not in ERROR_REASONS):
         error = "other"
-    return {
+    result = {
         "collection": _collection(outcome.get("collection"), target_date),
         **{key: _stage(outcome.get(key), fields) for key, (_, fields) in STAGE_COUNTERS.items()},
         "error": error or None,
     }
+    overview = freeze_reader_overview(outcome.get("reader_overview"), result["database"]["inserted"])
+    if overview is not None:
+        result["reader_overview"] = overview
+    return result
 
 
 def _valid_outcome(result):
@@ -280,6 +287,9 @@ def _valid_outcome(result):
             return False
         if any(stage[key] is not None and _count(stage[key]) is None for key in counters):
             return False
+    if "reader_overview" in result and not valid_reader_overview(
+            result["reader_overview"], result["database"]["inserted"]):
+        return False
     error = result.get("error")
     return error is None or isinstance(error, str) and error in ERROR_REASONS
 
@@ -326,11 +336,18 @@ def _load_run(path):
     return None
 
 
-def _card(title, lines, template):
+def _card(title, lines, template, *, sections=None):
+    elements = []
+    for section in sections if sections is not None else [lines]:
+        if not section:
+            continue
+        if elements:
+            elements.append({"tag": "hr"})
+        elements.append({"tag": "div", "text": {"tag": "lark_md", "content": "\n".join(section)}})
     return json.dumps({
         "config": {"wide_screen_mode": True},
         "header": {"title": {"tag": "plain_text", "content": title}, "template": template},
-        "elements": [{"tag": "div", "text": {"tag": "lark_md", "content": "\n".join(lines)}}],
+        "elements": elements,
     }, ensure_ascii=False)
 
 
@@ -346,29 +363,81 @@ def _result_card(run):
     status = run["status"]
     outcome = run["outcome"]
     collection = outcome["collection"]
-    start = _timestamp(run["started_at"]).strftime("%Y-%m-%d %H:%M:%S")
-    end = _timestamp(run["finished_at"]).strftime("%Y-%m-%d %H:%M:%S")
-    lines = [f"**业务日** {run['date']}  **运行 ID** {run['run_id']}",
-             f"**北京时间** {start} 至 {end}"]
-    for title, keys in (("账号", ("accounts_ok", "accounts_empty", "accounts_failed")),
-                        ("采集与正文", ("articles", "collected_count", "reused_count",
-                                     "body_ok", "body_insufficient", "body_failed"))):
-        counts = " / ".join(f"{COLLECTION_COUNTERS[key]} {_shown(collection[key])}" for key in keys)
-        lines.append(f"**{title}** {counts}")
+    start = _timestamp(run["started_at"])
+    end = _timestamp(run["finished_at"])
+    elapsed = max(0, int((end - start).total_seconds()))
+    database = outcome["database"]
+    overview = outcome.get("reader_overview")
+    sources, exceptions = [], []
+    lines = [f"📅 **{run['date']} 官微新闻**",
+             f"📰 采集到 {_shown(collection['articles'])} 篇当日文章；"
+             f"新增入库 {_shown(database['inserted'])} 篇，重复 {_shown(database['duplicate'])} 篇。"]
+    if overview is not None:
+        summary = overview["summary"]
+        ready = sum(summary[key] for key in (
+            "ready_generated", "ready_direct", "ready_existing", "ready_unknown"))
+        if overview["inserted"]:
+            lines.append(f"📝 **新增 {overview['inserted']} 篇中**：摘要就绪 {ready} 篇；"
+                         f"低于 3 分 {summary['low_score']} 篇，保留原文，无需摘要。")
+            methods = [("ready_generated", "模型生成"), ("ready_direct", "短正文直接采用"),
+                       ("ready_existing", "已有摘要"), ("ready_unknown", "生成方式未确认")]
+            if ready:
+                lines.append("摘要就绪：" + "、".join(f"{label} {summary[key]}"
+                             for key, label in methods if summary[key]) + "。")
+            pending = [("body_unusable", "正文不足或不可用"), ("score_unconfirmed", "评分未确认"),
+                       ("failed", "摘要失败"), ("pending", "摘要待完成"), ("unknown", "摘要分类未确认")]
+            if any(summary[key] for key, _ in pending):
+                exceptions.append("⚠️ 新增新闻待关注：" + "、".join(f"{label} {summary[key]} 篇"
+                             for key, label in pending if summary[key]) + "。")
+            regions = [f"{region['label']} {region['count']}" for region in overview["regions"]]
+            if overview["region_unknown"]:
+                regions.append(f"辖区未确认 {overview['region_unknown']}")
+            sources.append("📍 **新增来源**：" + "、".join(regions) + "（篇）")
+            sources.append("地区表示发布账号辖区，不代表事件发生地。")
+        else:
+            lines.append("📝 本次没有新增新闻。")
+    elif database["inserted"] == 0:
+        lines.append("📝 本次没有新增新闻。")
+    else:
+        lines.append("📝 新增新闻的摘要明细与来源地区未确认；现有阶段合计可能包含历史重复文章。")
+    problems = []
+    for key, label in (("body_insufficient", "正文不足"), ("body_failed", "正文失败")):
+        if collection[key]:
+            problems.append(f"{label} {collection[key]} 篇")
+    for stage_key, label in (("scoring", "评分失败"), ("database", "入库失败")):
+        if outcome[stage_key]["failed"]:
+            problems.append(f"{label} {outcome[stage_key]['failed']} 篇")
+    if database["skipped"]:
+        overlap = "（可能包含上述正文问题）" if collection['body_insufficient'] or collection['body_failed'] else ""
+        problems.append(f"跳过入库共 {database['skipped']} 篇{overlap}")
+    if database["inserted"] is None:
+        problems.append("入库提交结果未确认，不能判定新增数量")
+    if all(outcome["scoring"][key] is None for key in STAGE_COUNTERS["scoring"][1]):
+        problems.append("评分结果未确认")
+    if all(outcome["summary"][key] is None for key in STAGE_COUNTERS["summary"][1]):
+        problems.append("摘要结果未确认")
+    # Old rows may still need a summary even when no new row was inserted.
+    for key, label in (("failed", "摘要阶段失败"), ("pending", "摘要阶段待完成")):
+        if outcome["summary"][key]:
+            problems.append(f"{label} {outcome['summary'][key]} 篇（含历史重复文章）")
+    if problems:
+        exceptions.append("⚠️ **待关注**：" + "；".join(problems) + "。")
     if collection["failed_accounts"]:
-        lines.append("**失败账号**")
+        exceptions.append("⚠️ **采集失败账号**")
         for failed in collection["failed_accounts"]:
-            account = f"{failed['name']}（{failed['ghid']}）" if failed["ghid"] else "账号未识别"
-            lines.append(f"- {account} · {COLLECTION_CAUSES[failed['cause']][0]}")
-    for key, (title, counters) in STAGE_COUNTERS.items():
-        stage = outcome[key]
-        counts = " / ".join(f"{label} {_shown(stage[field])}" for field, label in counters.items())
-        stage_status = STAGE_STATUS.get(stage["status"])
-        if stage_status is None and all(stage[field] is None for field in counters):
-            stage_status = "未知"
-        label = f"{title}（{stage_status}）" if stage_status else title
-        lines.append(f"**{label}** {counts}")
-    lines.append(f"**接口费用** 本次 {_money(collection['api_cost'])} / 当日累计 {_money(collection['total_api_cost'])}")
+            account = failed['name'] if failed["ghid"] else "账号未识别"
+            exceptions.append(f"- {account} · {COLLECTION_CAUSES[failed['cause']][0]}")
+    account_counts = [collection[key] for key in ('accounts_ok', 'accounts_empty', 'accounts_failed')]
+    total_accounts = sum(account_counts) if all(n is not None for n in account_counts) else None
+    duration = f"{elapsed // 60} 分 {elapsed % 60} 秒" if elapsed >= 60 else f"{elapsed} 秒"
+    auxiliary = [
+        f"查询 {_shown(total_accounts)} 个账号：有当日文章 {_shown(collection['accounts_ok'])} / "
+        f"无当日文章 {_shown(collection['accounts_empty'])} / 失败 {_shown(collection['accounts_failed'])}。",
+        f"完成于 {end:%Y-%m-%d %H:%M:%S}（北京时间），耗时 {duration}。",
+        f"接口费用：本次 {_money(collection['api_cost'])} / 当日累计 {_money(collection['total_api_cost'])}",
+    ]
+    if collection['reused_count']:
+        auxiliary.append(f"本次读取 {_shown(collection['collected_count'])} / 缓存复用 {collection['reused_count']} 篇。")
     reasons = []
     if collection["complete"] is False:
         reasons.append(ERROR_REASONS["collection_incomplete"])
@@ -378,9 +447,10 @@ def _result_card(run):
     if error and ERROR_REASONS[error] not in reasons:
         reasons.append(ERROR_REASONS[error])
     if status != "success" or reasons:
-        lines.append("**原因** " + ("；".join(reasons) if reasons else "未知，详见该业务日运行日志"))
+        exceptions.append("**原因** " + ("；".join(reasons) if reasons else "未知，详见该业务日运行日志"))
     return _card(f"机关事务官微结果 · {TERMINAL[status]}", lines,
-                 {"success": "green", "partial": "orange"}.get(status, "red"))
+                 {"success": "green", "partial": "orange"}.get(status, "red"),
+                 sections=[lines, sources, exceptions, auxiliary])
 
 
 def _end_run(path, run, outcome, finished):
@@ -502,7 +572,7 @@ def _overdue(directory, check_day, status, send_fn, run=None, *, ambiguous=False
                   "notification": {"state": "pending", "attempts": 0}}
     message_uuid = uuid5(NAMESPACE_URL, f"serp-news/wechat-overdue/{check_day}").hex
     if status == "running":
-        reason = f"截至北京时间 09:00，昨日业务批次仍运行（ID {run['run_id']}）。"
+        reason = "⏳ 截至北京时间 09:00，昨日业务批次仍运行。"
     elif ambiguous:
         reason = "没有有效结果记录，请核对运行日志。"
     else:

@@ -57,12 +57,11 @@ def test_wechat_result_distinguishes_new_rows_and_duplicates(ledger, tmp_path):
         "summary": {"succeeded": 0, "failed": 0, "already_done": 1},
     }, output_root=tmp_path, send_fn=capture(messages))
     text = content(messages[0])
-    assert TARGET in text and run["run_id"] in text and "09:00" in text
-    assert "成功 1" in text and "零文章 1" in text
-    assert "采集 2" in text and "正文不足 1" in text
-    assert "本次新增 1" in text and "缓存复用 1" in text
-    assert "新增入库 0" in text and "重复 1" in text
-    assert "已完成 1" in text and "0.14" in text and "0.31" in text
+    assert TARGET in text and run["run_id"] not in text and "09:00" in text
+    assert "无当日文章 1" in text and "正文不足 1" in text
+    assert "采集到 2 篇" in text and "新增入库 0 篇" in text and "重复 1 篇" in text
+    assert "本次读取 1" in text and "缓存复用 1" in text
+    assert "0.14" in text and "0.31" in text
     assert result["notification"]["state"] == "sent"
 
 
@@ -78,9 +77,10 @@ def test_wechat_result_explicit_zero_and_missing_counters_are_distinct(ledger, t
         "scoring": {"succeeded": True}, "database": {"inserted": 0}, "summary": {},
     }, output_root=tmp_path, send_fn=capture(messages))
     text = content(messages[0])
-    assert "采集 0" in text and "有效正文 0" in text and "零文章 1" in text
+    assert "采集到 0 篇" in text and "无当日文章 1" in text
     assert "新增入库 0" in text and "重复 未知" in text
-    assert "评分（未知）" in text and "摘要（未知）" in text
+    assert "评分结果未确认" in text
+    assert "摘要结果未确认" in text
     assert "本次 ¥0.00" in text and "当日累计 未知" in text
 
 
@@ -117,8 +117,9 @@ def test_wechat_result_names_known_failed_accounts_with_sanitized_causes(ledger,
     result = ledger.finish_run(run, {"status": "partial", "collection": report},
                                output_root=tmp_path, send_fn=capture(messages))
     text = content(messages[0])
-    assert "国管局（gh_7af7ed4664f7） · 供应商余额不足" in text
-    assert "勤惟宁（gh_b658f8c01c4a） · 发布时间冲突" in text
+    assert "国管局 · 供应商余额不足" in text
+    assert "勤惟宁 · 发布时间冲突" in text
+    assert 'gh_7af7ed4664f7' not in text and 'gh_b658f8c01c4a' not in text
     assert "接口鉴权或配置" in text
     assert "SECRET" not in text + json.dumps(result)
 
@@ -182,7 +183,9 @@ def test_wechat_checker_recovers_dead_backfill_and_keeps_today_status_separate(l
         assert check["status"] == "missing" and check["date"] == TARGET
         assert len(messages) == 2
         assert date in content(messages[0]) and "中断" in content(messages[0])
-        assert old["run_id"] in content(messages[0])
+        assert old["run_id"] not in content(messages[0])
+        saved = json.loads((tmp_path / 'wechat_runs' / date / f"{old['run_id']}.json").read_text())
+        assert saved['run_id'] == old['run_id'] and saved['status'] == 'interrupted'
         assert all(live["run_id"] not in content(card) for card in messages)
     finally:
         ledger.release_run(live, output_root=tmp_path)
@@ -290,6 +293,7 @@ sys.stdin.readline()
                 assert ledger.check_missing(now=SHANGHAI_DAY, output_root=tmp_path,
                                             send_fn=capture(messages))["status"] == "running"
             assert len(messages) == 1 and "仍运行" in content(messages[0])
+            assert run["run_id"] not in content(messages[0])
         finally:
             process.terminate()
             process.wait(timeout=5)
@@ -298,7 +302,9 @@ sys.stdin.readline()
                                     send_fn=capture(messages))["status"] == "interrupted"
     assert len(messages) == 2
     assert "中断" in content(messages[-1]) and "新增入库 未知" in content(messages[-1])
-    assert run["run_id"] in content(messages[-1])
+    assert run["run_id"] not in content(messages[-1])
+    saved = json.loads((tmp_path / 'wechat_runs' / TARGET / f"{run['run_id']}.json").read_text())
+    assert saved['run_id'] == run['run_id'] and saved['status'] == 'interrupted'
 
 
 def test_wechat_releasing_run_without_finishing_leaves_interrupted_evidence(ledger, tmp_path):
@@ -450,3 +456,207 @@ def test_wechat_cli_explicitly_skips_when_disabled_without_creating_ledger(ledge
     assert ledger.main([flag]) == 0
     assert "skipped" in capsys.readouterr().out
     assert not (tmp_path / "output").exists()
+
+
+def reader_fixture(monkeypatch, tmp_path, kinds, *, duplicate=False):
+    """A committed day with one summary row per retained article."""
+    from wechat_collector import load_registry
+    from wechat_pipeline_run import write_stage
+    from topic_config import TOPIC
+
+    accounts = {a['region']: a for a in load_registry()['accounts'] if a['enabled']}
+    run = {'date': TARGET, 'run_id': 'a' * 32}
+    collection = {'date': TARGET, 'complete': True, 'accounts': [], 'articles': []}
+    db, summary = [], []
+    for i, (region, status, method, reason, score) in enumerate(kinds, 1):
+        a = accounts[region]
+        link = f"https://mp.weixin.qq.com/s?__biz={a['biz']}&mid={100+i}&idx=1"
+        candidate = {'title': f'新闻{i}', 'link': link, 'article_id': f"{a['biz']}/{100+i}/1"}
+        collection['articles'].append(dict(candidate, keyword=TOPIC, sourceapi='极致了api',
+            wechat_article_id=candidate['article_id'], wechat_ghid=a['ghid'], wechat_content_status='ok',
+            region='SECRET-FAKE', source='SECRET-FAKE'))
+        db.append(dict(candidate, stored_link=link, status='inserted'))
+        summary.append(dict(row_id=i, candidates=[candidate], status=status, stored_link=link,
+            stored_date=TARGET, score=score, summary_method=method, reason=reason))
+    if duplicate:
+        a = accounts['国管局']
+        candidate = dict(title='历史重复', link=f"https://mp.weixin.qq.com/s?__biz={a['biz']}&mid=1000&idx=1",
+                         article_id=f"{a['biz']}/1000/1")
+        collection['articles'].append(dict(candidate, keyword=TOPIC, sourceapi='极致了api', wechat_content_status='ok'))
+        db.append(dict(candidate, stored_link=candidate['link'], status='duplicate'))
+        summary.append(dict(row_id=1000, candidates=[candidate], status='already_done', stored_date='2026-11-01'))
+    monkeypatch.chdir(tmp_path)
+    write_stage(run, 'database', 'success', {'inserted': len(kinds), 'duplicate': int(duplicate), 'failed': 0, 'skipped': 0}, db)
+    write_stage(run, 'summary', 'success', {key: sum(r['status'] == key for r in summary)
+        for key in ('succeeded', 'already_done', 'not_needed', 'failed', 'pending')}, summary)
+    write_stage(run, 'scoring', 'success', {'succeeded': len(db), 'failed': 0}, [])
+    return run, collection, db, summary
+
+
+def test_reader_counts_new_rows_and_verified_publisher_regions_only(monkeypatch, tmp_path, ledger):
+    from wechat_pipeline_run import build_outcome
+
+    kinds = [('浙江', 'not_needed', None, 'low_score', 2),
+             ('厦门', 'succeeded', 'generated', None, 4),
+             ('厦门', 'succeeded', 'direct', None, 4)]
+    run, collection, _, _ = reader_fixture(monkeypatch, tmp_path, kinds, duplicate=True)
+    outcome = build_outcome(run, collection, None)
+    overview = outcome.get('reader_overview')
+    assert overview is not None, 'committed new rows need a separate reader denominator'
+    assert overview['inserted'] == 3
+    assert overview['summary']['ready_generated'] == 1
+    assert overview['summary']['ready_direct'] == 1
+    assert overview['summary']['low_score'] == 1
+    assert sum(overview['summary'].values()) == 3
+    assert overview['regions'] == [{'label': '浙江', 'count': 1}, {'label': '福建·厦门', 'count': 2}]
+    assert overview['region_unknown'] == 0
+    actual_run = ledger.start_run(TARGET, output_root=tmp_path)
+    cards = []
+    result = ledger.finish_run(actual_run, outcome, output_root=tmp_path, send_fn=capture(cards))
+    text = content(cards[0])
+    assert '新增 3 篇中' in text and '摘要就绪 2 篇' in text and '低于 3 分 1 篇' in text
+    assert '模型生成 1' in text and '短正文直接采用 1' in text
+    assert '浙江 1' in text and '福建·厦门 2' in text and '中央机关' not in text
+    assert actual_run['run_id'] not in text and 'SECRET' not in text + json.dumps(result)
+
+
+@pytest.mark.parametrize('details,want', [
+    ({'status': 'not_needed'}, 'unknown'),
+    ({'status': 'not_needed', 'reason': 'body_unusable', 'score': 4}, 'body_unusable'),
+    ({'status': 'pending', 'reason': 'score_missing', 'score': None}, 'score_unconfirmed'),
+    ({'status': 'failed', 'score': 4}, 'failed'),
+    ({'status': 'pending', 'score': 4}, 'pending'),
+    ({'status': 'succeeded'}, 'ready_unknown'),
+])
+def test_reader_does_not_infer_low_score_from_legacy_not_needed(monkeypatch, tmp_path, details, want):
+    from wechat_pipeline_run import build_outcome, write_stage
+
+    run, collection, _, rows = reader_fixture(monkeypatch, tmp_path, [('江西', 'pending', None, None, None)])
+    for key in ('score', 'reason', 'summary_method'):
+        rows[0].pop(key)
+    rows[0].update(details)
+    write_stage(run, 'summary', 'success', {}, rows)
+    summary = build_outcome(run, collection, None).get('reader_overview', {}).get('summary', {})
+    assert summary.get(want) == 1
+    assert sum(summary.values()) == 1
+
+
+def test_reader_same_row_duplicates_count_once_and_exclude_duplicate_publisher(monkeypatch, tmp_path):
+    from wechat_pipeline_run import build_outcome, write_stage
+
+    run, collection, db, rows = reader_fixture(monkeypatch, tmp_path, [('厦门', 'succeeded', 'direct', None, 4)], duplicate=True)
+    rows[0]['candidates'].append(db[-1])
+    write_stage(run, 'summary', 'success', {}, rows[:1])
+    overview = build_outcome(run, collection, None).get('reader_overview', {})
+    assert overview.get('summary', {}).get('ready_direct') == 1
+    assert overview.get('regions') == [{'label': '福建·厦门', 'count': 1}]
+
+
+def test_reader_unconfirmed_commit_cannot_become_confirmed_insert(monkeypatch, tmp_path):
+    from wechat_pipeline_run import build_outcome, write_stage
+
+    run, collection, db, _ = reader_fixture(monkeypatch, tmp_path, [('浙江', 'succeeded', 'direct', None, 4)])
+    db[0]['status'] = 'unknown'
+    write_stage(run, 'database', 'failed', {}, db)
+    outcome = build_outcome(run, collection, 'database_failed')
+    assert outcome.get('reader_overview') is None
+    assert outcome['database'].get('inserted') is None
+
+
+def test_reader_rejects_conflicting_summary_row_or_unverified_region(monkeypatch, tmp_path):
+    from wechat_pipeline_run import build_outcome, write_stage
+
+    run, collection, db, rows = reader_fixture(monkeypatch, tmp_path, [('浙江', 'succeeded', 'direct', None, 4)])
+    collection['articles'][0]['wechat_ghid'] = 'gh_forged'
+    rows[0]['stored_link'] = 'https://example.test/unrelated'
+    write_stage(run, 'summary', 'success', {}, rows)
+    overview = build_outcome(run, collection, None).get('reader_overview', {})
+    assert overview.get('summary', {}).get('unknown') == 1
+    assert overview.get('regions') == [] and overview.get('region_unknown') == 1
+
+
+def test_reader_optional_frozen_overview_survives_retry_and_invalid_input_is_not_leaked(ledger, monkeypatch, tmp_path):
+    from wechat_pipeline_run import build_outcome
+
+    _, collection, _, _ = reader_fixture(monkeypatch, tmp_path, [('浙江', 'not_needed', None, 'low_score', 1)])
+    evidence_run = {'date': TARGET, 'run_id': 'a' * 32}
+    outcome = build_outcome(evidence_run, collection, None)
+    run = ledger.start_run(TARGET, output_root=tmp_path)
+    cards = []
+    result = ledger.finish_run(run, outcome, output_root=tmp_path, send_fn=capture(cards, success=False))
+    assert result['outcome'].get('reader_overview') is not None
+    outcome['reader_overview']['summary']['low_score'] = 999
+    retried = ledger.retry_pending(output_root=tmp_path, send_fn=capture(cards))
+    assert retried['sent'] == 1 and cards[-1] == cards[0]
+    run2 = ledger.start_run(TARGET, output_root=tmp_path)
+    outcome['reader_overview']['regions'][0]['label'] = 'SECRET-CREDENTIAL'
+    result2 = ledger.finish_run(run2, outcome, output_root=tmp_path, send_fn=capture(cards))
+    assert 'SECRET' not in json.dumps(result2) + content(cards[-1])
+    assert 'reader_overview' not in result2['outcome']
+
+
+@pytest.mark.parametrize('broken', ['collection_articles', 'summary_status'])
+def test_reader_malformed_optional_evidence_keeps_committed_totals(monkeypatch, tmp_path, broken):
+    from wechat_pipeline_run import build_outcome, write_stage
+
+    run, collection, _, rows = reader_fixture(monkeypatch, tmp_path, [('浙江', 'succeeded', 'direct', None, 4)])
+    if broken == 'collection_articles':
+        collection['articles'] = None
+    else:
+        rows[0]['status'] = {'unexpected': 'SECRET'}
+        write_stage(run, 'summary', 'success', {}, rows)
+    overview = build_outcome(run, collection, None).get('reader_overview', {})
+    assert overview.get('inserted') == 1
+    if broken == 'collection_articles':
+        assert overview.get('region_unknown') == 1
+    else:
+        assert overview.get('summary', {}).get('unknown') == 1
+    assert 'SECRET' not in json.dumps(overview)
+
+
+def test_reader_missing_candidate_link_does_not_interrupt_finalization(monkeypatch, tmp_path):
+    from wechat_pipeline_run import build_outcome, write_stage
+
+    run, collection, db, _ = reader_fixture(monkeypatch, tmp_path, [('浙江', 'succeeded', 'direct', None, 4)])
+    db[0].pop('link')
+    write_stage(run, 'database', 'success', {'inserted': 1, 'duplicate': 0}, db)
+    outcome = build_outcome(run, collection, 'scoring_failed')
+    assert outcome['error'] == 'scoring_failed'
+    assert outcome['database']['inserted'] == 1
+    overview = outcome.get('reader_overview', {})
+    assert overview.get('summary', {}).get('unknown') == 1
+    assert overview.get('region_unknown') == 1
+
+
+@pytest.mark.parametrize('reports', [None, [], {'database': []}, {'database': {'counts': None}},
+    {'database': {'counts': {'inserted': 1}, 'articles': None}},
+    {'database': {'counts': {'inserted': 1}, 'articles': {}}}])
+def test_reader_malformed_report_cannot_invent_new_row_evidence(reports):
+    from wechat_reader_outcome import build_reader_overview
+
+    assert build_reader_overview(None, reports, TARGET) is None
+
+
+@pytest.mark.parametrize('summary', [None, [], {'articles': None}, {'articles': {}}])
+def test_reader_malformed_summary_keeps_new_rows_unknown(monkeypatch, tmp_path, summary):
+    from wechat_reader_outcome import build_reader_overview
+
+    _, collection, db, _ = reader_fixture(monkeypatch, tmp_path, [('浙江', 'succeeded', 'direct', None, 4)])
+    overview = build_reader_overview(collection, {'database': {'counts': {'inserted': 1}, 'articles': db},
+                                                'summary': summary}, TARGET)
+    assert overview['summary']['unknown'] == 1
+    assert overview['regions'] == [{'label': '浙江', 'count': 1}]
+
+
+def test_reader_optional_statistics_failure_preserves_business_result(monkeypatch, tmp_path):
+    import wechat_reader_outcome
+    from wechat_pipeline_run import build_outcome
+
+    run, collection, _, _ = reader_fixture(monkeypatch, tmp_path, [('浙江', 'succeeded', 'direct', None, 4)])
+    def broken(*args):
+        raise RuntimeError('SECRET statistics error')
+    monkeypatch.setattr(wechat_reader_outcome, 'build_reader_overview', broken)
+    outcome = build_outcome(run, collection, 'scoring_failed')
+    assert outcome['error'] == 'scoring_failed' and outcome['status'] == 'failed'
+    assert outcome['database']['inserted'] == 1 and 'reader_overview' not in outcome
+    assert 'SECRET statistics error' not in json.dumps(outcome)

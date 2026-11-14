@@ -646,3 +646,30 @@ def test_wechat_mixed_keyword_exception_preserves_its_own_summary_outcome(integr
     }
     assert report["status"] == ("success" if summary_complete else "failed")
     assert run["status"] == ("success" if summary_complete else "partial")
+
+
+def test_wechat_summary_evidence_distinguishes_direct_generated_and_low_score(integration, monkeypatch):
+    import news_item_summarizer
+
+    main, accounts, provider, db, scored, cards, commands = integration
+    a = accounts[0]
+    direct = article(900, biz=a['biz'])
+    generated = article(901, biz=a['biz'])
+    low = article(902, biz=a['biz'], title='无需摘要')
+    provider.pages[a['ghid'], ''] = [page(direct, generated, low, ghid=a['ghid'])]
+    provider.bodies[generated['url']] = '<div id="js_content"><p>' + BODY * 30 + '</p></div>'
+    monkeypatch.setattr(news_item_summarizer, 'call_llm', lambda *a, **kw: '模型摘要')
+    assert main.main(DAY, keyword=TOPIC) is True
+    run = ledger()
+    rows = read(receipts_for(run) / 'summary.json')['articles']
+    by_title = {r['candidates'][0]['title']: r for r in rows}
+    assert by_title[direct['title']].get('summary_method') == 'direct'
+    assert by_title[generated['title']].get('summary_method') == 'generated'
+    assert by_title[low['title']].get('reason') == 'low_score'
+    assert by_title[low['title']].get('score') == 2
+    assert by_title[direct['title']].get('stored_link') == direct['url']
+    assert all(r.get('stored_date') == DAY for r in rows)
+    assert all('content' not in r and 'summary' not in r for r in rows)
+    assert run['outcome']['reader_overview']['summary']['ready_direct'] == 1
+    assert run['outcome']['reader_overview']['summary']['ready_generated'] == 1
+    assert run['outcome']['reader_overview']['summary']['low_score'] == 1
