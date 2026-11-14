@@ -15,8 +15,6 @@ import logging
 import subprocess
 import datetime
 
-from db_utils import get_connection, get_table_name
-
 logger = logging.getLogger(__name__)
 
 # ---- 常量（硬编码，按 issue #11）----
@@ -32,6 +30,18 @@ METRIC_ICONS = {
 
 
 # ============== 数据查询 ==============
+
+def get_connection(*args, **kwargs):
+    from db_utils import get_connection as connect
+
+    return connect(*args, **kwargs)
+
+
+def get_table_name(default="scored_news"):
+    from db_utils import get_table_name as table_name
+
+    return table_name(default)
+
 
 def _offset_date(target, days):
     d = datetime.datetime.strptime(target, DATE_FMT).date()

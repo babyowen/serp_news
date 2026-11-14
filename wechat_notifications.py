@@ -452,7 +452,17 @@ def _days(root, latest):
 def _records(directory):
     for path in sorted(directory.glob("*.json")):
         if RUN_ID.fullmatch(path.stem):
-            yield path, _load_run(path)
+            try:
+                run = _load_run(path)
+            except (OSError, RecursionError):
+                # Keep evidence of an unusable record without abandoning the date scan.
+                run = None
+            yield path, run
+
+
+def _has_lease_marker(directory):
+    return any(RUN_ID.fullmatch(marker.name[1:-len(".live.lock")])
+               for marker in directory.glob(".*.live.lock"))
 
 
 def _retry_results(records, now, send_fn, *, check_day=None):
@@ -472,7 +482,7 @@ def retry_pending(*, output_root="output", send_fn=None):
     result = {"sent": 0, "pending": 0}
     for directory in _days(_ledger_root(output_root), now.date().isoformat()):
         with _day_lock(directory):
-            retried = _retry_results(_records(directory), now, send_fn)
+            retried = _retry_results(_records(directory), _now(), send_fn)
             for key, count in retried.items():
                 result[key] += count
     return result
@@ -510,22 +520,23 @@ def check_missing(*, now=None, output_root="output", send_fn=None):
     target = root / business_date
     for directory in sorted(set(_days(root, check_day)) | {target}):
         with _day_lock(directory):
+            observed_at = _now() if now is None else current
             records = list(_records(directory))
             eligible = []
             for path, run in records:
                 if run is None:
                     continue
                 started = _timestamp(run["started_at"])
-                if started > current:
+                if started > observed_at:
                     continue
                 if run["status"] == "running":
                     if not _is_running(path):
-                        _end_run(path, run, {"status": "interrupted", "error": "interrupted"}, current)
-                elif _timestamp(run["finished_at"]) > current:
+                        _end_run(path, run, {"status": "interrupted", "error": "interrupted"}, observed_at)
+                elif _timestamp(run["finished_at"]) > observed_at:
                     continue
                 if directory == target and started.date() == current.date():
                     eligible.append(run)
-            retried = _retry_results(records, current, send_fn, check_day=check_day)
+            retried = _retry_results(records, observed_at, send_fn, check_day=check_day)
             for key, count in retried.items():
                 result[key] += count
             if directory == target:
@@ -535,7 +546,7 @@ def check_missing(*, now=None, output_root="output", send_fn=None):
                     result["run_id"] = latest["run_id"]
                 if latest is None or latest["status"] == "running":
                     result["alert"] = _overdue(directory, check_day, result["status"], send_fn, latest,
-                                               ambiguous=bool(records))
+                                               ambiguous=bool(records) or _has_lease_marker(directory))
     return result
 
 

@@ -1,7 +1,10 @@
 """Drive the real ledger and scheduler through an isolated output root."""
 from concurrent.futures import ThreadPoolExecutor
+from contextlib import contextmanager
 from datetime import datetime, timedelta, timezone
 import json
+import os
+from pathlib import Path
 import subprocess
 import sys
 from threading import Event
@@ -239,6 +242,34 @@ def test_wechat_checker_ignores_run_scoped_stage_files(ledger, tmp_path):
     check = ledger.check_missing(now=SHANGHAI_DAY, output_root=tmp_path, send_fn=capture(messages))
     assert completed["status"] == "success"
     assert check["status"] == "missing" and len(messages) == 1
+    assert "没有有效结果记录" in content(messages[0]) and "未启动" not in content(messages[0])
+
+
+@pytest.mark.parametrize("unusable", ["directory", "permission"])
+def test_wechat_historical_read_error_does_not_prevent_replay_or_current_check(
+        ledger, tmp_path, monkeypatch, unusable):
+    bad_day = tmp_path / "wechat_runs" / "2026-11-09"
+    bad_day.mkdir(parents=True)
+    bad_path = bad_day / f"{uuid4().hex}.json"
+    if unusable == "directory":
+        bad_path.mkdir()
+    else:
+        bad_path.write_text("{}")
+        original_read = Path.read_text
+
+        def guarded_read(path, *args, **kwargs):
+            if path == bad_path:
+                raise PermissionError("injected unreadable record")
+            return original_read(path, *args, **kwargs)
+
+        monkeypatch.setattr(Path, "read_text", guarded_read)
+    run = ledger.start_run("2026-11-10", output_root=tmp_path)
+    ledger.finish_run(run, {"status": "failed"}, output_root=tmp_path, send_fn=lambda _: False)
+    messages = []
+    check = ledger.check_missing(now=SHANGHAI_DAY, output_root=tmp_path, send_fn=capture(messages))
+    assert check["status"] == "missing" and check["sent"] == 1
+    assert len(messages) == 2
+    assert "2026-11-10" in content(messages[0]) and TARGET in content(messages[1])
 
 
 def test_wechat_live_process_is_detected_and_process_exit_records_interrupted(ledger, tmp_path):
@@ -304,6 +335,26 @@ def test_wechat_parallel_finish_and_checker_send_one_result(ledger, tmp_path):
     assert len(messages) == 1
 
 
+def test_wechat_checker_observes_acknowledged_finish_that_wins_date_lock(ledger, tmp_path, monkeypatch):
+    run = ledger.start_run(TARGET, output_root=tmp_path)
+    messages = []
+    lock = ledger._day_lock
+
+    @contextmanager
+    def finish_before_checker_acquires_lock(directory):
+        monkeypatch.setattr(ledger, "_day_lock", lock)
+        monkeypatch.setattr(ledger, "_now", lambda: SHANGHAI_DAY + timedelta(seconds=10))
+        result = ledger.finish_run(run, {"status": "failed"}, output_root=tmp_path, send_fn=capture(messages))
+        assert result["notification"]["state"] == "sent"
+        with lock(directory):
+            yield
+
+    monkeypatch.setattr(ledger, "_day_lock", finish_before_checker_acquires_lock)
+    report = ledger.check_missing(output_root=tmp_path, send_fn=capture(messages))
+    assert report["status"] == "failed" and report["run_id"] == run["run_id"]
+    assert len(messages) == 1
+
+
 def test_wechat_finishes_result_after_local_registry_is_replaced(ledger, tmp_path, monkeypatch):
     import wechat_collector
 
@@ -352,6 +403,44 @@ def test_wechat_api_retries_use_same_uuid_and_independent_runs_use_distinct_uuid
     assert sent[0]["uuid"] == sent[1]["uuid"] != sent[2]["uuid"]
     assert len(sent[0]["uuid"]) <= 50
     assert sent[0]["content"] == sent[1]["content"]
+
+
+def test_wechat_standalone_check_sends_with_malformed_mysql_port(tmp_path):
+    script = """
+import sys
+from datetime import datetime
+import requests
+import wechat_notifications as ledger
+
+class Response:
+    def __init__(self, data):
+        self.data = data
+
+    def json(self):
+        return self.data
+
+def post(url, **kwargs):
+    if url.endswith("/tenant_access_token/internal"):
+        return Response({"tenant_access_token": "stub-token"})
+    assert url.endswith("/im/v1/messages") and kwargs["json"]["uuid"]
+    print("feishu-message-attempt")
+    return Response({"code": 0})
+
+requests.post = post
+ledger._now = lambda: datetime.fromisoformat(sys.argv[1])
+result = ledger.main(["--check-missing"])
+assert "db_utils" not in sys.modules
+raise SystemExit(result)
+"""
+    env = {**os.environ, "MYSQL_PORT": "invalid-port", "ENABLE_GOVERNMENT_WECHAT": "1",
+           "FEISHU_USER_ID": "ou_test", "FEISHU_APP_ID": "test_app",
+           "FEISHU_APP_SECRET": "test_secret", "LARK_CLI_PATH": ""}
+    proc = subprocess.run([sys.executable, "-B", "-c", script, SHANGHAI_DAY.isoformat()],
+                          cwd=tmp_path, env=env, capture_output=True, text=True, timeout=10)
+    assert proc.returncode == 0, proc.stdout + proc.stderr
+    assert proc.stdout.count("feishu-message-attempt") == 1
+    report = json.loads(proc.stdout.splitlines()[-1])
+    assert report["alert"] == "sent"
 
 
 @pytest.mark.parametrize("flag", ["--check-missing", "--retry-pending"])
