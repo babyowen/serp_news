@@ -148,11 +148,88 @@ def migrate_legacy_scores(results, json_path, date_str):
             news.update(candidate)
 
 
+def _cached_score(cached, row):
+    valid = (context_limit_skipped(cached) or content_skipped(cached)
+             or (type(cached.get("score")) is int and 0 <= cached["score"] <= 5
+                 and (cached.get("score_status") == "ok"
+                      and not body_rejection_reason(row.get("content"), row.get("title"))
+                      or cached.get("score_status") == "empty_content" and not row.get("content"))))
+    return valid and all(cached.get(key) == row.get(key) for key in ("title", "content"))
+
+
+def _score_row(row, keyword):
+    from scoring_policy import VERSION
+
+    result = score_news_result(row.get("title", ""), row.get("content", ""),
+                               row.get("search_keyword", keyword), keyword, context=row)
+    return {**row, **score_fields(result), "scoring_policy_version": VERSION}
+
+
+def _reuse_score(cached, row):
+    return {**row, **{key: value for key, value in cached.items() if key.startswith("score")
+                      or key == "scoring_policy_version"}}
+
+
+def incremental_score_news(json_path, keyword, run):
+    """Reconcile the current collection and checkpoint successful paid scores."""
+    from pathlib import Path
+    from government_affairs_pipeline import atomic_json
+    from wechat_pipeline_run import write_stage
+
+    path = Path(json_path)
+    saved = path.with_name(path.stem + "_scored.json")
+    rows = json.loads(path.read_text(encoding="utf-8"))
+    previous = json.loads(saved.read_text(encoding="utf-8")) if saved.exists() else []
+    migrate_legacy_scores(previous, path, run["date"])
+    by_link = {row.get("link"): row for row in previous}
+
+    candidates, admitted, results = {}, {}, {}
+    for row in rows:
+        link = row.get("link")
+        if row.get("wechat_article_id"):
+            candidates[link] = {"link": link, "title": row["title"],
+                                "article_id": row["wechat_article_id"], "status": "skipped"}
+            if row.get("wechat_content_status") != "ok":
+                continue
+        elif not check_current(row):
+            raise ValueError("publication date check missing or stale; run content stage first")
+        if link and eligible(row):
+            admitted.setdefault(link, row)
+
+    for link, row in admitted.items():
+        cached = by_link.get(link, {})
+        if _cached_score(cached, row):
+            results[link] = _reuse_score(cached, row)
+            if link in candidates and cached["score_status"] == "ok":
+                candidates[link]["status"] = "already_done"
+
+    # Remove stale/quarantined entries even if scoring is interrupted.
+    atomic_json(saved, list(results.values()))
+    complete = True
+    for link, row in admitted.items():
+        if link in results:
+            continue
+        result = _score_row(row, keyword)
+        results[link] = result
+        atomic_json(saved, list(results.values()))
+        status = result["score_status"]
+        skipped = status == "empty_content" or content_skipped(result) or context_limit_skipped(result)
+        if link in candidates:
+            candidates[link]["status"] = "succeeded" if status == "ok" else ("skipped" if skipped else "failed")
+        complete = complete and (status == "ok" or skipped)
+
+    counts = {status: sum(row["status"] == status for row in candidates.values())
+              for status in ("succeeded", "failed", "skipped", "already_done")}
+    counts["candidates"] = len(candidates)
+    status = ("partial" if counts["succeeded"] or counts["already_done"] else "failed") if counts["failed"] else "success"
+    write_stage(run, "scoring", status, counts, list(candidates.values()))
+    return complete
+
+
 def refresh_review_scores(json_path, keyword, links):
     """Score newly admitted rows, keeping already successful results across retries."""
     from pathlib import Path
     from government_affairs_pipeline import atomic_json
-    from scoring_policy import VERSION
     path = Path(json_path)
     saved = path.with_name(path.stem + "_scored.json")
     rows = json.loads(path.read_text(encoding="utf-8"))
@@ -163,18 +240,7 @@ def refresh_review_scores(json_path, keyword, links):
         if row.get("link") not in links or not eligible(row):
             continue
         cached = by_link.get(row["link"], {})
-        valid = ((context_limit_skipped(cached) or
-                  (type(cached.get("score")) is int and 0 <= cached["score"] <= 5
-                   and cached.get("score_status") == "ok"))
-                 and not body_rejection_reason(row.get("content"), row.get("title"))
-                 and cached.get("title") == row.get("title")
-                 and cached.get("content") == row.get("content"))
-        if valid:
-            result = {**cached, **row, **{k:v for k,v in cached.items() if k.startswith("score")}}
-        else:
-            scored = score_news_result(row.get("title", ""), row.get("content", ""),
-                                       row.get("search_keyword", keyword), keyword, context=row)
-            result = {**row, **score_fields(scored), "scoring_policy_version":VERSION}
+        result = _reuse_score(cached, row) if _cached_score(cached, row) else _score_row(row, keyword)
         by_link[row["link"]] = result
         # Persist each paid success before the next request or a DB operation.
         atomic_json(saved, list(by_link.values()))
@@ -295,6 +361,7 @@ def main():
         parser.add_argument('keyword', nargs='?', default=None)
         parser.add_argument('date', nargs='?', default=None)
         parser.add_argument('--test_json', type=str, help='测试模式，输入一条json字符串')
+        parser.add_argument('--incremental', action='store_true')
         parser.add_argument('--rescore', action='store_true', help='重评模式：只对无分数或0分的条目重新评分')
         parser.add_argument('--adopt-existing-config', action='store_true')
         args = parser.parse_args()
@@ -384,6 +451,16 @@ def main():
         prepare_batch(date_str, keyword, args.adopt_existing_config)
         json_path = os.path.join("output", date_str, f"{date_str}_{keyword}.json")
         scored_json_path = os.path.splitext(json_path)[0] + "_scored.json"
+
+        if args.incremental:
+            from wechat_pipeline_run import stage_run
+
+            run = stage_run(date_str)
+            if not run or args.rescore:
+                parser.error("--incremental requires an active pipeline scoring run")
+            complete = incremental_score_news(json_path, keyword, run)
+            log_script_complete("news_scorer.py", success=complete, message=f"增量评分: {keyword}")
+            return complete
 
         # 重评模式：从已有的_scored.json中找无分/0分条目重新评分
         if args.rescore:

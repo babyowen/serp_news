@@ -6,6 +6,8 @@ import json
 import argparse
 import shlex
 import concurrent.futures
+from contextlib import ExitStack
+from news_dates import reference_time
 from config import DEFAULT_KEYWORDS, SEARCH_KEYWORDS
 from runtime_config import value
 from batch_config import prepare_batch
@@ -107,13 +109,15 @@ def write_skip_log(keyword, reason, file_path):
         pass
 
 @with_error_handling("main.py", "新闻采集阶段")
-def execute_news_fetching(date, main_kw):
+def execute_news_fetching(date, main_kw, *, collect_wechat=None):
     """执行新闻采集阶段"""
     if main_kw == TOPIC:
         from government_affairs_pipeline import collect
         def run_search(term, output):
             cmd = shlex.join([sys.executable, "fetch_and_filter.py", term, date, "--main_keyword", TOPIC, "--search_keyword", term, "--output", output])
             return safe_subprocess_run(cmd, f"采集新闻-{term}", keyword=term, check=False)
+        if collect_wechat is not None:
+            return collect(date, SEARCH_KEYWORDS[main_kw], run_search, collect_wechat=collect_wechat)
         return collect(date, SEARCH_KEYWORDS[main_kw], run_search)
     merged_file = f"output/{date}/{date}_{main_kw}.json"
     if os.path.exists(merged_file):
@@ -218,7 +222,7 @@ def execute_content_fetching(date, kw):
     return safe_subprocess_run(cmd, f"抓取正文-{kw}", keyword=kw, check=False)
 
 @with_error_handling("main.py", "AI评分阶段")
-def execute_scoring(date, kw):
+def execute_scoring(date, kw, *, incremental=False):
     """执行AI评分阶段"""
     kw = kw.strip()
     merged_file = f"output/{date}/{date}_{kw}.json"
@@ -229,6 +233,10 @@ def execute_scoring(date, kw):
         write_skip_log(kw, "新闻列表文件不存在，无法评分", merged_file)
         return False
     
+    if incremental:
+        cmd = shlex.join([sys.executable, "news_scorer.py", kw, date, "--incremental"])
+        return safe_subprocess_run(cmd, f"AI评分-{kw}", keyword=kw, check=False, retries=1)
+
     if os.path.exists(scored_file) and not scored_file_complete(scored_file, kw):
         print(f"[ERROR] {kw} 已有评分包含失败项，请显式 --rescore 后再续跑")
         return False
@@ -323,16 +331,33 @@ def main(date=None, keyword=None, adopt_existing_config=False, config_revision=N
 
     main_success = True
     active_keywords = None
+    run = collection = error = None
+    resources = ExitStack()
     try:
         # 如果未指定日期，自动赋值为昨天日期
         if not date:
-            date = (datetime.datetime.now() - datetime.timedelta(days=1)).strftime("%Y-%m-%d")
+            date = (reference_time().date() - datetime.timedelta(days=1)).isoformat()
         snapshot, active_keywords = prepare_batch(date, keyword, adopt_existing_config, config_revision)
         SEARCH_KEYWORDS = snapshot.document["settings"]["SEARCH_KEYWORDS"]
         DEFAULT_KEYWORDS = list(SEARCH_KEYWORDS)
 
+        if os.environ.get("ENABLE_GOVERNMENT_WECHAT") == "1" and TOPIC in active_keywords:
+            from wechat_notifications import start_run, release_run
+            from wechat_pipeline_run import pipeline_lock, stage_environment, read_stage, write_stage
+
+            resources.enter_context(pipeline_lock(date))
+            run = start_run(date)
+            resources.callback(release_run, run)
+
+        def collect_wechat(day):
+            from wechat_collector import collect_wechat as collect_source
+
+            nonlocal collection
+            collection = collect_source(day)
+            return collection
+
         # 生成批次ID，设置批次日志路径
-        run_id = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        run_id = reference_time().strftime("%Y%m%d_%H%M%S_%f") if run else datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
         batch_log_path = os.path.join("output", date, f"run_{run_id}.log")
         os.environ["RUN_LOG_PATH"] = batch_log_path
         os.makedirs(os.path.dirname(batch_log_path), exist_ok=True)
@@ -358,7 +383,13 @@ def main(date=None, keyword=None, adopt_existing_config=False, config_revision=N
         # 步骤1：抓取API
         print(f"\n[步骤1] 开始执行步骤1：新闻采集阶段")
         for main_kw in active_keywords:
-            if execute_news_fetching(date, main_kw):
+            if run and main_kw == TOPIC:
+                fetched = execute_news_fetching(date, main_kw, collect_wechat=collect_wechat)
+                if not fetched and (not collection or fetched is None):
+                    error = "collection_failed"
+            else:
+                fetched = execute_news_fetching(date, main_kw)
+            if fetched:
                 fetch_success += 1
             else:
                 fetch_failed += 1
@@ -367,8 +398,13 @@ def main(date=None, keyword=None, adopt_existing_config=False, config_revision=N
         
         # 步骤2：抓正文
         print(f"\n[步骤2] 开始执行步骤2：正文抓取阶段")
-        for kw in active_keywords:
-            if execute_content_fetching(date, kw):
+        content_keywords = [kw for kw in active_keywords if not (run and kw == TOPIC and error == "collection_failed")]
+        gov_content_ok = False
+        for kw in content_keywords:
+            content_ok = execute_content_fetching(date, kw)
+            if run and kw == TOPIC:
+                gov_content_ok = content_ok
+            if content_ok:
                 content_success += 1
             else:
                 content_failed += 1
@@ -377,7 +413,17 @@ def main(date=None, keyword=None, adopt_existing_config=False, config_revision=N
         
         # 步骤3：评分（并发处理）
         print(f"\n[步骤3] 开始执行步骤3：AI评分阶段（并发处理）")
-        score_success, score_failed = execute_scoring_concurrent(date, active_keywords, max_workers=3)
+        if run:
+            # Keep report variables confined to the relevant child invocation.
+            with stage_environment(run):
+                gov_scored = gov_content_ok and execute_scoring(date, TOPIC, incremental=True)
+            other_keywords = [kw for kw in active_keywords if kw != TOPIC]
+            if other_keywords:
+                score_success, score_failed = execute_scoring_concurrent(date, other_keywords, max_workers=3)
+            score_success += int(bool(gov_scored))
+            score_failed += int(not gov_scored)
+        else:
+            score_success, score_failed = execute_scoring_concurrent(date, active_keywords, max_workers=3)
         
         print(f"\n[统计] 步骤3完成统计：成功 {score_success}，失败 {score_failed}")
         
@@ -387,26 +433,36 @@ def main(date=None, keyword=None, adopt_existing_config=False, config_revision=N
         date_arg = f'--date {shlex.quote(date)}'
         keyword_arg = f' --keyword {shlex.quote(keyword)}' if keyword else ''
         print("\n[步骤4] 开始执行步骤4：数据库写入阶段")
-        database_success = run_step(
-            f'{shlex.quote(sys.executable)} write_to_mysql.py {date_arg}{keyword_arg}',
-            '自动写入数据库',
-            'write_to_mysql.py',
-            '将scored结果写入数据库'
-        )
+        database_cmd = f'{shlex.quote(sys.executable)} write_to_mysql.py {date_arg}{keyword_arg}'
+        if run:
+            _update_step("自动写入数据库", "running")
+            with stage_environment(run):
+                database_success = safe_subprocess_run(database_cmd, '自动写入数据库', check=False, retries=1)
+            _update_step("自动写入数据库", "success" if database_success else "failed")
+        else:
+            database_success = run_step(database_cmd, '自动写入数据库', 'write_to_mysql.py',
+                                        '将scored结果写入数据库')
 
         # 步骤5：单条500字摘要（受环境变量控制）
         enable_item_summarizer = os.getenv("ENABLE_ITEM_SUMMARIZER", "1") == "1"
         if enable_item_summarizer:
             print(f"\n[步骤5] 开始执行步骤5：单条新闻摘要阶段")
-            item_summary_success = safe_subprocess_run(
-                f'{shlex.quote(sys.executable)} news_item_summarizer.py {shlex.quote(date)}{keyword_arg}',
-                '单条新闻摘要',
-                keyword='all',
-                check=False
-            )
+            summary_cmd = f'{shlex.quote(sys.executable)} news_item_summarizer.py {shlex.quote(date)}{keyword_arg}'
+            if run:
+                with stage_environment(run):
+                    item_summary_success = safe_subprocess_run(summary_cmd, '单条新闻摘要', keyword='all',
+                                                               check=False, retries=1)
+            else:
+                item_summary_success = safe_subprocess_run(summary_cmd, '单条新闻摘要', keyword='all', check=False)
         else:
             print(f"\n[步骤5] 已通过 ENABLE_ITEM_SUMMARIZER=0 关闭，跳过")
             item_summary_success = True
+            if run:
+                evidence = read_stage(run, "database")
+                counts = {}
+                if evidence and not evidence["articles"]:
+                    counts = dict.fromkeys(("succeeded", "failed", "already_done", "not_needed", "pending"), 0)
+                write_stage(run, "summary", "skipped", counts, [])
 
         # 步骤6：地域分析 — 已由 news_item_summarizer.py 在生成摘要时一并处理
         # news_region_analyzer.py 保留为独立脚本，可手动运行作为补充/应急
@@ -471,15 +527,32 @@ def main(date=None, keyword=None, adopt_existing_config=False, config_revision=N
         # 记录脚本完成
         log_script_complete("main.py", success=main_success, message=completion_message)
 
-    except KeyboardInterrupt:
+    except (KeyboardInterrupt, SystemExit) as exc:
+        error = "interrupted" if isinstance(exc, KeyboardInterrupt) or exc.code == 130 else "other"
         print(f"\n[INFO] 用户中断程序执行")
         log_script_complete("main.py", success=False, message="用户中断执行")
+        if isinstance(exc, SystemExit):
+            raise
         sys.exit(130)
     except Exception as e:
+        error = error or "other"
         error_msg = f"main函数执行过程中发生异常: {str(e)}"
         print(f"[ERROR] {error_msg}")
         log_script_complete("main.py", success=False, message=error_msg)
         main_success = False
+    finally:
+        with resources:
+            if run:
+                from wechat_notifications import finish_run
+                from wechat_pipeline_run import build_outcome
+
+                try:
+                    report = finish_run(run, build_outcome(run, collection, error))
+                    if report["notification"]["state"] != "sent":
+                        print("[WARN] 官微结果已保存，等待飞书补发")
+                except Exception as exc:
+                    print(f"[WARN] 官微结果登记失败: {type(exc).__name__}")
+                    main_success = False
 
     # 步骤8：新闻量波动预警 —— 收尾路径，任何前置异常后仍执行
     # KeyboardInterrupt 已通过 sys.exit(130) 提前退出，不会走到这里

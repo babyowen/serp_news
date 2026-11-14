@@ -13,6 +13,8 @@ import datetime
 from config import DEFAULT_KEYWORDS
 from news_freshness import eligible
 from content_quality import body_rejection_reason
+from topic_config import TOPIC
+from wechat_pipeline_run import stage_run, read_stage, write_stage
 from error_handler import (
     setup_global_exception_handler,
     with_error_handling,
@@ -94,17 +96,24 @@ def run_with_connection_retry(action_name, func, *args, max_attempts=2):
             raise
 
 
-def import_scored_news_with_retry(filepath, keyword, max_attempts=2, report=False):
+class CommitUnconfirmed(Exception):
+    """A lost COMMIT acknowledgement makes this transaction's counts unknown."""
+
+
+def import_scored_news_with_retry(filepath, keyword, max_attempts=2, report=False, on_insert=None):
     args = (filepath, keyword, True) if report else (filepath, keyword)
     result = run_with_connection_retry(f"导入 {keyword}", insert_scored_news, *args,
                                        max_attempts=max_attempts)
+    if on_insert is not None:
+        on_insert(result)
     updates = run_with_connection_retry("同步评分空值", update_scores_from_json, *args,
                                         max_attempts=max_attempts)
     if report:
         failed = set(result["failed_links"]) | set(updates["failed_links"])
         result["completed_links"] = sorted(set(result["completed_links"]) - failed)
         result["failed_links"] = sorted(failed)
-        result["ok"] = not failed
+        result["score_update_failed_links"] = updates["failed_links"]
+        result["ok"] = result["ok"] and not failed
     return result
 
 # 写入 scored_news 表（新闻正文及评分）
@@ -116,6 +125,7 @@ def insert_scored_news(json_path, keyword, report=False):
         data = json.load(f)
     success, fail, skip = 0, 0, 0
     completed_links, failed_links = set(), set()
+    rows_by_link, titles_to_links = {}, {}
     empty_content_skip = 0
     dup_title_skip = 0
 
@@ -124,6 +134,9 @@ def insert_scored_news(json_path, keyword, report=False):
     # existing keys once per main keyword and keep newly inserted keys in memory.
     candidate_items = []
     for item in data:
+        link = item.get("link")
+        if link:
+            rows_by_link[link] = {"status": "skipped"}
         if not eligible(item) or item.get("keyword", keyword) != keyword:
             skip += 1
             continue
@@ -146,6 +159,7 @@ def insert_scored_news(json_path, keyword, report=False):
         for title, link in cursor.fetchall():
             if title is not None:
                 existing_titles.add(title)
+                titles_to_links.setdefault(title, link)
                 if link is not None:
                     existing_title_links.add((title, link))
 
@@ -157,12 +171,14 @@ def insert_scored_news(json_path, keyword, report=False):
         if title is not None and link is not None and (title, link) in existing_title_links:
             skip += 1
             completed_links.add(link)
+            rows_by_link[link] = {"status": "duplicate", "stored_link": link}
             continue
 
         # 兜底查重：同一关键词下 title 完全相同（URL可能不同）
         if title is not None and title in existing_titles:
             dup_title_skip += 1
             completed_links.add(link)
+            rows_by_link[link] = {"status": "duplicate", "stored_link": titles_to_links[title]}
             continue
 
         sql = f'''
@@ -193,8 +209,10 @@ def insert_scored_news(json_path, keyword, report=False):
             ))
             success += 1
             completed_links.add(link)
+            rows_by_link[link] = {"status": "inserted", "stored_link": link}
             if title is not None:
                 existing_titles.add(title)
+                titles_to_links[title] = link
                 if link is not None:
                     existing_title_links.add((title, link))
         except Exception as e:
@@ -205,8 +223,15 @@ def insert_scored_news(json_path, keyword, report=False):
                 raise
             fail += 1
             failed_links.add(link)
+            rows_by_link[link] = {"status": "failed"}
             write_log(f"[导入异常] {item.get('title', '')[:30]}... 错误: {e}")
-    conn.commit()
+    try:
+        conn.commit()
+    except pymysql.MySQLError as exc:
+        if report and is_mysql_connection_error(exc):
+            # Replaying a possibly committed insert would turn unknown inserts into duplicates.
+            raise CommitUnconfirmed("insert commit acknowledgement lost") from exc
+        raise
     now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     parts = [f"成功: {success}", f"跳过: {skip}", f"空内容: {empty_content_skip}"]
     if dup_title_skip:
@@ -215,7 +240,8 @@ def insert_scored_news(json_path, keyword, report=False):
         parts.append(f"失败: {fail}")
     write_log(f"[{now}] 导入数据库 {keyword}: {', '.join(parts)}")
     if report:
-        return {"ok":fail == 0, "completed_links":sorted(completed_links), "failed_links":sorted(failed_links)}
+        return {"ok": fail == 0, "completed_links": sorted(link for link in completed_links if link),
+                "failed_links": sorted(link for link in failed_links if link), "rows": rows_by_link}
     return fail == 0
 
 
@@ -405,6 +431,46 @@ def fetch_latest_summary(date, keyword):
 # 数据获取：命令行参数、配置文件、各类json/txt文件
 # 执行：依次调用各类insert函数，完成数据导入
 # 结果：所有数据写入MySQL，日志记录导入情况
+def _import_wechat_batch(filepath, run, scoring):
+    articles = scoring["articles"]
+
+    def save(result, status):
+        rows = [{**item, **result["rows"].get(item["link"], {"status": "skipped"})}
+                for item in articles]
+        update_failures = set(result.get("score_update_failed_links", []))
+        for item in rows:
+            if item["link"] in update_failures:
+                item["score_update"] = "failed"
+        counts = {key: sum(item["status"] == key for item in rows)
+                  for key in ("inserted", "duplicate", "failed", "skipped")}
+        if update_failures:
+            counts["failed"] += sum(item["status"] != "failed" and item["link"] in update_failures
+                                    for item in rows)
+        if counts["failed"] and status == "success":
+            status = "partial" if counts["inserted"] or counts["duplicate"] else "failed"
+        write_stage(run, "database", status, counts, rows)
+
+    committed = None
+
+    def on_insert(result):
+        nonlocal committed
+        committed = result
+        save(result, "pending")
+
+    try:
+        result = import_scored_news_with_retry(filepath, TOPIC, report=True, on_insert=on_insert)
+    except Exception:
+        if committed is None:
+            # No acknowledged commit: preserve the known scope, leave counts unknown.
+            write_stage(run, "database", "failed", {},
+                        [dict(item, status="unknown") for item in articles])
+        else:
+            save(committed, "failed")
+        raise
+    save(result, "success")
+    return result["ok"]
+
+
 @with_error_handling("write_to_mysql.py", "main")
 def main():
     """主函数：处理数据库导入任务"""
@@ -421,6 +487,8 @@ def main():
         args = parser.parse_args()
         target_date = get_target_date(args.date)
         keywords = [args.keyword] if args.keyword else DEFAULT_KEYWORDS
+        run = stage_run(target_date) if TOPIC in keywords else None
+        scoring = read_stage(run, "scoring") if run else None
 
         # Schema changes must be an explicit maintenance action, never the
         # default behavior of a scheduled production batch.
@@ -441,11 +509,9 @@ def main():
             print("[INFO] 已通过 AUTO_MIGRATE_DEDUP_INDEX=0 跳过唯一索引迁移，使用应用层查重")
 
         # 新增：先导入 news_websites
-        run_with_connection_retry(
-            "导入网站源",
-            insert_news_websites,
-            os.path.join("output", "news_sources.txt"),
-        )
+        websites_path = os.path.join("output", "news_sources.txt")
+        if os.path.exists(websites_path):
+            run_with_connection_retry("导入网站源", insert_news_websites, websites_path)
 
         # 新增：导入 news_source_stats
         stats_json_path = os.path.join("output", "news_source_stats.json")
@@ -456,6 +522,10 @@ def main():
             print(f"文件不存在，跳过: {stats_json_path}")
 
         for keyword in keywords:
+            if run and keyword == TOPIC and not scoring:
+                print("[WARN] 未取得本次官微评分结果，跳过该关键词入库")
+                success = False
+                continue
             filename = f"{target_date}_{keyword}_scored.json"
             filepath = os.path.join("output", target_date, filename)
             if not os.path.exists(filepath):
@@ -463,7 +533,12 @@ def main():
                 continue
             try:
                 print(f"正在导入: {filepath} 到 scored_news ...")
-                import_scored_news_with_retry(filepath, keyword)
+                if run and keyword == TOPIC:
+                    imported = _import_wechat_batch(filepath, run, scoring)
+                else:
+                    imported = import_scored_news_with_retry(filepath, keyword)
+                if imported is False:
+                    success = False
             except Exception as e:
                     now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                     log_msg = f"[{now}] 导入数据库\n  关键词: {keyword}\n  文件: {filepath}\n  表: {TABLE_NAME}\n  错误: {e}\n------------------------------"
