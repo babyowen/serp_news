@@ -1,5 +1,6 @@
 """Regression coverage for application-level batch deduplication."""
 
+import copy
 import json
 import os
 import tempfile
@@ -7,6 +8,7 @@ import unittest
 from unittest.mock import Mock, patch
 
 import pymysql
+import pytest
 
 
 class BootstrapCursor:
@@ -140,6 +142,112 @@ class BatchDedupTests(unittest.TestCase):
         self.assertEqual(result, "ok")
         self.assertEqual(action_mock.call_count, 2)
         self.assertTrue(failed_connection.closed)
+
+
+@pytest.fixture
+def import_batch(monkeypatch, tmp_path):
+    from test_wechat_pipeline import Database
+
+    database = Database()
+    monkeypatch.setattr(write_to_mysql, "cursor", database)
+    monkeypatch.setattr(write_to_mysql, "conn", database)
+    monkeypatch.setattr(write_to_mysql, "write_log", lambda *_: None)
+    path = tmp_path / "scored.json"
+
+    def run(items, keyword):
+        path.write_text(json.dumps(items, ensure_ascii=False), encoding="utf-8")
+        original = path.read_bytes()
+        result = write_to_mysql.insert_scored_news(path, keyword, report=True)
+        assert path.read_bytes() == original
+        return result
+
+    return database, run
+
+
+@pytest.mark.parametrize("stored_title,candidate_title", [
+    ("孙中山  诞辰纪念活动", "孙中山 诞辰纪念活动"),
+    ("孙中山 诞辰纪念活动", "孙中山  诞辰纪念活动"),
+    ("\t孙中山\n诞辰纪念活动\u3000", " 孙中山 诞辰纪念活动 "),
+    ("孙中山\u00a0\u3000诞辰纪念活动", "孙中山\t\n诞辰纪念活动"),
+])
+@pytest.mark.parametrize("keyword", ["江苏机关事务", "养老", "未来关键词"])
+def test_whitespace_duplicate_reuses_existing_row_without_rewriting_history(
+        import_batch, stored_title, candidate_title, keyword):
+    from test_wechat_pipeline import news
+
+    database, run = import_batch
+    stored = dict(news(stored_title, "https://example.test/stored", keyword),
+                  id=1, score=2, short_summary="保留已有摘要", source="原始来源")
+    database.rows.append(stored)
+    before = copy.deepcopy(database.rows)
+    incoming = dict(news(candidate_title, "https://example.test/incoming", keyword),
+                    score=5, content="另一来源自己的正文。", source="候选来源")
+
+    for _ in range(2):
+        result = run([incoming], keyword)
+        assert result["rows"] == {incoming["link"]: {
+            "status": "duplicate", "stored_link": stored["link"]}}
+        assert result["completed_links"] == [incoming["link"]]
+        assert result["failed_links"] == []
+        assert database.rows == before
+
+
+def test_whitespace_duplicates_within_batch_keep_first_original_and_repeat_idempotently(import_batch):
+    from test_wechat_pipeline import news
+
+    database, run = import_batch
+    first = dict(news(" 孙中山\u3000 诞辰纪念活动 ", "https://example.test/first"),
+                 source="天津机关事务", score=4)
+    second = dict(news("孙中山 诞辰纪念活动", "https://example.test/second"),
+                  source="宁夏机关事务", content="另一来源自己的正文。", score=5)
+    result = run([first, second], first["keyword"])
+    assert result["rows"][first["link"]]["status"] == "inserted"
+    assert result["rows"][second["link"]] == {"status": "duplicate", "stored_link": first["link"]}
+    assert len(database.rows) == 1
+    for key in ("title", "content", "source", "score", "link"):
+        assert database.rows[0][key] == first[key]
+    before = copy.deepcopy(database.rows)
+    repeated = run([first, second], first["keyword"])
+    assert {row["status"] for row in repeated["rows"].values()} == {"duplicate"}
+    assert database.rows == before
+
+
+def test_title_dedup_preserves_word_boundaries_punctuation_and_case(import_batch):
+    from test_wechat_pipeline import news
+
+    database, run = import_batch
+    titles = ["AB C", "A BC", "A BC!", "a BC", "ABC"]
+    items = [news(title, f"https://example.test/{index}") for index, title in enumerate(titles)]
+    result = run(items, items[0]["keyword"])
+    assert [row["title"] for row in database.rows] == titles
+    assert {row["status"] for row in result["rows"].values()} == {"inserted"}
+
+
+def test_whitespace_title_dedup_keeps_main_keywords_separate(import_batch):
+    from test_wechat_pipeline import news
+
+    database, run = import_batch
+    for keyword in ("江苏机关事务", "养老", "未来关键词"):
+        item = news("孙中山  诞辰纪念活动", "https://example.test/shared", keyword)
+        assert run([item], keyword)["rows"][item["link"]]["status"] == "inserted"
+        item["title"] = "孙中山 诞辰纪念活动"
+        assert run([item], keyword)["rows"][item["link"]]["status"] == "duplicate"
+    assert [row["keyword"] for row in database.rows] == ["江苏机关事务", "养老", "未来关键词"]
+
+
+def test_existing_whitespace_duplicates_are_preserved_and_exact_link_is_retained(import_batch):
+    from test_wechat_pipeline import news
+
+    database, run = import_batch
+    database.rows.extend([
+        dict(news("孙中山  诞辰纪念活动", "https://example.test/first"), id=1),
+        dict(news("孙中山 诞辰纪念活动", "https://example.test/second"), id=2),
+    ])
+    before = copy.deepcopy(database.rows)
+    incoming = news("孙中山\t诞辰纪念活动", "https://example.test/second")
+    result = run([incoming], incoming["keyword"])
+    assert result["rows"][incoming["link"]] == {"status": "duplicate", "stored_link": incoming["link"]}
+    assert database.rows == before
 
 
 if __name__ == "__main__":

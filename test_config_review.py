@@ -108,9 +108,9 @@ def test_summary_only_processes_topics_bound_to_its_selected_version(ctx, monkey
         later["settings"]["SEARCH_KEYWORDS"] = {"下一批主题": ["下一批词"]}
         ctx.store.save(later, selected.token, "new active version")
     records = [
-        (1, "当前标题", "正文" * 300, "当前主题"),
-        (2, "另一标题", "正文" * 300, "另一个主题"),
-        (3, "历史标题", "正文" * 300, "已经删除的主题"),
+        (1, "当前标题", "正文" * 300, "当前主题", "来源", "https://example.test/1", "api"),
+        (2, "另一标题", "正文" * 300, "另一个主题", "来源", "https://example.test/2", "api"),
+        (3, "历史标题", "正文" * 300, "已经删除的主题", "来源", "https://example.test/3", "api"),
     ]
     class Cursor:
         def __init__(self):

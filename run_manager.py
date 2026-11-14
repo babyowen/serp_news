@@ -8,6 +8,7 @@ import signal
 from runtime_config import child_environment, get_store
 from config_schema import ConfigError
 from batch_config import validate_date
+from news_dates import reference_time
 
 PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 OUTPUT_DIR = os.path.join(PROJECT_DIR, "output")
@@ -45,7 +46,7 @@ class RunManager:
                     pass
 
         if not date:
-            date = (datetime.date.today() - datetime.timedelta(days=1)).strftime("%Y-%m-%d")
+            date = (reference_time().date() - datetime.timedelta(days=1)).isoformat()
 
         try:
             validate_date(date)

@@ -1,0 +1,723 @@
+{
+  "version": 1,
+  "keyword": "江苏机关事务",
+  "accounts": [
+    {
+      "region": "国管局",
+      "level": "national",
+      "name": "国管局",
+      "ghid": "gh_7af7ed4664f7",
+      "biz": "MzA3MDc2NzA4Nw==",
+      "enabled": true,
+      "official_url": "https://gkml.ggj.gov.cn/wzcc/202509/t20250930_48498.htm",
+      "profile_url": "https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=MzA3MDc2NzA4Nw==",
+      "verified_at": "2026-11-14",
+      "verification": {
+        "list": "passed",
+        "body": "http_passed",
+        "sample_date": "2024-04-16",
+        "sample_chars": 1967
+      }
+    },
+    {
+      "region": "天津",
+      "level": "province",
+      "name": "天津机关事务",
+      "ghid": "gh_dd06127bae42",
+      "biz": "Mzg2MjU5ODk0NA==",
+      "enabled": true,
+      "official_url": "https://www.ggj.gov.cn/h5/index.html",
+      "profile_url": "https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=Mzg2MjU5ODk0NA==",
+      "verified_at": "2026-11-14",
+      "verification": {
+        "list": "passed",
+        "body": "http_passed",
+        "sample_date": "2026-11-13",
+        "sample_chars": 963
+      }
+    },
+    {
+      "region": "河北",
+      "level": "province",
+      "name": "河北省机关事务管理局",
+      "ghid": "gh_ccf338e4b081",
+      "biz": "MzI2NjU0NzU4OA==",
+      "enabled": true,
+      "official_url": "https://www.ggj.gov.cn/h5/index.html",
+      "profile_url": "https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=MzI2NjU0NzU4OA==",
+      "verified_at": "2026-11-14",
+      "verification": {
+        "list": "passed",
+        "body": "http_passed",
+        "sample_date": "2026-11-13",
+        "sample_chars": 1118
+      }
+    },
+    {
+      "region": "山西",
+      "level": "province",
+      "name": "山西机关事务",
+      "ghid": "gh_115a26692b58",
+      "biz": "Mzg4MDYwMjc2Ng==",
+      "enabled": true,
+      "official_url": "https://www.ggj.gov.cn/h5/index.html",
+      "profile_url": "https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=Mzg4MDYwMjc2Ng==",
+      "verified_at": "2026-11-14",
+      "verification": {
+        "list": "passed",
+        "body": "http_passed",
+        "sample_date": "2026-11-14",
+        "sample_chars": 1039
+      }
+    },
+    {
+      "region": "内蒙古",
+      "level": "province",
+      "name": "内蒙古自治区机关事务管理局",
+      "ghid": "gh_65565bf0cd06",
+      "biz": "MzIwNDU5MjI5OQ==",
+      "enabled": true,
+      "official_url": "https://www.ggj.gov.cn/h5/index.html",
+      "profile_url": "https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=MzIwNDU5MjI5OQ==",
+      "verified_at": "2026-11-14",
+      "verification": {
+        "list": "passed",
+        "body": "http_passed",
+        "sample_date": "2026-11-13",
+        "sample_chars": 365
+      }
+    },
+    {
+      "region": "辽宁",
+      "level": "province",
+      "name": "辽宁机关事务",
+      "ghid": "gh_3a4858e832c2",
+      "biz": "MzY5MzAyMjYzMA==",
+      "enabled": true,
+      "official_url": "https://www.ggj.gov.cn/h5/index.html",
+      "profile_url": "https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=MzY5MzAyMjYzMA==",
+      "verified_at": "2026-11-14",
+      "verification": {
+        "list": "passed",
+        "body": "http_passed",
+        "sample_date": "2026-11-10",
+        "sample_chars": 629
+      }
+    },
+    {
+      "region": "上海",
+      "level": "province",
+      "name": "上海机关事务",
+      "ghid": "gh_1a74eeea8279",
+      "biz": "MzAwNDc4NDAwNQ==",
+      "enabled": true,
+      "official_url": "https://www.ggj.gov.cn/h5/index.html",
+      "profile_url": "https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=MzAwNDc4NDAwNQ==",
+      "verified_at": "2026-11-14",
+      "verification": {
+        "list": "passed",
+        "body": "http_passed",
+        "sample_date": "2026-11-13",
+        "sample_chars": 4066
+      }
+    },
+    {
+      "region": "江苏",
+      "level": "province",
+      "name": "江苏省机关事务管理局",
+      "ghid": "gh_d58dc573aca4",
+      "biz": "Mzg3ODUzNTQ0OQ==",
+      "enabled": true,
+      "official_url": "https://www.ggj.gov.cn/h5/index.html",
+      "profile_url": "https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=Mzg3ODUzNTQ0OQ==",
+      "verified_at": "2026-11-14",
+      "verification": {
+        "list": "passed",
+        "body": "http_passed",
+        "sample_date": "2026-11-03",
+        "sample_chars": 943
+      }
+    },
+    {
+      "region": "浙江",
+      "level": "province",
+      "name": "浙里好管家",
+      "ghid": "gh_2774ca4a022f",
+      "biz": "MzkzNzM5OTM4Mw==",
+      "enabled": true,
+      "official_url": "https://www.ggj.gov.cn/h5/index.html",
+      "profile_url": "https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=MzkzNzM5OTM4Mw==",
+      "verified_at": "2026-11-14",
+      "verification": {
+        "list": "passed",
+        "body": "http_passed",
+        "sample_date": "2026-11-14",
+        "sample_chars": 1359
+      }
+    },
+    {
+      "region": "安徽",
+      "level": "province",
+      "name": "皖美管家",
+      "ghid": "gh_b103c360dea3",
+      "biz": "MzI4OTU3MTU1Nw==",
+      "enabled": true,
+      "official_url": "https://www.ggj.gov.cn/h5/index.html",
+      "profile_url": "https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=MzI4OTU3MTU1Nw==",
+      "verified_at": "2026-11-14",
+      "verification": {
+        "list": "passed",
+        "body": "http_passed",
+        "sample_date": "2026-11-13",
+        "sample_chars": 718
+      }
+    },
+    {
+      "region": "江西",
+      "level": "province",
+      "name": "江西机关事务",
+      "ghid": "gh_208803538340",
+      "biz": "MzU5MjEwMTc1NA==",
+      "enabled": true,
+      "official_url": "https://www.ggj.gov.cn/h5/index.html",
+      "profile_url": "https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=MzU5MjEwMTc1NA==",
+      "verified_at": "2026-11-14",
+      "verification": {
+        "list": "passed",
+        "body": "http_passed",
+        "sample_date": "2026-11-14",
+        "sample_chars": 1020
+      }
+    },
+    {
+      "region": "山东",
+      "level": "province",
+      "name": "山东省机关事务管理局",
+      "ghid": "gh_b2ab950d5d59",
+      "biz": "MzU1NjE1MjUzMg==",
+      "enabled": true,
+      "official_url": "https://www.ggj.gov.cn/h5/index.html",
+      "profile_url": "https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=MzU1NjE1MjUzMg==",
+      "verified_at": "2026-11-14",
+      "verification": {
+        "list": "passed",
+        "body": "http_passed",
+        "sample_date": "2026-11-12",
+        "sample_chars": 375
+      }
+    },
+    {
+      "region": "河南",
+      "level": "province",
+      "name": "河南省机关事务管理局",
+      "ghid": "gh_5e30bc26d9a6",
+      "biz": "MzU4NTAyNjA3Mw==",
+      "enabled": true,
+      "official_url": "https://www.ggj.gov.cn/h5/index.html",
+      "profile_url": "https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=MzU4NTAyNjA3Mw==",
+      "verified_at": "2026-11-14",
+      "verification": {
+        "list": "passed",
+        "body": "http_passed",
+        "sample_date": "2026-10-30",
+        "sample_chars": 5010
+      }
+    },
+    {
+      "region": "湖北",
+      "level": "province",
+      "name": "湖北省机关事务管理局",
+      "ghid": "gh_feec4e9cdb69",
+      "biz": "Mzg5MTU5Mjg1Mg==",
+      "enabled": true,
+      "official_url": "https://www.ggj.gov.cn/h5/index.html",
+      "profile_url": "https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=Mzg5MTU5Mjg1Mg==",
+      "verified_at": "2026-11-14",
+      "verification": {
+        "list": "passed",
+        "body": "http_passed",
+        "sample_date": "2026-11-04",
+        "sample_chars": 881
+      }
+    },
+    {
+      "region": "湖南",
+      "level": "province",
+      "name": "湖南机关事务",
+      "ghid": "gh_cc2710bcb825",
+      "biz": "Mzk0NDI3MDk0NQ==",
+      "enabled": true,
+      "official_url": "https://www.ggj.gov.cn/h5/index.html",
+      "profile_url": "https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=Mzk0NDI3MDk0NQ==",
+      "verified_at": "2026-11-14",
+      "verification": {
+        "list": "passed",
+        "body": "http_passed",
+        "sample_date": "2026-11-13",
+        "sample_chars": 289
+      }
+    },
+    {
+      "region": "广东",
+      "level": "province",
+      "name": "广东机关事务",
+      "ghid": "gh_7cc3f57ed5ce",
+      "biz": "Mzg4ODcyNzQ4Ng==",
+      "enabled": true,
+      "official_url": "https://www.ggj.gov.cn/h5/index.html",
+      "profile_url": "https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=Mzg4ODcyNzQ4Ng==",
+      "verified_at": "2026-11-14",
+      "verification": {
+        "list": "passed",
+        "body": "http_passed",
+        "sample_date": "2026-11-13",
+        "sample_chars": 1214
+      }
+    },
+    {
+      "region": "广西",
+      "level": "province",
+      "name": "广西机关事务管理局",
+      "ghid": "gh_71c85f7baf15",
+      "biz": "MzU1MTQyOTE1Mw==",
+      "enabled": true,
+      "official_url": "https://www.ggj.gov.cn/h5/index.html",
+      "profile_url": "https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=MzU1MTQyOTE1Mw==",
+      "verified_at": "2026-11-14",
+      "verification": {
+        "list": "passed",
+        "body": "http_passed",
+        "sample_date": "2026-11-14",
+        "sample_chars": 958
+      }
+    },
+    {
+      "region": "重庆",
+      "level": "province",
+      "name": "重庆市机关事务管理局",
+      "ghid": "gh_eea73b3517b7",
+      "biz": "MzU5MDgzNjY0MQ==",
+      "enabled": true,
+      "official_url": "https://www.ggj.gov.cn/h5/index.html",
+      "profile_url": "https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=MzU5MDgzNjY0MQ==",
+      "verified_at": "2026-11-14",
+      "verification": {
+        "list": "passed",
+        "body": "http_passed",
+        "sample_date": "2026-11-13",
+        "sample_chars": 1499
+      }
+    },
+    {
+      "region": "四川",
+      "level": "province",
+      "name": "四川机关事务官微",
+      "ghid": "gh_8b6d55bd42c6",
+      "biz": "MzI4NjU4MjU3Ng==",
+      "enabled": true,
+      "official_url": "https://www.ggj.gov.cn/h5/index.html",
+      "profile_url": "https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=MzI4NjU4MjU3Ng==",
+      "verified_at": "2026-11-14",
+      "verification": {
+        "list": "passed",
+        "body": "http_passed",
+        "sample_date": "2026-11-13",
+        "sample_chars": 978
+      }
+    },
+    {
+      "region": "贵州",
+      "level": "province",
+      "name": "贵州省机关事务管理局",
+      "ghid": "gh_7bc1accc3d37",
+      "biz": "MzU3NzMyNDYyMQ==",
+      "enabled": true,
+      "official_url": "https://www.ggj.gov.cn/h5/index.html",
+      "profile_url": "https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=MzU3NzMyNDYyMQ==",
+      "verified_at": "2026-11-14",
+      "verification": {
+        "list": "passed",
+        "body": "http_passed",
+        "sample_date": "2026-11-13",
+        "sample_chars": 957
+      }
+    },
+    {
+      "region": "云南",
+      "level": "province",
+      "name": "云南省机关事务管理局",
+      "ghid": "gh_20a8349fdf3d",
+      "biz": "MzUzODk2NjQwOQ==",
+      "enabled": true,
+      "official_url": "https://www.ggj.gov.cn/h5/index.html",
+      "profile_url": "https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=MzUzODk2NjQwOQ==",
+      "verified_at": "2026-11-14",
+      "verification": {
+        "list": "passed",
+        "body": "http_passed",
+        "sample_date": "2026-11-06",
+        "sample_chars": 556
+      }
+    },
+    {
+      "region": "西藏",
+      "level": "province",
+      "name": "西藏机关事务",
+      "ghid": "gh_b941e8836133",
+      "biz": "MzE5MTIwMjg4NQ==",
+      "enabled": true,
+      "official_url": "https://www.ggj.gov.cn/h5/index.html",
+      "profile_url": "https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=MzE5MTIwMjg4NQ==",
+      "verified_at": "2026-11-14",
+      "verification": {
+        "list": "passed",
+        "body": "http_passed",
+        "sample_date": "2026-11-14",
+        "sample_chars": 1297
+      }
+    },
+    {
+      "region": "陕西",
+      "level": "province",
+      "name": "陕西机关事务",
+      "ghid": "gh_59b20959a80b",
+      "biz": "Mzg3NzU0MDM4Mw==",
+      "enabled": true,
+      "official_url": "https://www.ggj.gov.cn/h5/index.html",
+      "profile_url": "https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=Mzg3NzU0MDM4Mw==",
+      "verified_at": "2026-11-14",
+      "verification": {
+        "list": "passed",
+        "body": "http_passed",
+        "sample_date": "2026-11-11",
+        "sample_chars": 806
+      }
+    },
+    {
+      "region": "青海",
+      "level": "province",
+      "name": "青海省省直机关事务管理局",
+      "ghid": "gh_28878361c154",
+      "biz": "Mzg4Nzc2MDQ4OQ==",
+      "enabled": true,
+      "official_url": "https://www.ggj.gov.cn/h5/index.html",
+      "profile_url": "https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=Mzg4Nzc2MDQ4OQ==",
+      "verified_at": "2026-11-14",
+      "verification": {
+        "list": "passed",
+        "body": "http_passed",
+        "sample_date": "2026-11-06",
+        "sample_chars": 1093
+      }
+    },
+    {
+      "region": "宁夏",
+      "level": "province",
+      "name": "宁夏机关事务",
+      "ghid": "gh_de3c509877cf",
+      "biz": "Mzk0OTAxNTcyOA==",
+      "enabled": true,
+      "official_url": "https://www.ggj.gov.cn/h5/index.html",
+      "profile_url": "https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=Mzk0OTAxNTcyOA==",
+      "verified_at": "2026-11-14",
+      "verification": {
+        "list": "passed",
+        "body": "http_passed",
+        "sample_date": "2026-11-13",
+        "sample_chars": 2409
+      }
+    },
+    {
+      "region": "新疆",
+      "level": "province",
+      "name": "新疆机关事务",
+      "ghid": "gh_4b8116c415f0",
+      "biz": "MzUyNDE4Mzc2MQ==",
+      "enabled": true,
+      "official_url": "https://www.ggj.gov.cn/h5/index.html",
+      "profile_url": "https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=MzUyNDE4Mzc2MQ==",
+      "verified_at": "2026-11-14",
+      "verification": {
+        "list": "passed",
+        "body": "http_passed",
+        "sample_date": "2026-11-14",
+        "sample_chars": 1603
+      }
+    },
+    {
+      "region": "沈阳",
+      "level": "city",
+      "name": "沈阳机关事务服务号",
+      "ghid": "gh_f17081a5433c",
+      "biz": "Mzg4NjYxMzQ1MQ==",
+      "enabled": true,
+      "official_url": "https://www.ggj.gov.cn/h5/index.html",
+      "profile_url": "https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=Mzg4NjYxMzQ1MQ==",
+      "verified_at": "2026-11-14",
+      "verification": {
+        "list": "passed",
+        "body": "http_passed",
+        "sample_date": "2026-10-23",
+        "sample_chars": 580
+      }
+    },
+    {
+      "region": "大连",
+      "level": "city",
+      "name": "大连机关事务",
+      "ghid": "gh_78dbeb6101f6",
+      "biz": "MzA3MzAzMTY4OA==",
+      "enabled": true,
+      "official_url": "https://www.ggj.gov.cn/h5/index.html",
+      "profile_url": "https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=MzA3MzAzMTY4OA==",
+      "verified_at": "2026-11-14",
+      "verification": {
+        "list": "passed",
+        "body": "http_passed",
+        "sample_date": "2026-11-02",
+        "sample_chars": 4939
+      }
+    },
+    {
+      "region": "长春",
+      "level": "city",
+      "name": "长春机关事务",
+      "ghid": "gh_662760e702f3",
+      "biz": "MzkzMzQ5NzI1OQ==",
+      "enabled": true,
+      "official_url": "https://www.ggj.gov.cn/h5/index.html",
+      "profile_url": "https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=MzkzMzQ5NzI1OQ==",
+      "verified_at": "2026-11-14",
+      "verification": {
+        "list": "passed",
+        "body": "http_passed",
+        "sample_date": "2026-11-12",
+        "sample_chars": 727
+      }
+    },
+    {
+      "region": "哈尔滨",
+      "level": "city",
+      "name": "哈尔滨机关事务",
+      "ghid": "gh_7c6adeb484cb",
+      "biz": "Mzg2MTY2NTI3MQ==",
+      "enabled": true,
+      "official_url": "https://www.ggj.gov.cn/h5/index.html",
+      "profile_url": "https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=Mzg2MTY2NTI3MQ==",
+      "verified_at": "2026-11-14",
+      "verification": {
+        "list": "passed",
+        "body": "http_passed",
+        "sample_date": "2026-11-04",
+        "sample_chars": 716
+      }
+    },
+    {
+      "region": "南京",
+      "level": "city",
+      "name": "勤惟宁",
+      "ghid": "gh_b658f8c01c4a",
+      "biz": "MzkxOTYwMDcyMg==",
+      "enabled": true,
+      "official_url": "https://glj.nanjing.gov.cn/njsjgswglj/xxgkzl/zfwzgzndbg/202601/P020260120591648925975.pdf",
+      "profile_url": "https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=MzkxOTYwMDcyMg==",
+      "verified_at": "2026-11-14",
+      "verification": {
+        "list": "passed",
+        "body": "api_fallback",
+        "sample_date": "2026-11-13",
+        "sample_chars": 816
+      },
+      "previous_account": {
+        "name": "南京市市级机关微服务平台",
+        "ghid": "gh_57a870f023c9",
+        "biz": "MzU2OTIyODYyNw==",
+        "reason": "自主注销"
+      }
+    },
+    {
+      "region": "杭州",
+      "level": "city",
+      "name": "杭州机关后勤",
+      "ghid": "gh_11f3e687ba98",
+      "biz": "MzI2OTI5MTAwOA==",
+      "enabled": true,
+      "official_url": "https://www.ggj.gov.cn/h5/index.html",
+      "profile_url": "https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=MzI2OTI5MTAwOA==",
+      "verified_at": "2026-11-14",
+      "verification": {
+        "list": "passed",
+        "body": "http_passed",
+        "sample_date": "2026-11-11",
+        "sample_chars": 387
+      }
+    },
+    {
+      "region": "宁波",
+      "level": "city",
+      "name": "宁波机关事务",
+      "ghid": "gh_e7e27e962988",
+      "biz": "MzUyNjY1NTc5NA==",
+      "enabled": false,
+      "official_url": "https://www.ggj.gov.cn/h5/index.html",
+      "profile_url": "https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=MzUyNjY1NTc5NA==",
+      "verified_at": "2026-11-14",
+      "verification": {
+        "list": "migrated",
+        "body": "unverified",
+        "sample_date": null,
+        "sample_chars": null
+      },
+      "disabled_reason": "旧号已迁移并被回收，替代账号待官方核验"
+    },
+    {
+      "region": "厦门",
+      "level": "city",
+      "name": "鹭岛后勤",
+      "ghid": "gh_58fac54e4e5f",
+      "biz": "MzIwMTU0MzE1Nw==",
+      "enabled": true,
+      "official_url": "https://www.ggj.gov.cn/h5/index.html",
+      "profile_url": "https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=MzIwMTU0MzE1Nw==",
+      "verified_at": "2026-11-14",
+      "verification": {
+        "list": "passed",
+        "body": "http_passed",
+        "sample_date": "2026-11-03",
+        "sample_chars": 1434
+      }
+    },
+    {
+      "region": "济南",
+      "level": "city",
+      "name": "济南机关事务",
+      "ghid": "gh_1bc11ea19ee8",
+      "biz": "MzI4OTExNzU2MA==",
+      "enabled": true,
+      "official_url": "https://www.ggj.gov.cn/h5/index.html",
+      "profile_url": "https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=MzI4OTExNzU2MA==",
+      "verified_at": "2026-11-14",
+      "verification": {
+        "list": "passed",
+        "body": "http_passed",
+        "sample_date": "2026-09-18",
+        "sample_chars": 718
+      }
+    },
+    {
+      "region": "青岛",
+      "level": "city",
+      "name": "青岛机关事务",
+      "ghid": "gh_be6255616a99",
+      "biz": "MzA5MTU3MjgyNQ==",
+      "enabled": true,
+      "official_url": "https://www.ggj.gov.cn/h5/index.html",
+      "profile_url": "https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=MzA5MTU3MjgyNQ==",
+      "verified_at": "2026-11-14",
+      "verification": {
+        "list": "passed",
+        "body": "http_passed",
+        "sample_date": "2026-11-11",
+        "sample_chars": 607
+      }
+    },
+    {
+      "region": "武汉",
+      "level": "city",
+      "name": "武汉机关事务",
+      "ghid": "gh_6493535f6ef1",
+      "biz": "MzIwOTYwMjAxOA==",
+      "enabled": true,
+      "official_url": "https://www.ggj.gov.cn/h5/index.html",
+      "profile_url": "https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=MzIwOTYwMjAxOA==",
+      "verified_at": "2026-11-14",
+      "verification": {
+        "list": "passed",
+        "body": "http_passed",
+        "sample_date": "2026-11-06",
+        "sample_chars": 1012
+      }
+    },
+    {
+      "region": "深圳",
+      "level": "city",
+      "name": "深圳机关事务",
+      "ghid": "gh_b8c658c5d05c",
+      "biz": "MzAwMjc5ODgyNA==",
+      "enabled": true,
+      "official_url": "https://www.ggj.gov.cn/h5/index.html",
+      "profile_url": "https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=MzAwMjc5ODgyNA==",
+      "verified_at": "2026-11-14",
+      "verification": {
+        "list": "passed",
+        "body": "http_passed",
+        "sample_date": "2026-11-13",
+        "sample_chars": 900
+      }
+    },
+    {
+      "region": "成都",
+      "level": "city",
+      "name": "蓉机管",
+      "ghid": "gh_f3256e1d1716",
+      "biz": "MzU3NTcxMDQ4Mg==",
+      "enabled": true,
+      "official_url": "https://www.ggj.gov.cn/h5/index.html",
+      "profile_url": "https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=MzU3NTcxMDQ4Mg==",
+      "verified_at": "2026-11-14",
+      "verification": {
+        "list": "passed",
+        "body": "http_passed",
+        "sample_date": "2026-11-13",
+        "sample_chars": 404
+      }
+    }
+  ],
+  "websites": [
+    {
+      "region": "北京",
+      "url": "http://jgj.beijing.gov.cn/",
+      "status": "pending"
+    },
+    {
+      "region": "吉林",
+      "url": "http://sgj.jl.gov.cn/",
+      "status": "pending"
+    },
+    {
+      "region": "黑龙江",
+      "url": "http://jgj.hlj.gov.cn/",
+      "status": "pending"
+    },
+    {
+      "region": "福建",
+      "url": "http://jgswglj.fujian.gov.cn/",
+      "status": "pending"
+    },
+    {
+      "region": "海南",
+      "url": "http://jgsw.hainan.gov.cn/",
+      "status": "pending"
+    },
+    {
+      "region": "甘肃",
+      "url": "https://jgsw.gansu.gov.cn/",
+      "status": "pending"
+    },
+    {
+      "region": "新疆生产建设兵团",
+      "url": "http://www.xjbt.gov.cn/",
+      "status": "pending"
+    },
+    {
+      "region": "广州",
+      "url": "https://www.gz.gov.cn/",
+      "status": "pending"
+    },
+    {
+      "region": "西安",
+      "url": "http://jgswfwzx.xa.gov.cn/",
+      "status": "pending"
+    }
+  ]
+}

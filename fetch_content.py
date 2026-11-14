@@ -579,6 +579,10 @@ def check_topic_dates(news_list, date_str, keyword=None, force=False, today=None
     today = today or today_beijing()
     """Keep rejected rows for collection fingerprints and forensic inspection."""
     for item in news_list:
+        if item.get("wechat_article_id"):
+            # The collector owns publication evidence and retries for these rows.
+            item.pop("date_review", None)
+            continue
         msn = is_msn_news_url(item.get('link'))
         jfdaily = is_jfdaily_news_url(item.get('link'))
         repair_body = ((is_tencent_news_url(item.get('link')) or msn or jfdaily)
@@ -632,9 +636,9 @@ def check_topic_dates(news_list, date_str, keyword=None, force=False, today=None
                         custom_grab=bool(text) and (is_tencent_news_url(item.get('link')) or msn or jfdaily))
     path = date_diagnostic_path(date_str, keyword)
     write_diagnostic(news_list, date_str, path)
-    counts = {status: sum(item['publication_check']['status'] == status for item in news_list)
+    counts = {status: sum(item.get('publication_check', {}).get('status', 'pending') == status for item in news_list)
               for status in ('accepted', 'old', 'pending')}
-    search_count = sum(item['publication_check'].get('reason') == 'search_date_fallback' for item in news_list)
+    search_count = sum(item.get('publication_check', {}).get('reason') == 'search_date_fallback' for item in news_list)
     print(f"[GOV_DATE] 搜索日期兜底={search_count} 当日通过={counts['accepted']} 旧文排除={counts['old']} 待核验={counts['pending']} 清单={path}")
 
 
@@ -647,6 +651,9 @@ def cached_custom_body_complete(item):
 
 
 def content_fetch_complete(item, keyword):
+    if item.get("wechat_article_id"):
+        # Failed rows remain diagnostic and can only be retried by the collector.
+        return True
     from content_quality import body_rejection_reason
     # A known rejected body is handled, not a successful article. Retain it for audit.
     if body_rejection_reason(item.get("content"), item.get("title")) in {"feedback_only", "error_page", "paywall_excerpt", "navigation_only"}:
@@ -706,7 +713,7 @@ def process_json(keyword, date_str=None, mode='正式'):
     filtered_news_list = []
     for item in news_list:
         # Other custom site rules accept short bodies as successful extraction.
-        if cached_custom_body_complete(item):
+        if item.get("wechat_article_id") or cached_custom_body_complete(item):
             filtered_news_list.append(item)
             continue
         if (((check_current(item) or is_tencent_news_url(item.get('link'))
@@ -800,7 +807,8 @@ def process_json(keyword, date_str=None, mode='正式'):
     # Persist the batch and review state with one atomic replacement.
     for item in filtered_news_list:
         annotate_content_quality(item)
-        track_review(item, today_beijing())
+        if not item.get("wechat_article_id"):
+            track_review(item, today_beijing())
     from government_affairs_pipeline import atomic_json
     atomic_json(json_path, filtered_news_list)
     sync_job(filtered_news_list, date_str, keyword)

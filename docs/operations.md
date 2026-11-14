@@ -97,3 +97,56 @@ Issue #18 / PR #21 部署当天及后两天的完整验收，按 [上线检查�
 ## 平台日期自动复核
 
 每日 `main.py` 收尾执行到期日期复核，无需新增定时任务。复核保持原采集日期和配置绑定，成功后增量评分入库；达到次数上限后保留证据归档，不要求每日人工核查。查看 `output/date_reviews/last_run.report`、批次原始 JSON 的 `date_review` 及 `DATE_REVIEW` 日志。详情与手动命令见 [平台日期复核与评分时效](platform-date-review.md)。
+
+## 机关事务官微与飞书结果
+
+原00:30主任务处理已启用的「江苏机关事务」专题时，会采集[清单中的官微](government-affairs-wechat-sources.md)。开关默认关闭。部署后在实际运行目录的 `.env` 显式配置以下变量。
+
+```ini
+ENABLE_GOVERNMENT_WECHAT=1
+WECHAT_API_KEY=填入现有极致了账户密钥
+WECHAT_API_VERIFYCODE=
+WECHAT_API_BASE_URL=https://www.dajiala.com
+```
+
+`WECHAT_API_KEY` 必填。现有账户已验证 `WECHAT_API_VERIFYCODE` 可留空。`WECHAT_API_BASE_URL` 留空时使用 `https://www.dajiala.com`。服务器通过已有 `FEISHU_USER_ID`、`FEISHU_APP_ID` 和 `FEISHU_APP_SECRET` 发送结果卡片。原国资官微任务保持停用。
+
+如以后停用「江苏机关事务」专题，同时设置`ENABLE_GOVERNMENT_WECHAT=0`；独立检查会明确跳过，避免仍对已停用业务报漏跑。
+
+主任务默认处理北京时间昨天。补跑时把 `YYYY-MM-DD` 换成业务日。续跑使用同日成功检查点，每次运行单独记录结果。
+
+```bash
+cd /www/wwwroot/serp_news || exit 1
+/www/wwwroot/serp_news/.venv/bin/python -B main.py YYYY-MM-DD --keyword 江苏机关事务
+```
+
+### 每天09:00独立检查
+
+在宝塔增加独立Shell任务，执行周期为每天北京时间09:00（cron表达式`0 9 * * *`）。先确认宝塔/服务器调度时区为Asia/Shanghai；若服务器使用UTC，计划应设为01:00 UTC。命令中的`TZ`只设置进程时区，不能改变宝塔触发时间。
+
+```bash
+cd /www/wwwroot/serp_news || exit 1
+TZ=Asia/Shanghai /www/wwwroot/serp_news/.venv/bin/python -B wechat_notifications.py --check-missing
+```
+
+2026-11-14只读核对时，00:30任务使用项目 `.venv/bin/python`，服务器时区为 Asia/Shanghai。检查任务需独立于主任务触发，这样主任务未启动时仍有提醒。检查任务和主任务共用项目运行目录，运行用户需有读写权限，文件系统需支持 `flock`。
+
+启用时记录首个生效的北京时间00:30运行日期及对应业务日（前一天），在该次主任务计划触发后的09:00开始检查。独立检查读取 `output/wechat_runs/`，识别业务批次未启动、已中断、仍运行及待发送结果。每条待发结果每个北京时间检查日尝试一次。已确认发送的结果和同一检查日的漏跑提醒均去重。
+
+### 诊断与恢复
+
+- `output/YYYY-MM-DD/diagnostics/wechat_collection.json` 保存逐账号采集状态、文章和费用。同目录的 `wechat_collection_state.json` 是续跑缓存，两者一起保留。同日主流程可恢复失败来源，正常零篇单独标记。
+- `output/wechat_runs/YYYY-MM-DD/` 保存各次运行和通知状态，`stages/<run_id>/` 保存评分、入库和摘要的阶段报告。主任务收尾最多尝试发送三次，失败记录进入待发送状态，由独立检查处理。
+- 同日主流程与采集阶段都有互斥保护。主流程异常退出后，仍在工作的业务子进程继续持有同日锁和运行租约，直到最后一个子进程退出；父进程消失不代表可以立即续跑。不要删除锁文件或缓存来强制并行；先确认已有进程是否结束。
+- 这些目录需由任务运行用户读写，并随运行数据备份。清理记录会丢失续跑缓存和通知去重依据。
+
+飞书结果分别显示新增入库、重复和失败，缺少证据的阶段显示未知。图片或视频因文字不足跳过评分时保留诊断。正常零篇、部分失败及异常终止也会记录结果。
+
+采集数按官微文章统计，新增入库只计已提交的新数据库记录。多个来源的同标题文章可能合并到一条数据库记录，摘要成功数按本次实际更新的数据库记录统计，因此各阶段数量可能不同；运行阶段记录保留候选文章与数据库记录的对应关系。
+
+修复飞书配置后可运行以下命令，逐条补发尚未确认送达的终态结果。
+
+```bash
+cd /www/wwwroot/serp_news || exit 1
+/www/wwwroot/serp_news/.venv/bin/python -B wechat_notifications.py --retry-pending
+```

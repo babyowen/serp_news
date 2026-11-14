@@ -30,8 +30,11 @@ from llm_client_pool import get_pool
 from runtime_config import value, model_credentials, model_arguments
 from batch_config import prepare_batch
 from topic_config import TOPIC
+from wechat_pipeline_run import stage_run, read_stage, write_stage
 from content_quality import body_rejection_reason
+from news_title_key import title_key
 from summary_grounding import grounded_system_prompt, attribution_supported
+from wechat_source_context import add_source_context
 from news_business_type_utils import (
     build_business_type_catalog,
     load_business_type_aliases,
@@ -51,10 +54,12 @@ def parse_date(arg):
         return f"{s[0:4]}-{s[4:6]}-{s[6:8]}"
     return s
 
-def call_llm(title, content, max_retries=3):
+def call_llm(title, content, max_retries=3, context=None):
     if body_rejection_reason(content, title):
         return None
     user_prompt = value("NEWS_ITEM_SUMMARY_USER_PROMPT_500").format(title=title.strip(), content=content.strip())
+    system_prompt, user_prompt = add_source_context(
+        grounded_system_prompt(value("NEWS_ITEM_SUMMARY_SYSTEM_PROMPT_500")), user_prompt, context)
     backoffs = [5, 10, 20]
     for i in range(max_retries):
         client = _pool.get_client(*model_credentials("item_summarizer"))
@@ -62,7 +67,7 @@ def call_llm(title, content, max_retries=3):
             resp = client.chat.completions.create(
                 **model_arguments("item_summarizer"),
                 messages=[
-                    {"role": "system", "content": grounded_system_prompt(value("NEWS_ITEM_SUMMARY_SYSTEM_PROMPT_500"))},
+                    {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_prompt}
                 ]
             )
@@ -115,11 +120,72 @@ def add_business_types_to_catalog(catalog, business_types):
             labels.append(item["level2"])
             labels.sort()
 
+class WechatSummaryEvidence:
+    """Associate candidates with the actual stored rows selected by the importer."""
+    def __init__(self, run, database, cur, table):
+        self.run = run
+        self.rows = {}
+        self.unmapped = []
+        self.articles = database["articles"]
+        links = sorted({item["stored_link"] for item in self.articles
+                        if item["status"] in {"inserted", "duplicate"} and item.get("stored_link")})
+        by_key = {}
+        if links:
+            placeholders = ",".join(["%s"] * len(links))
+            cur.execute(f"SELECT id, title, link, fetchdate, score, short_summary, content FROM {table} "
+                        f"WHERE keyword=%s AND link IN ({placeholders})", (TOPIC, *links))
+            for stored in cur.fetchall():
+                by_key.setdefault((title_key(stored[1]), stored[2]), []).append(stored)
+        for item in self.articles:
+            candidate = {key: item[key] for key in ("title", "link", "article_id")}
+            if item["status"] == "skipped":
+                self.unmapped.append(dict(candidate, status="not_needed"))
+                continue
+            matches = by_key.get((title_key(item["title"]), item.get("stored_link")), [])
+            if item["status"] not in {"inserted", "duplicate"} or len(matches) != 1:
+                self.unmapped.append(dict(candidate, status="pending"))
+                continue
+            rid, title, _, stored_day, score, summary, content = matches[0]
+            if summary and str(summary).strip():
+                status = "already_done"
+            elif (str(stored_day) != run["date"] or not content or not str(content).strip()
+                    or body_rejection_reason(content, title) or score is not None and score < 3):
+                status = "not_needed"
+            else:
+                status = "pending"
+            row = self.rows.setdefault(rid, {"status": status, "candidates": []})
+            row["candidates"].append(candidate)
+        self.save("pending")
+
+    def save(self, status=None):
+        counts = {key: sum(row["status"] == key for row in [*self.rows.values(), *self.unmapped])
+                  for key in ("succeeded", "failed", "already_done", "not_needed", "pending")}
+        complete = not (counts["failed"] or counts["pending"])
+        if status is None:
+            if not complete:
+                status = "partial" if counts["succeeded"] or counts["already_done"] else "failed"
+            else:
+                status = "success"
+        articles = [dict(item, row_id=rid) for rid, item in self.rows.items()] + self.unmapped
+        write_stage(self.run, "summary", status, counts, articles)
+        return complete
+
+    def update_summary(self, cur, table, rid, summary):
+        cur.execute(f"UPDATE {table} SET short_summary=%s WHERE id=%s "
+                    "AND (short_summary IS NULL OR short_summary='')", (summary, rid))
+        self.record(rid, "succeeded" if cur.rowcount == 1 else "pending")
+
+    def record(self, rid, status):
+        if rid in self.rows and self.rows[rid]["status"] in {"pending", "failed"}:
+            self.rows[rid]["status"] = status
+            self.save("pending")
+
+
 @with_error_handling("news_item_summarizer.py", "main")
 def main():
     log_script_start("news_item_summarizer.py", sys.argv[1:])
     err = ErrorHandler()
-    success_all = True
+    evidence = None
     try:
         parser = argparse.ArgumentParser()
         parser.add_argument('date', nargs='?', default=None)
@@ -132,6 +198,15 @@ def main():
         table_name = validate_region_table_name(args.table or get_table_name())
         conn = get_conn()
         cur = conn.cursor()
+        run = stage_run(date) if TOPIC in batch_keywords else None
+        database = read_stage(run, "database") if run else None
+        if database:
+            evidence = WechatSummaryEvidence(run, database, cur, table_name)
+        elif run:
+            # A rejected or interrupted topic batch has no current candidate scope.
+            batch_keywords = [keyword for keyword in batch_keywords if keyword != TOPIC]
+            if not batch_keywords:
+                return False
 
         has_region_column = table_has_region_column(cur, table_name)
         if args.keyword == "公积金" and not has_region_column:
@@ -144,7 +219,7 @@ def main():
         aliases = load_business_type_aliases(cur, table_name) if gjj_annotation_ready else {}
         business_type_catalog = build_business_type_catalog(cur, table_name, aliases) if gjj_annotation_ready else {}
 
-        sql = f"SELECT id, title, content, keyword FROM {table_name} WHERE fetchdate=%s AND score>=3 AND (short_summary IS NULL OR short_summary='')"
+        sql = f"SELECT id, title, content, keyword, source, link, sourceapi FROM {table_name} WHERE fetchdate=%s AND score>=3 AND (short_summary IS NULL OR short_summary='')"
         # Scope the database work to the same topics whose revision was pinned.
         # Historical rows for removed/unbound topics require an explicit run.
         # Using another revision in this directory requires per-topic resumes;
@@ -154,7 +229,7 @@ def main():
             
         cur.execute(sql, tuple(params))
         initial_rows = cur.fetchall()
-        gov_pending = {rid for rid, title, content, keyword in initial_rows
+        gov_pending = {rid for rid, title, content, keyword, source, link, sourceapi in initial_rows
                        if keyword == TOPIC and content and str(content).strip()}
         gov_total = len(gov_pending)
         total = len(initial_rows)
@@ -168,7 +243,7 @@ def main():
             rows = cur.fetchall()
             if not rows:
                 break
-            for rid, title, content, keyword in rows:
+            for rid, title, content, keyword, source, link, sourceapi in rows:
                 if not content or not str(content).strip() or body_rejection_reason(content, title):
                     skip += 1
                     continue
@@ -196,6 +271,8 @@ def main():
                             conn.ping(reconnect=True)
                             if annotate_gjj:
                                 update_summary_fields(cur, table_name, rid, text, region, business_types)
+                            elif evidence and rid in evidence.rows:
+                                evidence.update_summary(cur, table_name, rid, text)
                             else:
                                 update_summary_only(cur, table_name, rid, text)
                             gov_pending.discard(rid)
@@ -220,6 +297,8 @@ def main():
                                 conn = get_conn()
                                 cur = conn.cursor()
                     if not done:
+                        if evidence:
+                            evidence.record(rid, "failed")
                         fail += 1
                     continue
                 if annotate_gjj:
@@ -230,7 +309,8 @@ def main():
                     region = result.get("region") if result else None
                     business_types = result.get("business_types", []) if result else []
                 else:
-                    summary = call_llm(title or '', content or '')
+                    summary = call_llm(title or '', content or '', context={
+                        "keyword": keyword, "source": source, "link": link, "sourceapi": sourceapi})
                     region = None
                     business_types = []
                 if summary:
@@ -241,6 +321,8 @@ def main():
                             conn.ping(reconnect=True)
                             if annotate_gjj:
                                 update_summary_fields(cur, table_name, rid, summary, region, business_types)
+                            elif evidence and rid in evidence.rows:
+                                evidence.update_summary(cur, table_name, rid, summary)
                             else:
                                 update_summary_only(cur, table_name, rid, summary)
                             gov_pending.discard(rid)
@@ -265,8 +347,12 @@ def main():
                                 conn = get_conn()
                                 cur = conn.cursor()
                     if not done:
+                        if evidence:
+                            evidence.record(rid, "failed")
                         fail += 1
                 else:
+                    if evidence:
+                        evidence.record(rid, "failed")
                     fail += 1
                     safe_print(f"[生成失败] id={rid}")
                 time.sleep(0.2)
@@ -276,11 +362,13 @@ def main():
         log_run(date, table_name, total, success, fail, skip)
         if TOPIC in batch_keywords:
             safe_print(f"[GOV_SUMMARY] 最终成功 {gov_total-len(gov_pending)} 最终失败 {len(gov_pending)}")
-        complete = not gov_pending
+        evidence_complete = evidence.save() if evidence else True
+        complete = not gov_pending and evidence_complete
         log_script_complete("news_item_summarizer.py", success=complete, message=f"抓取日期 {date} 完成: 成功{success} 失败尝试{fail} 跳过{skip}；机关事务最终失败{len(gov_pending)}")
         return complete
     except Exception as e:
-        success_all = False
+        if evidence:
+            evidence.save()
         err.log_error(
             error_type="MAIN_FUNCTION_ERROR",
             error_msg=str(e),

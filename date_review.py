@@ -88,6 +88,19 @@ def deliver_rows(raw_path, keyword, links):
 
 def review_batch(day, keyword, today=None, deliver=None):
     """Run in an isolated child process so the original batch's config stays pinned."""
+    import os
+    from topic_config import TOPIC
+
+    if keyword == TOPIC and os.environ.get("ENABLE_GOVERNMENT_WECHAT") == "1":
+        from batch_config import validate_date
+        from wechat_pipeline_run import pipeline_lock
+
+        with pipeline_lock(validate_date(day)):
+            return _review_batch(day, keyword, today, deliver)
+    return _review_batch(day, keyword, today, deliver)
+
+
+def _review_batch(day, keyword, today, deliver):
     from batch_config import prepare_batch
     from fetch_content import check_topic_dates, date_diagnostic_path
     from news_freshness import write_diagnostic
@@ -100,6 +113,9 @@ def review_batch(day, keyword, today=None, deliver=None):
     rows = json.loads(path.read_text(encoding="utf-8"))
     all_ok = True
     for row in rows:
+        if row.get("wechat_article_id"):
+            row.pop("date_review", None)
+            continue
         expire_review(row, today)
         state = row.get("date_review", {})
         if state.get("status") == "ready" and state.get("delivery_attempts",0) >= 3:
