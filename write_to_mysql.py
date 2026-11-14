@@ -13,8 +13,10 @@ import datetime
 from functools import partial
 from config import DEFAULT_KEYWORDS
 from news_freshness import eligible
+from news_title_key import title_key
 from content_quality import body_rejection_reason
 from topic_config import TOPIC
+from wechat_collector import _article_identity
 from wechat_pipeline_run import stage_run, read_stage, write_stage
 from error_handler import (
     setup_global_exception_handler,
@@ -160,27 +162,29 @@ def insert_scored_news(json_path, keyword, report=False):
         )
         for title, link in cursor.fetchall():
             if title is not None:
-                existing_titles.add(title)
-                titles_to_links.setdefault(title, link)
+                key = title_key(title)
+                existing_titles.add(key)
+                titles_to_links.setdefault(key, link)
                 if link is not None:
-                    existing_title_links.add((title, link))
+                    existing_title_links.add((key, link))
 
     for item, content in candidate_items:
         title = item.get('title')
         link = item.get('link')
+        key = title_key(title)
 
-        # 查重：同一主关键词内 title+link。不同业务关键词允许各保留一条。
-        if title is not None and link is not None and (title, link) in existing_title_links:
+        # 仅比较时合并标题空白；原始标题和正文不改写，主关键词之间不合并。
+        if title is not None and link is not None and (key, link) in existing_title_links:
             skip += 1
             completed_links.add(link)
             rows_by_link[link] = {"status": "duplicate", "stored_link": link}
             continue
 
-        # 兜底查重：同一关键词下 title 完全相同（URL可能不同）
-        if title is not None and title in existing_titles:
+        # 兜底查重：同一关键词下标题仅空白不同也视为重复（URL可能不同）。
+        if title is not None and key in existing_titles:
             dup_title_skip += 1
             completed_links.add(link)
-            rows_by_link[link] = {"status": "duplicate", "stored_link": titles_to_links[title]}
+            rows_by_link[link] = {"status": "duplicate", "stored_link": titles_to_links[key]}
             continue
 
         sql = f'''
@@ -213,10 +217,10 @@ def insert_scored_news(json_path, keyword, report=False):
             completed_links.add(link)
             rows_by_link[link] = {"status": "inserted", "stored_link": link}
             if title is not None:
-                existing_titles.add(title)
-                titles_to_links[title] = link
+                existing_titles.add(key)
+                titles_to_links[key] = link
                 if link is not None:
-                    existing_title_links.add((title, link))
+                    existing_title_links.add((key, link))
         except Exception as e:
             # Only statement-local constraint/data failures permit partial commit.
             # Deadlocks, disconnects and other operational errors can invalidate
@@ -265,10 +269,12 @@ def update_scores_from_json(json_path, keyword, report=False, *, wechat_rows=Non
         params = (score, title, keyword, link)
         if wechat_rows is not None and item.get("wechat_article_id"):
             stored_link = wechat_rows.get(link, {}).get("stored_link")
-            if not stored_link:
+            identity = _article_identity(link)
+            if (not identity or item["wechat_article_id"] != "/".join(identity)
+                    or identity != _article_identity(stored_link)):
                 continue
-            # The title dedup maps the candidate to the retained URL. Verify
-            # the current day and exact text in the update itself.
+            # Publisher context belongs to this article, not another title duplicate.
+            # Tracking URLs may differ; retain exact stored URL/day/text guards in SQL.
             sql += (" AND fetchdate=%s AND CAST(content AS BINARY)=CAST(%s AS BINARY)"
                     " AND CAST(title AS BINARY)=CAST(%s AS BINARY) AND CAST(link AS BINARY)=CAST(%s AS BINARY)")
             params = (score, title, keyword, stored_link, item["fetchdate"], item["content"], title, stored_link)

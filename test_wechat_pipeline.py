@@ -100,9 +100,10 @@ class Database:
                            if r["fetchdate"] == params[0] and r["keyword"] in params[1:]
                            and r["score"] is not None and r["score"] >= 3 and not r["short_summary"]]
         elif sql.startswith("SELECT id, title, link, fetchdate, score, short_summary, content"):
+            lookup = "link" if "AND link IN (" in sql else "title"
             self.result = [(r["id"], r["title"], r["link"], r["fetchdate"], r["score"],
                             r["short_summary"], r["content"]) for r in self.rows
-                           if r["keyword"] == params[0] and r["title"] in params[1:]]
+                           if r["keyword"] == params[0] and r[lookup] in params[1:]]
         elif sql.lstrip().startswith("UPDATE") and "short_summary" in sql:
             summary, rid = params
             for row in self.rows:
@@ -322,15 +323,19 @@ def test_wechat_import_lost_commit_ack_does_not_report_an_insert(integration):
     assert len(db.rows) == 1
 
 
-def test_wechat_summary_maps_same_title_to_actual_database_row(integration):
+@pytest.mark.parametrize("stored_title,candidate_title", [
+    ("跨来源同一标题", "跨来源同一标题"),
+    ("跨来源  同一标题", "跨来源 同一标题"),
+    ("跨来源\u3000同一标题", "跨来源\u00a0\t同一标题"),
+])
+def test_wechat_summary_maps_same_title_to_actual_database_row(integration, stored_title, candidate_title):
     main, accounts, provider, db, scored, cards, commands = integration
     a = accounts[0]
-    duplicate = "跨来源同一标题"
-    shared = news(duplicate, "https://example.test/search")
+    shared = news(stored_title, "https://example.test/search")
     provider.search_rows["机关事务管理"] = [shared]
     provider.pages[a["ghid"], ""] = [
-        page(article(201, 1, biz=a["biz"], title=duplicate),
-             article(201, 2, biz=a["biz"], title=duplicate),
+        page(article(201, 1, biz=a["biz"], title=candidate_title),
+             article(201, 2, biz=a["biz"], title=candidate_title),
              article(202, biz=a["biz"], title="无需摘要"), ghid=a["ghid"])
     ]
     assert main.main(DAY, keyword=TOPIC) is True
@@ -345,6 +350,11 @@ def test_wechat_summary_maps_same_title_to_actual_database_row(integration):
         "succeeded": 1, "failed": 0, "already_done": 0, "not_needed": 1, "pending": 0
     }
     assert len(next(row["candidates"] for row in summarized["articles"] if row["status"] == "succeeded")) == 2
+    assert db.rows[0]["title"] == stored_title
+    assert db.rows[0]["link"] == shared["link"]
+    assert main.main(DAY, keyword=TOPIC) is True
+    assert len(db.rows) == 2
+    assert read(receipts_for(ledger()) / "summary.json")["counts"]["already_done"] == 1
 
 
 def test_wechat_row_error_keeps_other_committed_counts(integration):
@@ -488,12 +498,15 @@ def stored_null_score(title, *, day=DAY, content=BODY):
                 keyword=TOPIC, content=content, score=None, short_summary=None)
 
 
-def test_wechat_recovers_null_score_on_the_matching_duplicate_and_converges(integration):
+def test_wechat_recovers_null_score_only_for_same_article_despite_tracking_url_and_converges(integration):
     main, accounts, provider, db, scored, cards, commands = integration
     a = accounts[0]
-    title = "完全相同的跨渠道报道"
-    db.rows.append(stored_null_score(title))
-    provider.pages[a["ghid"], ""] = [page(article(401, biz=a["biz"], title=title), ghid=a["ghid"])]
+    title = "完全相同的同一篇报道"
+    candidate = article(401, biz=a["biz"], title=title)
+    stored = stored_null_score(title)
+    stored["link"] = candidate["url"].replace("#rd", "&tracking=original")
+    db.rows.append(stored)
+    provider.pages[a["ghid"], ""] = [page(candidate, ghid=a["ghid"])]
     assert main.main(DAY, keyword=TOPIC) is True
     receipts = receipts_for(ledger())
     assert read(receipts / "database.json")["counts"]["duplicate"] == 1
@@ -509,6 +522,78 @@ def test_wechat_recovers_null_score_on_the_matching_duplicate_and_converges(inte
     assert scored == [title]
 
 
+@pytest.mark.parametrize("different_identity", ["account", "mid", "idx", "non_wechat"])
+def test_wechat_does_not_transfer_contextual_score_between_articles_with_identical_text(
+        integration, different_identity):
+    main, accounts, provider, db, scored, cards, commands = integration
+    a, b = accounts[:2]
+    title = "各地开展相同部署的报道"
+    candidate = article(406, biz=a["biz"], title=title)
+    old = article(407 if different_identity == "mid" else 406,
+                  2 if different_identity == "idx" else 1,
+                  biz=b["biz"] if different_identity == "account" else a["biz"], title=title)
+    stored = stored_null_score(title)
+    if different_identity != "non_wechat":
+        stored.update(link=old["url"], source=b["name"], sourceapi="极致了api")
+    db.rows.append(dict(stored))
+    provider.pages[a["ghid"], ""] = [page(candidate, ghid=a["ghid"])]
+
+    assert main.main(DAY, keyword=TOPIC) is False
+    run = ledger()
+    receipts = receipts_for(run)
+    assert read(receipts / "database.json")["counts"] == {
+        "inserted": 0, "duplicate": 1, "failed": 0, "skipped": 0}
+    assert read(receipts / "summary.json")["counts"]["pending"] == 1
+    assert db.rows == [stored]
+    assert scored == [title]
+    assert run["status"] == "partial"
+
+
+def test_whitespace_duplicate_does_not_replace_failed_retained_score_from_another_original(integration):
+    main, accounts, provider, db, scored, cards, commands = integration
+    a = accounts[0]
+    stored = stored_null_score("孙中山  诞辰纪念活动")
+    stored.update(source="此前未完成评分的来源", sourceapi="serp_bingnews")
+    db.rows.append(dict(stored))
+    candidate = article(405, biz=a["biz"], title="孙中山 诞辰纪念活动")
+    provider.pages[a["ghid"], ""] = [page(candidate, ghid=a["ghid"])]
+
+    for _ in range(2):
+        assert main.main(DAY, keyword=TOPIC) is False
+        run = ledger()
+        receipts = receipts_for(run)
+        assert read(receipts / "database.json")["counts"] == {
+            "inserted": 0, "duplicate": 1, "failed": 0, "skipped": 0}
+        summary = read(receipts / "summary.json")
+        assert summary["status"] == "failed"
+        assert summary["counts"]["pending"] == 1
+        assert summary["articles"][0]["row_id"] == stored["id"]
+        assert db.rows == [stored]
+        assert run["status"] == "partial"
+    assert scored == [candidate["title"]]
+
+
+@pytest.mark.parametrize("stored_title,candidate_title", [
+    ("AB C", "A BC"), ("A BC", "a BC"), ("A BC!", "A BC"),
+])
+def test_summary_evidence_does_not_map_different_titles_even_when_stored_link_matches(
+        monkeypatch, tmp_path, stored_title, candidate_title):
+    import news_item_summarizer
+
+    monkeypatch.chdir(tmp_path)
+    db = Database()
+    stored = dict(stored_null_score(stored_title), score=4, short_summary="已有摘要")
+    db.rows.append(stored)
+    candidate = dict(title=candidate_title, link="https://example.test/incoming", article_id="test/1",
+                     stored_link=stored["link"], status="duplicate")
+    evidence = news_item_summarizer.WechatSummaryEvidence(
+        {"date": DAY, "run_id": "test-title-boundary"}, {"articles": [candidate]}, db, "scored_news_test")
+    assert evidence.rows == {}
+    assert evidence.unmapped == [dict(title=candidate_title, link=candidate["link"],
+                                      article_id="test/1", status="pending")]
+    assert evidence.save() is False
+
+
 @pytest.mark.parametrize("day,content,summary_status,summary_count,success",
                          [(DAY, BODY + "这是不同的正文。", "failed", "pending", False),
                           ("2026-11-12", BODY, "success", "not_needed", True)])
@@ -517,8 +602,11 @@ def test_wechat_does_not_transfer_score_to_different_or_historical_stored_rows(
     main, accounts, provider, db, scored, cards, commands = integration
     a = accounts[0]
     title = "同标题但应保留存档正文"
-    db.rows.append(stored_null_score(title, day=day, content=content))
-    provider.pages[a["ghid"], ""] = [page(article(402, biz=a["biz"], title=title), ghid=a["ghid"])]
+    candidate = article(402, biz=a["biz"], title=title)
+    stored = stored_null_score(title, day=day, content=content)
+    stored["link"] = candidate["url"]
+    db.rows.append(stored)
+    provider.pages[a["ghid"], ""] = [page(candidate, ghid=a["ghid"])]
     assert main.main(DAY, keyword=TOPIC) is success
     run = ledger()
     receipt = read(receipts_for(run) / "summary.json")

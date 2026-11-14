@@ -32,6 +32,7 @@ from batch_config import prepare_batch
 from topic_config import TOPIC
 from wechat_pipeline_run import stage_run, read_stage, write_stage
 from content_quality import body_rejection_reason
+from news_title_key import title_key
 from summary_grounding import grounded_system_prompt, attribution_supported
 from wechat_source_context import add_source_context
 from news_business_type_utils import (
@@ -126,21 +127,21 @@ class WechatSummaryEvidence:
         self.rows = {}
         self.unmapped = []
         self.articles = database["articles"]
-        titles = sorted({item["title"] for item in self.articles
-                         if item["status"] in {"inserted", "duplicate"}})
-        by_title = {}
-        if titles:
-            placeholders = ",".join(["%s"] * len(titles))
+        links = sorted({item["stored_link"] for item in self.articles
+                        if item["status"] in {"inserted", "duplicate"} and item.get("stored_link")})
+        by_key = {}
+        if links:
+            placeholders = ",".join(["%s"] * len(links))
             cur.execute(f"SELECT id, title, link, fetchdate, score, short_summary, content FROM {table} "
-                        f"WHERE keyword=%s AND title IN ({placeholders})", (TOPIC, *titles))
+                        f"WHERE keyword=%s AND link IN ({placeholders})", (TOPIC, *links))
             for stored in cur.fetchall():
-                by_title.setdefault(stored[1], []).append(stored)
+                by_key.setdefault((title_key(stored[1]), stored[2]), []).append(stored)
         for item in self.articles:
             candidate = {key: item[key] for key in ("title", "link", "article_id")}
             if item["status"] == "skipped":
                 self.unmapped.append(dict(candidate, status="not_needed"))
                 continue
-            matches = [row for row in by_title.get(item["title"], []) if row[2] == item.get("stored_link")]
+            matches = by_key.get((title_key(item["title"]), item.get("stored_link")), [])
             if item["status"] not in {"inserted", "duplicate"} or len(matches) != 1:
                 self.unmapped.append(dict(candidate, status="pending"))
                 continue
