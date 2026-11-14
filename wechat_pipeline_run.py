@@ -69,9 +69,11 @@ def read_stage(run, stage):
 
 def build_outcome(run, collection, error):
     outcome = {"collection": collection, "status": "success", "error": error}
+    reports = {}
     for stage in ("scoring", "database", "summary"):
         report = read_stage(run, stage)
         if report:
+            reports[stage] = report
             outcome[stage] = {**report["counts"], "status": report["status"]}
         if (not report or report["status"] in {"failed", "partial", "pending"}) and not outcome["error"]:
             outcome["error"] = stage + "_failed"
@@ -84,4 +86,14 @@ def build_outcome(run, collection, error):
                                           ("scoring", "succeeded"), ("database", "inserted"),
                                           ("summary", "succeeded")) if outcome.get(stage))
         outcome["status"] = "partial" if worked and error in {None, "collection_incomplete"} else "failed"
+    from wechat_reader_outcome import build_reader_overview
+
+    try:
+        overview = build_reader_overview(collection, reports, run["date"])
+    except Exception:
+        # Optional presentation must not prevent freezing the business result.
+        # Keep its original status/error and use the card's unknown-detail text.
+        overview = None
+    if overview is not None:
+        outcome["reader_overview"] = overview
     return outcome
