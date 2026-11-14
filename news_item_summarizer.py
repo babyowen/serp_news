@@ -156,13 +156,15 @@ class WechatSummaryEvidence:
     def save(self, status=None):
         counts = {key: sum(row["status"] == key for row in [*self.rows.values(), *self.unmapped])
                   for key in ("succeeded", "failed", "already_done", "not_needed", "pending")}
+        complete = not (counts["failed"] or counts["pending"])
         if status is None:
-            if counts["failed"] or counts["pending"]:
+            if not complete:
                 status = "partial" if counts["succeeded"] or counts["already_done"] else "failed"
             else:
                 status = "success"
         articles = [dict(item, row_id=rid) for rid, item in self.rows.items()] + self.unmapped
         write_stage(self.run, "summary", status, counts, articles)
+        return complete
 
     def update_summary(self, cur, table, rid, summary):
         cur.execute(f"UPDATE {table} SET short_summary=%s WHERE id=%s "
@@ -355,14 +357,13 @@ def main():
         log_run(date, table_name, total, success, fail, skip)
         if TOPIC in batch_keywords:
             safe_print(f"[GOV_SUMMARY] 最终成功 {gov_total-len(gov_pending)} 最终失败 {len(gov_pending)}")
-        if evidence:
-            evidence.save()
-        complete = not gov_pending
+        evidence_complete = evidence.save() if evidence else True
+        complete = not gov_pending and evidence_complete
         log_script_complete("news_item_summarizer.py", success=complete, message=f"抓取日期 {date} 完成: 成功{success} 失败尝试{fail} 跳过{skip}；机关事务最终失败{len(gov_pending)}")
         return complete
     except Exception as e:
         if evidence:
-            evidence.save("failed")
+            evidence.save()
         err.log_error(
             error_type="MAIN_FUNCTION_ERROR",
             error_msg=str(e),

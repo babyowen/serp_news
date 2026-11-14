@@ -80,10 +80,23 @@ class Database:
         elif sql.startswith("UPDATE") and "SET score=" in sql:
             if self.fail_score_update:
                 raise pymysql.OperationalError(1213, "update rolled back")
+            score, title, keyword, link, *identity = params
+            for row in self.rows:
+                if (row["title"], row["keyword"], row["link"], row["score"]) != (title, keyword, link, None):
+                    continue
+                if identity:
+                    assert all(predicate in sql for predicate in (
+                        "fetchdate=%s", "CAST(content AS BINARY)=CAST(%s AS BINARY)",
+                        "CAST(title AS BINARY)=CAST(%s AS BINARY)", "CAST(link AS BINARY)=CAST(%s AS BINARY)",
+                    ))
+                    if [row["fetchdate"], row["content"], row["title"], row["link"]] != identity:
+                        continue
+                row["score"] = score
+                self.rowcount += 1
         elif sql.startswith("SELECT id, title, content, keyword"):
             self.result = [(r["id"], r["title"], r["content"], r["keyword"]) for r in self.rows
                            if r["fetchdate"] == params[0] and r["keyword"] in params[1:]
-                           and r["score"] >= 3 and not r["short_summary"]]
+                           and r["score"] is not None and r["score"] >= 3 and not r["short_summary"]]
         elif sql.startswith("SELECT id, title, link, fetchdate, score, short_summary, content"):
             self.result = [(r["id"], r["title"], r["link"], r["fetchdate"], r["score"],
                             r["short_summary"], r["content"]) for r in self.rows
@@ -462,3 +475,84 @@ def test_wechat_main_explicit_default_is_previous_beijing_day(integration, monke
     monkeypatch.setattr(main, "reference_time", lambda: datetime.fromisoformat("2026-11-14T00:30:00+08:00"))
     assert main.main(keyword=TOPIC) is True
     assert ledger()["date"] == DAY
+
+
+def receipts_for(run):
+    return Path("output/wechat_runs", DAY, "stages", run["run_id"])
+
+
+def stored_null_score(title, *, day=DAY, content=BODY):
+    return dict(id=1, title=title, link="https://example.test/original-search", fetchdate=day,
+                keyword=TOPIC, content=content, score=None, short_summary=None)
+
+
+def test_wechat_recovers_null_score_on_the_matching_duplicate_and_converges(integration):
+    main, accounts, provider, db, scored, cards, commands = integration
+    a = accounts[0]
+    title = "完全相同的跨渠道报道"
+    db.rows.append(stored_null_score(title))
+    provider.pages[a["ghid"], ""] = [page(article(401, biz=a["biz"], title=title), ghid=a["ghid"])]
+    assert main.main(DAY, keyword=TOPIC) is True
+    receipts = receipts_for(ledger())
+    assert read(receipts / "database.json")["counts"]["duplicate"] == 1
+    assert read(receipts / "database.json")["counts"]["inserted"] == 0
+    assert read(receipts / "summary.json")["counts"]["succeeded"] == 1
+    assert db.rows[0]["score"] == 4
+    assert db.rows[0]["short_summary"] == BODY
+
+    assert main.main(DAY, keyword=TOPIC) is True
+    second = ledger()
+    assert second["status"] == "success"
+    assert read(receipts_for(second) / "summary.json")["counts"]["already_done"] == 1
+    assert scored == [title]
+
+
+@pytest.mark.parametrize("day,content,summary_status,summary_count,success",
+                         [(DAY, BODY + "这是不同的正文。", "failed", "pending", False),
+                          ("2026-11-12", BODY, "success", "not_needed", True)])
+def test_wechat_does_not_transfer_score_to_different_or_historical_stored_rows(
+        integration, day, content, summary_status, summary_count, success):
+    main, accounts, provider, db, scored, cards, commands = integration
+    a = accounts[0]
+    title = "同标题但应保留存档正文"
+    db.rows.append(stored_null_score(title, day=day, content=content))
+    provider.pages[a["ghid"], ""] = [page(article(402, biz=a["biz"], title=title), ghid=a["ghid"])]
+    assert main.main(DAY, keyword=TOPIC) is success
+    run = ledger()
+    receipt = read(receipts_for(run) / "summary.json")
+    assert receipt["status"] == summary_status
+    assert receipt["counts"][summary_count] == 1
+    assert run["status"] == ("success" if success else "partial")
+    assert db.rows[0]["score"] is None
+    assert db.rows[0]["short_summary"] is None
+
+
+@pytest.mark.parametrize("summary_complete", [True, False])
+def test_wechat_mixed_keyword_exception_preserves_its_own_summary_outcome(integration, monkeypatch,
+                                                                        summary_complete):
+    import news_item_summarizer
+
+    main, accounts, provider, db, scored, cards, commands = integration
+    a = accounts[0]
+    title = "已有官微摘要" if summary_complete else "正文不同的官微候选"
+    existing = stored_null_score(title, content=BODY if summary_complete else BODY + "不同的正文。")
+    if summary_complete:
+        existing.update(score=4, short_summary="现有摘要")
+    db.rows.extend([existing, dict(id=2, title="养老专题文章", link="https://example.test/other",
+                                   fetchdate=DAY, keyword="养老", content="这是养老项目的完整报道。" * 100,
+                                   score=4, short_summary=None)])
+    provider.pages[a["ghid"], ""] = [page(article(403, biz=a["biz"], title=title), ghid=a["ghid"])]
+
+    def broken(*_):
+        raise ValueError("unrelated row error")
+
+    monkeypatch.setattr(news_item_summarizer, "call_llm", broken)
+    assert main.main(DAY) is False
+    run = ledger()
+    report = read(receipts_for(run) / "summary.json")
+    assert report["counts"] == {
+        "succeeded": 0, "failed": 0, "already_done": int(summary_complete),
+        "not_needed": 0, "pending": int(not summary_complete),
+    }
+    assert report["status"] == ("success" if summary_complete else "failed")
+    assert run["status"] == ("success" if summary_complete else "partial")

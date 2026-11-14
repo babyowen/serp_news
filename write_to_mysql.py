@@ -10,6 +10,7 @@ import pymysql
 from dotenv import load_dotenv
 import argparse
 import datetime
+from functools import partial
 from config import DEFAULT_KEYWORDS
 from news_freshness import eligible
 from content_quality import body_rejection_reason
@@ -104,10 +105,11 @@ def import_scored_news_with_retry(filepath, keyword, max_attempts=2, report=Fals
     args = (filepath, keyword, True) if report else (filepath, keyword)
     result = run_with_connection_retry(f"导入 {keyword}", insert_scored_news, *args,
                                        max_attempts=max_attempts)
+    update = update_scores_from_json
     if on_insert is not None:
         on_insert(result)
-    updates = run_with_connection_retry("同步评分空值", update_scores_from_json, *args,
-                                        max_attempts=max_attempts)
+        update = partial(update, wechat_rows=result["rows"])
+    updates = run_with_connection_retry("同步评分空值", update, *args, max_attempts=max_attempts)
     if report:
         failed = set(result["failed_links"]) | set(updates["failed_links"])
         result["completed_links"] = sorted(set(result["completed_links"]) - failed)
@@ -245,7 +247,7 @@ def insert_scored_news(json_path, keyword, report=False):
     return fail == 0
 
 
-def update_scores_from_json(json_path, keyword, report=False):
+def update_scores_from_json(json_path, keyword, report=False, *, wechat_rows=None):
     """重评后更新数据库中已有记录的分数"""
     with open(json_path, 'r', encoding='utf-8') as f:
         data = json.load(f)
@@ -258,10 +260,20 @@ def update_scores_from_json(json_path, keyword, report=False):
                 or item.get("keyword", keyword) != keyword or item.get("score_status") != "ok"
                 or type(score) is not int or not 0 <= score <= 5 or not title or not item.get("link")):
             continue
+        link = item["link"]
+        sql = f"UPDATE {TABLE_NAME} SET score=%s WHERE title=%s AND keyword=%s AND link=%s AND score IS NULL"
+        params = (score, title, keyword, link)
+        if wechat_rows is not None and item.get("wechat_article_id"):
+            stored_link = wechat_rows.get(link, {}).get("stored_link")
+            if not stored_link:
+                continue
+            # The title dedup maps the candidate to the retained URL. Verify
+            # the current day and exact text in the update itself.
+            sql += (" AND fetchdate=%s AND CAST(content AS BINARY)=CAST(%s AS BINARY)"
+                    " AND CAST(title AS BINARY)=CAST(%s AS BINARY) AND CAST(link AS BINARY)=CAST(%s AS BINARY)")
+            params = (score, title, keyword, stored_link, item["fetchdate"], item["content"], title, stored_link)
         try:
-            cursor.execute(
-                f"UPDATE {TABLE_NAME} SET score=%s WHERE title=%s AND keyword=%s AND link=%s AND score IS NULL",
-                (score, title, keyword, item["link"]))
+            cursor.execute(sql, params)
             if cursor.rowcount > 0:
                 updated += cursor.rowcount
         except Exception as exc:
