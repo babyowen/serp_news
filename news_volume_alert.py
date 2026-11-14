@@ -288,7 +288,7 @@ def _send_feishu_via_cli(card_json, user_id, lark_cli):
         return False
 
 
-def _send_feishu_via_api(card_json, user_id, app_id, app_secret):
+def _send_feishu_via_api(card_json, user_id, app_id, app_secret, *, message_uuid=None):
     """飞书开放平台 API 方式（Linux 服务器，纯 Python 无需 Node.js）。
 
     1. 用 app_id/app_secret 换 tenant_access_token
@@ -319,6 +319,7 @@ def _send_feishu_via_api(card_json, user_id, app_id, app_secret):
                 "receive_id": user_id,
                 "msg_type": "interactive",
                 "content": card_json,
+                **({"uuid": message_uuid} if message_uuid else {}),
             },
             timeout=10,
         )
@@ -332,7 +333,7 @@ def _send_feishu_via_api(card_json, user_id, app_id, app_secret):
         return False
 
 
-def send_feishu(card_json):
+def send_feishu(card_json, *, message_uuid=None):
     """发送飞书卡片。
 
     调度顺序：
@@ -340,6 +341,8 @@ def send_feishu(card_json):
     2. 若 FEISHU_APP_ID/SECRET 配置 → 走开放平台 API（Linux 服务器）
     3. CLI 失败时也降级到 API
     4. 都没有则记录警告并返回 False
+
+    指定 message_uuid 时优先使用 API，保留同一发送请求的去重标识。
     """
     user_id = os.getenv("FEISHU_USER_ID")
     if not user_id:
@@ -348,7 +351,10 @@ def send_feishu(card_json):
         return False
 
     lark_cli = os.getenv("LARK_CLI_PATH", DEFAULT_LARK_CLI_PATH)
-    if lark_cli and os.path.exists(lark_cli):
+    app_id = os.getenv("FEISHU_APP_ID")
+    app_secret = os.getenv("FEISHU_APP_SECRET")
+    use_uuid_api = message_uuid and app_id and app_secret
+    if not use_uuid_api and lark_cli and os.path.exists(lark_cli):
         result = _send_feishu_via_cli(card_json, user_id, lark_cli)
         if result is True:
             logger.info(f"NewsVolumeAlert | sent via lark-cli to {user_id}")
@@ -357,10 +363,9 @@ def send_feishu(card_json):
         if result is False:
             print("[WARN] [预警] lark-cli 发送失败，尝试 API 降级")
 
-    app_id = os.getenv("FEISHU_APP_ID")
-    app_secret = os.getenv("FEISHU_APP_SECRET")
     if app_id and app_secret:
-        if _send_feishu_via_api(card_json, user_id, app_id, app_secret):
+        options = {"message_uuid": message_uuid} if message_uuid else {}
+        if _send_feishu_via_api(card_json, user_id, app_id, app_secret, **options):
             logger.info(f"NewsVolumeAlert | sent via API to {user_id}")
             print(f"[INFO] [预警] 飞书通知已通过 API 发送给 {user_id}")
             return True
