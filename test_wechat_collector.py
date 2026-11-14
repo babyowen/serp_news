@@ -358,26 +358,43 @@ def test_wechat_journals_successful_body_before_next_paid_call(tmp_path):
     assert resumed.calls == [("http", second["url"])]
 
 
-def test_wechat_direct_conflicting_date_evidence_survives_a_verified_fallback(tmp_path):
+def test_wechat_direct_date_conflict_blocks_paid_fallback_on_first_run_and_resume(tmp_path):
     entry = article(100)
     client = Provider({(GOV, ""): [page(entry)]},
                       bodies={entry["url"]: '<meta property="article:published_time" content="2026-11-12">'
                                             '<div id="js_content">不能入库的错误正文</div>'},
                       details={entry["url"]: [detail(entry)]})
     report = collect(tmp_path, client)
-    assert not report["complete"] and report["api_cost"] == 0.17
+    assert not report["complete"] and report["api_cost"] == 0.14
     row = report["articles"][0]
     assert row["wechat_content_status"] == "failed" and row["content"] == "" and not eligible(row)
     check = row["publication_check"]
     assert check["reason"] == "conflicting_publication_dates"
     assert {(item["source"], item["date"]) for item in check["evidence"]} == {
         ("wechat_history:post_time", DAY), ("wechat_history:post_time_str", DAY),
-        ("meta:article:published_time", "2026-11-12"), ("wechat_detail:pubtime", DAY),
+        ("meta:article:published_time", "2026-11-12"),
     }
+    assert client.calls == [("history", GOV, ""), ("http", entry["url"])]
+    client.calls.clear()
     client.bodies[entry["url"]] = "<title>环境异常</title>"
-    client.details[entry["url"]] = [detail(entry)]
     resumed = collect(tmp_path, client)
     assert not resumed["complete"] and resumed["articles"][0]["publication_check"] == check
+    assert resumed["api_cost"] == 0 and resumed["total_api_cost"] == 0.14
+    assert not any(kind == "detail" for kind, *_ in client.calls)
+
+
+def test_wechat_fallback_date_conflict_is_not_charged_again_on_resume(tmp_path):
+    entry = article(100)
+    client = Provider({(GOV, ""): [page(entry)]},
+                      bodies={entry["url"]: "<title>环境异常</title>"},
+                      details={entry["url"]: [detail(entry, when="before"), detail(entry)]})
+    first = collect(tmp_path, client)
+    assert first["api_cost"] == 0.17 and not first["complete"]
+    client.calls.clear()
+    resumed = collect(tmp_path, client)
+    assert not resumed["complete"] and resumed["api_cost"] == 0
+    assert resumed["articles"][0]["publication_check"] == first["articles"][0]["publication_check"]
+    assert not client.calls
 
 
 @pytest.mark.parametrize(("published", "beijing_day"), [
@@ -393,7 +410,7 @@ def test_wechat_normalizes_space_separated_html_timestamps_with_offsets(tmp_path
     report = collect(tmp_path, client)
     row = report["articles"][0]
     assert report["complete"] == eligible(row) == (beijing_day == DAY)
-    assert report["api_cost"] == (0.14 if beijing_day == DAY else 0.17)
+    assert report["api_cost"] == 0.14
     assert {"source": "meta:article:published_time", "raw": published, "date": beijing_day} in (
         row["publication_check"]["evidence"]
     )
@@ -509,13 +526,17 @@ def test_wechat_migrated_disabled_account_is_never_called(tmp_path):
     assert client.calls == [("history", GOV, "")]
 
 
-@pytest.mark.parametrize(("responses", "status", "cost", "attempts"), [
-    ([(429, {"code": 20001, "cost_money": 0.02})], "failed", 0.02, 1),
+@pytest.mark.parametrize(("responses", "status", "cost", "attempts", "error"), [
+    ([(429, {"code": 20001, "cost_money": 0.02})], "failed", 0.02, 1, "20001"),
+    ([(503, {"code": 104, "cost_money": 0.02})], "failed", 0.02, 1, "104"),
+    ([(401, {"code": 2005, "cost_money": 0.02})], "failed", 0.02, 1, "HTTP 401"),
+    ([(403, {"code": 2005, "cost_money": 0.02})], "failed", 0.02, 1, "HTTP 403"),
+    ([(404, {"code": 2005, "cost_money": 0.02})], "failed", 0.02, 1, "HTTP 404"),
     ([(503, {"cost_money": 0.02}), (502, {"code": 0, "cost_money": 0.03}),
-      (200, page())], "empty", 0.19, 3),
+      (200, page())], "empty", 0.19, 3, None),
 ])
 def test_wechat_accounts_for_billable_http_errors_before_retry_decision(
-        tmp_path, monkeypatch, no_retry_wait, responses, status, cost, attempts):
+        tmp_path, monkeypatch, no_retry_wait, responses, status, cost, attempts, error):
     monkeypatch.setenv("WECHAT_API_KEY", "test-key")
     queued = iter(responses)
     calls = []
@@ -530,12 +551,12 @@ def test_wechat_accounts_for_billable_http_errors_before_retry_decision(
 
     def wire(self, method, url, **kwargs):
         calls.append((method, url))
-        return Response(*next(queued))
+        return Response(*next(queued, responses[-1]))
 
     monkeypatch.setattr("requests.Session.request", wire)
     report = collect(tmp_path, None)
     assert len(calls) == attempts
     assert report["accounts"][0]["status"] == status
     assert report["api_cost"] == report["total_api_cost"] == cost
-    if status == "failed":
-        assert "20001" in report["accounts"][0]["error"]
+    if error:
+        assert error in report["accounts"][0]["error"]

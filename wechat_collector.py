@@ -44,6 +44,8 @@ PROVIDER_ERRORS = {
     50000: "极致了内部服务器错误",
 }
 RETRY_DELAY_BY_CODE = {-1: 5, 103: 2, 105: 2, 106: 2, 107: 2, 2003: 2, 2005: 2, 50000: 2}
+RETRYABLE_HTTP = {408, 425, 429, 500, 502, 503, 504}
+PUBLICATION_CONFLICT = "conflicting_publication_dates"
 
 
 class CollectionError(Exception):
@@ -123,14 +125,16 @@ class _WechatClient:
             data = response.json()
         except ValueError:
             data = None
-        if response.status_code == 200:
+        status = response.status_code
+        if status == 200:
             return data
         data = data if isinstance(data, dict) else {}
         cost, code = data.get("cost_money"), data.get("code")
+        if status not in RETRYABLE_HTTP:
+            raise CollectionError(f"极致了 HTTP {status}", cost_money=cost)
         if type(code) is int and code != 0:
             raise _provider_code_error(code, cost_money=cost)
-        retry_after = 2 if response.status_code in {408, 425, 429, 500, 502, 503, 504} else None
-        raise CollectionError(f"极致了 HTTP {response.status_code}", retry_after=retry_after, cost_money=cost)
+        raise CollectionError(f"极致了 HTTP {status}", retry_after=2, cost_money=cost)
 
     def post_history(self, ghid, offset):
         return self._provider("POST", "/post_history", fields={
@@ -363,7 +367,7 @@ def _store_body(row, text, check, method):
     row["publication_check"] = check
     row["wechat_content_method"] = method
     if check["status"] != "accepted":
-        raise CollectionError("极致了正文发布时间与列表不符")
+        raise CollectionError("正文发布时间与列表不符")
     reason = body_rejection_reason(text, row["title"])
     if not text or reason or _blocked_body(text) or text.strip() == row["title"]:
         row.update(wechat_content_status="insufficient", wechat_content_error=reason or "正文无有效文字")
@@ -442,7 +446,8 @@ def _collect_account(client, journal, account):
 
     for article in state["articles"].values():
         row = article["row"]
-        if row["wechat_content_status"] in BODY_DONE:
+        if (row["wechat_content_status"] in BODY_DONE
+                or row["publication_check"]["reason"] == PUBLICATION_CONFLICT):
             continue
         direct = article.get("direct_evidence", []).copy()
         link = row["link"]
@@ -459,15 +464,15 @@ def _collect_account(client, journal, account):
         row["publication_check"] = check
         if new_evidence:
             article["direct_evidence"] = direct
-            # Persist new direct evidence before spending on fallback.
-            journal.save()
         try:
             method = "http"
-            if text is None or check["status"] != "accepted":
+            if text is None and check["reason"] != PUBLICATION_CONFLICT:
+                if new_evidence:
+                    journal.save()
                 detail = journal.request(state, client.article_detail, link)
                 text, check = _detail_body(detail, row, evidence)
                 method = "article_detail"
-            _store_body(row, text, check, method)
+            _store_body(row, text or "", check, method)
         except CollectionError as exc:
             row["wechat_content_error"] = str(exc)
         journal.save()
@@ -482,7 +487,7 @@ def _account_report(account, journal, key, state):
     error = state["list_error"]
     if failures:
         first_error = next(row["wechat_content_error"] for row in articles if row["wechat_content_status"] == "failed")
-        article_error = f"{failures} 篇正文待重试：{first_error}"
+        article_error = f"{failures} 篇正文未通过：{first_error}"
         error = "；".join(filter(None, (error, article_error)))
     costs = _cost(state["total_api_cost"])
     reused = len(previous_ids & state["articles"].keys())
