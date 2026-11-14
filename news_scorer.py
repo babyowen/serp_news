@@ -34,6 +34,7 @@ from logger_utils import NewsLogger, get_news_logger
 from llm_client_pool import get_pool
 from runtime_config import value, model_credentials, model_arguments
 from batch_config import prepare_batch
+from wechat_source_context import score_context_fields, score_context_matches
 
 # 全局评分连接池实例
 _scoring_client_pool = get_pool()
@@ -105,7 +106,9 @@ def batch_score_news(json_path, keyword):
         result = score_news_result(title, content, search_keyword, keyword, context=news)
         score = result.score
         news_with_score = dict(news)
+        news_with_score.pop("score_source_context", None)
         news_with_score.update(score_fields(result))
+        news_with_score.update(score_context_fields(news, keyword))
         from scoring_policy import VERSION
         news_with_score["scoring_policy_version"] = VERSION
         results.append(news_with_score)
@@ -148,13 +151,14 @@ def migrate_legacy_scores(results, json_path, date_str):
             news.update(candidate)
 
 
-def _cached_score(cached, row):
+def _cached_score(cached, row, keyword=None):
     valid = (context_limit_skipped(cached) or content_skipped(cached)
              or (type(cached.get("score")) is int and 0 <= cached["score"] <= 5
                  and (cached.get("score_status") == "ok"
                       and not body_rejection_reason(row.get("content"), row.get("title"))
                       or cached.get("score_status") == "empty_content" and not row.get("content"))))
-    return valid and all(cached.get(key) == row.get(key) for key in ("title", "content"))
+    return (valid and all(cached.get(key) == row.get(key) for key in ("title", "content"))
+            and score_context_matches(cached, row, keyword))
 
 
 def _score_row(row, keyword):
@@ -162,11 +166,27 @@ def _score_row(row, keyword):
 
     result = score_news_result(row.get("title", ""), row.get("content", ""),
                                row.get("search_keyword", keyword), keyword, context=row)
-    return {**row, **score_fields(result), "scoring_policy_version": VERSION}
+    fresh = {key: value for key, value in row.items() if key != "score_source_context"}
+    return {**fresh, **score_fields(result), **score_context_fields(row, keyword), "scoring_policy_version": VERSION}
+
+
+def refresh_source_context_scores(path, keyword):
+    """Refresh only changed publisher context, checkpointing each completed request."""
+    from pathlib import Path
+    from government_affairs_pipeline import atomic_json
+
+    rows = json.loads(Path(path).read_text(encoding="utf-8"))
+    if not isinstance(rows, list):
+        return
+    for index, row in enumerate(rows):
+        if isinstance(row, dict) and eligible(row) and not score_context_matches(row, main_keyword=keyword):
+            rows[index] = _score_row(row, keyword)
+            atomic_json(path, rows)
 
 
 def _reuse_score(cached, row):
-    return {**row, **{key: value for key, value in cached.items() if key.startswith("score")
+    fresh = {key: value for key, value in row.items() if key != "score_source_context"}
+    return {**fresh, **{key: value for key, value in cached.items() if key.startswith("score")
                       or key == "scoring_policy_version"}}
 
 
@@ -198,7 +218,7 @@ def incremental_score_news(json_path, keyword, run):
 
     for link, row in admitted.items():
         cached = by_link.get(link, {})
-        if _cached_score(cached, row):
+        if _cached_score(cached, row, keyword):
             results[link] = _reuse_score(cached, row)
             if link in candidates and cached["score_status"] == "ok":
                 candidates[link]["status"] = "already_done"
@@ -240,7 +260,7 @@ def refresh_review_scores(json_path, keyword, links):
         if row.get("link") not in links or not eligible(row):
             continue
         cached = by_link.get(row["link"], {})
-        result = _reuse_score(cached, row) if _cached_score(cached, row) else _score_row(row, keyword)
+        result = _reuse_score(cached, row) if _cached_score(cached, row, keyword) else _score_row(row, keyword)
         by_link[row["link"]] = result
         # Persist each paid success before the next request or a DB operation.
         atomic_json(saved, list(by_link.values()))
@@ -401,7 +421,8 @@ def main():
                         continue
                     # 跳过机制：如已存在_scored.json文件，说明已完成打分，无需重复处理
                     if os.path.exists(scored_json_path):
-                        safe_print(f"[SKIP] {scored_json_path} 已存在，跳过 {keyword}")
+                        refresh_source_context_scores(scored_json_path, keyword)
+                        safe_print(f"[CHECK] {scored_json_path} 已存在，检查 {keyword} 评分缓存")
                         if scored_file_complete(scored_json_path, keyword):
                             processed_count += 1
                         else:
@@ -476,17 +497,18 @@ def main():
                     if not eligible(news):
                         continue
                     score = news.get("score")
-                    # 只重评真正缺失分数的（score为None），不重评score=0（有效评分）
-                    if score is not None:
+                    stale_context = not score_context_matches(news, main_keyword=keyword)
+                    # Keep valid scores (including zero), except changed publisher context.
+                    if score is not None and not stale_context:
                         continue
                     title = news.get("title", "")
                     content = news.get("content", "")
-                    search_keyword = news.get("search_keyword", keyword)
-                    if not content or content.strip() == "":
+                    if (not content or content.strip() == "") and not stale_context:
                         continue
-                    result = score_news_result(title, content, search_keyword, keyword, context=news)
-                    news.update(score_fields(result))
-                    new_score = result.score
+                    fresh = _score_row(news, keyword)
+                    news.clear()
+                    news.update(fresh)
+                    new_score = news["score"]
                     rescored_count += 1
                     safe_print(f"[RESCORE] {title[:40]}... → {new_score}分")
                 # 写回
@@ -500,7 +522,8 @@ def main():
 
         # 跳过机制：如已存在_scored.json文件，说明已完成打分，无需重复处理
         if os.path.exists(scored_json_path):
-            safe_print(f"[SKIP] {scored_json_path} 已存在，跳过 {keyword}")
+            refresh_source_context_scores(scored_json_path, keyword)
+            safe_print(f"[CHECK] {scored_json_path} 已存在，检查 {keyword} 评分缓存")
             complete = scored_file_complete(scored_json_path, keyword)
             log_script_complete("news_scorer.py", success=complete, message=f"检查已有评分: {keyword}；失败项需显式 --rescore")
             return complete

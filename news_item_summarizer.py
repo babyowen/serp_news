@@ -33,6 +33,7 @@ from topic_config import TOPIC
 from wechat_pipeline_run import stage_run, read_stage, write_stage
 from content_quality import body_rejection_reason
 from summary_grounding import grounded_system_prompt, attribution_supported
+from wechat_source_context import add_source_context
 from news_business_type_utils import (
     build_business_type_catalog,
     load_business_type_aliases,
@@ -52,10 +53,12 @@ def parse_date(arg):
         return f"{s[0:4]}-{s[4:6]}-{s[6:8]}"
     return s
 
-def call_llm(title, content, max_retries=3):
+def call_llm(title, content, max_retries=3, context=None):
     if body_rejection_reason(content, title):
         return None
     user_prompt = value("NEWS_ITEM_SUMMARY_USER_PROMPT_500").format(title=title.strip(), content=content.strip())
+    system_prompt, user_prompt = add_source_context(
+        grounded_system_prompt(value("NEWS_ITEM_SUMMARY_SYSTEM_PROMPT_500")), user_prompt, context)
     backoffs = [5, 10, 20]
     for i in range(max_retries):
         client = _pool.get_client(*model_credentials("item_summarizer"))
@@ -63,7 +66,7 @@ def call_llm(title, content, max_retries=3):
             resp = client.chat.completions.create(
                 **model_arguments("item_summarizer"),
                 messages=[
-                    {"role": "system", "content": grounded_system_prompt(value("NEWS_ITEM_SUMMARY_SYSTEM_PROMPT_500"))},
+                    {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_prompt}
                 ]
             )
@@ -215,7 +218,7 @@ def main():
         aliases = load_business_type_aliases(cur, table_name) if gjj_annotation_ready else {}
         business_type_catalog = build_business_type_catalog(cur, table_name, aliases) if gjj_annotation_ready else {}
 
-        sql = f"SELECT id, title, content, keyword FROM {table_name} WHERE fetchdate=%s AND score>=3 AND (short_summary IS NULL OR short_summary='')"
+        sql = f"SELECT id, title, content, keyword, source, link, sourceapi FROM {table_name} WHERE fetchdate=%s AND score>=3 AND (short_summary IS NULL OR short_summary='')"
         # Scope the database work to the same topics whose revision was pinned.
         # Historical rows for removed/unbound topics require an explicit run.
         # Using another revision in this directory requires per-topic resumes;
@@ -225,7 +228,7 @@ def main():
             
         cur.execute(sql, tuple(params))
         initial_rows = cur.fetchall()
-        gov_pending = {rid for rid, title, content, keyword in initial_rows
+        gov_pending = {rid for rid, title, content, keyword, source, link, sourceapi in initial_rows
                        if keyword == TOPIC and content and str(content).strip()}
         gov_total = len(gov_pending)
         total = len(initial_rows)
@@ -239,7 +242,7 @@ def main():
             rows = cur.fetchall()
             if not rows:
                 break
-            for rid, title, content, keyword in rows:
+            for rid, title, content, keyword, source, link, sourceapi in rows:
                 if not content or not str(content).strip() or body_rejection_reason(content, title):
                     skip += 1
                     continue
@@ -305,7 +308,8 @@ def main():
                     region = result.get("region") if result else None
                     business_types = result.get("business_types", []) if result else []
                 else:
-                    summary = call_llm(title or '', content or '')
+                    summary = call_llm(title or '', content or '', context={
+                        "keyword": keyword, "source": source, "link": link, "sourceapi": sourceapi})
                     region = None
                     business_types = []
                 if summary:

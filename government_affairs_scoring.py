@@ -9,6 +9,7 @@ from runtime_config import value, model_arguments, model_credentials
 from topic_config import TOPIC
 from news_freshness import eligible
 from scoring_policy import messages, cap_score
+from wechat_source_context import score_context_matches
 from content_quality import body_rejection_reason, quality_status, content_skipped
 
 @dataclass(frozen=True)
@@ -63,7 +64,8 @@ def score_result(title, content, keyword, main_keyword, pool, max_retries=3, ret
     system = prompts.get(main_keyword or keyword) or value("NEWS_SCORE_SYSTEM_MSG")
     if content is None or not str(content).strip():
         return record_result(ScoreResult(0, "empty_content"))
-    request_messages = messages(system, value("NEWS_SCORE_PROMPT"), title, content, keyword, context)
+    request_messages = messages(system, value("NEWS_SCORE_PROMPT"), title, content, keyword, context,
+                                main_keyword=main_keyword or keyword)
     params, credentials = model_arguments("scoring"), model_credentials("scoring")
     for attempt in range(1, max_retries + 1):
         raw = None
@@ -99,7 +101,8 @@ def scored_file_complete(path, keyword):
     try:
         rows = json.loads(Path(path).read_text(encoding="utf-8"))
         return isinstance(rows, list) and all(
-            isinstance(row, dict) and eligible(row) and (content_skipped(row) or context_limit_skipped(row) or
+            isinstance(row, dict) and eligible(row) and score_context_matches(row, main_keyword=keyword)
+            and (content_skipped(row) or context_limit_skipped(row) or
             (type(row.get("score")) is int and 0 <= row["score"] <= 5
              and ((row.get("score_status") == "ok" and not body_rejection_reason(row.get("content"), row.get("title"))) or
                   (row.get("score_status") == "empty_content" and row["score"] == 0))))

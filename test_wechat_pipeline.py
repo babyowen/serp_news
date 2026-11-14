@@ -70,11 +70,12 @@ class Database:
         elif sql.startswith("SELECT title, link"):
             self.result = [(r["title"], r["link"]) for r in self.rows if r["keyword"] == params[0]]
         elif sql.lstrip().startswith("INSERT INTO"):
-            day, title, link, _, fetchdate, _, _, keyword, content, _, _, score, _ = params
+            day, title, link, source, fetchdate, sourceapi, _, keyword, content, _, _, score, search_keyword = params
             if title == self.reject:
                 raise pymysql.DataError(1406, "invalid row")
             self.uncommitted.append(dict(id=len(self.rows) + len(self.uncommitted) + 1, title=title,
                                          link=link, fetchdate=fetchdate, keyword=keyword, content=content,
+                                         source=source, sourceapi=sourceapi, search_keyword=search_keyword,
                                          score=score, short_summary=None))
             self.rowcount = 1
         elif sql.startswith("UPDATE") and "SET score=" in sql:
@@ -94,7 +95,8 @@ class Database:
                 row["score"] = score
                 self.rowcount += 1
         elif sql.startswith("SELECT id, title, content, keyword"):
-            self.result = [(r["id"], r["title"], r["content"], r["keyword"]) for r in self.rows
+            self.result = [(r["id"], r["title"], r["content"], r["keyword"], r.get("source"),
+                            r["link"], r.get("sourceapi")) for r in self.rows
                            if r["fetchdate"] == params[0] and r["keyword"] in params[1:]
                            and r["score"] is not None and r["score"] >= 3 and not r["short_summary"]]
         elif sql.startswith("SELECT id, title, link, fetchdate, score, short_summary, content"):

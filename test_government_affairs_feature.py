@@ -49,7 +49,7 @@ def test_empty_success_is_not_search_failure(tmp_path, monkeypatch):
 
 class SummaryCursor:
     def __init__(self, text):
-        self.rows=[(1,"标题",text,TOPIC)]
+        self.rows=[(1,"标题",text,TOPIC,"测试来源","https://example.test/article","api")]
         self.queries=[]; self.written=[]
     def execute(self,sql,params=None):
         self.queries.append((sql,params))
@@ -69,7 +69,7 @@ def test_summary_final_failure_and_short_content(tmp_path,monkeypatch,length,ans
     monkeypatch.setattr(summary,"table_has_business_types_column",lambda *a:False)
     monkeypatch.setattr(summary.time,"sleep",lambda _:None)
     queue=iter(answers)
-    monkeypatch.setattr(summary,"call_llm",lambda *a:next(queue))
+    monkeypatch.setattr(summary,"call_llm",lambda *a,**k:next(queue))
     monkeypatch.setattr(sys,"argv",["news_item_summarizer.py","2099-01-01","--keyword",TOPIC])
     assert summary.main() is want
     assert (len(cursor.written)==1) is want
