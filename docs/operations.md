@@ -133,7 +133,7 @@ TZ=Asia/Shanghai /www/wwwroot/serp_news/.venv/bin/python -B wechat_notifications
 
 启用时记录首个生效的北京时间00:30运行日期及对应业务日（前一天），在该次主任务计划触发后的09:00开始检查。独立检查读取 `output/wechat_runs/`，识别业务批次未启动、已中断、仍运行及待发送结果。每条待发结果每个北京时间检查日尝试一次。已确认发送的结果和同一检查日的漏跑提醒均去重。
 
-2026-11-14 发布时确认主任务 ID 8 和独立检查 ID 10 已配置，首个计划处理业务日为2026-11-14，由次日00:30主任务采集，09:00检查。发布及回填证据见[验证记录](government-affairs-wechat-verification.md#生产回填与发布)。
+2026-11-14 发布时确认主任务 ID 8 和独立检查 ID 10 已配置，首个计划处理业务日为2026-11-14，由次日00:30主任务采集，09:00检查。首轮00:30采集与飞书已于2026-11-15完成；09:00检查截至08:37尚未触发。实际宝塔任务表在 `/www/server/panel/data/db/crontab.db`。发布、回填与首轮运行证据见[验证记录](government-affairs-wechat-verification.md)。
 
 ### 诊断与恢复
 
