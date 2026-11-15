@@ -184,3 +184,11 @@ python run_config_tests.py -k 'bank or historical or dedup or business'
 - `main.py` 使用 `sys.executable` 调用子进程，确保与当前 Python 环境一致（不硬编码 `python`）
 - `tobacco_gov_crawler.py` 通过 macOS launchd 定时任务每日凌晨 1:00 自动运行（`~/Library/LaunchAgents/com.tobacco.gov.crawler.plist`）
 - `.env` 中的 `MYSQL_TABLE` 会影响定时任务的写入目标表，开发期间切换测试表后注意恢复
+
+## 机关事务官微阶段状态（2026-11-15）
+
+- 38个官微、地域上下文、结果卡片和09:00漏跑检查已上线，来源见 `docs/government-affairs-wechat-sources.md`；矩阵9个官网未定向接入，旧国资官微不恢复。
+- 首轮00:30自动采集正常，14篇全部已在补跑时入库，新增0；飞书02:35发送成功。09:00检查截至08:37尚未触发；详细验收和待办见 `docs/government-affairs-wechat-verification.md`。
+- 已知待办：去重保留行3分会挡住同一文章新评4分；标题比较只折叠空白段，尚未处理标点后空格有无。不要把待办记成已修复，也不跨来源机械替换分数或摘要。
+- 下游 ainews 已携带官微地域信息并修复调试预览；内容质量改造被用户暂停。保护所有现有提示词及其他专题，后续恢复开发需确认范围。
+- 本阶段原始证据归档到主仓库忽略目录 `output/weekly-wechat-closeout-20261115/evidence/`。保留测试/生产提升回执及评估HTML，不能把快照或凭据提交到Git。
